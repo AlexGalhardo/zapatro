@@ -27,7 +27,7 @@ Since 2026-10-24 the project has 10 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
-- **repo:** the project moved to the public repository `AlexGalhardo/zeta-c` with a fresh history (the earlier history stays in the private `truco.lekzera.xyz` repo).
+- **repo:** the project moved to the public repository `AlexGalhardo/zeta-c` with a fresh history (the earlier history stays in the private `truco.lekzera.xyz` repo); `main` is the only branch (no `dev`), and CI builds Electron on Linux, Windows and macOS on every push.
 - **docs:** the 1.0 trailer is marked done (GD-012: 60 s and 15 s cuts in EN and PT-BR rendered in `trailer/out/` and published on the site; Steam waits for the store page), pending decision 9 (trailer v1/v2) is closed, and the old `assets` and `qa` worktrees are recorded as closed and merged (AGENTS.md, PLAN §12.1, `docs/git-and-versioning.md`).
 - **android:** the splash screen and the WebView background use the neutral #2B2B2B of the current art (the old dark brown flashed before the game drew); the Android 12+ system splash uses it too.
 - **trailer:** EN and PT follow one 60 s script (`trailer/src/script.ts`, director review §7.6: title and TRUCO!, a hand with signal, truco and the Chips × Mult count, shop and build, the boss with its rule on screen, end card with stores and URL) and a 15 s teaser; on-screen captions and `.vtt` subtitles come from the same list; Rubik replaces Pixelify Sans; `record-clips.ts` adds a boss clip and anchors clip times to the recorded video's end (they were wall-clock times and missed the action).
@@ -45,6 +45,7 @@ Since 2026-10-24 the project has 10 releases, numbered in order from 0.1.0 to 0.
 
 ### Fixed
 
+- **ci:** the Electron jobs look for `Zapatro.exe` and `Zapatro.app` (they still used the old `Zapaco` name), `mobile/android/gradlew` and the git hooks are executable in the repository, and release notes no longer prefix a second scope on entries that already have one.
 - **table:** the Manha tip opens under the HUD block, flush with its right edge, instead of below the icon over the top partner's portrait; the ☰ list keeps its place by the sidebar.
 - **android:** leaving the app (Home) and coming back reopens the table under the pause menu and suspends the audio while away, like a browser tab (the app sent an event nothing listened to); `qa-android.ts` now requires the pause after Home. Emulator run (API 33, 2400×1080): 12/12, debug APK 14.9 MB.
 - **ui:** shop focus and prices: after buying, focus moves to the next item you can afford; prices you cannot pay are disabled (grey, skipped by the arrows, still give the not-enough-money feedback on click) and affordable ones use the light wood, never the danger red; only the focused button shows Enter; the sidebar Almanac icon has a neutral border. Table, at the dev's request: the top partner and his cards sit 16 px clear of the HUD, the manilha/ZAP information moved to its own block in the felt's bottom-left corner (only "VIRA" stays under the vira); the tutorial ends focused on Main menu; table tips stay open after a tap until a tap elsewhere or 4 s; the sidebar, chips/mult boxes and HUD panel are cached textures (`panelTex`), cutting the idle table render by about a third.

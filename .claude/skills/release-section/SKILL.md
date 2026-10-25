@@ -5,7 +5,7 @@ description: Use whenever you commit Zapatro (Truco Roguelite) — commits are p
 
 # release-section
 
-Fluxo em **todo commit**: gates, docs e a entrada em `[Unreleased]` do CHANGELOG; **sem bump nem tag**. Releases são marcos: 10 até 2026-10-24 (pedido do usuário), cada um com as notas de todos os commits desde o anterior. Remoto único `origin`: o repositório foi renomeado para `AlexGalhardo/truco.lekzera.xyz` (o URL antigo `AlexGalhardo/jogo-truco.git` ainda redireciona). Branches no remoto: só `dev` e `main`.
+Fluxo em **todo commit**: gates, docs e a entrada em `[Unreleased]` do CHANGELOG; **sem bump nem tag**. Releases são marcos: 10 até 2026-10-24 (pedido do usuário), cada um com as notas de todos os commits desde o anterior. Remoto único `origin`: `AlexGalhardo/zeta-c` (público, histórico novo desde 2026-10-25; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única no remoto: `main`.
 
 ## 1. Gates (nesta ordem; corrija a causa, nunca `--no-verify`)
 
@@ -62,7 +62,7 @@ Commits e tags ficam locais até o usuário pedir push/release explicitamente (2
 
 ```bash
 bun run graph                                     # antes de todo push (AST, ~15 s, local/gitignored)
-git push origin dev:dev dev:main --follow-tags    # dev e main juntos
+git push origin main --follow-tags
 ```
 
 ## 6. GitHub Release (só quando o usuário pedir)

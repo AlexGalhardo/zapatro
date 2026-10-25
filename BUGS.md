@@ -13,7 +13,7 @@
 
 ## Resumo
 
-> Linha principal (`dev`/`main`, visual híbrido da Art Bible v2, `docs/visual.md`): os itens de arte pixel/concept da linha antiga estão marcados "n/a" ou "obsoleto pela art bible v2".
+> Linha principal (`main`, visual híbrido da Art Bible v2, `docs/visual.md`): os itens de arte pixel/concept da linha antiga estão marcados "n/a" ou "obsoleto pela art bible v2".
 
 | Id | Sev. | Tela | Problema | Status |
 | --- | --- | --- | --- | --- |

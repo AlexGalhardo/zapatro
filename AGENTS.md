@@ -46,7 +46,7 @@ Resumo mínimo:
 1. Lógica pura (`src/logic`, `src/game`) sem Phaser e por turnos (`legalActions`/`apply`); números em `src/data`; textos em `src/i18n` (EN + PT-BR juntos); cores em `src/config/palette.ts`.
 2. Gates antes de commitar: `bun run check`, `bun run typecheck`, `bun test`; `bun run build` e smoke antes de push. Nunca `--no-verify`.
 3. Toda mudança atualiza PLAN.md, CHANGELOG.md (`[Unreleased]`) e o doc afetado no mesmo lote.
-4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0` e `v0.10.0`, depois patches pequenos `0.10.1` e minors `0.11.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Push em `dev`/`main` e `bun run release` só quando o usuário pedir explicitamente.** Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
+4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0` e `v0.10.0`, depois patches pequenos `0.10.1` e minors `0.11.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Push na `main` e `bun run release` só quando o usuário pedir explicitamente.** Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
 5. Estilo visual: princípios do Balatro (legibilidade, "juice") com identidade de boteco do interior paulista; nunca copiar arte, logo ou layout de terceiros.
 6. Cascas nativas (`desktop/`, `mobile/`): o jogo não importa Electron/Capacitor; não mudar a origem do save (`app://truco-roguelite`); keystore e login Steam nunca no repo; `.env` nunca no git.
 
@@ -92,8 +92,8 @@ Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pod
 
 ## Worktrees (PLAN §12.1)
 
-- As worktrees `../jogo-truco-assets` (branch `assets`) e `../jogo-truco-qa` (branch `qa`) foram encerradas: todo o trabalho delas está em `dev`/`main` e as branches foram apagadas (conferido em 2026-10-25). Hoje há só o repositório principal.
-- Não crie worktree nova sem pedido explícito do dev. Se uma for criada, ela só mexe nos arquivos de que é dona e o fio principal integra com merge em `dev` depois dos gates.
+- As worktrees `../jogo-truco-assets` (branch `assets`) e `../jogo-truco-qa` (branch `qa`) foram encerradas: todo o trabalho delas está na `main` e as branches foram apagadas (conferido em 2026-10-25). Hoje há só o repositório principal.
+- Não crie worktree nova sem pedido explícito do dev. Se uma for criada, ela só mexe nos arquivos de que é dona e o fio principal integra com merge na `main` depois dos gates.
 
 ## Skills do projeto
 

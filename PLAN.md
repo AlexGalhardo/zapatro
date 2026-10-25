@@ -132,7 +132,7 @@ iOS · espanhol e outros idiomas · multiplayer · backend, contas, telemetria �
 | D-57 | **Opção de baralho de 4 cores** (acessibilidade) e **velocidade de animação 1×/2×/4×** nas Configurações | Acessibilidade e ritmo |
 | D-59 | Mesa em **melhor de três quedas**: os rivais precisam fechar 12 tentos duas vezes; cada queda zera só os tentos de quem a fechou (como a Queda, D-04) | Com derrota na 1ª queda rival, nenhuma mesa passava de ~80% e a run nunca chegava aos 40–60% da D-39 (A5, 2026-09-30; revisar no playtest) |
 | D-60 | Calibragem do A5: metas ×1,27 por Campeonato (110 → 585), Corrida 15 Fichas × 2 Mult, Delegado = Corrida pela metade, parceiros com coragem 0,2, rivais por Campeonato (`RIVAL_POOLS`) | `bun run balance`: bot bom 45–49%, aleatório < 1%, 4,2 mãos por mesa |
-| D-62 | Repositório **público** `AlexGalhardo/zeta-c` com histórico novo (2026-10-25); CI de 3 sistemas em todo push na `main`; `deploy.yml` publica o site em `beta.lekzera.xyz` a cada push na `main`; workflows do Claude removidos | Minutos livres do Actions; repo público não deve aceitar disparo de terceiros com o token do Claude |
+| D-62 | Repositório **público** `AlexGalhardo/zeta-c` com histórico novo (2026-10-25); branch única `main` (sem `dev`); CI de 3 sistemas em todo push; `deploy.yml` publica o site em `beta.lekzera.xyz` a cada push na `main`; workflows do Claude removidos | Minutos livres do Actions; repo público não deve aceitar disparo de terceiros com o token do Claude |
 | D-61 | Estacas mexem no relógio: rivais de pools mais duros e tentos de vantagem (1/2/4/6), além de metas ×1,3, juros com teto $3, sem prêmio na Pequena e preços +25% | Só metas quase não mudavam a taxa (o relógio domina, D-59) |
 | D-58 | Pastas das cascas: `desktop/` (Electron) e `mobile/` (Capacitor); `site/` e `trailer/` também com `package.json` e `bun.lock` próprios | Dependências pesadas fora do jogo |
 
@@ -448,7 +448,7 @@ Scripts herdados (`scripts/lib/pixellab.ts`, `pl-*.ts`, `assets-validate.ts`, `a
 
 ## 11. Git, versões e release
 
-- **Remoto:** `origin` → `https://github.com/AlexGalhardo/zeta-c.git` (público, histórico novo desde 2026-10-25, D-62; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branches `dev` (integração) e `main` (build testável, só por fast-forward depois dos gates).
+- **Remoto:** `origin` → `https://github.com/AlexGalhardo/zeta-c.git` (público, histórico novo desde 2026-10-25, D-62; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única `main` (sem `dev` desde 2026-10-25, D-62), depois dos gates.
 - **Commits:** Conventional Commits 1.0.0, em inglês, micro-commits. Escopos: `truco`, `score`, `ai`, `run`, `shop`, `meta`, `save`, `table`, `ui`, `hud`, `i18n`, `audio`, `art`, `debug`, `balance`, `tutorial`, `desktop`, `mobile`, `web`, `site`, `trailer`, `ci`, `plan`, `docs`, `skills`, `deps`, `release`.
 - **SemVer 2.0.0** (D-22):
 
@@ -463,7 +463,7 @@ Scripts herdados (`scripts/lib/pixellab.ts`, `pl-*.ts`, `assets-validate.ts`, `a
 - **Versão só no `package.json` raiz**; cascas, site e trailer leem dali; o `versionCode` do Android é derivado (`scripts/lib/version-code.ts`, RCs abaixo da final).
 - **CHANGELOG.md** (Keep a Changelog 1.1.0): toda mudança entra em `[Unreleased]` **no mesmo commit**; ao fechar seção, vira `## [x.y.z] - data`.
 - **Docs no mesmo lote:** PLAN (`[x]`), CHANGELOG e o doc afetado em `docs/`. Fluxo repetitivo ou armadilha nova → skill em `.claude/skills/`.
-- **CI** (`ci.yml`): em `dev` → quality (format, lint, tsc, test, commitlint), balance, qa (Linux), android debug APK, electron Linux; em `main`/tags → + electron Windows e macOS (D-42).
+- **CI** (`ci.yml`, push/PR na `main`): quality (format, lint, tsc, test, commitlint), balance, smoke, android debug APK, electron Linux, Windows e macOS (D-62). `deploy.yml`: site em `beta.lekzera.xyz`.
 - **Release** (`release.yml`, tag `v*`): zip web (completo e demo), zips Electron por SO, AAB/APK assinados (secrets `ANDROID_KEYSTORE_*`), SHA256SUMS, GitHub Release com as notas do CHANGELOG (prerelease quando a tag tem `-`).
 
 ---

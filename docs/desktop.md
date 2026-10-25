@@ -45,7 +45,7 @@ QA nas 11 resoluções mais usadas na Steam (Hardware Survey): `bun scripts/qa-d
 
 **`.exe` portátil para testar (todo release):** `bun run exe` gera `Zapatro-<versão>-win-x64.exe` na **raiz do projeto** (ignorado pelo git; só a versão atual fica lá). Um arquivo só, dois cliques. `bun run release` e o `release.yml` (job `electron` do Windows) fazem o mesmo e o anexam ao GitHub Release como `zapatro_<versão>_windows_amd64.exe`. O save fica em `%APPDATA%\Zapaco` (`desktop/main.js` mantém a pasta antiga).
 
-Executáveis gerados: `release/win-unpacked/Zapaco.exe`, `release/linux-unpacked/truco-roguelite`, `release/mac-arm64/Truco Roguelite.app`. Rode o executável com `--smoke` para a mesma checagem do CI.
+Executáveis gerados: `release/win-unpacked/Zapatro.exe`, `release/linux-unpacked/truco-roguelite`, `release/mac-arm64/Zapatro.app`. Rode o executável com `--smoke` para a mesma checagem do CI.
 
 ## CI/CD
 

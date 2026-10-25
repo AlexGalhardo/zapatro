@@ -67,7 +67,7 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
       - name: Ad hoc signature (macOS, until a Developer ID is set up)
         if: runner.os == 'macOS'
-        run: codesign --force --deep --sign - "desktop/release/mac-arm64/Zapaco.app"
+        run: codesign --force --deep --sign - "desktop/release/mac-arm64/Zapatro.app"
       # Every release has the portable Windows executable too (Zapatro-<version>-win-x64.exe).
       - name: Portable .exe (Windows)
         if: runner.os == 'Windows'

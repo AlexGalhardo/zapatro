@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
   push:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -75,14 +75,14 @@ jobs:
           for i in $(seq 60); do curl -sf http://localhost:4173 > /dev/null && break; sleep 1; done
           bun scripts/smoke.ts --url http://localhost:4173 --seconds 30
 
-  # Steam build (desktop/): Linux on every push; Windows and macOS only on main (D-42).
+  # Steam build (desktop/): Linux, Windows and macOS on every push and PR (public repo, D-62).
   electron:
     needs: quality
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ github.ref == 'refs/heads/main' && fromJSON('["ubuntu-latest","windows-latest","macos-latest"]') || fromJSON('["ubuntu-latest"]') }}
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
@@ -99,14 +99,14 @@ jobs:
       # Without a Developer ID the app stays unsigned; Apple Silicon only runs signed code (ad hoc is enough).
       - name: Ad hoc signature (macOS)
         if: runner.os == 'macOS'
-        run: codesign --force --deep --sign - "desktop/release/mac-arm64/Zapaco.app"
+        run: codesign --force --deep --sign - "desktop/release/mac-arm64/Zapatro.app"
       - name: Smoke test the packaged app
         shell: bash
         run: |
           case "$RUNNER_OS" in
             Linux) xvfb-run -a ./desktop/release/linux-unpacked/truco-roguelite --smoke --no-sandbox ;;
-            Windows) "./desktop/release/win-unpacked/Zapaco.exe" --smoke ;;
-            macOS) "./desktop/release/mac-arm64/Zapaco.app/Contents/MacOS/Zapaco" --smoke ;;
+            Windows) "./desktop/release/win-unpacked/Zapatro.exe" --smoke ;;
+            macOS) "./desktop/release/mac-arm64/Zapatro.app/Contents/MacOS/Zapatro" --smoke ;;
           esac
 
   # Google Play build (mobile/): debug APK, installable on a phone for testing.

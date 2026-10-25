@@ -39,7 +39,7 @@ export function releaseNotes(tag: string): string {
 		.map((line) =>
 			// Merged milestone sections already carry each entry's own scope and commit link.
 			line.startsWith('- ') && !line.includes('/commit/')
-				? `- ${scope ? `**${scope}:** ` : ''}${line.slice(2)}${link}`
+				? `- ${scope && !line.startsWith('- **') ? `**${scope}:** ` : ''}${line.slice(2)}${link}`
 				: line,
 		)
 		.join('\n');

@@ -1,6 +1,6 @@
 # Git, commits e versionamento
 
-- Remoto único: **`origin`** → `https://github.com/AlexGalhardo/zeta-c.git` (público, histórico novo desde 2026-10-25; o histórico anterior fica no repo privado `AlexGalhardo/truco.lekzera.xyz`; o Gridbound, template de origem, fica em `tibia-roguelite-game`). Branches **`dev`** (integração) e **`main`** (build testável).
+- Remoto único: **`origin`** → `https://github.com/AlexGalhardo/zeta-c.git` (público, histórico novo desde 2026-10-25; o histórico anterior fica no repo privado `AlexGalhardo/truco.lekzera.xyz`; o Gridbound, template de origem, fica em `tibia-roguelite-game`). Branch única **`main`**.
 
 ## Conventional Commits 1.0.0 (obrigatório)
 
@@ -78,10 +78,10 @@ Regra do usuário (2026-10-24): **releases são poucos e em ordem** (10 até ago
 
 Os 104 commits até `6be48af` ganharam uma tag cada (`0.0.1`…`0.0.17`, `0.1.0-alpha.1`…`alpha.35`, `0.1.0-beta.1`…`beta.23`, `1.0.0-rc.1`…`rc.29`), um release com as notas daquele commit e uma seção no CHANGELOG. As fases seguem as tags antigas (v0.0.4, v0.1.0-alpha.1, v0.1.0-beta.1), que foram apagadas e refeitas. O `package.json` desses commits antigos guarda a versão da época, não a da tag.
 
-## Branches `dev` e `main` (pedido do usuário, 2026-09-28)
+## Branch única `main` (pedido do usuário, 2026-10-25)
 
-- Trabalho em andamento e integração de worktrees vão para **`dev`** (`git push origin HEAD:dev`).
-- A **`main`** só recebe uma build **testável e sem bugs conhecidos**, depois de rodar em `dev`: `bun run check:fix` (formatter) → `bun run check` (lint) → `bun run typecheck` (`bun check`) → `bun test` → smoke **Playwright headless** (`bun scripts/smoke.ts` com `bun run dev` rodando) → `bun run build`. Então `git push origin dev:main --follow-tags` (fast-forward). Desde 2026-09-28 o push vai para `dev` e `main` juntos.
+- Não há `dev`: todo commit vai direto para a **`main`** (`git push origin main`), depois dos gates: `bun run check:fix` (formatter) → `bun run check` (lint) → `bun run typecheck` (`bun check`) → `bun test` → smoke **Playwright headless** (`bun scripts/smoke.ts`) → `bun run build` → `bun run graph`.
+- Todo push na `main` roda o `ci.yml` e o `deploy.yml` (site em <https://beta.lekzera.xyz>).
 
 ## Worktrees
 

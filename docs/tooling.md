@@ -60,7 +60,7 @@ Removidas em 2026-10-15 por não servirem a um jogo de cartas por turnos (sem f�
 
 | Comando | O quê |
 |---|---|
-| `bun scripts/smoke.ts --url http://localhost:5191 [--seconds 35] [--shot out.png]` | Smoke headless (Playwright): menu e, quando a mesa existir, partida com bot a 4×; falha em qualquer erro de console. Gate antes de promover `dev` → `main` e job `smoke` do CI |
+| `bun scripts/smoke.ts --url http://localhost:5191 [--seconds 35] [--shot out.png]` | Smoke headless (Playwright): menu e, quando a mesa existir, partida com bot a 4×; falha em qualquer erro de console. Gate antes de push na `main` e job `smoke` do CI |
 | `bun scripts/pl-*.ts` | Geração PixelLab (worktree `assets`, ver docs/visual.md) |
 | `bun scripts/el-sfx.ts` / `bun scripts/el-music.ts` | ElevenLabs (só com pedido do usuário) |
 | `bun scripts/qa-devices.ts --set mobile\|desktop [--only id,id] [telas…]` | Capturas de menu, configurações, jogo, loja e personagem nos 11 celulares mais vendidos no Brasil ou nas 11 resoluções mais usadas na Steam (`scripts/lib/devices.ts`); falha com erro de console. Saída em `qa-devices/` |
@@ -76,6 +76,6 @@ Removidas em 2026-10-15 por não servirem a um jogo de cartas por turnos (sem f�
 
 ## CI/CD e executáveis
 
-- `.github/workflows/ci.yml` — push/PR em `dev`/`main`: `format:check`, `lint`, `typecheck`, `bun test`, markdownlint, mensagens de commit do PR (`.githooks/commit-msg`), smoke Playwright no build de produção, Electron empacotado + `--smoke` (Linux; Windows e macOS só na `main`) e APK Android de debug.
+- `.github/workflows/ci.yml` — push/PR na `main`: `format:check`, `lint`, `typecheck`, `bun test`, markdownlint, mensagens de commit do PR (`.githooks/commit-msg`), smoke Playwright no build de produção, Electron empacotado + `--smoke` (Linux, Windows e macOS) e APK Android de debug.
 - `.github/workflows/release.yml` — tag `v*` (ou manual, sem publicar): gates, zips web (completo e demo `VITE_DEMO=1`), zips Electron por SO, AAB/APK Android, SBOMs, `checksums.txt` assinado (cosign) com proveniência e GitHub Release no formato do vukem (docs/git-and-versioning.md; pre-release quando a versão tem `-`).
 - `.github/dependabot.yml` — Bun e GitHub Actions, semanal.
