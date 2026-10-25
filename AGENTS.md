@@ -37,7 +37,7 @@ Em **toda** tarefa de programação (código, scripts, CI, revisão, refatoraç�
 | [karpathy.md](.claude/rules/karpathy.md) | As 4 diretrizes obrigatórias em programação |
 | [code-architecture.md](.claude/rules/code-architecture.md) | Phaser 4, `onKey`, lógica pura por turnos sem Phaser, eventos de domínio, onde ficam números/textos/cores, estilo |
 | [content-and-assets.md](.claude/rules/content-and-assets.md) | Balanceamento, conteúdo data-driven, assets, concept art, sons, chaves no `.env` |
-| [git-release-docs.md](.claude/rules/git-release-docs.md) | Docs no mesmo lote, Conventional Commits/SemVer, gates, **releases são marcos (10 até agora), não commits**, graphify, QA, CI/CD, remoto, worktrees (encerradas), site |
+| [git-release-docs.md](.claude/rules/git-release-docs.md) | Docs no mesmo lote, Conventional Commits/SemVer, gates, **releases são marcos (11 até agora), não commits**, graphify, QA, CI/CD, remoto, worktrees (encerradas), site |
 | [caveman.md](.claude/rules/caveman.md) | Estilo terso do chat (só o chat; arquivos em prosa normal) |
 | [platform.md](.claude/rules/platform.md) | Electron (Steam) e Capacitor (Android), versão, origem do save, segredos |
 
@@ -46,7 +46,7 @@ Resumo mínimo:
 1. Lógica pura (`src/logic`, `src/game`) sem Phaser e por turnos (`legalActions`/`apply`); números em `src/data`; textos em `src/i18n` (EN + PT-BR juntos); cores em `src/config/palette.ts`.
 2. Gates antes de commitar: `bun run check`, `bun run typecheck`, `bun test`; `bun run build` e smoke antes de push. Nunca `--no-verify`.
 3. Toda mudança atualiza PLAN.md, CHANGELOG.md (`[Unreleased]`) e o doc afetado no mesmo lote.
-4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0` e `v0.10.0`, depois patches pequenos `0.10.1` e minors `0.11.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Push na `main` e `bun run release` só quando o usuário pedir explicitamente.** Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
+4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0`, `v0.10.0` e `v0.11.0`, depois patches pequenos `0.11.1` e minors `0.12.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Push na `main` e `bun run release` só quando o usuário pedir explicitamente.** Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
 5. Estilo visual: princípios do Balatro (legibilidade, "juice") com identidade de boteco do interior paulista; nunca copiar arte, logo ou layout de terceiros.
 6. Cascas nativas (`desktop/`, `mobile/`): o jogo não importa Electron/Capacitor; não mudar a origem do save (`app://truco-roguelite`); keystore e login Steam nunca no repo; `.env` nunca no git.
 
