@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+	<!-- Flat app icon (branch balatro-style): a felt tile, a cream card with a club and a gold bolt. -->
+	<rect width="1024" height="1024" fill="#24644d"/>
+	<rect x="96" y="96" width="832" height="832" rx="160" fill="#1b4d3b"/>
+	<g transform="rotate(-8 512 512)">
+		<rect x="292" y="196" width="440" height="620" rx="56" fill="#0a0806" opacity="0.35" transform="translate(16 28)"/>
+		<rect x="292" y="196" width="440" height="620" rx="56" fill="#dacdb2"/>
+		<rect x="304" y="208" width="416" height="596" rx="46" fill="#f8f0de"/>
+		<g fill="#26222b">
+			<circle cx="512" cy="410" r="92"/>
+			<circle cx="410" cy="530" r="92"/>
+			<circle cx="614" cy="530" r="92"/>
+			<circle cx="512" cy="500" r="64"/>
+			<path d="M488 520 L536 520 L590 700 L434 700 Z"/>
+		</g>
+	</g>
+	<path d="M610 150 L470 470 L560 470 L500 760 L700 400 L600 400 L680 150 Z" fill="#f4c542" stroke="#0a0806" stroke-width="18" stroke-linejoin="round"/>
+</svg>

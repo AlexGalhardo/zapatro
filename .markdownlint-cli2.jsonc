@@ -1,0 +1,42 @@
+// markdownlint (https://github.com/DavidAnson/markdownlint): `bun run lint:md`, pre-commit and CI.
+{
+	"config": {
+		"default": true,
+		// Docs are written one paragraph per line and tables are wide.
+		"MD013": false,
+		// Tables use `| --- |` and compact pipes alike.
+		"MD060": false,
+		// Keep a Changelog repeats "### Added" under every version.
+		"MD024": { "siblings_only": true },
+		// CLAUDE.md is only `@AGENTS.md`; skills start with YAML front matter.
+		"MD041": false,
+		// Inline HTML is used for <kbd>, <details> and anchors.
+		"MD033": false,
+		// Lists may continue their numbering after a paragraph or table.
+		"MD029": false,
+		// Bold lines work as small headings in specs.
+		"MD036": false
+	},
+	// Project docs and the project's own skills; vendored skills keep their upstream style.
+	"globs": [
+		"**/*.md",
+		"!.claude/skills/**",
+		".claude/skills/{add-game-content,game-art-assets,game-audio-assets,svg-concept-art,platform-builds,qa-global,release-section}/SKILL.md"
+	],
+	"ignores": [
+		"**/node_modules/**",
+		"dist/**",
+		"site/out/**",
+		"site/.next/**",
+		"desktop/release/**",
+		"graphify-out/**",
+		"references/**",
+		"art-src/**",
+		".claude/skills/**/references/**",
+		// Raw dumps kept as history (brainstorm keeps its own style; see docs/README.md).
+		"docs/brainstorm.md",
+		"docs/claude-code.md",
+		"docs/improve-game-development-research.md",
+		"PROMPT-CREATE-PLAN.md"
+	]
+}

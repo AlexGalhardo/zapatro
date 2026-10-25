@@ -1,0 +1,23 @@
+{
+	"name": "zapatro.com",
+	"productName": "Zapatro",
+	"description": "Zapatro: a Truco Paulista roguelite.",
+	"author": "Alex Galhardo",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"main": "main.js",
+	"steamAppId": null,
+	"scripts": {
+		"start": "electron .",
+		"smoke": "electron . --smoke",
+		"dist": "electron-builder --dir"
+	},
+	"devDependencies": {
+		"electron": "44.5.0",
+		"electron-builder": "26.15.3"
+	},
+	"dependencies": {
+		"steamworks.js": "0.4.0"
+	}
+}

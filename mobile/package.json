@@ -1,0 +1,22 @@
+{
+	"name": "truco-roguelite-mobile",
+	"private": true,
+	"version": "0.0.1",
+	"scripts": {
+		"sync": "cap sync android",
+		"open": "cap open android",
+		"run": "cap run android",
+		"assets": "capacitor-assets generate --android"
+	},
+	"dependencies": {
+		"@capacitor/android": "8.5.2",
+		"@capacitor/core": "8.5.2",
+		"@capacitor/filesystem": "8.1.3",
+		"@capacitor/haptics": "8.0.2",
+		"@capacitor/share": "8.0.2"
+	},
+	"devDependencies": {
+		"@capacitor/assets": "3.0.5",
+		"@capacitor/cli": "8.5.2"
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"name": "truco-roguelite-trailer",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"studio": "remotion studio",
+		"render": "bun scripts/vtt.ts && remotion render Trailer-en out/trailer-en.mp4 && remotion render Trailer-pt out/trailer-pt.mp4 && remotion render Teaser-en out/teaser-en.mp4 && remotion render Teaser-pt out/teaser-pt.mp4",
+		"vtt": "bun scripts/vtt.ts",
+		"typecheck": "bun check --no-script"
+	},
+	"dependencies": {
+		"@remotion/cli": "4.0.532",
+		"@remotion/google-fonts": "4.0.532",
+		"react": "19.3.0",
+		"react-dom": "19.3.0",
+		"remotion": "4.0.532"
+	},
+	"devDependencies": {
+		"@types/react": "19.3.0",
+		"typescript": "6.0.3"
+	}
+}

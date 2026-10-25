@@ -1,0 +1,25 @@
+# Decisões
+
+A lista completa (D-01…D-58: design, entrevista e decisões técnicas) está em [PLAN.md §2](../PLAN.md#2-decisões). Aqui ficam as decisões tomadas **durante a execução**, com data e origem.
+
+| Data | Decisão | Origem |
+|---|---|---|
+| 2026-09-30 | Repositório novo `AlexGalhardo/jogo-truco` com o Gridbound importado como template; o Gridbound fica em `tibia-roguelite-game` (`dev` `f4fb29a`) | Usuário |
+| 2026-09-30 | Worktrees paralelas: `assets` (PixelLab + ElevenLabs) desde a FASE 0 e `qa` (balanceamento, simulação, E2E) a partir do BETA (PLAN §12.1) | Usuário |
+| 2026-09-30 | Execução autônoma da FASE 0 até o fim do BETA; dúvidas resolvidas pelo agente com o caminho mais recomendado e registradas aqui | Usuário |
+| 2026-09-30 | Áudio segue a convenção herdada `public/assets/audio/{sfx,music}/<key>.mp3` (takes `<key>.N.mp3`), sem manifesto novo | Agente |
+| 2026-09-30 | `public/assets/gfx/index.json` só com `images` e `strips` (retratos = uma imagem por expressão) | Agente |
+| 2026-09-30 | `sim`, `balance`, `qa` e `perf` do Gridbound removidos; voltam reescritos no PRÉ-ALPHA/ALPHA (o CI da FASE 0 roda só o smoke) | Agente |
+| 2026-09-30 | Docs das cascas renomeados para `docs/desktop.md` e `docs/mobile.md` (as pastas já eram `desktop/` e `mobile/`) | Agente |
+| 2026-09-30 | Android local: `mobile/android/local.properties` (gitignored) aponta o SDK; build exige `JAVA_HOME` = JDK 21 | Agente |
+| 2026-09-30 | D-59: mesa em melhor de três quedas (rivais fecham 12 duas vezes); D-60: calibragem do A5 (metas, Corrida, Delegado, parceiros, rivais por Campeonato). Revisar no playtest do ALPHA | Agente |
+| 2026-09-30 | Ids de conteúdo alinhados com a arte da worktree `assets` (Campeonatos, Promessas, Melhorias, pacote `baralho`, `contadorDeCartas`) | Agente |
+| 2026-10-01 | D-61: Estacas encurtam o relógio (rivais mais duros, tentos de vantagem). Viciado = cópia extra de cada ♣. Build Poki sem vozes, ambiências tardias e `music.king` para ficar < 8 MB. Pular mesa segue sem custo (pendente decisão do usuário) | Agente |
+| 2026-10-15 | Demo web = Campeonato 1 (até o primeiro chefe, D-33 revista); site com o jogo completo em `/play/` e a demo em `/demo/`, no domínio `truco.lekzera.xyz`; repositório renomeado para `AlexGalhardo/truco.lekzera.xyz` | Usuário |
+| 2026-10-15 | **Todo push é um release**: bump `1.0.0-rc.N`, seção do CHANGELOG, tag e `bun run release` (GitHub Release com builds feitos na máquina local, porque o repo privado fica sem minutos de Actions; o `release.yml` só completa macOS/AAB quando roda); `CLAUDE.md` passa a só importar o `AGENTS.md` | Usuário |
+| 2026-10-15 | **Cada commit é um release** (substitui "cada push"): bump SemVer e seção do CHANGELOG no próprio commit, tag por commit; os 104 commits antigos foram renumerados (0.0.1 → 1.0.0-rc.29) com um release cada; Husky/commitlint trocados por `.githooks` + markdownlint | Usuário |
+| 2026-10-24 | **10 releases só** (substitui "cada commit é um release"): os 139 releases viraram 10 marcos (`v0.0.17`, `v0.0.35`, `v0.0.52`, `v0.1.12`, `v0.1.25`, `v0.1.37`, `v0.1.50`, `v0.1.62`, `v0.1.75`, `v0.1.87`), cada um com o CHANGELOG e os commits desde o anterior; commits não sobem versão nem criam tag | Usuário |
+| 2026-10-24 | **Releases numerados em ordem** (`0.1.0` … `0.10.0`, depois patches pequenos e minors) e **todo release gera o `.exe` portátil do Windows na raiz do projeto** (gitignored) para o dev testar | Usuário |
+| 2026-10-25 | **`name` do pacote = `zapatro.com`** (raiz e `desktop/`), revisando D-21 só no nome do `package.json`. Identificadores que guardam o save continuam com o codinome e nunca mudam: `appId` `com.alexgalhardo.trucoroguelite`, origem `app://truco-roguelite`, chave `truco-roguelite.save`, `userData` do Electron fixo em `Zapaco` (`desktop/main.js`) | Usuário (GD-028) |
+| 2026-10-25 | **Promessa condicional (P-08)**: a Promessa ganha ao pular só é resgatada se a mesa seguinte for vencida; pular a mesa seguinte também a perde (`skipTable`). Medido: pular Pequenas +4,5 a +4,7 p.p. (aceite ≤ +5), pular Pequenas e Grandes +12 a +15,5 p.p. (ainda dominante; próximo custo pendente) | Usuário (P-08, GD-020) |
+| 2026-10-25 | **Metas ×2** ("dobre a dificuldade, hoje está muito fácil e muito rápido"): `CHAMPIONSHIP_GOALS` dobradas (220 → 1.170 na Pequena), o que vale para todas as mesas, Estacas e o infinito. Bot bom na Estaca 1 cai de ~45% para ~25%, mesa de 4,5 para 6,0 mãos. A faixa da D-39 passa a ser **20–35%** (proposta, aguarda confirmação do dev); nada foi compensado em outros números | Usuário |

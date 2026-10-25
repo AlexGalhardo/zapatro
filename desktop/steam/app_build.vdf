@@ -1,0 +1,48 @@
+// SteamPipe app build (docs/desktop.md §Steam). Replace 1000/1001/1002/1003 with the
+// App ID and depot IDs from Steamworks → App Admin → SteamPipe → Depots before the first upload.
+// Upload: steamcmd +login <builder account> +run_app_build "<absolute path to this file>" +quit
+// Paths are relative to this file; the folders come from `bun run electron:build` on each OS
+// (or the truco-roguelite-electron-*.zip files of the GitHub Release, unzipped into ../release/).
+"AppBuild"
+{
+	"AppID" "1000"
+	"Desc" "Zapatro"
+	"ContentRoot" "../release/"
+	"BuildOutput" "output/"
+	// "1" = only report what would be uploaded. Branch to go live on (never "default" from a script).
+	"Preview" "0"
+	"SetLive" ""
+	"Depots"
+	{
+		// Windows x64
+		"1001"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "win-unpacked/*"
+				"DepotPath" "."
+				"recursive" "1"
+			}
+		}
+		// Linux x64 (Steam Deck runs this one natively)
+		"1002"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "linux-unpacked/*"
+				"DepotPath" "."
+				"recursive" "1"
+			}
+		}
+		// macOS arm64
+		"1003"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "mac-arm64/*"
+				"DepotPath" "."
+				"recursive" "1"
+			}
+		}
+	}
+}

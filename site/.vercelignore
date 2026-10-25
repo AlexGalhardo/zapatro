@@ -1,0 +1,5 @@
+# Deploy uploads only the static export (scripts/site-build.ts builds it locally).
+*
+!out
+!out/**
+!vercel.json

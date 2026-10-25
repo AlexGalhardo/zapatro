@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Format (Biome)
+        run: bun run format:check
+      - name: Lint (Biome)
+        run: bun run lint
+      - name: Markdown (markdownlint)
+        run: bun run lint:md
+      - name: Types (bun check)
+        run: bun run typecheck
+      - name: Tests (bun:test)
+        run: bun test
+      - name: Commit messages (Conventional Commits)
+        if: github.event_name == 'pull_request'
+        # Same check as the local .githooks/commit-msg, on every commit of the PR.
+        run: |
+          for c in $(git rev-list ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}); do
+            git log -1 --format=%B "$c" > msg.txt
+            sh .githooks/commit-msg msg.txt
+          done
+
+  # Production build in a headless browser: boots, menu, and a bot match once the table exists.
+  balance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Balance gate (D-39)
+        run: bun scripts/balance.ts --seeds 3 --runs 300
+
+  smoke:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+      - name: Production build
+        run: bun run build
+      - name: Smoke (Playwright)
+        run: |
+          bunx --bun vite preview --port 4173 --strictPort &
+          for i in $(seq 60); do curl -sf http://localhost:4173 > /dev/null && break; sleep 1; done
+          bun scripts/smoke.ts --url http://localhost:4173 --seconds 30
+
+  # Steam build (desktop/): Linux on every push; Windows and macOS only on main (D-42).
+  electron:
+    needs: quality
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ${{ github.ref == 'refs/heads/main' && fromJSON('["ubuntu-latest","windows-latest","macos-latest"]') || fromJSON('["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run electron:install --frozen-lockfile
+      - name: Web build (bun check + Vite)
+        run: bun run build
+      - name: Package (electron-builder --dir)
+        run: bun scripts/build-electron.ts --skip-web
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      # Without a Developer ID the app stays unsigned; Apple Silicon only runs signed code (ad hoc is enough).
+      - name: Ad hoc signature (macOS)
+        if: runner.os == 'macOS'
+        run: codesign --force --deep --sign - "desktop/release/mac-arm64/Zapaco.app"
+      - name: Smoke test the packaged app
+        shell: bash
+        run: |
+          case "$RUNNER_OS" in
+            Linux) xvfb-run -a ./desktop/release/linux-unpacked/truco-roguelite --smoke --no-sandbox ;;
+            Windows) "./desktop/release/win-unpacked/Zapaco.exe" --smoke ;;
+            macOS) "./desktop/release/mac-arm64/Zapaco.app/Contents/MacOS/Zapaco" --smoke ;;
+          esac
+
+  # Google Play build (mobile/): debug APK, installable on a phone for testing.
+  android:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: bun install --frozen-lockfile
+      - run: bun run android:install --frozen-lockfile
+      - name: Web build (bun check + Vite)
+        run: bun run build
+      - name: Debug APK (cap sync + Gradle)
+        run: bun scripts/build-android.ts --skip-web --debug
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truco-roguelite-android-debug-apk
+          path: mobile/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

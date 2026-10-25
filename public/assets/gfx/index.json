@@ -1,0 +1,84 @@
+{
+	"images": {
+		"portrait.tonhao": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.donaCida": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.zeMalandro": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.juninho": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.ze": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.bia": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.joca": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.lurdes": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.tiao": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.neide": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.valentao": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.cartomante": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.juiz": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.agiota": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.delegado": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.professor": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.irmaos": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.sortuda": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.reiDoTruco": {
+			"w": 128,
+			"h": 128
+		},
+		"portrait.mudo": {
+			"w": 128,
+			"h": 128
+		}
+	}
+}

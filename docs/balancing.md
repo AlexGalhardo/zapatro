@@ -1,0 +1,276 @@
+# Balanceamento
+
+Espelho dos números de `src/data/*` e resultados do bot (`bun scripts/sim.ts`, `bun run balance`). Metas (PLAN D-39): na Estaca 1, bot **bom** vence 20–35% das runs (40–60% até as metas ×2 de 2026-10-25) e bot **aleatório** menos de 5%; cada Estaca tira 5–8 p.p. do bot bom.
+
+Os valores iniciais estão no design ([GDD §4–7](gdd-game-design-document.md)) e entram aqui conforme são implementados (PRÉ-ALPHA e ALPHA).
+
+## Perfis de IA (`src/data/ai-profiles.ts`, PA2)
+
+| Perfil | Coragem | Agressividade | Blefe | Peso da Fama | Erro | Flagra | Sinaliza |
+|---|---|---|---|---|---|---|---|
+| coward | 0,10 | 0,10 | 0,03 | 0,4 | 0,05 | 0,15 | 0,6 |
+| bully | 0,80 | 0,80 | 0,20 | 0,3 | 0,06 | 0,15 | 0,6 |
+| calculator | 0,45 | 0,45 | 0,02 | 0,8 | 0,02 | 0,25 | 0,8 |
+| bluffer | 0,55 | 0,60 | 0,35 | 0,4 | 0,06 | 0,20 | 0,5 |
+| rookie | 0,50 | 0,50 | 0,10 | 0,1 | 0,25 | 0,10 | 0,4 |
+| pro | 0,50 | 0,55 | 0,12 | 0,9 | 0,01 | 0,30 | 0,9 |
+
+Amostras de Monte Carlo por decisão: 40. Chance de flagra do jogador humano: 0,2 (base).
+
+**Torneio (2026-09-30, `tests/ai.test.ts`):** dupla `pro` × dupla aleatória, 1.000 partidas a 12 → **951 vitórias (95,1%)**, meta ≥ 85%. Decisão p99 < 5 ms.
+
+## Pontuação (`src/data/cards.ts`, `src/data/lances.ts`, `src/data/championships.ts`, A2)
+
+Fichas por carta: 4=1 · 5=2 · 6=3 · 7=4 · Q=5 · J=6 · K=7 · A=8 · 2=9 · 3=10; manilhas pica-fumo 12 · espadilha 13 · copas 14 · zap 15. Carta encoberta: 0.
+
+| Lance | Fichas | Mult | +Fichas/nível | +Mult/nível |
+|---|---|---|---|---|
+| limpa (Vaza Limpa) | 10 | 1 | 10 | 1 |
+| virada | 20 | 2 | 15 | 1 |
+| suada | 15 | 2 | 15 | 1 |
+| corrida | 5 | 1 | 5 | 1 |
+| onze (Mão de 11) | 30 | 3 | 20 | 2 |
+| ferro (Mão de Ferro) | 40 | 4 | 25 | 2 |
+| queda | 50 | 5 | 25 | 2 |
+
+Metas base por Campeonato: 100 · 250 · 600 · 1.500 · 3.500 · 8.000 · 16.000 · 30.000; Pequena ×1, Grande ×1,5, Chefe ×2. Valores iniciais sem calibragem (o bot de run chega no A5).
+
+## Manhas e modificadores (`src/data/manhas.ts`, `src/data/card-mods.ts`, A3)
+
+| Manha | Raridade | Preço | Condição | Efeito |
+|---|---|---|---|---|
+| malandro | comum | 4 | você pediu truco sem manilha | +4 Mult |
+| maoDeLixo | comum | 4 | perdeu a 1ª vaza | +$2 |
+| seuZe | comum | 5 | por vaza vencida com 4–7 | +15 Fichas |
+| maoLeve | comum | 4 | por vaza vencida com ♦ | +$1 |
+| ultimaCartada | incomum | 6 | perdeu a 1ª, venceu a 3ª | ×2 Mult |
+| sangueFrio | incomum | 6 | aposta ≥ 6 | +8 Mult |
+| duplaDinamica | incomum | 6 | por vaza vencida pelo parceiro | +3 Mult |
+| teatro | rara | 8 | rival correu e você sem manilha | ×3 Mult |
+| zapZap | rara | 8 | com o zap, por vaza vencida | ×1,5 Mult |
+| ferroQuente | lendária | 10 | Lance Mão de Ferro | ×4 Mult |
+| cangaceiro | comum | 5 | alguma vaza cangou | +8 Mult |
+| peQuente | comum | 4 | Lance Vaza Limpa | +30 Fichas |
+| reviravolta | incomum | 6 | Lance Virada | +6 Mult |
+| onzeLetras | incomum | 6 | Lance Mão de 11 | ×2 Mult |
+
+Modificadores: gold (Dourada) +$1 · heavy (Pesada) +20 Fichas · hot (Quente) +4 Mult se aposta ≥ 3. Sem calibragem (A5).
+
+## Run (A4–A5, `src/data/economy.ts`, `championships.ts`, `partners.ts`, `bosses.ts`)
+
+- Metas (Pequena; Grande ×1,5; Chefe ×2): 220 · 280 · 360 · 450 · 580 · 730 · 920 · 1.170 (dobradas em 2026-10-25; antes 110 → 585); infinito ×1,4 por Campeonato.
+- Mesa em melhor de três quedas (D-59). Corrida 15 Fichas × 2 Mult. Delegado: Corrida ×0,5.
+- Dinheiro: início $4; prêmio $3/$4/$5; rapidez +$1 por tento que faltava ao rival (teto $5); juros +$1 a cada $5 (teto $5); reroll $5 +$1; venda pela metade; Simpatia/Lance $3; pacotes $4 ($6 Manha).
+- Rivais por Campeonato: C1 covarde/novato … C8 profissional/valentão/blefador (`RIVAL_POOLS`). Parceiros: Tonhão (valentão, coragem 0,2, agressividade 0,6), Dona Cida (calculista, coragem 0,2); erro ×1/×0,7/×0,4 por nível.
+- Bot bom (`GOOD_BOT`): perfil profissional com coragem 0,2, agressividade 0,2, blefe 0,02; compra por raridade + tags em comum; guarda $10 para juros a partir de 3 Manhas. Hábitos do B0.2 em `HABITS` (`src/game/run-sim.ts`): Manhas de ×Mult à direita; com os espaços cheios vende a mais fraca quando a nova vale ao menos 2 a mais (raridade + tags); Espelho copia carta modificada, Benzedeira nunca tira carta modificada, Figa só com Mão Leve; **não pula mesa** (ver abaixo).
+
+**`bun scripts/balance.ts --seeds 3 --runs 300` (2026-09-30):** bot bom 49,0% · 45,0% · 49,0%; aleatório 0,3% · 0,3% · 0,7%; 4,28 · 4,27 · 4,16 mãos por mesa; sem NaN. **PASS.**
+
+Histórico da calibragem: com derrota na 1ª queda rival a mesa C1 vencia ~75–80% e nenhuma curva de metas passava de ~5% de runs vencidas; melhor de três levou a ~24%; bot cauteloso, Delegado pela metade e parceiros cuidadosos fecharam em 45–49%. O relógio dos tentos rivais domina: metas mais baixas quase não mudam a taxa de vitória.
+
+## Rodada BETA B0 (2026-09-30, worktree `qa`)
+
+`--stake N` em `sim.ts` e `balance.ts` já chega ao `simulateRun` (sai no resumo), mas ainda não muda nada: as Estacas entram no B2 (`newRun` recebe a Estaca quando existir). `--stake 2` deu o mesmo 51,7% da Estaca 1.
+
+**Efeito de cada hábito do bot** (bot bom, 300 runs por seed, `HABITS` ligado um a um):
+
+| Configuração | Seeds | Vitórias por seed | Média |
+|---|---|---|---|
+| sem hábitos (= ALPHA) | 1–5 | 49,0 · 45,0 · 49,0 · 39,3 · 47,7 | 46,0% |
+| só ordenar Manhas | 1–3 | 49,0 · 45,7 · 48,7 | 47,8% (sem efeito: ×Mult é raro) |
+| só vender a mais fraca | 1–5 | 49,7 · 50,0 · 50,3 · 50,0 · 52,3 | 50,5% |
+| só Simpatias com critério | 1–5 | 42,3 · 48,7 · 47,0 · 46,7 · 47,3 | 46,4% (ruído) |
+| **todos (padrão)** | 1–5 | 51,7 · 53,0 · 48,0 · 51,0 · 51,0 | **50,9%** |
+| todos + pular Pequenas | 1–3 | 62,3 · 61,3 · 53,0 | 58,9% |
+| todos + pular Pequenas e Grandes | 1–3 | 69,0 · 70,7 · 72,0 | 70,6% |
+
+Com a venda, as Manhas mais vistas no fim da run mudam de `maoDeLixo`, `peQuente`, `gritador`, `contadorDeCartas` para `reviravolta`, `seuZe`, `maoDeLixo`, `ultimaCartada`, `caraDePau`, `teatro`. O dinheiro no fim continua alto (~$54): o bot não usa reroll e sobra caixa.
+
+**Pular mesa é dominante.** Pular tira uma mesa inteira do risco de perder a run, e a Promessa não custa nada além da loja perdida (que o bot nem precisa, com ~$50 sobrando). Com metas ×1,25 e ×1,5 (medido mexendo em `CHAMPIONSHIP_GOALS` só na simulação) a vantagem continua: todos 46,0% / 38,6%; +Pequenas 55,0% / 49,9%; +Pequenas e Grandes 66,6% / 64,2%. Ou seja, subir metas não resolve; o custo de pular precisa ser de design. Por isso o bot padrão não pula (o portão mediria o atalho, não as mesas). Pedido ao fio principal no relatório do B0.
+
+**`bun scripts/balance.ts --seeds 3 --runs 300` (bot do B0):** bot bom 51,7% · 53,0% · 48,0%; aleatório 0,3% · 0,3% · 0,7%; 4,23 · 4,13 · 4,08 mãos por mesa; sem NaN. **PASS.** O ritmo está colado no piso de 4 mãos por mesa.
+
+## BETA (`0.1.0-beta.1`)
+
+**`bun scripts/balance.ts --seeds 3 --runs 300` (Estaca 1, 60 Manhas):** bot bom 47,0 · 52,7 · 54,0%; aleatório 1,3 · 1,0 · 2,3%; 4,11 · 4,10 · 4,01 mãos por mesa. **PASS.**
+
+**Estacas (`bun scripts/sim.ts --runs 400 --stake N`, D-61):** 48,0 · 49,7 · 47,2 · 44,8 · 33,8 · 25,0 · 24,5 · 15,2%. A queda total (≈ 33 p.p.) está dentro do esperado; os degraus 1→2, 2→3 e 6→7 ainda ficam abaixo de 5 p.p. (calibrar no próximo ciclo da worktree `qa`).
+
+Regras por Estaca (cumulativas, antigas): 2 rivais com 1 tento de vantagem · 3 vantagem 2 e juros com teto $3 · 4 rivais um Campeonato mais duros · 5 metas ×1,3 e Pequena sem prêmio · 6 vantagem 4 · 7 rivais dois Campeonatos mais duros · 8 vantagem 6 e preços +25%.
+
+### B2.2 calibrado (2026-10-01)
+
+`bun scripts/stakes.ts --runs 600` (uma Estaca por processo, mesmas seeds do `balance`): **48,7 · 43,0 · 35,5 · 30,3 · 24,5 · 19,5 · 14,2 · 7,7%**, degraus de 5,7 · 7,5 · 5,2 · 5,8 · 5,0 · 5,3 · 6,5 p.p. **PASS** (D-39: 5–8 p.p.). Sete rodadas: a meta (`goalMult`) e a vantagem dos rivais em tentos são as alavancas fortes; juros com teto e rivais um Campeonato mais duros pesam pouco sozinhos. Com 600 runs o erro padrão de um degrau é ~2,9 p.p.
+
+| Estaca | Metas | Vantagem dos rivais | Outras regras (cumulativas) |
+|---|---|---|---|
+| 1 | ×1 | 0 | jogo base |
+| 2 | ×1,15 | 0 | |
+| 3 | ×1,25 | 3 tentos | juros com teto de $3 |
+| 4 | ×1,3 | 3 | rivais um Campeonato mais duros; Pequena sem prêmio |
+| 5 | ×1,45 | 4 | |
+| 6 | ×1,5 | 6 | |
+| 7 | ×1,7 | 6 | rivais dois Campeonatos mais duros |
+| 8 | ×1,8 | 7 | preços da loja +25% |
+
+Os textos `stake.<n>` (EN e PT-BR) foram reescritos para bater com as regras (os antigos descreviam regras de uma versão anterior).
+
+## ZAP e coringa (2026-10-15)
+
+Regra da casa (PLAN §5.2 e §5.12): o ZAP passa a ser a carta de paus duas acima da vira (força 14, `ZAP_CHIPS` 18 Fichas) e todo baralho ganha um coringa (vale um 3, `JOKER_CHIPS` 10; efeitos `joker:double` ×2 e `joker:zeroed` ×0 no fim da contagem). `bun scripts/sim.ts` (500 runs, Estaca 1): bot bom **53,2%**, 4,14 mãos por mesa. `bun run balance`: **PASS** nas 3 seeds (bot bom 53,2 · 52,8 · 50,6%; aleatório 1,8 · 1,6 · 1,2%). Nenhum número existente mudou.
+
+## Companheiros (2026-10-24)
+
+10 companheiros, 3 sorteados por run, traços simétricos (`src/data/companions.ts`, GDD §8). Os rivais passam a usar o estilo do companheiro sobre o perfil do pool do Campeonato. `bun run balance` (`--seeds 3`, 500 runs, parceiro sorteado entre os 8 iniciais): bot bom **45,2 · 45,6 · 45,0%**; aleatório 1,6 · 1,6 · 1,2%; 4,51 · 4,49 · 4,51 mãos por mesa. **PASS.** Os traços ainda são proposta: números em `companions.ts`; ajuste só ali e rode `bun run balance`.
+
+## Pular mesa com Promessa condicional (2026-10-25, P-08, GD-020)
+
+Regra (`skipTable` em `src/logic/run/run.ts`): a Promessa só é resgatada se a mesa seguinte for vencida. Perder a mesa já encerrava a run antes da loja; o que muda é que pular a mesa seguinte também perde a Promessa que esperava (pular Pequena e Grande rende só a Promessa da Grande).
+
+Comando: `bun scripts/sim.ts --runs 1000 --seed <1|2> --skip none|small|both` (bot bom, Estaca 1, parceiro sorteado; as três variantes usam as mesmas seeds `seed × 100 000 + i`). Aceite do GD-020: pular fica em até +5 p.p. sobre o bot que não pula.
+
+| Variante | Regra | Seed 1 | Seed 2 | Δ vs. não pular |
+|---|---|---|---|---|
+| não pula | — | 45,9% | 45,5% | — |
+| pula Pequenas | antes do P-08 | 50,6% | — | +4,7 |
+| pula Pequenas e Grandes | antes do P-08 | 64,6% | — | +18,7 |
+| pula Pequenas | P-08 | 50,6% | 50,0% | +4,7 · +4,5 ✅ |
+| pula Pequenas e Grandes | P-08 | 61,4% | 57,6% | +15,5 · +12,1 ❌ |
+| pula Pequenas | P-08 + meta +15% na mesa após o pulo (teste, não aplicado) | 48,2% | 49,3% | +2,3 · +3,8 |
+| pula Pequenas e Grandes | P-08 + meta +15% (teste, não aplicado) | 55,8% | 54,7% | +9,9 · +9,2 |
+
+Leitura: pular só Pequenas passa no aceite; pular as duas continua dominante, porque a vantagem vem de jogar 8 mesas em vez de 24 (menos chances de perder a run), não do valor da Promessa. Nem a meta +15% fecha o buraco. Próxima alavanca é decisão do dev (ex.: limitar a um pulo por Campeonato). Com 1000 runs o erro padrão de uma diferença é ~2,2 p.p. O bot padrão segue sem pular (`HABITS.skip` desligado) para o portão medir as mesas.
+
+`bun run balance` depois da regra (`--seeds 3`, 500 runs): bot bom **45,2 · 45,6 · 45,0%**; aleatório 1,6 · 1,6 · 1,2%; 4,51 · 4,49 · 4,51 mãos por mesa. **PASS.**
+
+## Estacas com o elenco novo (2026-10-25, GD-021)
+
+`bun scripts/stakes.ts --runs 1000` (uma Estaca por processo, seeds `100 000 + i`, as mesmas do `balance` seed 1; ~7,5 min de relógio em 8 processos): **45,9 · 42,6 · 29,9 · 23,9 · 20,8 · 13,0 · 11,3 · 6,2%**. **FAIL** no D-39: com erro padrão de ~2,1 p.p. por degrau, quatro de sete saem da faixa de 5–8 p.p.
+
+| Degrau | 1→2 | 2→3 | 3→4 | 4→5 | 5→6 | 6→7 | 7→8 |
+|---|---|---|---|---|---|---|---|
+| Queda (p.p.) | 3,3 ❌ | 12,7 ❌ | 6,0 | 3,1 ❌ | 7,8 | 1,7 ❌ | 5,1 |
+
+Estaca 8 em 6,2% (≤ 15% ✅). A queda total (39,7 p.p.) é próxima da calibrada em 2026-10-01 (41 p.p.), mas os degraus ficaram desiguais com os companheiros: 2→3 (vantagem de 3 tentos) pesa demais e 1→2, 4→5 e 6→7 quase não pesam. Nenhuma regra foi mexida; rebalancear `src/data/stakes.ts` é decisão do dev.
+
+## Metas ×2 (2026-10-25, pedido do dev)
+
+Pedido: "dobre a dificuldade atual do jogo, dobrando a quantidade de pontos que o jogador precisa fazer por partida". A fonte única `CHAMPIONSHIP_GOALS` (`src/data/championships.ts`) foi dobrada: **220 · 280 · 360 · 450 · 580 · 730 · 920 · 1.170**. Grande (×1,5), Chefe (×2), Estacas (`goalMult`) e infinito (×1,4 por Campeonato) derivam dela. A partida rápida não tem meta; o tutorial usa `tableGoal(1, 'small')`, que passa de 110 para 220. Nenhum outro número foi compensado.
+
+Mesmas seeds antes e depois (código idêntico, só a meta muda):
+
+| Medida | Comando | Antes (metas ×1) | Depois (metas ×2) |
+|---|---|---|---|
+| Bot bom, Estaca 1 | `bun run balance` (`--seeds 3`, 500 runs, seeds `s × 100 000 + i`) | 45,2 · 45,6 · 45,0% | **23,0 · 25,8 · 25,4%** |
+| Bot aleatório | idem | 1,6 · 1,6 · 1,2% | 0,6 · 0,0 · 0,0% |
+| Mãos por mesa (duração) | idem | 4,51 · 4,49 · 4,51 | **6,03 · 5,95 · 5,94** (+33%) |
+| Bot bom | `bun scripts/sim.ts --runs 1000 --seed 1` | 45,9% | 25,6% |
+| Campeonato médio alcançado | idem | 6,36 | 5,31 |
+| Runs que terminam em C1…C8 (de 1000) | idem | 56 · 66 · 44 · 59 · 59 · 80 · 64 · 572 | 110 · 111 · 78 · 88 · 96 · 70 · 82 · 365 |
+| Dinheiro médio no fim | idem | $46,0 | $36,7 |
+
+Estacas (`bun scripts/stakes.ts --runs 300`, seeds `100 000 + i`):
+
+| Estaca | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| Antes (%) | 48,7 | 43,7 | 30,0 | 19,0 | 22,0 | 13,3 | 12,7 | 5,0 |
+| Depois (%) | 24,3 | 20,0 | 14,3 | 12,7 | 10,3 | 5,7 | 4,0 | 1,0 |
+| Degrau depois (p.p.) | — | 4,3 | 5,7 | 1,6 | 2,4 | 4,6 | 1,7 | 3,0 |
+
+Leitura: a dobra corta a taxa de vitória quase pela metade (−20 p.p.) e alonga a mesa em ~1,5 mão; as derrotas passam a vir mais cedo (C1–C2 dobram). Com a Estaca 1 em ~25%, a curva de Estacas comprime: só 2→3 fica em 5–8 p.p. e a Estaca 8 cai para ~1%. Com 300 runs o erro padrão de um degrau é ~3 p.p.
+
+**Gate:** a faixa do bot bom em `scripts/balance.ts` passou de 40–60% para **20–35%** (o que a dobra produz, com folga), para o portão refletir a decisão em vez de falhar sempre. É proposta: o dev confirma a faixa (PLAN D-39). Aleatório < 5% e ritmo 4–12 mãos seguem iguais e passam.
+
+## Opções medidas para decisão (2026-10-25)
+
+Só simulação: nada aqui foi aplicado ao código (`src/data` segue com metas ×2 e as Estacas de 2026-10-01). As variantes rodaram numa cópia de `src/` fora do repo, com `CHAMPIONSHIP_GOALS`, `goalMult` e `rivalHeadStart` trocados por variáveis de ambiente; mesmas seeds dos comandos do repo. Cada Estaca do `stakes.ts` roda num processo próprio e só depende das próprias regras, então o resultado de uma Estaca com os mesmos parâmetros é idêntico entre variantes.
+
+### 1. Curva de Estacas para a base ×2
+
+**Faixa proposta: −3 a −5 p.p. por degrau.** A faixa antiga (−5 a −8 p.p. sobre uma base de ~45–49%) tirava 11–17% da taxa por degrau; sobre a base nova de ~25% isso dá −2,8 a −4,2 p.p., arredondado para −3 a −5. Sete degraus de ~3 p.p. levam a Estaca 8 a ~3%, o piso pedido (≥ 2–3%). Com 300 runs, o erro padrão de uma taxa de 15% é ~2 p.p.; um degrau isolado não separa 2 de 4 p.p. com segurança (a Estaca 8 com `goalMult` 1,45 deu mais vitórias que com 1,25: ruído).
+
+`bun scripts/stakes.ts --runs 300` (metas ×2; `rivalHeadStart` atual `[0, 0, 3, 3, 4, 6, 6, 7]` salvo indicação):
+
+| Variante | `goalMult` E1…E8 | Vitória % E1…E8 | Degraus (p.p.) |
+|---|---|---|---|
+| Atual | 1 · 1,15 · 1,25 · 1,3 · 1,45 · 1,5 · 1,7 · 1,8 | 24,3 · 20,0 · 14,3 · 12,7 · 10,3 · 5,7 · 4,0 · 1,0 | 4,3 · 5,7 · 1,6 · 2,4 · 4,6 · 1,7 · 3,0 |
+| c1 | 1 · 1,1 · 1,1 · 1,15 · 1,2 · 1,2 · 1,25 · 1,25 | 24,3 · 20,3 · 18,3 · 16,0 · 12,0 · 8,0 · 5,0 · 1,7 | 4,0 · 2,0 · 2,3 · 4,0 · 4,0 · 3,0 · 3,3 |
+| c2 | 1 · 1,1 · 1,15 · 1,2 · 1,3 · 1,3 · 1,4 · 1,45 | 24,3 · 20,3 · 17,3 · 15,0 · 12,0 · 7,0 · 4,3 · 2,3 | 4,0 · 3,0 · 2,3 · 3,0 · 5,0 · 2,7 · 2,0 |
+| c3 | 1 · 1,1 · 1,15 · 1,15 · 1,2 · 1,2 · 1,2 · 1,2 | 24,3 · 20,3 · 17,3 · 16,0 · 12,0 · 8,0 · 5,3 · 2,7 | 4,0 · 3,0 · 1,3 · 4,0 · 4,0 · 2,7 · 2,6 |
+| c4 (`rivalHeadStart` `[0, 0, 3, 3, 4, 5, 6, 6]`) | 1 · 1,1 · 1,15 · 1,15 · 1,2 · 1,2 · 1,25 · 1,25 | 24,3 · 20,3 · 17,3 · 16,0 · 12,0 · 7,3 · 5,0 · 4,3 | 4,0 · 3,0 · 1,3 · 4,0 · 4,7 · 2,3 · 0,7 |
+| **Proposta** (montada de Estacas já medidas) | **1 · 1,1 · 1,15 · 1,2 · 1,2 · 1,2 · 1,2 · 1,2** | **24,3 · 20,3 · 17,3 · 15,0 · 12,0 · 8,0 · 5,3 · 2,7** | **4,0 · 3,0 · 2,3 · 3,0 · 4,0 · 2,7 · 2,6** |
+
+A proposta pega cada Estaca de uma variante já rodada com os mesmos parâmetros (E4 de c2; as demais de c3). Quatro degraus ficam em 3–5 p.p. e três em 2,3–2,7 p.p. (dentro do erro de 300 runs); a Estaca 8 fica em 2,7%. Com metas já dobradas, `goalMult` quase plano (1,1 a 1,2) basta: os degraus passam a vir da vantagem dos rivais em tentos, dos rivais mais duros e da Pequena sem prêmio. Antes de aplicar: confirmar com `--runs 600` ou mais.
+
+#### Confirmação com 600 runs
+
+`bun scripts/stakes.ts --runs 600` com metas ×2, a linha "Proposta" e a "Atual" rodadas inteiras, mesmas seeds (`100 000 + i`). Erro padrão de cada ponto = √(p(1−p)/600); o de um degrau fica em ~1,2–2,4 p.p. (as Estacas usam as mesmas seeds, então o erro real do degrau é um pouco menor).
+
+| Estaca | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| Atual (%) | 24,2 ± 1,7 | 20,7 ± 1,7 | 13,0 ± 1,4 | 13,5 ± 1,4 | 9,5 ± 1,2 | 5,5 ± 0,9 | 2,7 ± 0,7 | 1,2 ± 0,4 |
+| Degrau atual (p.p.) | — | 3,5 | 7,7 | −0,5 | 4,0 | 4,0 | 2,8 | 1,5 |
+| Proposta (%) | 24,2 ± 1,7 | 20,3 ± 1,6 | 15,8 ± 1,5 | 13,8 ± 1,4 | 11,3 ± 1,3 | 6,8 ± 1,0 | 6,3 ± 1,0 | 3,0 ± 0,7 |
+| Degrau proposta (p.p.) | — | 3,9 | 4,5 | 2,0 | 2,5 | 4,5 | 0,5 | 3,3 |
+
+A proposta segura só em parte. A Estaca 8 fica em 3,0% (≥ 2 ✅) e a queda total é de 21,2 p.p. (atual: 23,0), mas 6→7 (0,5 p.p.) quase não pesa: as duas Estacas têm `goalMult` 1,2, e o único acréscimo da 7 (rivais dois Campeonatos mais duros) quase não muda a taxa. Os degraus 3→4 e 4→5 (2,0 e 2,5) ficam abaixo de 3 por pouco, dentro do erro. Ainda assim é melhor que a curva atual, que tem um degrau negativo (3→4) e outro de 7,7 p.p. (2→3).
+
+Patch que o dev aplicaria (não aplicado): `src/data/stakes.ts:27`
+
+```ts
+        goalMult: [1, 1.1, 1.15, 1.2, 1.2, 1.2, 1.2, 1.2][stake - 1] ?? 1.2,
+```
+
+`rivalHeadStart` (linha 32) fica como está. Para corrigir o 6→7, o candidato ainda não medido é a Estaca 7 com `goalMult` 1,3 (e a 8 com 1,3, para não subir a 8): rodar `--runs 600` antes de aplicar. Depois de aplicar: `bun scripts/stakes.ts --runs 600` e atualizar o comentário do cabeçalho de `stakes.ts` ("loses 5–8 p.p. per Stake") e o PASS de `scripts/stakes.ts` (hoje 5–8 p.p.), se a faixa −3 a −5 for confirmada.
+
+### 2. Alternativa: metas ×1,5 em vez de ×2
+
+Metas 165 · 210 · 270 · 338 · 435 · 548 · 690 · 878 (Pequena).
+
+| Medida | Comando | ×1 | ×1,5 | ×2 (atual) |
+|---|---|---|---|---|
+| Bot bom, Estaca 1 | `bun run balance` (`--seeds 3`, 500 runs) | 45,2 · 45,6 · 45,0% | **31,4 · 34,2 · 31,8%** | 23,0 · 25,8 · 25,4% |
+| Bot aleatório | idem | 1,6 · 1,6 · 1,2% | 0,8 · 0,0 · 0,2% | 0,6 · 0,0 · 0,0% |
+| Mãos por mesa | idem | 4,51 · 4,49 · 4,51 | **5,33 · 5,31 · 5,35** | 6,03 · 5,95 · 5,94 |
+
+Estacas com ×1,5 e as regras atuais (`bun scripts/stakes.ts --runs 300`): **32,3 · 28,7 · 19,7 · 16,0 · 14,0 · 8,0 · 5,0 · 4,0%**, degraus 3,6 · 9,0 · 3,7 · 2,0 · 6,0 · 3,0 · 1,0 p.p. A ×1,5 fica no limite de cima da faixa de 20–35% (seed 2 em 34,2%); a mesa ganha ~0,8 mão em vez de ~1,5.
+
+### 3. Pular mesa com metas ×2
+
+`bun scripts/sim.ts --runs 1000 --seed 1|2 --skip none|small|both` (com P-08):
+
+| Variante | ×1 seed 1 · 2 | Δ ×1 | ×2 seed 1 · 2 | Δ ×2 | Mãos por mesa ×2 |
+|---|---|---|---|---|---|
+| Não pula | 45,9 · 45,5% | — | 25,6 · 27,0% | — | 6,03 · 5,95 |
+| Pula Pequenas | 50,6 · 50,0% | +4,7 · +4,5 | 29,9 · 29,7% | +4,3 · +2,7 | 6,68 · 6,60 |
+| Pula Pequenas e Grandes | 61,4 · 57,6% | +15,5 · +12,1 | 40,8 · 37,8% | **+15,2 · +10,8** | 7,79 · 7,74 |
+
+A dobra não muda o ganho absoluto de pular (pular as duas segue em +11 a +15 p.p.), mas em termos relativos ele piora: sobre uma base de ~26%, pular tudo vale +50% de vitórias (antes, +30%). Pular só Pequenas segue dentro do aceite (≤ +5 p.p.). O pulo duplo continua sendo a decisão pendente do GD-020.
+
+## Estilos de parceiro (2026-10-15, historico; `PARTNER_STYLES` agora em `src/data/companions.ts`)
+
+Cada parceiro tem um jeito próprio de jogar as apostas (`PARTNER_STYLES` em `src/data/partners.ts`, que substitui coragem, agressividade e blefe do arquétipo; texto `partner.style.<estilo>` na escolha de parceiro):
+
+| Parceiro | Estilo | Coragem | Agressividade | Blefe |
+|---|---|---|---|---|
+| Tonhão | agressivo: pede e aumenta truco com mão razoável, aceita quase tudo | 0,4 | 0,95 | 0,25 |
+| Dona Cida | conservadora: só pede com mão muito forte, nunca blefa, corre de pedido duvidoso | 0,05 | 0,05 | 0 |
+| Zé Malandro | blefador: pede truco com metade das mãos fracas em que o blefe é possível | 0,25 | 0,55 | 0,5 |
+| Juninho | destemido: aceita quase todo pedido | 0,6 | 0,5 | 0,1 |
+
+Antes todos tinham coragem 0,2 (Tonhão agressividade 0,6). Teste de comportamento: `tests/companion-styles.test.ts` (200 mesas por parceiro: Tonhão pede mais truco e Dona Cida menos; Zé pede com mão fraca bem mais que os outros, Dona Cida quase nunca; Juninho corre menos que Dona Cida).
+
+**`bun scripts/sim.ts --runs 300 --partner <id>`, seeds 1 e 2 (bot bom, Estaca 1), antes → depois:**
+
+| Parceiro | Antes | Depois |
+|---|---|---|
+| Tonhão | 53,3% · 57,7% | 49,0% · 48,7% |
+| Dona Cida | 46,7% · 51,3% | 56,0% · 57,7% |
+| Zé Malandro | 50,0% · 49,3% | 44,0% · 49,3% |
+| Juninho | 36,3% · 35,3% | 34,3% · 29,0% |
+
+Juninho com coragem 0,8 caía para ~31%; com 0,6 fica perto de antes (ele compensa subindo de nível a cada mesa). Dona Cida conservadora virou a escolha mais segura e Tonhão a mais arriscada, o que combina com os estilos.
+
+**`bun run balance` (`--seeds 3`, 500 runs, parceiro sorteado entre Tonhão e Dona Cida):** bot bom 50,2% · 54,0% · 55,0%; aleatório 0,8% · 0,4% · 0,8%; 4,10 · 4,19 · 4,12 mãos por mesa. **PASS.**
+
+A partida rápida continua com os arquétipos de `src/data/characters.ts` (Tonhão valentão, Dona Cida calculista): os testes de QA usam seeds fixas nela.

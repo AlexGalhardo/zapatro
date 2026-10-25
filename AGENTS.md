@@ -1,0 +1,100 @@
+# AGENTS.md — Zapatro
+
+Instruções para qualquer agente de código (Claude Code, Codex, Cursor, Gemini, etc.). O `CLAUDE.md` só importa este arquivo.
+
+**Projeto** (codinome `truco-roguelite` no `appId`, na origem e no save; pacote `zapatro.com`): roguelite de cartas em **visual híbrido pixel + vetor** (ver abaixo) sobre o **Truco Paulista 2×2**, com estrutura inspirada no Balatro: você + parceiro IA contra uma dupla IA; cada mão vira pontos (**Fichas × Mult**, com a aposta 1/3/6/9/12 como Mult base); a run tem 8 Campeonatos com loja, Manhas, cartas modificadas e chefes. Publicação: **Steam (Electron)**, **Google Play (Capacitor, Android)**, **itch.io e Poki (demo web)** e site próprio (<https://truco.lekzera.xyz>: `/play/` completo, `/demo/` até o primeiro chefe).
+**Stack:** TypeScript · Vite · **Phaser 4.2.x** · **Bun 1.4.4** (`bun:test`). Arte vetorial por código (`src/art/flat.ts`) e retratos em pixel art; áudio ElevenLabs; trailer Remotion; site Next.js 16 SSG + Tailwind v4 na Vercel. UI **EN + PT-BR**; docs em PT-BR.
+
+## Visual híbrido (Art Bible v2, 2026-10-24)
+
+Pessoas e ícones pequenos são **pixel art**; todo o resto é **vetor chapado desenhado por código**. Detalhe e regras em [docs/visual.md](docs/visual.md). Inspirado nos *princípios* de UI do Balatro (painéis arredondados com sombra sólida, números grandes, contador Fichas × Mult em destaque), **sem copiar** arte, logo, fonte, layout ou paleta dele nem de outros jogos (o jogo Malandro não é referência: vocabulário próprio, lista de strings proibidas em `docs/visual.md` §5).
+
+- **Ícones de UI** em pixel art (`public/assets/gfx/icon`, `bun scripts/icons.ts` a partir de `ui-icons.png`; os que a folha não tem são vetor em `src/art/icons.ts`, chave `icon.<nome>`).
+- **Retratos 128×128** em pixel art (`public/assets/gfx/portrait/<id>.png`), gerados por `bun scripts/portraits.ts` a partir de `references/concept-art/zapatro/char-*.png`; nunca peça ao PixelLab os personagens que já têm concept (só o que falta, como O Mudo, em `art-src/portrait/`).
+- **Vetor por código** em `src/art/flat.ts`: `tex(scene, key)` desenha cartas, versos, modificadores, ícones e fundos num canvas 2D, rasterizado no zoom da tela com tamanho lógico fixo; `registerPortraits` entrega os PNG dos retratos. Fundo neutro `#2B2B2B`, sidebar esquerda congelada, bloco HUD no canto superior direito do feltro.
+- **Render suave:** `pixelArt: false`, `antialias`, sem `roundPixels`. Fonte única Rubik (trocar por Roboto exige `@fontsource/roboto`, aguardando aprovação).
+- **Atalhos sempre visíveis:** todo botão com atalho mostra a tecla (ou o botão do controle) num selo à direita (`hint`, `src/ui/key-hint.ts`); o botão em foco mostra o que confirma (Enter / ✕) e `buttonNav` já começa com um botão em foco no teclado e no controle. No modo toque não há selos. Nada de linha de dica "Sua vez · …" na mesa.
+- **Arte nova:** prompts em [prompts-new-concept-art-using-pixel-art.md](prompts-new-concept-art-using-pixel-art.md) (ChatGPT → `references/concept-art/zapatro/`).
+- **UI:** `Button` (bloco arredondado com sombra; `color` é o preenchimento), `drawPanel`/`addPanel` (`src/ui/panel.ts`), telas encaixadas no palco 640×360 com `src/view/stage.ts` (`addBackdrop`, `fitCamera`).
+- **Elenco:** 10 companheiros (`src/data/companions.ts`), 3 sorteados por run como parceiro; os traços (vantagem e defeito) valem para a dupla em que o companheiro senta (GDD §8).
+
+## Comece aqui (toda sessão)
+
+1. **Carregue as skills `karpathy-guidelines` e `ponytail`** e siga-as até o fim da sessão. A skill `svg-concept-art` só vale na branch `pixel-art` (o pipeline de concept saiu daqui). A skill `caveman` (`.claude/skills/caveman`, nível `full`) economiza tokens no chat; código, commits e docs seguem em prosa normal.
+2. **[BUGS.md](BUGS.md)** é o foco até a 1.0.0 comercial: bugs, telas e mockups que faltam, com prompts para o ChatGPT e patch notes.
+3. **Grafo primeiro:** `uvx --from graphifyy==0.9.71 graphify query "<pergunta>"` (skill `graphify`); sem `graphify-out/`, gere com `bun run graph`.
+4. **[PLAN.md](PLAN.md)** é a fonte da verdade (decisões, regras exatas do Truco §5, arquitetura §4, fases e checklists).
+5. **[docs/agent-workflow.md](docs/agent-workflow.md)** (como trabalhar), **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (design), **[docs/README.md](docs/README.md)** (índice), **[docs/architecture.md](docs/architecture.md)** (mapa do código).
+
+## Programação: sempre Karpathy + Ponytail
+
+Em **toda** tarefa de programação (código, scripts, CI, revisão, refatoração, depuração) siga a skill **`karpathy-guidelines`** junto com **`ponytail`** (nível `full`): pensar antes de codar e expor suposições, o mínimo de código que resolve, mudanças cirúrgicas, critério de sucesso verificável e verificado.
+
+## Regras (detalhes em `.claude/rules/`)
+
+| Arquivo | Conteúdo |
+|---|---|
+| [karpathy.md](.claude/rules/karpathy.md) | As 4 diretrizes obrigatórias em programação |
+| [code-architecture.md](.claude/rules/code-architecture.md) | Phaser 4, `onKey`, lógica pura por turnos sem Phaser, eventos de domínio, onde ficam números/textos/cores, estilo |
+| [content-and-assets.md](.claude/rules/content-and-assets.md) | Balanceamento, conteúdo data-driven, assets, concept art, sons, chaves no `.env` |
+| [git-release-docs.md](.claude/rules/git-release-docs.md) | Docs no mesmo lote, Conventional Commits/SemVer, gates, **releases são marcos (10 até agora), não commits**, graphify, QA, CI/CD, remoto, worktrees (encerradas), site |
+| [caveman.md](.claude/rules/caveman.md) | Estilo terso do chat (só o chat; arquivos em prosa normal) |
+| [platform.md](.claude/rules/platform.md) | Electron (Steam) e Capacitor (Android), versão, origem do save, segredos |
+
+Resumo mínimo:
+
+1. Lógica pura (`src/logic`, `src/game`) sem Phaser e por turnos (`legalActions`/`apply`); números em `src/data`; textos em `src/i18n` (EN + PT-BR juntos); cores em `src/config/palette.ts`.
+2. Gates antes de commitar: `bun run check`, `bun run typecheck`, `bun test`; `bun run build` e smoke antes de push. Nunca `--no-verify`.
+3. Toda mudança atualiza PLAN.md, CHANGELOG.md (`[Unreleased]`) e o doc afetado no mesmo lote.
+4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0` e `v0.10.0`, depois patches pequenos `0.10.1` e minors `0.11.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Push em `dev`/`main` e `bun run release` só quando o usuário pedir explicitamente.** Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
+5. Estilo visual: princípios do Balatro (legibilidade, "juice") com identidade de boteco do interior paulista; nunca copiar arte, logo ou layout de terceiros.
+6. Cascas nativas (`desktop/`, `mobile/`): o jogo não importa Electron/Capacitor; não mudar a origem do save (`app://truco-roguelite`); keystore e login Steam nunca no repo; `.env` nunca no git.
+
+## Comandos
+
+```text
+bun install · bun run dev · bun run build · bun test · bun run typecheck · bun run check(:fix)
+bun scripts/smoke.ts --url http://localhost:5191           # smoke headless (menu + partida com bot)
+bun scripts/qa.ts --url http://localhost:5191              # QA por grupos (skill qa-global)
+bun scripts/qa-web.ts --url http://localhost:5207 [--fast] # fluxos web no build de produção (vite preview)
+bun scripts/sim.ts [--skip none|small|both] · bun run balance  # simulação (pular mesa) e gate D-39
+bun scripts/store-art.ts · bun scripts/store-shots.ts      # artes e capturas de loja em docs/media/ (shots: build + vite preview 4173)
+bun run graph                                              # atualiza o grafo (antes de todo push)
+bun run release                                            # GitHub Release das tags novas (notas do CHANGELOG; builds e .exe no HEAD)
+bun run exe                                                # Zapatro-<versão>-win-x64.exe na raiz (gitignored) para testar
+bun run electron:dev | electron:build | electron:smoke     # Steam (desktop/)
+bun run android:run | android:debug | android:bundle       # Google Play (mobile/); JDK 21 + ANDROID_HOME
+bun run site:build · bun run site:deploy                   # site (site/) → site/out → Vercel (truco.lekzera.xyz)
+bun scripts/site-check.ts                                  # ensaio do deploy: site/out servido como na Vercel, antes do site:deploy
+bun scripts/soak.ts --url http://localhost:5191            # soak RC1.2: 30 runs do bot, erros e heap
+bun scripts/record-clips.ts --url http://localhost:5192    # clipes do trailer; depois cd trailer && bun run render
+```
+
+Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pode estar ocupada). `?run=1&auto=1&speed=4` joga uma run inteira com o bot; `?skipMenu=1` abre a partida rápida (Truco puro até 12; `&goal=110` liga a pontuação); `?qa=1` expõe `window.__GAME__` em produção. Todos os atalhos de teste: **[test-hacks.md](test-hacks.md)**.
+
+## Onde está cada coisa
+
+| Preciso de… | Leia |
+|---|---|
+| Como trabalhar numa sessão | [docs/agent-workflow.md](docs/agent-workflow.md) |
+| Mapa do código, camadas, eventos | [docs/architecture.md](docs/architecture.md) |
+| Design e regras (GDD) | [docs/gdd-game-design-document.md](docs/gdd-game-design-document.md) |
+| Números e fórmulas | [docs/balancing.md](docs/balancing.md) |
+| Arte (Art Bible v2: retratos em pixel art, resto vetor por código em `src/art/flat.ts`) | [docs/visual.md](docs/visual.md) |
+| Design de jogo (lenses) e pesquisa de mercado | [docs/books/](docs/books/) + skill `art-of-game-design`; [docs/card-games-research.md](docs/card-games-research.md) |
+| Sons | [docs/audio.md](docs/audio.md) + skill `game-audio-assets` |
+| Decisões | [docs/decisions.md](docs/decisions.md) e PLAN §2 |
+| Commits, versões, push, release | [docs/git-and-versioning.md](docs/git-and-versioning.md) + skill `release-section` |
+| Build Steam / Android | [docs/desktop.md](docs/desktop.md), [docs/mobile.md](docs/mobile.md) + skill `platform-builds` |
+| Lançamento nas lojas (Steam, Play, itch.io, Poki) | [docs/launch-game.md](docs/launch-game.md) |
+| Site | [docs/site.md](docs/site.md) |
+| Skills e ferramentas | [docs/tooling.md](docs/tooling.md) |
+
+## Worktrees (PLAN §12.1)
+
+- As worktrees `../jogo-truco-assets` (branch `assets`) e `../jogo-truco-qa` (branch `qa`) foram encerradas: todo o trabalho delas está em `dev`/`main` e as branches foram apagadas (conferido em 2026-10-25). Hoje há só o repositório principal.
+- Não crie worktree nova sem pedido explícito do dev. Se uma for criada, ela só mexe nos arquivos de que é dona e o fio principal integra com merge em `dev` depois dos gates.
+
+## Skills do projeto
+
+`karpathy-guidelines` e `ponytail` (+ `-review`/`-audit`/`-debt`): sempre em código · `add-game-content`: Manha, Simpatia, Lance, chefe, parceiro, perfil de IA, coringa · `game-art-assets` / `game-audio-assets`: PixelLab e ElevenLabs · `svg-concept-art`: só na branch `pixel-art` · `caveman`: estilo terso do chat (`full`) · `platform-builds`: Electron/Steam e Capacitor/Google Play · `release-section`: gates, docs, versão, commit, push e release a cada commit · `qa-global`: QA funcional · `graphify`: contexto do código · `art-of-game-design` e `pixel-logic`: livros de design e pixel art aplicados ao jogo. Também: Phaser 4 (`scenes`, `tweens`, …), `gd-*`/`gc-*`/`ccgs-*` ([docs/tooling.md](docs/tooling.md)).

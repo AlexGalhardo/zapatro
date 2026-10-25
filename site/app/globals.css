@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (game-director-feedback.md §7.4): the game's own palette (src/config/palette.ts),
+ * radius, solid shadow, focus ring and motion. The only place the site defines them.
+ */
+@theme {
+	--color-bg: #2b2b2b;
+	--color-panel: #30261f;
+	--color-panel-dark: #231c17;
+	--color-gold: #f4c542;
+	--color-cream: #f8f0de;
+	--color-text: #f6eedc;
+	--color-dim: #c9bda6;
+	--color-chips: #3f7fc0;
+	/* Text-only chips blue: #3f7fc0 is 3.4:1 on #2b2b2b (fails AA); this one is 5.1:1. */
+	--color-chips-text: #5fa0e0;
+	--color-mult: #e4572e;
+	--color-cta: #47b468;
+	--color-cta-hover: #3a9b57;
+	--color-ink: #1a1a1a;
+	--color-danger: #d2392f;
+	--color-felt: #24644d;
+	--font-sans: var(--font-rubik), system-ui, sans-serif;
+	--radius-panel: 8px;
+	--radius-button: 6px;
+	--radius-seal: 4px;
+	--shadow-solid: 0 4px 0 #1a1a1a;
+	--text-tagline: 1.5rem;
+	--text-body: 1.125rem;
+}
+
+:root {
+	--focus-ring: 3px solid var(--color-gold);
+	--focus-offset: 2px;
+	--motion: 150ms ease-out;
+}
+
+/* Every transition reads --motion, so this switches them all off. */
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--motion: 0ms linear;
+	}
+}
+
+@layer base {
+	html {
+		color-scheme: dark;
+	}
+	body {
+		@apply bg-bg font-sans text-body text-text leading-normal;
+	}
+	h1,
+	h2,
+	h3 {
+		@apply text-gold leading-tight font-bold;
+	}
+	a {
+		@apply text-gold;
+		transition: color var(--motion);
+	}
+	a:hover {
+		@apply text-cream;
+	}
+	:focus-visible {
+		outline: var(--focus-ring);
+		outline-offset: var(--focus-offset);
+	}
+}
+
+/* Game button: flat block, rounded, solid shadow; the colour never changes the size (no CLS). */
+@utility btn {
+	@apply inline-flex min-h-11 items-center justify-center gap-2 rounded-button border-2 border-panel-dark bg-panel px-4 py-2 font-medium text-text no-underline shadow-solid;
+	transition:
+		background-color var(--motion),
+		color var(--motion);
+	&:hover {
+		@apply bg-panel-dark text-gold;
+	}
+}
+
+@utility btn-cta {
+	@apply bg-cta font-bold text-ink;
+	&:hover {
+		@apply bg-cta-hover text-ink;
+	}
+}
+
+@utility card {
+	@apply rounded-panel border-2 border-panel-dark bg-panel p-4 shadow-solid;
+}

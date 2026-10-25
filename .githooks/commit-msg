@@ -1,0 +1,11 @@
+#!/bin/sh
+# Conventional Commits 1.0.0 (.claude/rules/git-release-docs.md). Merge and revert messages made by git pass.
+msg=$(head -n 1 "$1")
+case "$msg" in
+  Merge\ *|Revert\ *) exit 0 ;;
+esac
+if ! printf '%s' "$msg" | grep -Eq '^(feat|fix|docs|test|refactor|perf|chore|build|ci|style|revert)(\([a-z0-9._-]+\))?!?: .+'; then
+  echo "commit-msg: not a Conventional Commit: \"$msg\"" >&2
+  echo "expected: <type>(<scope>)?: <description>, type in feat|fix|docs|test|refactor|perf|chore|build|ci|style|revert" >&2
+  exit 1
+fi

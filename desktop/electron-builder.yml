@@ -1,0 +1,36 @@
+# electron-builder: unpacked app folders (`--dir`), which is what SteamPipe uploads as a depot.
+# Version comes from the root package.json (scripts/build-electron.ts passes extraMetadata.version).
+appId: com.alexgalhardo.trucoroguelite
+productName: Zapatro
+copyright: Copyright © 2026 Alex Galhardo
+directories:
+  output: release
+  buildResources: build
+files:
+  - main.js
+  - steam.js
+  - preload.cjs
+  - package.json
+  - build/icon.png
+# The Vite build of the repository root, served by main.js from resources/web.
+extraResources:
+  - from: ../dist
+    to: web
+asar: true
+# steamworks.js ships native .node binaries: they must live outside the asar to load.
+asarUnpack:
+  - node_modules/steamworks.js/**
+electronLanguages: [en-US, pt-BR]
+# `--win portable` (scripts/build-electron.ts --exe) makes the single Zapatro-<version>-win-x64.exe.
+win:
+  target: dir
+  icon: build/icon.png
+mac:
+  target: dir
+  icon: build/icon.png
+  category: public.app-category.games
+linux:
+  target: dir
+  icon: build/icon.png
+  executableName: truco-roguelite
+  category: Game

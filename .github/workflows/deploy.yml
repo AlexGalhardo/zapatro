@@ -1,0 +1,33 @@
+name: Deploy
+
+# The site (landing + /play/ + /demo/) on every push to main, to the Vercel project behind
+# https://beta.lekzera.xyz. The production site truco.lekzera.xyz still goes out by hand (site:deploy).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  vercel:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - name: Site build (game, demo, art, Next.js export)
+        run: bun run site:build
+      - name: Deploy to Vercel (production)
+        working-directory: site
+        run: bunx vercel@62.1.0 deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"

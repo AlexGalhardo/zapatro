@@ -1,0 +1,217 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  # Manual runs build every artifact without publishing (dry run of the release).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - name: Gates
+        run: bun run format:check && bun run lint && bun run typecheck && bun test
+      - name: Zip the full web build
+        run: cd dist && zip -qr ../truco-roguelite-web.zip .
+      - name: Demo build (Campeonato 1 até o primeiro chefe, itch.io / Poki / site)
+        run: VITE_DEMO=1 bun run build && cd dist && zip -qr ../truco-roguelite-web-demo.zip .
+      - name: Poki build (demo + Poki SDK, under 8 MB)
+        run: |
+          VITE_DEMO=1 VITE_POKI=1 bun run build
+          size=$(du -sk dist | cut -f1)
+          echo "poki build: ${size} KB"
+          test "$size" -lt 8192
+          cd dist && zip -qr ../truco-roguelite-web-poki.zip .
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truco-roguelite-web
+          path: truco-roguelite-web*.zip
+          if-no-files-found: error
+
+  # Electron builds (the Steam depots): zipped unpacked folders, one per OS.
+  electron:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            dir: win-unpacked
+            asset: truco-roguelite-electron-windows-x64.zip
+          - os: ubuntu-latest
+            dir: linux-unpacked
+            asset: truco-roguelite-electron-linux-x64.zip
+          - os: macos-latest
+            dir: mac-arm64
+            asset: truco-roguelite-electron-macos-arm64.zip
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run electron:install --frozen-lockfile
+      - run: bun run build
+      - name: Package (electron-builder --dir)
+        run: bun scripts/build-electron.ts --skip-web
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - name: Ad hoc signature (macOS, until a Developer ID is set up)
+        if: runner.os == 'macOS'
+        run: codesign --force --deep --sign - "desktop/release/mac-arm64/Zapaco.app"
+      # Every release has the portable Windows executable too (Zapatro-<version>-win-x64.exe).
+      - name: Portable .exe (Windows)
+        if: runner.os == 'Windows'
+        run: bun scripts/build-electron.ts --skip-web --exe
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - uses: actions/upload-artifact@v7.0.1
+        if: runner.os == 'Windows'
+        with:
+          name: zapatro-windows-exe
+          path: Zapatro-*-win-x64.exe
+          if-no-files-found: error
+      - name: Zip
+        shell: bash
+        working-directory: desktop/release/${{ matrix.dir }}
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then 7z a -tzip "$GITHUB_WORKSPACE/${{ matrix.asset }}" . > /dev/null
+          else zip -qry "$GITHUB_WORKSPACE/${{ matrix.asset }}" .; fi
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}
+          if-no-files-found: error
+
+  # Google Play: release AAB (upload to the Play Console) + APK (sideload), signed with the upload key
+  # from the ANDROID_KEYSTORE_* secrets (docs/mobile.md). Without them Android refuses an
+  # unsigned APK ("package appears to be invalid"), so only the debug-signed APK is published.
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: bun install --frozen-lockfile
+      - run: bun run android:install --frozen-lockfile
+      - run: bun run build
+      - name: AAB and APK
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          out=mobile/android/app/build/outputs
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/upload.jks"
+            bun scripts/build-android.ts --skip-web
+            bun scripts/build-android.ts --skip-web --apk
+            cp "$out"/bundle/release/app-release.aab truco-roguelite-android.aab
+            cp "$out"/apk/release/app-release.apk truco-roguelite-android.apk
+          else
+            echo "::warning::ANDROID_KEYSTORE_BASE64 not set: publishing only the debug APK (no AAB for Google Play)"
+            bun scripts/build-android.ts --skip-web --debug
+            cp "$out"/apk/debug/app-debug.apk truco-roguelite-android-debug.apk
+          fi
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truco-roguelite-android
+          path: truco-roguelite-android*
+          if-no-files-found: error
+
+  # Release in the format of AlexGalhardo/vukem: the title is the tag, the notes are the Keep a
+  # Changelog groups with a commit link per entry (scripts/lib/release-notes.ts), the assets are
+  # zapatro_<version>_<platform> files with an SBOM each, checksums.txt, its cosign keyless
+  # signature (checksums.txt.sigstore.json) and the build provenance (zapatro.intoto.jsonl).
+  publish:
+    needs: [web, electron, android]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release and upload the assets
+      id-token: write # Sigstore OIDC identity for cosign and attestations
+      attestations: write # build provenance attestations
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        with:
+          cosign-release: v3.1.3
+      - uses: anchore/sbom-action/download-syft@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          syft-version: v1.54.1
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Name the assets zapatro_<version>_<platform>
+        working-directory: assets
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          for f in *; do
+            case "$f" in
+              truco-roguelite-web-demo.zip) n=web-demo.zip ;;
+              truco-roguelite-web-poki.zip) n=web-poki.zip ;;
+              truco-roguelite-web.zip) n=web.zip ;;
+              truco-roguelite-electron-windows-x64.zip) n=windows_amd64.zip ;;
+              Zapatro-*-win-x64.exe) n=windows_amd64.exe ;;
+              truco-roguelite-electron-linux-x64.zip) n=linux_amd64.zip ;;
+              truco-roguelite-electron-macos-arm64.zip) n=darwin_arm64.zip ;;
+              truco-roguelite-android.aab) n=android.aab ;;
+              truco-roguelite-android.apk) n=android.apk ;;
+              truco-roguelite-android-debug.apk) n=android-debug.apk ;;
+              *) echo "::error::unknown asset $f"; exit 1 ;;
+            esac
+            mv "$f" "zapatro_${v}_$n"
+          done
+      - name: Release notes
+        run: bun scripts/lib/release-notes.ts "$GITHUB_REF_NAME" > notes.md
+      - name: SBOMs (syft)
+        working-directory: assets
+        run: for f in zapatro_*; do syft "file:$f" -o "cyclonedx-json=$f.sbom.json"; done
+      - name: Checksums and signature
+        working-directory: assets
+        run: |
+          sha256sum zapatro_* > checksums.txt
+          cosign sign-blob checksums.txt --bundle checksums.txt.sigstore.json --yes
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        id: attest
+        with:
+          subject-checksums: ./assets/checksums.txt
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: |
+          cp "$BUNDLE" assets/zapatro.intoto.jsonl
+          pre=""
+          case "$GITHUB_REF_NAME" in *-*) pre="--prerelease";; esac
+          # `bun run release` may have published it from a local machine: then only add the missing
+          # assets (macOS, AAB, SBOMs, signature, provenance) and keep the local ones.
+          if existing=$(gh release view "$GITHUB_REF_NAME" --json assets -q '.assets[].name' 2> /dev/null); then
+            for f in assets/*; do
+              echo "$existing" | grep -qxF "$(basename "$f")" || gh release upload "$GITHUB_REF_NAME" "$f"
+            done
+          else
+            gh release create "$GITHUB_REF_NAME" assets/* --title "$GITHUB_REF_NAME" --notes-file notes.md --verify-tag --latest $pre
+          fi

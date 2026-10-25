@@ -1,0 +1,19 @@
+#!/bin/sh
+# Fast checks on what is being committed. The full gate is in the release-section skill.
+set -e
+staged=$(git diff --cached --name-only --diff-filter=ACMR -- '*.ts' '*.tsx' '*.js' '*.json' | grep -v '^\.claude/' || true)
+if [ -n "$staged" ]; then
+  bunx biome check --no-errors-on-unmatched $staged
+fi
+if git diff --cached --name-only --diff-filter=ACMR | grep -q '\.ts$'; then
+  bun check --no-script
+fi
+# Same scope as .markdownlint-cli2.jsonc: vendored skills keep their upstream style.
+own='^\.claude/skills/(add-game-content|game-art-assets|game-audio-assets|svg-concept-art|platform-builds|qa-global|release-section)/SKILL\.md$'
+md=$(git diff --cached --name-only --diff-filter=ACMR -- '*.md' | grep -Ev '^\.claude/skills/|^references/|^art-src/' || true)
+md="$md $(git diff --cached --name-only --diff-filter=ACMR -- '*.md' | grep -E "$own" || true)"
+md=$(echo $md)
+if [ -n "$md" ]; then
+  bunx markdownlint-cli2 --no-globs $md
+fi
+# Releases are milestones (git-and-versioning.md): a commit needs no version bump or CHANGELOG section.

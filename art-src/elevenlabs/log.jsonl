@@ -1,0 +1,327 @@
+{"at":"2026-09-30T21:11:09.802Z","kind":"sfx","key":"sfx.card.play","take":1,"seconds":0.5,"prompt":"playing card slapped down firmly on a formica table, crisp paper snap"}
+{"at":"2026-09-30T21:11:11.029Z","kind":"sfx","key":"sfx.card.play","take":2,"seconds":0.5,"prompt":"playing card slapped down firmly on a formica table, crisp paper snap"}
+{"at":"2026-09-30T21:11:19.917Z","kind":"sfx","key":"sfx.card.shuffle","take":1,"seconds":1,"prompt":"riffle shuffle of a worn paper deck of playing cards on a table, bridge finish"}
+{"at":"2026-09-30T21:11:21.484Z","kind":"sfx","key":"sfx.card.deal","take":1,"seconds":0.5,"prompt":"one playing card dealt and sliding fast across a formica table"}
+{"at":"2026-09-30T21:11:22.745Z","kind":"sfx","key":"sfx.card.deal","take":2,"seconds":0.5,"prompt":"one playing card dealt and sliding fast across a formica table"}
+{"at":"2026-09-30T21:11:24.122Z","kind":"sfx","key":"sfx.card.flip","take":1,"seconds":0.5,"prompt":"a single playing card flipped face up on a table, light paper flick"}
+{"at":"2026-09-30T21:11:25.481Z","kind":"sfx","key":"sfx.trick.win","take":1,"seconds":0.6,"prompt":"hand sweeping a small pile of playing cards off a table into a neat stack"}
+{"at":"2026-09-30T21:11:26.758Z","kind":"sfx","key":"sfx.truco","take":1,"seconds":0.8,"prompt":"powerful open palm slam on a wooden bar table, glasses rattle, dry punchy thud"}
+{"at":"2026-09-30T21:11:28.262Z","kind":"sfx","key":"sfx.truco","take":2,"seconds":0.8,"prompt":"powerful open palm slam on a wooden bar table, glasses rattle, dry punchy thud"}
+{"at":"2026-09-30T21:11:29.863Z","kind":"sfx","key":"sfx.bet.accept","take":1,"seconds":0.5,"prompt":"two quick confident knuckle knocks on a wooden table"}
+{"at":"2026-09-30T21:11:31.200Z","kind":"sfx","key":"sfx.bet.run","take":1,"seconds":0.8,"prompt":"playing cards tossed down in defeat on a table, then a chair scraping back"}
+{"at":"2026-09-30T21:11:32.360Z","kind":"sfx","key":"sfx.signal","take":1,"seconds":0.5,"prompt":"very short soft sneaky whoosh"}
+{"at":"2026-09-30T21:11:34.316Z","kind":"sfx","key":"sfx.signal.caught","take":1,"seconds":0.6,"prompt":"one short sharp referee whistle blow"}
+{"at":"2026-09-30T21:11:35.972Z","kind":"sfx","key":"sfx.score.chip","take":1,"seconds":0.5,"prompt":"one tiny clean poker chip click, very short tick"}
+{"at":"2026-09-30T21:11:37.871Z","kind":"sfx","key":"sfx.score.mult","take":1,"seconds":0.5,"prompt":"low punchy wooden thock, short and deep"}
+{"at":"2026-09-30T21:11:39.154Z","kind":"sfx","key":"sfx.score.xmult","take":1,"seconds":0.6,"prompt":"bright glass clink of two small beer glasses toasting, ringing"}
+{"at":"2026-09-30T21:11:40.600Z","kind":"sfx","key":"sfx.money","take":1,"seconds":0.6,"prompt":"a few coins dropped onto a wooden table, short bright jingle"}
+{"at":"2026-09-30T21:11:42.302Z","kind":"sfx","key":"sfx.manha.trigger","take":1,"seconds":0.5,"prompt":"short playful magical sparkle pop, little chime"}
+{"at":"2026-09-30T21:11:43.794Z","kind":"sfx","key":"sfx.table.win","take":1,"seconds":2,"prompt":"small bar crowd cheering and clapping, a bottle cap pops, happy"}
+{"at":"2026-09-30T21:11:45.312Z","kind":"sfx","key":"sfx.table.lose","take":1,"seconds":2,"prompt":"small bar crowd groaning in disappointment, a chair creaks"}
+{"at":"2026-09-30T21:11:46.958Z","kind":"ui","key":"sfx.shop.buy","take":1,"seconds":0.6,"prompt":"old mechanical cash register ding with a coin drop"}
+{"at":"2026-09-30T21:11:48.577Z","kind":"ui","key":"sfx.shop.reroll","take":1,"seconds":0.5,"prompt":"quick riffle of paper tickets ending with a click"}
+{"at":"2026-09-30T21:11:49.981Z","kind":"ui","key":"sfx.pack.open","take":1,"seconds":1,"prompt":"tearing open a paper envelope quickly, then playing cards fanning out"}
+{"at":"2026-09-30T21:11:51.570Z","kind":"ui","key":"sfx.ui.move","take":1,"seconds":0.5,"prompt":"tiny soft wooden tick, very short"}
+{"at":"2026-09-30T21:11:53.154Z","kind":"ui","key":"sfx.ui.confirm","take":1,"seconds":0.5,"prompt":"short pleasant wooden click with a soft little bell"}
+{"at":"2026-09-30T21:11:54.429Z","kind":"ui","key":"sfx.ui.back","take":1,"seconds":0.5,"prompt":"short soft paper swipe"}
+{"at":"2026-09-30T21:11:56.192Z","kind":"ui","key":"sfx.ui.error","take":1,"seconds":0.5,"prompt":"short dull double wooden knock, negative"}
+{"at":"2026-09-30T21:12:01.997Z","kind":"amb","key":"amb.boteco","take":1,"seconds":30,"prompt":"Small brazilian neighborhood bar at night: murmur of conversation in the background, a ceiling fan humming, glasses clinking now and then, a small tv far away, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T21:12:19.836Z","kind":"music","key":"music.menu","model":"music_v2_5","seconds":60,"credits":0,"prompt":"Calm nostalgic Brazilian viola caipira solo with soft acoustic guitar, warm late afternoon mood, gentle and inviting, 80 bpm. instrumental, no vocals, seamless loop for a cozy pixel art card game set in a small bar in the countryside of Sao Paulo, Brazil"}
+{"at":"2026-09-30T21:12:46.131Z","kind":"music","key":"music.table","model":"music_v2_5","seconds":75,"credits":2069,"prompt":"Upbeat relaxed Brazilian sertanejo raiz groove as if from an old AM radio in a bar: viola caipira riff, acoustic guitar, soft accordion, light percussion, slightly lo-fi and warm, 100 bpm. instrumental, no vocals, seamless loop for a cozy pixel art card game set in a small bar in the countryside of Sao Paulo, Brazil"}
+{"at":"2026-09-30T21:13:03.393Z","kind":"music","key":"music.boss","model":"music_v2_5","seconds":60,"credits":0,"prompt":"Tense Brazilian showdown: driving zabumba and pandeiro percussion, low tense viola caipira ostinato, dramatic accordion stabs, rising suspense, 120 bpm. instrumental, no vocals, seamless loop for a cozy pixel art card game set in a small bar in the countryside of Sao Paulo, Brazil"}
+{"at":"2026-09-30T21:21:25.097Z","kind":"vo","key":"vo.tonhao.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:21:25.954Z","kind":"vo","key":"vo.tonhao.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:21:27.241Z","kind":"vo","key":"vo.tonhao.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:21:28.164Z","kind":"vo","key":"vo.tonhao.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:21:29.010Z","kind":"vo","key":"vo.tonhao.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:21:30.014Z","kind":"vo","key":"vo.tonhao.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:21:30.803Z","kind":"vo","key":"vo.tonhao.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:21:31.631Z","kind":"vo","key":"vo.tonhao.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:21:32.536Z","kind":"vo","key":"vo.tonhao.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:21:33.590Z","kind":"vo","key":"vo.tonhao.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:21:34.750Z","kind":"vo","key":"vo.tonhao.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:21:35.894Z","kind":"vo","key":"vo.tonhao.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:21:36.945Z","kind":"vo","key":"vo.tonhao.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:21:37.959Z","kind":"vo","key":"vo.tonhao.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:21:39.198Z","kind":"vo","key":"vo.tonhao.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:21:40.292Z","kind":"vo","key":"vo.tonhao.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:21:41.619Z","kind":"vo","key":"vo.tonhao.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:22:22.340Z","kind":"vo","key":"vo.donaCida.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:22:23.316Z","kind":"vo","key":"vo.donaCida.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:22:24.383Z","kind":"vo","key":"vo.donaCida.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:22:25.221Z","kind":"vo","key":"vo.donaCida.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:22:26.401Z","kind":"vo","key":"vo.donaCida.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:22:27.583Z","kind":"vo","key":"vo.donaCida.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:22:28.583Z","kind":"vo","key":"vo.donaCida.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:22:29.522Z","kind":"vo","key":"vo.donaCida.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:22:30.442Z","kind":"vo","key":"vo.donaCida.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:22:31.850Z","kind":"vo","key":"vo.donaCida.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:22:33.155Z","kind":"vo","key":"vo.donaCida.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:22:34.201Z","kind":"vo","key":"vo.donaCida.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:22:35.474Z","kind":"vo","key":"vo.donaCida.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:22:36.561Z","kind":"vo","key":"vo.donaCida.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:22:37.865Z","kind":"vo","key":"vo.donaCida.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:22:39.259Z","kind":"vo","key":"vo.donaCida.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:22:40.677Z","kind":"vo","key":"vo.donaCida.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:22:59.804Z","kind":"vo","key":"vo.zeMalandro.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:23:00.535Z","kind":"vo","key":"vo.zeMalandro.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:23:01.571Z","kind":"vo","key":"vo.zeMalandro.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:23:03.079Z","kind":"vo","key":"vo.zeMalandro.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:23:03.921Z","kind":"vo","key":"vo.zeMalandro.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:23:04.890Z","kind":"vo","key":"vo.zeMalandro.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:23:05.788Z","kind":"vo","key":"vo.zeMalandro.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:23:06.648Z","kind":"vo","key":"vo.zeMalandro.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:23:07.587Z","kind":"vo","key":"vo.zeMalandro.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:23:08.608Z","kind":"vo","key":"vo.zeMalandro.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:23:09.693Z","kind":"vo","key":"vo.zeMalandro.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:23:10.801Z","kind":"vo","key":"vo.zeMalandro.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:23:11.884Z","kind":"vo","key":"vo.zeMalandro.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:23:13.489Z","kind":"vo","key":"vo.zeMalandro.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:23:15.107Z","kind":"vo","key":"vo.zeMalandro.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:23:16.035Z","kind":"vo","key":"vo.zeMalandro.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:23:17.151Z","kind":"vo","key":"vo.zeMalandro.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:23:34.457Z","kind":"vo","key":"vo.juninho.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:23:35.449Z","kind":"vo","key":"vo.juninho.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:23:36.768Z","kind":"vo","key":"vo.juninho.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:23:37.715Z","kind":"vo","key":"vo.juninho.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:23:38.590Z","kind":"vo","key":"vo.juninho.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:23:39.409Z","kind":"vo","key":"vo.juninho.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:23:40.344Z","kind":"vo","key":"vo.juninho.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:23:41.210Z","kind":"vo","key":"vo.juninho.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:23:42.044Z","kind":"vo","key":"vo.juninho.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:23:43.104Z","kind":"vo","key":"vo.juninho.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:23:44.149Z","kind":"vo","key":"vo.juninho.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:23:45.158Z","kind":"vo","key":"vo.juninho.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:23:46.311Z","kind":"vo","key":"vo.juninho.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:23:47.273Z","kind":"vo","key":"vo.juninho.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:23:48.290Z","kind":"vo","key":"vo.juninho.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:23:49.277Z","kind":"vo","key":"vo.juninho.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:48:38.226Z","kind":"music","key":"music.win","model":"music_v2_5","seconds":12,"credits":0,"prompt":"Short joyful Brazilian victory jingle: bright accordion and viola caipira flourish, triangle and zabumba, festive ending, instrumental, no vocals"}
+{"at":"2026-09-30T21:48:44.490Z","kind":"music","key":"music.lose","model":"music_v2_5","seconds":10,"credits":275,"prompt":"Short sad funny Brazilian defeat jingle: slow descending viola caipira phrase, a sighing accordion, gentle ending, instrumental, no vocals"}
+{"at":"2026-09-30T21:49:17.585Z","kind":"vo","key":"vo.ze.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:49:18.629Z","kind":"vo","key":"vo.ze.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:49:20.164Z","kind":"vo","key":"vo.ze.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:49:21.293Z","kind":"vo","key":"vo.ze.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:49:22.228Z","kind":"vo","key":"vo.ze.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:49:23.087Z","kind":"vo","key":"vo.ze.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:49:23.890Z","kind":"vo","key":"vo.ze.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:49:24.915Z","kind":"vo","key":"vo.ze.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:49:25.916Z","kind":"vo","key":"vo.ze.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:49:27.086Z","kind":"vo","key":"vo.ze.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:49:28.398Z","kind":"vo","key":"vo.ze.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:49:29.407Z","kind":"vo","key":"vo.ze.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:49:30.716Z","kind":"vo","key":"vo.ze.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:49:31.726Z","kind":"vo","key":"vo.ze.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:49:33.086Z","kind":"vo","key":"vo.ze.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:49:34.138Z","kind":"vo","key":"vo.ze.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:49:35.968Z","kind":"vo","key":"vo.ze.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:50:09.551Z","kind":"vo","key":"vo.bia.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:50:10.656Z","kind":"vo","key":"vo.bia.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:50:11.834Z","kind":"vo","key":"vo.bia.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:50:12.841Z","kind":"vo","key":"vo.bia.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:50:13.922Z","kind":"vo","key":"vo.bia.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:50:14.913Z","kind":"vo","key":"vo.bia.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:50:15.925Z","kind":"vo","key":"vo.bia.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:50:16.766Z","kind":"vo","key":"vo.bia.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:50:17.794Z","kind":"vo","key":"vo.bia.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:50:19.142Z","kind":"vo","key":"vo.bia.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:50:20.176Z","kind":"vo","key":"vo.bia.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:50:21.268Z","kind":"vo","key":"vo.bia.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:50:22.438Z","kind":"vo","key":"vo.bia.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:50:23.331Z","kind":"vo","key":"vo.bia.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:50:24.823Z","kind":"vo","key":"vo.bia.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:50:25.877Z","kind":"vo","key":"vo.bia.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:50:27.285Z","kind":"vo","key":"vo.bia.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:50:49.056Z","kind":"vo","key":"vo.joca.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:50:50.043Z","kind":"vo","key":"vo.joca.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:50:51.270Z","kind":"vo","key":"vo.joca.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:50:52.287Z","kind":"vo","key":"vo.joca.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:50:53.160Z","kind":"vo","key":"vo.joca.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:50:54.009Z","kind":"vo","key":"vo.joca.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:50:54.964Z","kind":"vo","key":"vo.joca.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:50:55.811Z","kind":"vo","key":"vo.joca.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:50:56.726Z","kind":"vo","key":"vo.joca.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:50:57.839Z","kind":"vo","key":"vo.joca.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:50:59.044Z","kind":"vo","key":"vo.joca.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:51:00.138Z","kind":"vo","key":"vo.joca.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:51:01.226Z","kind":"vo","key":"vo.joca.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:51:02.746Z","kind":"vo","key":"vo.joca.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:51:03.942Z","kind":"vo","key":"vo.joca.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:51:05.038Z","kind":"vo","key":"vo.joca.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:51:06.352Z","kind":"vo","key":"vo.joca.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:51:27.348Z","kind":"vo","key":"vo.lurdes.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:51:28.189Z","kind":"vo","key":"vo.lurdes.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:51:29.679Z","kind":"vo","key":"vo.lurdes.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:51:30.516Z","kind":"vo","key":"vo.lurdes.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:51:31.494Z","kind":"vo","key":"vo.lurdes.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:51:32.566Z","kind":"vo","key":"vo.lurdes.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:51:33.434Z","kind":"vo","key":"vo.lurdes.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:51:34.624Z","kind":"vo","key":"vo.lurdes.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:51:35.688Z","kind":"vo","key":"vo.lurdes.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:51:36.964Z","kind":"vo","key":"vo.lurdes.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:51:38.054Z","kind":"vo","key":"vo.lurdes.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:51:39.181Z","kind":"vo","key":"vo.lurdes.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:51:40.732Z","kind":"vo","key":"vo.lurdes.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:51:41.663Z","kind":"vo","key":"vo.lurdes.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:51:42.970Z","kind":"vo","key":"vo.lurdes.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:51:43.908Z","kind":"vo","key":"vo.lurdes.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:51:45.130Z","kind":"vo","key":"vo.lurdes.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:52:07.970Z","kind":"vo","key":"vo.tiao.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:52:09.087Z","kind":"vo","key":"vo.tiao.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:52:10.245Z","kind":"vo","key":"vo.tiao.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:52:11.159Z","kind":"vo","key":"vo.tiao.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:52:12.026Z","kind":"vo","key":"vo.tiao.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:52:13.042Z","kind":"vo","key":"vo.tiao.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:52:14.006Z","kind":"vo","key":"vo.tiao.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:52:15.020Z","kind":"vo","key":"vo.tiao.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:52:16.079Z","kind":"vo","key":"vo.tiao.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:52:17.153Z","kind":"vo","key":"vo.tiao.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:52:18.181Z","kind":"vo","key":"vo.tiao.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:52:19.229Z","kind":"vo","key":"vo.tiao.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:52:20.338Z","kind":"vo","key":"vo.tiao.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:52:21.272Z","kind":"vo","key":"vo.tiao.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:52:22.761Z","kind":"vo","key":"vo.tiao.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:52:23.827Z","kind":"vo","key":"vo.tiao.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:52:25.102Z","kind":"vo","key":"vo.tiao.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:52:45.072Z","kind":"vo","key":"vo.neide.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T21:52:46.696Z","kind":"vo","key":"vo.neide.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T21:52:48.145Z","kind":"vo","key":"vo.neide.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T21:52:49.062Z","kind":"vo","key":"vo.neide.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T21:52:49.928Z","kind":"vo","key":"vo.neide.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T21:52:51.030Z","kind":"vo","key":"vo.neide.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T21:52:51.917Z","kind":"vo","key":"vo.neide.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T21:52:53.151Z","kind":"vo","key":"vo.neide.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T21:52:54.180Z","kind":"vo","key":"vo.neide.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T21:52:55.589Z","kind":"vo","key":"vo.neide.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T21:52:56.752Z","kind":"vo","key":"vo.neide.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T21:52:57.821Z","kind":"vo","key":"vo.neide.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T21:52:58.884Z","kind":"vo","key":"vo.neide.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T21:52:59.920Z","kind":"vo","key":"vo.neide.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T21:53:01.356Z","kind":"vo","key":"vo.neide.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T21:53:02.439Z","kind":"vo","key":"vo.neide.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T21:53:03.879Z","kind":"vo","key":"vo.neide.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T21:57:53.151Z","kind":"sfx","key":"sfx.score.xmult","take":1,"seconds":0.6,"prompt":"bright glass clink of two small beer glasses toasting, ringing"}
+{"at":"2026-09-30T21:57:54.989Z","kind":"ui","key":"sfx.shop.reroll","take":1,"seconds":0.5,"prompt":"quick riffle of paper tickets ending with a click"}
+{"at":"2026-09-30T21:57:56.709Z","kind":"ui","key":"sfx.ui.confirm","take":1,"seconds":0.5,"prompt":"short pleasant wooden click with a soft little bell"}
+{"at":"2026-09-30T21:59:24.206Z","kind":"sfx","key":"sfx.score.xmult","take":1,"seconds":1,"prompt":"loud bright clink of two glass beer glasses toasting, clear ringing tone"}
+{"at":"2026-09-30T21:59:25.614Z","kind":"ui","key":"sfx.shop.reroll","take":1,"seconds":0.8,"prompt":"loud quick riffle of a stack of paper tickets ending with a sharp click"}
+{"at":"2026-09-30T22:49:45.261Z","kind":"music","key":"music.king","model":"music_v2_5","seconds":60,"credits":750,"prompt":"Grand legendary final duel theme: majestic viola caipira melody over big orchestral strings, pounding zabumba, triumphant brass, epic but still Brazilian countryside, 110 bpm. instrumental, no vocals, seamless loop for a cozy pixel art card game set in a small bar in the countryside of Sao Paulo, Brazil"}
+{"at":"2026-09-30T22:50:00.994Z","kind":"amb","key":"amb.barDeEstrada","take":1,"seconds":30,"prompt":"roadside truck stop bar at night: trucks passing on a highway outside, a buzzing neon sign, a few men murmuring, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:50:30.383Z","kind":"amb","key":"amb.quermesse","take":1,"seconds":30,"prompt":"brazilian june festival at night: crowd chatter outdoors, a crackling bonfire, distant accordion forro music very faint, kids laughing, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:50:36.800Z","kind":"amb","key":"amb.clube","take":1,"seconds":30,"prompt":"old social club hall: quiet murmur of older people, domino tiles clacking, a big ceiling fan, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:50:44.607Z","kind":"amb","key":"amb.festaDoPeao","take":1,"seconds":30,"prompt":"rodeo festival at night: big crowd far away, a rodeo announcer echoing unintelligibly, cattle mooing, dust and wind, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:50:51.270Z","kind":"amb","key":"amb.regional","take":1,"seconds":30,"prompt":"small town gymnasium: echoing hall, crowd murmur, sneakers squeaking, folding chairs, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:50:57.381Z","kind":"amb","key":"amb.estadual","take":1,"seconds":30,"prompt":"big championship hall: large audience murmuring, occasional applause, camera shutters, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:51:04.077Z","kind":"amb","key":"amb.reiDoTruco","take":1,"seconds":30,"prompt":"legendary luxurious old bar: hushed tense audience, soft jazz-like murmur, glasses clinking, a grandfather clock ticking, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-09-30T22:51:33.810Z","kind":"vo","key":"vo.valentao.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T22:51:34.775Z","kind":"vo","key":"vo.valentao.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T22:51:35.970Z","kind":"vo","key":"vo.valentao.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T22:51:38.243Z","kind":"vo","key":"vo.valentao.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T22:51:39.532Z","kind":"vo","key":"vo.valentao.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T22:51:40.600Z","kind":"vo","key":"vo.valentao.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T22:51:41.400Z","kind":"vo","key":"vo.valentao.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T22:51:42.336Z","kind":"vo","key":"vo.valentao.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T22:51:43.345Z","kind":"vo","key":"vo.valentao.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T22:51:44.416Z","kind":"vo","key":"vo.valentao.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T22:51:45.690Z","kind":"vo","key":"vo.valentao.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T22:51:46.858Z","kind":"vo","key":"vo.valentao.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T22:51:48.312Z","kind":"vo","key":"vo.valentao.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T22:51:49.341Z","kind":"vo","key":"vo.valentao.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T22:51:50.864Z","kind":"vo","key":"vo.valentao.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T22:51:51.816Z","kind":"vo","key":"vo.valentao.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T22:51:52.957Z","kind":"vo","key":"vo.valentao.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T22:52:16.596Z","kind":"vo","key":"vo.cartomante.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T22:52:17.381Z","kind":"vo","key":"vo.cartomante.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T22:52:18.707Z","kind":"vo","key":"vo.cartomante.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T22:52:19.729Z","kind":"vo","key":"vo.cartomante.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T22:52:20.673Z","kind":"vo","key":"vo.cartomante.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T22:52:21.727Z","kind":"vo","key":"vo.cartomante.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T22:52:22.673Z","kind":"vo","key":"vo.cartomante.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T22:52:23.505Z","kind":"vo","key":"vo.cartomante.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T22:52:24.551Z","kind":"vo","key":"vo.cartomante.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T22:52:25.815Z","kind":"vo","key":"vo.cartomante.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T22:52:27.060Z","kind":"vo","key":"vo.cartomante.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T22:52:27.943Z","kind":"vo","key":"vo.cartomante.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T22:52:29.106Z","kind":"vo","key":"vo.cartomante.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T22:52:29.953Z","kind":"vo","key":"vo.cartomante.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T22:52:31.173Z","kind":"vo","key":"vo.cartomante.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T22:52:32.234Z","kind":"vo","key":"vo.cartomante.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T22:52:33.526Z","kind":"vo","key":"vo.cartomante.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T22:52:53.100Z","kind":"vo","key":"vo.juiz.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T22:52:53.958Z","kind":"vo","key":"vo.juiz.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T22:52:55.264Z","kind":"vo","key":"vo.juiz.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T22:52:55.956Z","kind":"vo","key":"vo.juiz.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T22:52:56.778Z","kind":"vo","key":"vo.juiz.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T22:52:57.576Z","kind":"vo","key":"vo.juiz.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T22:52:58.393Z","kind":"vo","key":"vo.juiz.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T22:52:59.320Z","kind":"vo","key":"vo.juiz.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T22:53:00.271Z","kind":"vo","key":"vo.juiz.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T22:53:01.213Z","kind":"vo","key":"vo.juiz.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T22:53:02.259Z","kind":"vo","key":"vo.juiz.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T22:53:03.219Z","kind":"vo","key":"vo.juiz.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T22:53:04.494Z","kind":"vo","key":"vo.juiz.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T22:53:05.286Z","kind":"vo","key":"vo.juiz.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T22:53:06.494Z","kind":"vo","key":"vo.juiz.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T22:53:07.638Z","kind":"vo","key":"vo.juiz.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T22:53:08.894Z","kind":"vo","key":"vo.juiz.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T22:53:24.620Z","kind":"vo","key":"vo.agiota.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T22:53:25.502Z","kind":"vo","key":"vo.agiota.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T22:53:26.756Z","kind":"vo","key":"vo.agiota.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T22:53:27.551Z","kind":"vo","key":"vo.agiota.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T22:53:28.378Z","kind":"vo","key":"vo.agiota.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T22:53:29.202Z","kind":"vo","key":"vo.agiota.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T22:53:29.978Z","kind":"vo","key":"vo.agiota.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T22:53:30.827Z","kind":"vo","key":"vo.agiota.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T22:53:31.582Z","kind":"vo","key":"vo.agiota.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T22:53:32.516Z","kind":"vo","key":"vo.agiota.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T22:53:33.621Z","kind":"vo","key":"vo.agiota.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T22:53:34.702Z","kind":"vo","key":"vo.agiota.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T22:53:35.779Z","kind":"vo","key":"vo.agiota.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T22:53:36.590Z","kind":"vo","key":"vo.agiota.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T22:53:37.759Z","kind":"vo","key":"vo.agiota.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T22:53:38.792Z","kind":"vo","key":"vo.agiota.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T22:53:40.050Z","kind":"vo","key":"vo.agiota.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T22:53:56.476Z","kind":"vo","key":"vo.delegado.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T22:53:57.260Z","kind":"vo","key":"vo.delegado.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T22:53:58.322Z","kind":"vo","key":"vo.delegado.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T22:53:59.197Z","kind":"vo","key":"vo.delegado.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T22:53:59.995Z","kind":"vo","key":"vo.delegado.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T22:54:00.832Z","kind":"vo","key":"vo.delegado.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T22:54:01.624Z","kind":"vo","key":"vo.delegado.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T22:54:02.532Z","kind":"vo","key":"vo.delegado.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T22:54:03.602Z","kind":"vo","key":"vo.delegado.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T22:54:04.663Z","kind":"vo","key":"vo.delegado.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T22:54:05.596Z","kind":"vo","key":"vo.delegado.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T22:54:06.378Z","kind":"vo","key":"vo.delegado.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T22:54:07.634Z","kind":"vo","key":"vo.delegado.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T22:54:08.642Z","kind":"vo","key":"vo.delegado.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T22:54:09.834Z","kind":"vo","key":"vo.delegado.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T22:54:10.701Z","kind":"vo","key":"vo.delegado.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T22:54:11.862Z","kind":"vo","key":"vo.delegado.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T22:54:32.664Z","kind":"vo","key":"vo.reiDoTruco.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-09-30T22:54:33.541Z","kind":"vo","key":"vo.reiDoTruco.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-09-30T22:54:34.852Z","kind":"vo","key":"vo.reiDoTruco.truco","take":3,"model":"eleven_v4","text":"[laughing] TRUCO!"}
+{"at":"2026-09-30T22:54:35.840Z","kind":"vo","key":"vo.reiDoTruco.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-09-30T22:54:37.360Z","kind":"vo","key":"vo.reiDoTruco.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-09-30T22:54:38.299Z","kind":"vo","key":"vo.reiDoTruco.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-09-30T22:54:39.128Z","kind":"vo","key":"vo.reiDoTruco.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-09-30T22:54:39.963Z","kind":"vo","key":"vo.reiDoTruco.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-09-30T22:54:41.044Z","kind":"vo","key":"vo.reiDoTruco.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-09-30T22:54:42.143Z","kind":"vo","key":"vo.reiDoTruco.bora","take":1,"model":"eleven_v4","text":"[excited] Bora! Desce!"}
+{"at":"2026-09-30T22:54:43.393Z","kind":"vo","key":"vo.reiDoTruco.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora! Desce!"}
+{"at":"2026-09-30T22:54:44.519Z","kind":"vo","key":"vo.reiDoTruco.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora."}
+{"at":"2026-09-30T22:54:45.506Z","kind":"vo","key":"vo.reiDoTruco.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora."}
+{"at":"2026-09-30T22:54:46.404Z","kind":"vo","key":"vo.reiDoTruco.caiu","take":1,"model":"eleven_v4","text":"[triumphant] Caiu!"}
+{"at":"2026-09-30T22:54:47.570Z","kind":"vo","key":"vo.reiDoTruco.caiu","take":2,"model":"eleven_v4","text":"[laughing] Caiu!"}
+{"at":"2026-09-30T22:54:48.580Z","kind":"vo","key":"vo.reiDoTruco.oloco","take":1,"model":"eleven_v4","text":"[surprised] Ô loco!"}
+{"at":"2026-09-30T22:54:49.750Z","kind":"vo","key":"vo.reiDoTruco.oloco","take":2,"model":"eleven_v4","text":"[laughing] Ô loco!"}
+{"at":"2026-09-30T22:55:08.644Z","kind":"sfx","key":"sfx.score.xmult","take":1,"seconds":1,"prompt":"two glass beer bottles clinking loudly together, bright bell-like ring with a shimmering sustained tail"}
+{"at":"2026-09-30T23:02:31.201Z","kind":"amb","key":"amb.reiDoTruco","take":1,"seconds":30,"prompt":"legendary luxurious old bar: tense audience murmuring clearly in the room, glasses clinking, a grandfather clock ticking, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-10-25T15:51:50.640Z","kind":"sfx","key":"sfx.zap.reveal","take":1,"seconds":0.6,"prompt":"Short bright magical sparkle sting with a tiny bell, playful, no reverb tail, mono, for a card game highlight"}
+{"at":"2026-10-25T15:51:52.180Z","kind":"sfx","key":"sfx.bet.doze","take":1,"seconds":0.8,"prompt":"Dramatic short impact: a heavy wooden table slap followed by a low thud and a quick cymbal choke, dry, mono"}
+{"at":"2026-10-25T15:52:34.970Z","kind":"sfx","key":"sfx.bet.doze","take":1,"seconds":0.8,"prompt":"Dramatic short impact: a heavy wooden table slap followed by a low thud and a quick cymbal choke, dry, mono"}
+{"at":"2026-10-25T15:52:36.551Z","kind":"sfx","key":"sfx.queda","take":1,"seconds":1,"prompt":"Triumphant short brass hit with a rising shaker, bar celebration feel, dry"}
+{"at":"2026-10-25T15:52:38.182Z","kind":"sfx","key":"sfx.hand.lose","take":1,"seconds":0.5,"prompt":"Soft descending two-note wooden xylophone, gentle disappointment, dry, mono"}
+{"at":"2026-10-25T15:52:39.905Z","kind":"sfx","key":"sfx.card.cover","take":1,"seconds":0.5,"prompt":"Single playing card placed face down on felt with a muffled slide, very short, mono"}
+{"at":"2026-10-25T15:53:11.993Z","kind":"sfx","key":"sfx.hand.lose","take":1,"seconds":0.5,"prompt":"Soft descending two-note wooden xylophone, gentle disappointment, dry, mono"}
+{"at":"2026-10-25T15:53:50.787Z","kind":"sfx","key":"sfx.hand.lose","take":1,"seconds":0.5,"prompt":"Two hollow wooden blocks tapped one after the other, the second lower in pitch, a gentle disappointed sound, dry, mono"}

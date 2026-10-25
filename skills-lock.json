@@ -1,0 +1,344 @@
+{
+	"version": 1,
+	"skills": {
+		"actions-and-utilities": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/actions-and-utilities/SKILL.md",
+			"computedHash": "a222343042fd636d9eb408788b27453ebb91a18b6855864487498a590c5fb3da"
+		},
+		"animations": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/animations/SKILL.md",
+			"computedHash": "342f4448eed4b25a890793b7f14cad8b3393a16a915cf967edbcd6d2fd9d20d7"
+		},
+		"audio-and-sound": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/audio-and-sound/SKILL.md",
+			"computedHash": "6b7e89b5fa68a551829949bf295246e9ea0050379ab1302b26564cd1082e369f"
+		},
+		"cameras": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/cameras/SKILL.md",
+			"computedHash": "4226f37eb305a91e0d005b3006665232a4f2669fd79828f1b879624e9760d2e7"
+		},
+		"caveman": {
+			"source": "JuliusBrussee/caveman",
+			"sourceType": "github",
+			"skillPath": "skills/caveman/SKILL.md",
+			"computedHash": "0bf09a0a9a017d004a81d4b693e5a2d830e1a28230a5885df773e1ed9c0571cc"
+		},
+		"ccgs-balance-check": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/balance-check/SKILL.md",
+			"computedHash": "05f0d8bb268d0d1800d08b5600658414c5059626e65a1af2bb0f2066b3f404b8",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-bug-report": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/bug-report/SKILL.md",
+			"computedHash": "ecbf1b291fc40fd6204a9d75e62b8eae675c4c2bbfa94801d5dc4d40ff9b4070",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-launch-checklist": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/launch-checklist/SKILL.md",
+			"computedHash": "a94be94ee6fe3cffcd422d11903d77c940be3a42b3d0583b842a366ba0cf1de1",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-localize": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/localize/SKILL.md",
+			"computedHash": "8c052563ab7349b40242132127348d95dc0aa2e4156827c13b7d49104b7af4ac",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-perf-profile": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/perf-profile/SKILL.md",
+			"computedHash": "e349338340c261c7a20881223a123660b8604355a04b655e9c9aabd920256ddc",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-playtest-report": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/playtest-report/SKILL.md",
+			"computedHash": "4b79089931173ec159903ef2c8cb94999767066ebea6c5f81ed8b5fa985744b6",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-qa-plan": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/qa-plan/SKILL.md",
+			"computedHash": "a960a4dfcb10e15e6f3e63b300aeaead64279b1e21c073a3207940402faaeeed",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-release-checklist": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/release-checklist/SKILL.md",
+			"computedHash": "94e3f67c280e7b5fca1a9a906a5d9e00ed56ce4b7c3c34f17ec93768e21a5acd",
+			"localEdits": "renamed with source prefix, project note, removed CCGS yaml-helper config injection"
+		},
+		"ccgs-scope-check": {
+			"source": "Donchitos/Claude-Code-Game-Studios",
+			"sourceType": "github",
+			"skillPath": ".claude/skills/scope-check/SKILL.md",
+			"computedHash": "7c62350615b7c496193d76303686e4dac1dfc1a02005d1b096b494a6ed1b12c5",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"data-manager": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/data-manager/SKILL.md",
+			"computedHash": "d5e4ee7c0ed6cd24e7264bebcbcaf2b9032e5a3c42cc38c3a9fed6f81bda334b"
+		},
+		"events-system": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/events-system/SKILL.md",
+			"computedHash": "e9f5d6b60311f3301c18de17f8414887eb1b96992e5e4461110128a74836c773"
+		},
+		"filters-and-postfx": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/filters-and-postfx/SKILL.md",
+			"computedHash": "202a8e2f75c501d2799d16b606cf6afbcf15aa27cb1a8ad5e50705b03fa28390"
+		},
+		"game-object-components": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/game-object-components/SKILL.md",
+			"computedHash": "f610808358e80182b524a0ae1590f5a877d69e205d2b0fff4aad317469e8710f"
+		},
+		"game-setup-and-config": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/game-setup-and-config/SKILL.md",
+			"computedHash": "ff373f46eef9528843a388b8fc2083b4a7aad8f50298d753ec745423706b77a0"
+		},
+		"gc-game-designer": {
+			"source": "PlayableIntelligence/game-creator",
+			"sourceType": "github",
+			"skillPath": "skills/game-designer/SKILL.md",
+			"computedHash": "99f94ad7d83320b2b306417f0a61ddf2c8c4bf69588670f013497246c1d622e2",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gc-game-qa": {
+			"source": "PlayableIntelligence/game-creator",
+			"sourceType": "github",
+			"skillPath": "skills/game-qa/SKILL.md",
+			"computedHash": "bf4f113c73baea8bc605c418d4cac73b0eb225779bd084db3701e1676c6ab265",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-audio-design": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/audio-design/SKILL.md",
+			"computedHash": "984f079b36a99a65ac4019a5fd62c5a2b5c0eb772322a7eb1069644221d15320",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-game-ai": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/game-ai/SKILL.md",
+			"computedHash": "3fa1a2f14c6f813891253245d828edbf9ac61e8a4a0d900c30c0c5f3f299d131",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-game-feel": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/game-feel/SKILL.md",
+			"computedHash": "56127958805eb3d687a73c7cae34e3137a474c82d05aee1318710a162eda0be7",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-game-ui-ux": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/game-ui-ux/SKILL.md",
+			"computedHash": "49e6e38804c97998f010b4d3fb5dabc857ab1ca42af7343eecf268c03352aa8b",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-input-systems": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/input-systems/SKILL.md",
+			"computedHash": "2d7197e6ec4063171603079564e2fc3d09ec60876098f80088ab14b181eef0c7",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-itch-publish": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/workflows/itch-publish/SKILL.md",
+			"computedHash": "282f22824981b19221a47ba653cf465f3f11e915a05e3198a0776460b44e1baf",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-performance-optimization": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/performance-optimization/SKILL.md",
+			"computedHash": "7ade8cab803fbb1dcf10a610dd75e755a33d411f9943f78f933667fd1a807d98",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-roguelike": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/genres/roguelike/SKILL.md",
+			"computedHash": "692ce403dc0489310dd3bf63b428ce6c0cd07e9f3ad4b2424d3e0f1ad3fe7174",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-save-systems": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/disciplines/save-systems/SKILL.md",
+			"computedHash": "2d901bdc2a7290ea07db3b5db1cb25a1df8c036d0ee8442b288b75c0f30bb97a",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"gd-steam-publish": {
+			"source": "gamedev-skills/awesome-gamedev-agent-skills",
+			"sourceType": "github",
+			"skillPath": "skills/workflows/steam-publish/SKILL.md",
+			"computedHash": "66299cf9faf8bc8cce7a40a292b6ab6e4dbb58ad3a43f86183f8f128303e7a2d",
+			"localEdits": "renamed with source prefix and project note"
+		},
+		"geometry-and-math": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/geometry-and-math/SKILL.md",
+			"computedHash": "3e606a6044353673d48958a58ad3328c38c2fe82d30cc968ce4d8edea9002fca"
+		},
+		"graphics-and-shapes": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/graphics-and-shapes/SKILL.md",
+			"computedHash": "63c67cbf57b8338031aa762940187bf957c6144c7a56c7fc6adb303fcd9f24bd"
+		},
+		"grilling": {
+			"source": "mattpocock/skills",
+			"sourceType": "github",
+			"skillPath": "skills/productivity/grilling/SKILL.md",
+			"computedHash": "4fa026e5979770347b3357ff5139e1e41d21c3a9f7335e9cd2811cb5b8d32f2f"
+		},
+		"groups-and-containers": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/groups-and-containers/SKILL.md",
+			"computedHash": "238fc80957f8a74b127979ac45ea76a9dd13cfe2ada1f7913f4649b3db5facdf"
+		},
+		"input-keyboard-mouse-touch": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/input-keyboard-mouse-touch/SKILL.md",
+			"computedHash": "ec25f47ee3cdc6a6ed0ceaa77d62fcbe30a161f73cbc2dcf3771e12c64bee791"
+		},
+		"loading-assets": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/loading-assets/SKILL.md",
+			"computedHash": "ad170c148ff69639aa3307879f6c392ee55f45beadbae30f724f478abf98a951"
+		},
+		"particles": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/particles/SKILL.md",
+			"computedHash": "7bbe8f927750a78b89e39c4b8612862f974ff09a428cb33942ab8e6b6487a5d9"
+		},
+		"ponytail": {
+			"source": "dietrichgebert/ponytail",
+			"sourceType": "github",
+			"skillPath": "skills/ponytail/SKILL.md",
+			"computedHash": "46a57e26a2632e7fa40eae6a3cf3011ccdc4d8db19d8f8617907d6b5deef055e"
+		},
+		"ponytail-audit": {
+			"source": "dietrichgebert/ponytail",
+			"sourceType": "github",
+			"skillPath": "skills/ponytail-audit/SKILL.md",
+			"computedHash": "49e835c96313009179ec162d80ccc9d91625e387c8af7cd3975c531ba105b2d5"
+		},
+		"ponytail-debt": {
+			"source": "dietrichgebert/ponytail",
+			"sourceType": "github",
+			"skillPath": "skills/ponytail-debt/SKILL.md",
+			"computedHash": "c0a5c0c0cc843cb53f15b792790946768500b45538d07fadbf0602ed6af63a47"
+		},
+		"ponytail-gain": {
+			"source": "dietrichgebert/ponytail",
+			"sourceType": "github",
+			"skillPath": "skills/ponytail-gain/SKILL.md",
+			"computedHash": "f8847c410b54978fff41eab775fc754d41ede19ad6fb72fac799b65616cc6683"
+		},
+		"ponytail-help": {
+			"source": "dietrichgebert/ponytail",
+			"sourceType": "github",
+			"skillPath": "skills/ponytail-help/SKILL.md",
+			"computedHash": "07e0fc50c722cee981d47f62a5d32a7def4cb65651f414724e5fd6939f145977"
+		},
+		"ponytail-review": {
+			"source": "dietrichgebert/ponytail",
+			"sourceType": "github",
+			"skillPath": "skills/ponytail-review/SKILL.md",
+			"computedHash": "6c8b7e5c897a406b66da6aabda7fa6509e8d1d447e73e602265d7986497445d1"
+		},
+		"render-textures": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/render-textures/SKILL.md",
+			"computedHash": "3a9d0008ba5a75c1e4f6d455ba578d640cd612d4dd64e9bc566cddec1711d3ab"
+		},
+		"scale-and-responsive": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/scale-and-responsive/SKILL.md",
+			"computedHash": "a6d70e6e8191a7038f15ade6ac7dc9cb2c33bde8c64a3e82ae54cc84a640fa58"
+		},
+		"scenes": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/scenes/SKILL.md",
+			"computedHash": "3074badaa83649550b218788638c4811bfa3dc9b21f1139e99661f36d1bcdc9e"
+		},
+		"sprites-and-images": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/sprites-and-images/SKILL.md",
+			"computedHash": "0b481bd5b02c2e997a4207ba83046770a72db599b92c22353a9bbdbad77d1cfb"
+		},
+		"text-and-bitmaptext": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/text-and-bitmaptext/SKILL.md",
+			"computedHash": "979e4655caf74ed97a7a61a7cab8b673114aa40ce356883bdaa261f727049c68"
+		},
+		"time-and-timers": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/time-and-timers/SKILL.md",
+			"computedHash": "4889fc4150aab4ab02e1d308e1ad64e0fac646a5dc3a9a04866534fdaedde715"
+		},
+		"tweens": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/tweens/SKILL.md",
+			"computedHash": "e3fdd8e7017453842054744958ee032bfea2f5b1c143001c517f5888ca4d9f54"
+		},
+		"v3-to-v4-migration": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/v3-to-v4-migration/SKILL.md",
+			"computedHash": "f924579f61b1d691209ed3299b3ae81e3d21e0e005e82182d277ece90e821866"
+		},
+		"v4-new-features": {
+			"source": "phaserjs/phaser",
+			"sourceType": "github",
+			"skillPath": "skills/v4-new-features/SKILL.md",
+			"computedHash": "cf435ba5df67acfaa55b346e0922357a0df47e232084a3b2e2a09e8fcfc60b5b"
+		}
+	}
+}
