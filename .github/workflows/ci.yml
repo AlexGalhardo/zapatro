@@ -128,7 +128,7 @@ jobs:
         run: bun run build
       - name: Debug APK (cap sync + Gradle)
         run: bun scripts/build-android.ts --skip-web --debug
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: truco-roguelite-android-debug-apk
           path: mobile/android/app/build/outputs/apk/debug/*.apk
