@@ -11,6 +11,7 @@ import {
 	tiltedKey,
 	tiltedSize,
 } from '../art/flat';
+import { titleMetrics } from '../art/title';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL } from '../config/features';
 import { PALETTE, shade, toCss } from '../config/palette';
@@ -86,6 +87,7 @@ import { onKey, onSceneEvent } from '../ui/keys';
 import { type ButtonNav, buttonNav } from '../ui/nav';
 import { drawPanel } from '../ui/panel';
 import { fadeTo } from '../ui/screen';
+import { addTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { comfort } from '../view/comfort';
@@ -290,6 +292,10 @@ const signLabel = (sign: Sign): string =>
 
 /** Width of the end-of-table panel: the count panel's, between the side card columns. */
 const END_W = 228;
+
+/** The won table's reward mini-cards and the Total card under them. */
+const END_CARD = { w: 50, h: 40 };
+const END_TOTAL = { w: 120, h: 28 };
 
 interface SeatView {
 	/** Pointer of the speech bubble towards the avatar. */
@@ -2348,6 +2354,8 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		let reward: TableReward = null;
 		if (this.runState) {
 			const m = this.match;
+			// The prize card keeps the value it promised; after the payout the projection is moot.
+			this.prizeText = null;
 			reward = finishTable(this.runState, {
 				won: winner === 'us',
 				rivalTentos: m.state.score.them,
@@ -2378,63 +2386,171 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.status.setText('');
 	}
 
+	/**
+	 * The won table's reward as cards: one mini-card per payout line (icon, label, value) and a
+	 * gold-framed Total under them; the cards come in one by one and their numbers count up (all
+	 * at once with "reduce flashes"). Lines that are always there show even at $0 (greyed); the
+	 * Jhony and Sheila lines only when they apply. Returns the body's height.
+	 */
+	private rewardCards(into: Phaser.GameObjects.Container, r: NonNullable<TableReward>): number {
+		const extra = r.doubled
+			? Math.max(0, r.table) + r.prize + r.speed + r.interest + r.partner
+			: 0;
+		const lines: { icon: string; label: I18nKey; value: number }[] = [
+			{ icon: 'coin', label: 'table.end.prize', value: r.prize },
+			{ icon: 'next', label: 'table.end.speed', value: r.speed },
+			{ icon: 'calc', label: 'table.end.interest', value: r.interest },
+			...(this.runState?.partner === 'zeMalandro'
+				? [{ icon: 'people', label: 'table.end.partner' as I18nKey, value: r.partner }]
+				: []),
+			{ icon: 'cards', label: 'table.end.table', value: r.table },
+			...(r.doubled
+				? [{ icon: 'sparkle', label: 'table.end.double' as I18nKey, value: extra }]
+				: []),
+		];
+		const total = r.prize + r.speed + r.interest + r.partner + r.table + extra;
+		const W = END_CARD.w;
+		const H = END_CARD.h;
+		const gap = GAP.list;
+		const perRow = lines.length <= 4 ? lines.length : Math.ceil(lines.length / 2);
+		const rows = Math.ceil(lines.length / perRow);
+		const money = (n: number): string =>
+			`${n > 0 ? '+' : n < 0 ? '−' : ''}${t('table.money', { n: Math.abs(Math.round(n)) })}`;
+		const tint = (n: number): number =>
+			n > 0 ? PALETTE.manilha : n < 0 ? PALETTE.bad : PALETTE.textDim;
+		const still = comfort.reduceFlashes;
+		const count = (text: Phaser.GameObjects.Text, to: number, delay: number): void => {
+			if (still || !to) return void text.setText(money(to));
+			const c = { v: 0 };
+			text.setText(money(0));
+			this.tweens.add({
+				targets: c,
+				v: to,
+				delay,
+				duration: 320,
+				ease: 'Quad.easeOut',
+				onUpdate: () => text.setText(money(c.v)),
+				onComplete: () => text.setText(money(to)),
+			});
+		};
+		const enter = (o: Phaser.GameObjects.Container, delay: number): void => {
+			if (still) return;
+			const y = o.y;
+			o.setAlpha(0).setY(y + 6);
+			this.tweens.add({
+				targets: o,
+				alpha: 1,
+				y,
+				delay,
+				duration: 160,
+				ease: 'Quad.easeOut',
+			});
+		};
+		lines.forEach((line, i) => {
+			const row = Math.floor(i / perRow);
+			const inRow = Math.min(perRow, lines.length - row * perRow);
+			const col = i - row * perRow;
+			const x = (col - (inRow - 1) / 2) * (W + gap);
+			const y = row * (H + gap) + H / 2;
+			const card = this.add.container(x, y);
+			card.add(this.add.image(0, 0, panelTex(this, W, H, PALETTE.panelLight, RADIUS.button)));
+			card.add(this.endIcon(line.icon, 0, -H / 2 + 8));
+			card.add(
+				this.add
+					.text(0, -H / 2 + 18, t(line.label), this.text(6, PALETTE.textDim))
+					.setOrigin(0.5),
+			);
+			const value = this.add
+				.text(0, H / 2 - 9, '', this.bold(10, tint(line.value)))
+				.setOrigin(0.5);
+			card.add(value);
+			into.add(card);
+			enter(card, i * 90);
+			count(value, line.value, i * 90 + 80);
+		});
+		const gridH = rows * H + (rows - 1) * gap;
+		const ty = gridH + gap + END_TOTAL.h / 2;
+		const box = this.add.container(0, ty);
+		const g = this.add.graphics();
+		g.fillStyle(PALETTE.panelDark, 1).fillRoundedRect(
+			-END_TOTAL.w / 2,
+			-END_TOTAL.h / 2,
+			END_TOTAL.w,
+			END_TOTAL.h,
+			RADIUS.button,
+		);
+		g.lineStyle(2, PALETTE.manilha, 1).strokeRoundedRect(
+			-END_TOTAL.w / 2,
+			-END_TOTAL.h / 2,
+			END_TOTAL.w,
+			END_TOTAL.h,
+			RADIUS.button,
+		);
+		const totalValue = this.add.text(18, 0, '', this.bold(14, tint(total))).setOrigin(0.5);
+		box.add([
+			g,
+			this.add
+				.text(-END_TOTAL.w / 2 + 8, 0, t('table.end.total'), this.bold(8))
+				.setOrigin(0, 0.5),
+			totalValue,
+		]);
+		into.add(box);
+		const last = lines.length * 90;
+		enter(box, last);
+		count(totalValue, total, last + 80);
+		return ty + END_TOTAL.h / 2;
+	}
+
+	/** A small icon for a reward card: the coin is drawn, the rest are vector icons. */
+	private endIcon(name: string, x: number, y: number): Phaser.GameObjects.GameObject {
+		if (name === 'coin')
+			return this.add
+				.graphics()
+				.fillStyle(PALETTE.manilha, 1)
+				.fillCircle(x, y, 4)
+				.lineStyle(1, shade(PALETTE.manilha, -0.4), 1)
+				.strokeCircle(x, y, 4);
+		return this.add.image(x, y, tex(this, `icon.${name}`)).setDisplaySize(10, 10);
+	}
+
 	/** The end-of-table panel, in the current language. */
 	private drawEnd(): void {
 		if (!this.ended) return;
 		const { winner, reward } = this.ended;
 		this.endPanel.removeAll(true);
 		const box = this.add.graphics();
-		const title = this.add
-			.text(
-				0,
-				0,
-				t(
-					winner === 'us'
-						? this.match.goal === undefined
-							? 'table.matchWin'
-							: 'table.goalWin'
-						: this.runState
-							? 'table.goalLose'
-							: 'table.matchLose',
-				),
-				{
-					...this.text(12, winner === 'us' ? PALETTE.good : PALETTE.bad),
-					wordWrap: { width: END_W - 2 * PAD.panel },
-				},
-			)
-			.setOrigin(0.5);
-		// As wide as the count panel (between the side card columns) and as tall as its body:
-		// the title in the 30 px header, then the reward list (if any) and the buttons, padded.
-		const frame = (info?: Phaser.GameObjects.Text): number => {
-			const list = info?.text ? info.height + GAP.panel : 0;
-			const h = 30 + PAD.panel + list + BUTTON_H.action + PAD.panel;
+		const label = t(
+			winner === 'us'
+				? this.match.goal === undefined
+					? 'table.matchWin'
+					: 'table.goalWin'
+				: this.runState
+					? 'table.goalLose'
+					: 'table.matchLose',
+		);
+		// The screen-title look, shrunk until it fits the header.
+		const color = winner === 'us' ? PALETTE.good : PALETTE.bad;
+		let size = 16;
+		let title = addTitle(this, 0, 0, label, size, color);
+		while (title.width - 2 * titleMetrics(size).pad > END_W - 2 * PAD.panel && size > 9) {
+			title.destroy();
+			title = addTitle(this, 0, 0, label, --size, color);
+		}
+		// As wide as the count panel (between the side card columns): the title in the 30 px
+		// header, then the body (reward cards, if any) and the buttons, padded.
+		const frame = (body = 0): { top: number; buttons: number } => {
+			const h = 30 + PAD.panel + (body ? body + GAP.panel : 0) + BUTTON_H.action + PAD.panel;
 			drawPanel(box, -END_W / 2, -h / 2, END_W, h, { header: 30, shadow: 4 });
 			title.setY(-h / 2 + 15);
-			info?.setY(-h / 2 + 30 + PAD.panel + info.height / 2);
-			return h / 2 - PAD.panel - BUTTON_H.action / 2;
+			return {
+				top: -h / 2 + 30 + PAD.panel,
+				buttons: h / 2 - PAD.panel - BUTTON_H.action / 2,
+			};
 		};
 		if (this.runState) {
-			const lines = reward
-				? t('table.reward', {
-						p: reward.prize,
-						s: reward.speed,
-						i: reward.interest + reward.partner,
-						m: reward.table,
-						total:
-							reward.prize +
-							reward.speed +
-							reward.interest +
-							reward.partner +
-							reward.table,
-					}) +
-					(reward.doubled
-						? `
-${t('table.reward.doubled')}`
-						: '')
-				: '';
-			const info = this.add
-				.text(0, 0, lines, { ...this.text(8), wordWrap: { width: END_W - 2 * PAD.panel } })
-				.setOrigin(0.5);
+			const cards = this.add.container(0, 0);
+			const { top, buttons } = frame(reward ? this.rewardCards(cards, reward) : 0);
+			cards.setY(top);
 			const next = new Button(
 				this,
 				t('table.continue'),
@@ -2445,8 +2561,8 @@ ${t('table.reward.doubled')}`
 					color: PALETTE.good,
 				},
 			);
-			next.setPosition(0, frame(info));
-			this.endPanel.add([box, title, info, next]).setVisible(true);
+			next.setPosition(0, buttons);
+			this.endPanel.add([box, title, cards, next]).setVisible(true);
 			return;
 		}
 		const net = this.net;
@@ -2469,7 +2585,7 @@ ${t('table.reward.doubled')}`
 			w: 100,
 			h: BUTTON_H.action,
 		});
-		const by = frame();
+		const by = frame().buttons;
 		again.setPosition(-54, by);
 		menu.setPosition(54, by);
 		// After the tutorial, Enter goes on to the menu instead of replaying the tutorial.
