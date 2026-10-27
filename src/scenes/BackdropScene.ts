@@ -10,9 +10,20 @@ const DIM_TINT = Phaser.Display.Color.GetColor(
 	...([0, 0, 0].map(() => Math.round(255 * BACKDROP_BRIGHTNESS)) as [number, number, number]),
 );
 
-/** Picks the painting behind the current screen (the Backdrop scene sits under every other). */
+/** Gameplay paintings (background-1/2/3): `main` and `partner` show one of them, drawn at random. */
+const VARIANTS = ['partner', 'street', 'main'] as const;
+const VARIANT_KEY = 'backdropVariant';
+
+/**
+ * Picks the painting behind the current screen (the Backdrop scene sits under every other).
+ * A new table or the partner screen draws a new gameplay painting; menus opened over the table
+ * keep it, so the background never flips under an overlay.
+ */
 export function setBackdrop(scene: Phaser.Scene, key: BackdropKey): void {
-	scene.game.registry.set(REGISTRY_KEY, key);
+	const { registry } = scene.game;
+	if (key === 'partner' || scene.scene.key === 'Table' || !registry.has(VARIANT_KEY))
+		registry.set(VARIANT_KEY, Phaser.Math.RND.pick([...VARIANTS]));
+	registry.set(REGISTRY_KEY, key);
 }
 
 /** Full-screen scenes: the backdrop sits right under the topmost one of them that is running. */
@@ -54,7 +65,10 @@ export class BackdropScene extends Phaser.Scene {
 		let size = { width: 0, height: 0 };
 		const show = (): void => {
 			const key = (this.game.registry.get(REGISTRY_KEY) as BackdropKey | undefined) ?? 'main';
-			const tex = `img.bg.${key}`;
+			const variant = this.game.registry.get(VARIANT_KEY) as string | undefined;
+			const picked = `img.bg.${key === 'shop' ? 'shop' : (variant ?? key)}`;
+			// A painting still loading (BootScene LATER) shows the always-loaded main one meanwhile.
+			const tex = this.textures.exists(picked) ? picked : 'img.bg.main';
 			const ok = this.textures.exists(tex);
 			image.setVisible(ok);
 			if (!ok) return;
@@ -69,10 +83,12 @@ export class BackdropScene extends Phaser.Scene {
 		});
 		const events = this.game.registry.events;
 		events.on(`changedata-${REGISTRY_KEY}`, show);
+		events.on(`changedata-${VARIANT_KEY}`, show);
 		// The shop and partner paintings load after the first screen (BootScene LATER).
 		this.textures.on(Phaser.Textures.Events.ADD, show);
 		this.events.once('shutdown', () => {
 			events.off(`changedata-${REGISTRY_KEY}`, show);
+			events.off(`changedata-${VARIANT_KEY}`, show);
 			this.textures.off(Phaser.Textures.Events.ADD, show);
 		});
 	}
