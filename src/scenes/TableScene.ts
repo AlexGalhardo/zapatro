@@ -294,8 +294,16 @@ const signLabel = (sign: Sign): string =>
 const END_W = 228;
 
 /** The won table's reward mini-cards and the Total card under them. */
-const END_CARD = { w: 50, h: 40 };
-const END_TOTAL = { w: 120, h: 28 };
+const END_CARD = { h: 40 };
+const END_TOTAL = { h: 28 };
+/**
+ * The end panel's one inner padding (border to everything, all four sides), its one gap (between
+ * rows and between cards) and the title's row; cards, Total and buttons share the content width.
+ */
+const END_PAD = PAD.panel;
+const END_GAP = GAP.inline;
+const END_TITLE_H = 24;
+const END_INNER = END_W - 2 * END_PAD;
 
 interface SeatView {
 	/** Pointer of the speech bubble towards the avatar. */
@@ -2387,10 +2395,11 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	}
 
 	/**
-	 * The won table's reward as cards: one mini-card per payout line (icon, label, value) and a
-	 * gold-framed Total under them; the cards come in one by one and their numbers count up (all
-	 * at once with "reduce flashes"). Lines that are always there show even at $0 (greyed); the
-	 * Jhony and Sheila lines only when they apply. Returns the body's height.
+	 * The won table's reward as cards: one mini-card per payout line (icon, label, value) and the
+	 * Total under them, all one family (light panel with depth), the Total marked by a thin gold
+	 * edge and a bigger number; the cards come in one by one and their numbers count up (all at
+	 * once with "reduce flashes"). Lines that are always there show even at $0 (greyed); the Jhony
+	 * and Sheila lines only when they apply. Returns the body's height.
 	 */
 	private rewardCards(into: Phaser.GameObjects.Container, r: NonNullable<TableReward>): number {
 		const extra = r.doubled
@@ -2409,9 +2418,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				: []),
 		];
 		const total = r.prize + r.speed + r.interest + r.partner + r.table + extra;
-		const W = END_CARD.w;
 		const H = END_CARD.h;
-		const gap = GAP.list;
 		const perRow = lines.length <= 4 ? lines.length : Math.ceil(lines.length / 2);
 		const rows = Math.ceil(lines.length / perRow);
 		const money = (n: number): string =>
@@ -2450,8 +2457,10 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			const row = Math.floor(i / perRow);
 			const inRow = Math.min(perRow, lines.length - row * perRow);
 			const col = i - row * perRow;
-			const x = (col - (inRow - 1) / 2) * (W + gap);
-			const y = row * (H + gap) + H / 2;
+			// Every row spans the content width: its cards share it, END_GAP apart.
+			const W = (END_INNER - (inRow - 1) * END_GAP) / inRow;
+			const x = -END_INNER / 2 + col * (W + END_GAP) + W / 2;
+			const y = row * (H + END_GAP) + H / 2;
 			const card = this.add.container(x, y);
 			card.add(this.add.image(0, 0, panelTex(this, W, H, PALETTE.panelLight, RADIUS.button)));
 			card.add(this.endIcon(line.icon, 0, -H / 2 + 8));
@@ -2468,29 +2477,31 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			enter(card, i * 90);
 			count(value, line.value, i * 90 + 80);
 		});
-		const gridH = rows * H + (rows - 1) * gap;
-		const ty = gridH + gap + END_TOTAL.h / 2;
+		const gridH = rows * H + (rows - 1) * END_GAP;
+		const ty = gridH + END_GAP + END_TOTAL.h / 2;
 		const box = this.add.container(0, ty);
-		const g = this.add.graphics();
-		g.fillStyle(PALETTE.panelDark, 1).fillRoundedRect(
-			-END_TOTAL.w / 2,
-			-END_TOTAL.h / 2,
-			END_TOTAL.w,
-			END_TOTAL.h,
-			RADIUS.button,
-		);
-		g.lineStyle(2, PALETTE.manilha, 1).strokeRoundedRect(
-			-END_TOTAL.w / 2,
-			-END_TOTAL.h / 2,
-			END_TOTAL.w,
-			END_TOTAL.h,
-			RADIUS.button,
-		);
-		const totalValue = this.add.text(18, 0, '', this.bold(14, tint(total))).setOrigin(0.5);
+		const edge = this.add
+			.graphics()
+			.lineStyle(1, PALETTE.manilha, 1)
+			.strokeRoundedRect(
+				-END_INNER / 2 + 0.5,
+				-END_TOTAL.h / 2 + 0.5,
+				END_INNER - 1,
+				END_TOTAL.h - 1,
+				RADIUS.button,
+			);
+		const totalValue = this.add
+			.text(END_INNER / 2 - END_PAD, 0, '', this.bold(14, tint(total)))
+			.setOrigin(1, 0.5);
 		box.add([
-			g,
+			this.add.image(
+				0,
+				0,
+				panelTex(this, END_INNER, END_TOTAL.h, PALETTE.panelLight, RADIUS.button),
+			),
+			edge,
 			this.add
-				.text(-END_TOTAL.w / 2 + 8, 0, t('table.end.total'), this.bold(8))
+				.text(-END_INNER / 2 + END_PAD, 0, t('table.end.total'), this.bold(9))
 				.setOrigin(0, 0.5),
 			totalValue,
 		]);
@@ -2501,16 +2512,19 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		return ty + END_TOTAL.h / 2;
 	}
 
-	/** A small icon for a reward card: the coin is drawn, the rest are vector icons. */
+	/** A reward card's icon: all gold, 10 px, line style (the coin is a drawn ring). */
 	private endIcon(name: string, x: number, y: number): Phaser.GameObjects.GameObject {
 		if (name === 'coin')
 			return this.add
 				.graphics()
-				.fillStyle(PALETTE.manilha, 1)
-				.fillCircle(x, y, 4)
-				.lineStyle(1, shade(PALETTE.manilha, -0.4), 1)
-				.strokeCircle(x, y, 4);
-		return this.add.image(x, y, tex(this, `icon.${name}`)).setDisplaySize(10, 10);
+				.lineStyle(1.6, PALETTE.manilha, 1)
+				.strokeCircle(x, y, 4)
+				.lineStyle(1.2, PALETTE.manilha, 1)
+				.lineBetween(x, y - 2, x, y + 2);
+		return this.add
+			.image(x, y, tex(this, `icon.${name}`))
+			.setDisplaySize(10, 10)
+			.setTint(PALETTE.manilha);
 	}
 
 	/** The end-of-table panel, in the current language. */
@@ -2528,23 +2542,28 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 					? 'table.goalLose'
 					: 'table.matchLose',
 		);
-		// The screen-title look, shrunk until it fits the header.
+		// The screen-title look, shrunk until it fits the content width.
 		const color = winner === 'us' ? PALETTE.good : PALETTE.bad;
 		let size = 16;
 		let title = addTitle(this, 0, 0, label, size, color);
-		while (title.width - 2 * titleMetrics(size).pad > END_W - 2 * PAD.panel && size > 9) {
+		while (title.width - 2 * titleMetrics(size).pad > END_INNER && size > 9) {
 			title.destroy();
 			title = addTitle(this, 0, 0, label, --size, color);
 		}
-		// As wide as the count panel (between the side card columns): the title in the 30 px
-		// header, then the body (reward cards, if any) and the buttons, padded.
+		// One padding around everything and one gap between the title, the body and the buttons.
 		const frame = (body = 0): { top: number; buttons: number } => {
-			const h = 30 + PAD.panel + (body ? body + GAP.panel : 0) + BUTTON_H.action + PAD.panel;
-			drawPanel(box, -END_W / 2, -h / 2, END_W, h, { header: 30, shadow: 4 });
-			title.setY(-h / 2 + 15);
+			const h =
+				END_PAD +
+				END_TITLE_H +
+				END_GAP +
+				(body ? body + END_GAP : 0) +
+				BUTTON_H.action +
+				END_PAD;
+			drawPanel(box, -END_W / 2, -h / 2, END_W, h, { shadow: 4 });
+			title.setY(-h / 2 + END_PAD + END_TITLE_H / 2);
 			return {
-				top: -h / 2 + 30 + PAD.panel,
-				buttons: h / 2 - PAD.panel - BUTTON_H.action / 2,
+				top: -h / 2 + END_PAD + END_TITLE_H + END_GAP,
+				buttons: h / 2 - END_PAD - BUTTON_H.action / 2,
 			};
 		};
 		if (this.runState) {
@@ -2556,7 +2575,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				t('table.continue'),
 				() => fadeTo(this, 'Run', { fresh: false }),
 				{
-					w: 130,
+					w: END_INNER,
 					h: BUTTON_H.action,
 					color: PALETTE.good,
 				},
@@ -2566,6 +2585,8 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			return;
 		}
 		const net = this.net;
+		// Two buttons share the content width, END_GAP apart.
+		const half = (END_INNER - END_GAP) / 2;
 		const again = new Button(
 			this,
 			t(net ? 'net.backToLobby' : 'table.again'),
@@ -2576,18 +2597,18 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				fadeTo(this, 'Lan', { client: net.client });
 			},
 			{
-				w: 100,
+				w: half,
 				h: BUTTON_H.action,
 				color: PALETTE.good,
 			},
 		);
 		const menu = new Button(this, t('table.menu'), () => fadeTo(this, 'Menu'), {
-			w: 100,
+			w: half,
 			h: BUTTON_H.action,
 		});
 		const by = frame().buttons;
-		again.setPosition(-54, by);
-		menu.setPosition(54, by);
+		again.setPosition(-(half + END_GAP) / 2, by);
+		menu.setPosition((half + END_GAP) / 2, by);
 		// After the tutorial, Enter goes on to the menu instead of replaying the tutorial.
 		if (this.tutorial) {
 			this.nav?.reset();
