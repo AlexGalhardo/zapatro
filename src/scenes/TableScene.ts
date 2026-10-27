@@ -14,11 +14,12 @@ import { BOSS_POOL, type BossId, FINAL_BOSS } from '../data/bosses';
 import { CHAMPIONSHIPS, type ChampionshipId } from '../data/championships';
 import { type Expression, SIGN_CATEGORY, SIGN_MARK, TABLE_TIMING } from '../data/characters';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
-import { JOKER_EFFECTS, type JokerEffect } from '../data/jokers';
+import { JOKER_EFFECTS } from '../data/jokers';
 import type { Action as KeyAction } from '../data/keybinds';
 import type { LanceId } from '../data/lances';
 import { isManhaId } from '../data/manhas';
 import { DUCK, type VoLine } from '../data/sfx';
+import { SPECIAL_CARDS, specialOf } from '../data/specials';
 import { TUTORIAL_DEAL, type TutorialAnchor, type TutorialTrigger } from '../data/tutorial';
 import { Match, manilhasSeen, type SeatBrain } from '../game/match';
 import { RemoteMatch } from '../game/remote-match';
@@ -36,6 +37,7 @@ import { type ScoreStep, tableGoal, totals } from '../logic/score/score';
 import { TOUCH_TEXT_MIN } from '../logic/touch';
 import {
 	type Card,
+	isSpecial,
 	isZap,
 	JOKER,
 	manilhaOf,
@@ -48,6 +50,7 @@ import {
 import {
 	type Action,
 	jokerEffects,
+	type PlayEffect,
 	type Seat,
 	SIGNS,
 	type Sign,
@@ -637,7 +640,7 @@ export class TableScene extends Phaser.Scene {
 
 	private cardKey(card: Card): string {
 		const key = cardArt(card);
-		if (card.rank === JOKER) return tex(this, key);
+		if (isSpecial(card)) return tex(this, key);
 		// Four-colour deck: the `.4c` art when it exists, else the placeholder's own variant.
 		const four = `${key}.4c`;
 		if (comfort.fourColor && (this.textures.exists(four) || !this.textures.exists(key)))
@@ -907,7 +910,11 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				.setDepth(DEPTH.controls);
 		bar('⚙', () => this.openPause('Settings'), 0, 34);
 		bar('II', () => this.openPause(), 38, 56, 'pause');
-		bar('☰', () => this.toggleManhaList(), 98, 34);
+		// The list of owned Manhas: only a run has any, so elsewhere the button would do nothing.
+		const hasManhas = this.match.manhas.length > 0;
+		bar('☰', () => this.toggleManhaList(), 98, 34)
+			.setVisible(hasManhas)
+			.setEnabled(hasManhas);
 		this.signPicker = this.add.container(0, 0).setDepth(DEPTH.pickers).setVisible(false);
 		const pickerBg = this.add.graphics();
 		drawPanel(pickerBg, -46, -SIGN_ROW() / 2 - 6, 190, SIGNS.length * SIGN_ROW() + 12);
@@ -1280,7 +1287,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			v.backs.removeAll(true);
 			const hand = s.hands[seat];
 			hand.forEach((card, i) => {
-				const peeked = m.peek?.seat === seat && m.peek.cardId === card.id;
+				const peeked =
+					(m.peek?.seat === seat && m.peek.cardId === card.id) ||
+					s.known.some((k) => k.to === 'us' && k.seat === seat && k.cardId === card.id);
 				const face = this.reveal || peeked || jokerEffects(s).includes('showdown');
 				const ui = SEAT_UI[seat as Exclude<Seat, 0>];
 				const img = this.add
@@ -1367,15 +1376,17 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			.setText(
 				card.rank === JOKER
 					? t('table.strength.joker')
-					: isZap(card, manilha)
-						? t('table.strength.zap', { n, of })
-						: card.rank === manilha
-							? t('table.strength.manilha', {
-									name: t(`card.manilha.${card.suit}` as I18nKey),
-									n,
-									of,
-								})
-							: t('table.strength', { n, of }),
+					: isSpecial(card)
+						? t('table.strength.special')
+						: isZap(card, manilha)
+							? t('table.strength.zap', { n, of })
+							: card.rank === manilha
+								? t('table.strength.manilha', {
+										name: t(`card.manilha.${card.suit}` as I18nKey),
+										n,
+										of,
+									})
+								: t('table.strength', { n, of }),
 			)
 			.setPosition(img.x, img.y - CARD_H / 2 - 4)
 			.setVisible(true);
@@ -1958,15 +1969,21 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	 * The joker's draw (PLAN §5.12): the banner spins through the effects and lands on the one
 	 * drawn, with its description under it.
 	 */
-	private async jokerRoulette(effect: JokerEffect): Promise<void> {
-		const name = (e: JokerEffect) => t(`joker.${e}.name` as I18nKey);
-		this.showBanner(t('table.joker'), 500);
+	private async jokerRoulette(effect: PlayEffect): Promise<void> {
+		const name = (e: PlayEffect) => t(`joker.${e}.name` as I18nKey);
+		// The joker spins through its ten effects, a special card through its own three.
+		const card = specialOf(effect);
+		const pool: readonly PlayEffect[] = card ? SPECIAL_CARDS[card] : JOKER_EFFECTS;
+		const step = pool.length > 3 ? 3 : 1;
+		this.showBanner(
+			card ? `${t(`special.${card}.name` as I18nKey).toUpperCase()}!` : t('table.joker'),
+			500,
+		);
 		await this.wait(450);
 		for (let i = 0; i < 8; i++) {
-			const e =
-				JOKER_EFFECTS[(JOKER_EFFECTS.indexOf(effect) + 3 + i * 3) % JOKER_EFFECTS.length];
+			const e = pool[(pool.indexOf(effect) + step + i * step) % pool.length];
 			this.banner
-				.setText(name(e as JokerEffect))
+				.setText(name(e as PlayEffect))
 				.setVisible(true)
 				.setScale(1)
 				.setAlpha(0.7);
@@ -1981,7 +1998,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			.setVisible(true);
 		await this.wait(1300);
 		this.popup.setVisible(false);
-		if (effect === 'showdown' || effect === 'worth3') this.refreshHud();
+		// Effects that change the bet or the hands redraw them.
+		if (effect === 'swap' || effect === 'redraw') this.renderHand();
+		this.refreshHud();
 	}
 
 	/** Chips × Mult counted step by step (the same `steps` the total comes from, D-02). */

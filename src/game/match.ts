@@ -24,7 +24,7 @@ import {
 	type TableOutcome,
 	tableOutcome,
 } from '../logic/score/score';
-import { type Card, jokerCard, standardDeck } from '../logic/truco/cards';
+import { type Card, fullDeck } from '../logic/truco/cards';
 import { observe } from '../logic/truco/observe';
 import {
 	type Action,
@@ -145,7 +145,7 @@ export class Match {
 		const r = opts.resume;
 		this.rng = r ? new Rng(r.rng) : opts.rng;
 		this.brains = opts.brains;
-		this.deck = opts.deck ?? [...standardDeck(), jokerCard()];
+		this.deck = opts.deck ?? fullDeck();
 		this.fame = r?.fame ?? opts.fame ?? 0;
 		this.goal = opts.goal;
 		this.levels = opts.levels ?? {};

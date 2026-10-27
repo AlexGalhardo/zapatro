@@ -11,7 +11,7 @@ import { COMPANIONS, type CompanionId } from '../../data/companions';
 import { JOKER_CHIPS, JOKER_DOUBLE_X } from '../../data/jokers';
 import { LANCES, type LanceId } from '../../data/lances';
 import { MANHA_BY_ID, type ManhaId } from '../../data/manhas';
-import { type Card, isZap, JOKER, type Rank } from '../truco/cards';
+import { type Card, isSpecial, isZap, type Rank } from '../truco/cards';
 import { jokerEffects, type Seat, type TableState, type Team } from '../truco/table';
 import { handFacts, manhaSteps, modSteps } from './manhas';
 
@@ -43,9 +43,9 @@ export interface HandScore {
 export type LanceLevels = Partial<Record<LanceId, number>>;
 
 export function cardChips(card: Card, manilha: Rank): number {
-	if (card.rank === JOKER) return JOKER_CHIPS;
+	if (isSpecial(card)) return JOKER_CHIPS;
 	if (isZap(card, manilha)) return ZAP_CHIPS;
-	return card.rank === manilha ? MANILHA_CHIPS[card.suit] : RANK_CHIPS[card.rank];
+	return card.rank === manilha ? MANILHA_CHIPS[card.suit] : RANK_CHIPS[card.rank as Rank];
 }
 
 /** Chips and Mult of a Lance at a level (1 = base). */

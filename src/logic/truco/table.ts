@@ -1,9 +1,16 @@
 import { JOKER_EFFECTS, JOKER_WORTH, type JokerEffect } from '../../data/jokers';
+import {
+	BONUS_TENTOS,
+	SHIELD_TENTOS,
+	SPECIAL_CARDS,
+	type SpecialEffect,
+} from '../../data/specials';
 import type { Rng } from '../rng';
 import {
 	type Card,
 	isJoker,
-	JOKER,
+	isSpecial,
+	jokerCard,
 	manilhaOf,
 	type Rank,
 	strength,
@@ -52,9 +59,12 @@ export interface Played {
 	seat: Seat;
 	card: Card;
 	faceDown: boolean;
-	/** What the joker drew when it was played face up. */
-	effect?: JokerEffect;
+	/** What the joker or special card drew when it was played face up. */
+	effect?: PlayEffect;
 }
+
+/** What a joker or a special card can draw. */
+export type PlayEffect = JokerEffect | SpecialEffect;
 
 export type TrickResult = Team | 'tie';
 
@@ -136,12 +146,22 @@ export interface TableState {
 	pending: Pending | null;
 	signalsLeft: [number, number, number, number];
 	signals: SignalRecord[];
+	/** Trevo `shield`: this pair loses only SHIELD_TENTOS if it folds. */
+	shield: Team | null;
+	/** Trevo `bonus`: this pair wins BONUS_TENTOS extra if it takes the hand. */
+	bonus: Team | null;
+	/** Raio `freeze`: nobody can call truco until the hand ends. */
+	frozen: boolean;
+	/** Raio `reversed`: the weakest card wins every trick of the rest of the hand. */
+	reversed: boolean;
+	/** Olho `peek`: rival cards shown to the pair that played it. */
+	known: { seat: Seat; cardId: string; to: Team }[];
 	over: HandEnd | null;
 }
 
 export type TableEvent =
 	| { type: 'played'; seat: Seat; card: Card; faceDown: boolean }
-	| { type: 'joker'; seat: Seat; effect: JokerEffect }
+	| { type: 'joker'; seat: Seat; effect: PlayEffect }
 	| { type: 'vira'; vira: Card; manilha: Rank }
 	| { type: 'trick'; index: number; result: TrickResult; winner?: Seat }
 	| { type: 'truco'; seat: Seat; to: Bet }
@@ -196,12 +216,12 @@ export function deal(
 	let vira = opts.vira ?? turnVira(pile);
 	if (!opts.vira && opts.rigVira && rng.chance(opts.rigVira)) {
 		const mine = new Set(hands[0].map((c) => c.rank));
-		const rigged = pile.filter((c) => c.rank !== JOKER && mine.has(manilhaOf(c.rank)));
+		const rigged = pile.filter((c) => !isSpecial(c) && mine.has(manilhaOf(c.rank as Rank)));
 		if (rigged.length) vira = rng.pick(rigged);
 	}
 	if (!opts.vira && opts.rigViraRivals && rng.chance(opts.rigViraRivals)) {
 		const theirs = new Set([...hands[1], ...hands[3]].map((c) => c.rank));
-		const rigged = pile.filter((c) => c.rank !== JOKER && theirs.has(manilhaOf(c.rank)));
+		const rigged = pile.filter((c) => !isSpecial(c) && theirs.has(manilhaOf(c.rank as Rank)));
 		if (rigged.length) vira = rng.pick(rigged);
 	}
 	const eleven: Team[] = (['us', 'them'] as const).filter((t) => score[t] === MATCH_POINTS - 1);
@@ -225,17 +245,22 @@ export function deal(
 		pending: null,
 		signalsLeft: kind === 'iron' ? [0, 0, 0, 0] : [...rules.signals],
 		signals: [],
+		shield: null,
+		bonus: null,
+		frozen: false,
+		reversed: false,
+		known: [],
 		over: null,
 	};
 }
 
 /**
- * Turns the vira from the pile. The joker is never the vira: it goes to the bottom and the next
- * card turns (PLAN §5.12).
+ * Turns the vira from the pile. A joker or special card is never the vira: it goes to the bottom
+ * and the next card turns (PLAN §5.12).
  */
 function turnVira(pile: Card[]): Card {
 	let vira = pile.pop() as Card;
-	while (isJoker(vira) && pile.some((c) => !isJoker(c))) {
+	while (isSpecial(vira) && pile.some((c) => !isSpecial(c))) {
 		pile.unshift(vira);
 		vira = pile.pop() as Card;
 	}
@@ -265,6 +290,7 @@ export function canCallTruco(s: TableState, seat: Seat): boolean {
 		!s.over &&
 		s.elevenDecided &&
 		s.bet < 12 &&
+		!s.frozen &&
 		s.lastRaiser !== teamOf(seat) &&
 		(s.pending ? s.pending.responder === seat && s.pending.to < 12 : s.turn === seat)
 	);
@@ -337,16 +363,24 @@ export function trickValues(t: Trick, manilha: Rank): number[] {
 }
 
 /**
- * Winner of a full trick. Joker effects: `void` makes it a tie; `upsideDown` makes the weakest
- * face-up card win (face-down cards never win, D-34).
+ * Winner of a full trick. Joker effects: `void` makes it a tie; `upsideDown` (or the Raio's
+ * `reversed`, for the rest of the hand) makes the weakest face-up card win (face-down cards never
+ * win, D-34); the Raio's `claim` gives the trick to who played it.
  */
-export function resolveTrick(t: Trick, manilha: Rank): void {
+export function resolveTrick(t: Trick, manilha: Rank, reversed = false): void {
 	const values = trickValues(t, manilha);
+	// Raio `claim`: whoever played it takes the trick, whatever the others played.
+	const claim = t.plays.filter((p) => p.effect === 'claim').at(-1);
+	if (claim) {
+		t.result = teamOf(claim.seat);
+		t.winner = claim.seat;
+		return;
+	}
 	if (t.plays.some((p) => p.effect === 'void')) {
 		t.result = 'tie';
 		return;
 	}
-	const upside = t.plays.some((p) => p.effect === 'upsideDown');
+	const upside = reversed || t.plays.some((p) => p.effect === 'upsideDown');
 	const open = t.plays.map((p, i) => (p.faceDown ? null : (values[i] as number)));
 	const face = open.filter((v): v is number => v !== null);
 	const best = !face.length ? -1 : upside ? Math.min(...face) : Math.max(...face);
@@ -360,31 +394,82 @@ export function resolveTrick(t: Trick, manilha: Rank): void {
 }
 
 /**
- * The joker's effect for a play (equal odds). Effects that cannot happen are left out: no
- * `newVira` without a card to turn, no `copycat` as the trick's first face-up card.
+ * The effect of a joker or special card for a play (equal odds). Effects that cannot happen are
+ * left out: no `newVira` without a card to turn, no `copycat` as the trick's first face-up card,
+ * no `raise` at 12, no `peek` when the rivals have no cards left.
  */
-export function drawJokerEffect(s: TableState, rng: Rng): JokerEffect {
-	const canTurn = s.stock.some((c) => !isJoker(c));
+export function drawEffect(s: TableState, card: Card, seat: Seat, rng: Rng): PlayEffect {
+	const pool: readonly PlayEffect[] = isJoker(card)
+		? JOKER_EFFECTS
+		: SPECIAL_CARDS[card.rank as keyof typeof SPECIAL_CARDS];
+	const canTurn = s.stock.some((c) => !isSpecial(c));
 	const canCopy = currentTrick(s).plays.some((p) => !p.faceDown);
+	const rivals = [nextSeat(seat), nextSeat(partnerOf(seat))];
+	const canPeek = rivals.some((r) => s.hands[r].length > 0);
 	return rng.pick(
-		JOKER_EFFECTS.filter((e) => (e !== 'newVira' || canTurn) && (e !== 'copycat' || canCopy)),
+		pool.filter(
+			(e) =>
+				(e !== 'newVira' || canTurn) &&
+				(e !== 'copycat' || canCopy) &&
+				(e !== 'raise' || s.bet < 12) &&
+				(e !== 'peek' || canPeek),
+		),
 	);
 }
 
+/** The joker's effect for a play (equal odds). */
+export const drawJokerEffect = (s: TableState, rng: Rng): JokerEffect =>
+	drawEffect(s, jokerCard(), 0, rng) as JokerEffect;
+
 /** Effects that change the hand right away (the rest act when the trick or the hand ends). */
-function applyJoker(s: TableState, effect: JokerEffect, events: TableEvent[]): void {
+function applyEffect(
+	s: TableState,
+	effect: PlayEffect,
+	seat: Seat,
+	rng: Rng,
+	events: TableEvent[],
+): void {
+	const team = teamOf(seat);
 	if (effect === 'worth3' && s.bet < JOKER_WORTH) s.bet = JOKER_WORTH;
 	if (effect === 'newVira') {
-		const i = s.stock.findIndex((c) => !isJoker(c));
+		const i = s.stock.findIndex((c) => !isSpecial(c));
 		const vira = s.stock.splice(i, 1)[0] as Card;
 		s.vira = vira;
 		s.manilha = viraManilha(vira);
 		events.push({ type: 'vira', vira, manilha: s.manilha });
 	}
+	if (effect === 'raise') s.bet = nextBet(s.bet);
+	if (effect === 'shield') s.shield = team;
+	if (effect === 'bonus') s.bonus = team;
+	if (effect === 'freeze') s.frozen = true;
+	if (effect === 'reversed') s.reversed = true;
+	if (effect === 'peek')
+		for (const r of [nextSeat(seat), nextSeat(partnerOf(seat))]) {
+			const hand = s.hands[r];
+			if (hand.length) s.known.push({ seat: r, cardId: rng.pick(hand).id, to: team });
+		}
+	if (effect === 'swap') {
+		// As many cards as both hands have, so nobody runs out of cards before the hand ends.
+		const mine = rng.shuffle(s.hands[seat]);
+		const theirs = rng.shuffle(s.hands[partnerOf(seat)]);
+		const k = Math.min(mine.length, theirs.length);
+		s.hands[seat] = [...theirs.slice(0, k), ...mine.slice(k)];
+		s.hands[partnerOf(seat)] = [...mine.slice(0, k), ...theirs.slice(k)];
+	}
+	if (effect === 'redraw') {
+		const hand = s.hands[seat];
+		const n = hand.length;
+		s.stock.push(...hand.splice(0));
+		// Common cards first: a special card only comes back when the stock has no other.
+		const pool = rng.shuffle(s.stock);
+		const fresh = [...pool.filter((c) => !isSpecial(c)), ...pool.filter(isSpecial)].slice(0, n);
+		s.stock = s.stock.filter((c) => !fresh.includes(c));
+		hand.push(...fresh);
+	}
 }
 
 /** Joker effects drawn so far in the hand, in order. */
-export const jokerEffects = (s: TableState): JokerEffect[] =>
+export const jokerEffects = (s: TableState): PlayEffect[] =>
 	s.tricks.flatMap((t) => t.plays.flatMap((p) => (p.effect ? [p.effect] : [])));
 
 function finish(s: TableState, end: HandEnd, events: TableEvent[]): void {
@@ -474,7 +559,16 @@ export function apply(
 		case 'fold': {
 			const p = s.pending as Pending;
 			events.push({ type: 'folded', seat: action.seat });
-			finish(s, { winner: teamOf(p.by), tentos: s.bet, reason: 'fold' }, events);
+			const shielded = s.shield === teamOf(action.seat);
+			finish(
+				s,
+				{
+					winner: teamOf(p.by),
+					tentos: shielded ? Math.min(s.bet, SHIELD_TENTOS) : s.bet,
+					reason: 'fold',
+				},
+				events,
+			);
 			break;
 		}
 		case 'play': {
@@ -483,18 +577,19 @@ export function apply(
 			const card = hand.splice(i, 1)[0] as Card;
 			const faceDown = action.faceDown === true;
 			const trick = currentTrick(s);
-			const effect = isJoker(card) && !faceDown ? drawJokerEffect(s, rng) : undefined;
+			const effect =
+				isSpecial(card) && !faceDown ? drawEffect(s, card, action.seat, rng) : undefined;
 			trick.plays.push({ seat: action.seat, card, faceDown, ...(effect ? { effect } : {}) });
 			events.push({ type: 'played', seat: action.seat, card, faceDown });
 			if (effect) {
 				events.push({ type: 'joker', seat: action.seat, effect });
-				applyJoker(s, effect, events);
+				applyEffect(s, effect, action.seat, rng, events);
 			}
 			if (trick.plays.length < 4) {
 				s.turn = nextSeat(action.seat);
 				break;
 			}
-			resolveTrick(trick, s.manilha);
+			resolveTrick(trick, s.manilha, s.reversed);
 			events.push({
 				type: 'trick',
 				index: s.tricks.length - 1,
@@ -503,7 +598,14 @@ export function apply(
 			});
 			const winner = handWinner(s.tricks.map((t) => t.result as TrickResult));
 			if (winner !== undefined) {
-				finish(s, { winner, tentos: winner ? s.bet : 0, reason: 'tricks' }, events);
+				const extra =
+					winner && s.bonus === winner
+						? Math.max(
+								0,
+								Math.min(BONUS_TENTOS, MATCH_POINTS - s.score[winner] - s.bet),
+							)
+						: 0;
+				finish(s, { winner, tentos: winner ? s.bet + extra : 0, reason: 'tricks' }, events);
 				break;
 			}
 			const opener = trick.winner ?? trick.opener;

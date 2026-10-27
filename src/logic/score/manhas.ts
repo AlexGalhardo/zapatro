@@ -1,7 +1,7 @@
 import { CARD_MODS, type CardModDef, isCardModId } from '../../data/card-mods';
 import type { LanceId } from '../../data/lances';
 import type { ManhaDef, ManhaWhen, PerTrickWon } from '../../data/manhas';
-import { type Card, type CardRank, isJoker, isZap, type Rank } from '../truco/cards';
+import { type Card, type CardRank, isSpecial, isZap, type Rank } from '../truco/cards';
 import { type Played, type Seat, type TableState, teamOf } from '../truco/table';
 import type { ScoreStep } from './score';
 
@@ -107,7 +107,7 @@ const matches = (p: Played, per: PerTrickWon, manilha: Rank): boolean =>
 	(!per.manilha || p.card.rank === manilha) &&
 	(per.by !== 'partner' || p.seat === 2) &&
 	(!per.ranks || per.ranks.some((r) => r === p.card.rank)) &&
-	(!per.suit || (p.card.suit === per.suit && !isJoker(p.card)));
+	(!per.suit || (p.card.suit === per.suit && !isSpecial(p.card)));
 
 /** Steps of one Manha (none when its condition fails). */
 export function manhaSteps(def: ManhaDef, f: HandFacts): ScoreStep[] {

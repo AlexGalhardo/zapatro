@@ -138,7 +138,7 @@ Resumo; o texto normativo é o [PLAN §5](../PLAN.md#5-especificação-de-regras
 
 | Regra | Resumo | Ref. |
 |---|---|---|
-| Baralho | 40 cartas (sem 8, 9, 10) + **1 coringa**; força base 4 < 5 < 6 < 7 < Q < J < K < A < 2 < 3; mínimo 20 cartas, cópias permitidas | §5.1, D-06 |
+| Baralho | 40 cartas (sem 8, 9, 10) + **2 coringas** + 3 cartas especiais (Trevo, Olho, Raio); força base 4 < 5 < 6 < 7 < Q < J < K < A < 2 < 3; mínimo 20 cartas, cópias permitidas | §5.1, D-06 |
 | Vira e manilha | Manilha = valor acima da vira (com volta: vira 7 → Q; vira 3 → 4); naipes pica-fumo ♦ < espadilha ♠ < copas ♥ < paus ♣ | §5.2 |
 | **ZAP (regra da casa)** | Carta de paus **duas** acima da vira; vence todas as manilhas (força 14); aviso "Você tem o ZAP!" | §5.2, **Fixo** 2026-10-15 |
 | Turno | Anti-horário; "mão" à direita de quem dá; quem dá roda; quem vence a vaza abre a próxima (vaza cangada: abre quem abriu a cangada) | §5.3, D-53 |
@@ -150,7 +150,8 @@ Resumo; o texto normativo é o [PLAN §5](../PLAN.md#5-especificação-de-regras
 | Mão de 11 | Dupla com 11 vê as cartas do parceiro; joga (vale 3) ou corre (rival +1); pedir truco perde a mão (a UI nem oferece o botão) | §5.9, D-54 |
 | Mão de ferro | 11×11: todos às cegas (ninguém vê a própria mão), sem truco nem sinais | §5.9 |
 | Placar | Rivais a 12 = uma queda deles (2 quedas = derrota); sua dupla a 12 antes da meta = **Queda** (Lance, só seus tentos zeram) | §5.10, D-04, D-59 |
-| **Coringa** | 1 por baralho (tutorial sem); nunca é a vira; sem efeito vale um 3; aberto sorteia 1 de 10 efeitos (GDD 7.8) | §5.12, **Fixo** 2026-10-15 |
+| **Cartas especiais** | Trevo, Olho e Raio, 1 de cada na run e na Partida Rápida (LAN e tutorial sem); valem um 3; abertas sorteiam 1 dos 3 efeitos delas (GDD 7.9) | §5.12.1, **Fixo** 2026-10-27 |
+| **Coringa** | 2 por baralho (tutorial sem); nunca é a vira; sem efeito vale um 3; aberto sorteia 1 de 10 efeitos (GDD 7.8) | §5.12, **Fixo** 2026-10-15 |
 
 ---
 
@@ -359,7 +360,7 @@ Consumível que sobe 1 nível de um Lance (+Fichas e +Mult, GDD 4.4): o equivale
 
 Promessa rara (Manha rara grátis) · Promessa de dinheiro (+$10) · Promessa de pacote (pacote grátis) · Ficha extra · Mult extra · Carta nova · Simpatia grátis · Vida extra (3 quedas na próxima mesa).
 
-### 7.8 Coringa (1 por baralho, PLAN §5.12) ⚖ (`src/data/jokers.ts`)
+### 7.8 Coringa (2 por baralho, PLAN §5.12) ⚖ (`src/data/jokers.ts`)
 
 | Efeito | O que faz |
 |---|---|
@@ -375,6 +376,18 @@ Promessa rara (Manha rara grátis) · Promessa de dinheiro (+$10) · Promessa de
 | `showdown` | Todas as mãos à mostra, inclusive para a IA |
 
 Sorteio com `Rng` de seed, chances iguais; efeito impossível não entra no sorteio. Na mesa: roleta de nomes no banner + popup. ⚠ Tensão com o pilar P3/16.2 (informação → decisão): o coringa é sorte pura; **Proposta**: mostrar a lista dos 10 efeitos no tooltip da carta antes de jogá-la.
+
+### 7.9 Cartas especiais: Trevo, Olho e Raio (PLAN §5.12.1) ⚖ (`src/data/specials.ts`)
+
+Três cartas únicas por baralho, no espírito dos Jokers do Balatro mas na mesa, não na contagem: cada uma, aberta, sorteia 1 de 3 efeitos.
+
+| Carta | Tema | Efeitos |
+|---|---|---|
+| Trevo | Sorte e aposta | Aposta sobe (um degrau de graça) · Escudo (se a dupla correr, perde só 1 tento) · Bônus (+2 tentos se a dupla vencer a mão, até 12) |
+| Olho | Informação e mão | Espiar (uma carta de cada rival à mostra para a dupla) · Troca (cartas que sobram com as do parceiro) · Nova mão (as cartas que sobram são trocadas por novas) |
+| Raio | Caos na mesa | Gelo (ninguém pede truco) · Vaza garantida (a vaza é da dupla de quem jogou) · De ponta-cabeça (a mais fraca vence cada vaza do resto da mão) |
+
+Proposta de revisão no playtest: a IA hoje joga as cartas como um 3 e não se aproveita de "espiar".
 
 ### 7.9 Baralho compartilhado
 
@@ -766,7 +779,8 @@ Estado implementado por versão (antigo `game-design.md`; detalhe no [CHANGELOG]
 | Campeonato / Mesa | "Ante" / "blind" |
 | Estaca | Nível de dificuldade cumulativo por baralho |
 | Fama | Medidor Honesto ↔ Blefador |
-| Coringa | Carta única por baralho com 10 efeitos sorteados |
+| Coringa | Duas cartas por baralho com 10 efeitos sorteados |
+| Carta especial | Trevo, Olho ou Raio: carta única por baralho com 3 efeitos sorteados |
 | Flagra | Rival percebe um sinal |
 
 ---

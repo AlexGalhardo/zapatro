@@ -42,8 +42,8 @@ describe('starting decks (B2.1)', () => {
 
 	test('Viciado: an extra copy of every ♣ card, all ids unique', () => {
 		const run = newRun(1, 'tonhao', 'viciado');
-		expect(run.deck).toHaveLength(51);
-		expect(new Set(run.deck.map((c) => c.id)).size).toBe(51);
+		expect(run.deck).toHaveLength(55);
+		expect(new Set(run.deck.map((c) => c.id)).size).toBe(55);
 	});
 
 	test('do Interior: 4, 5 and 6 give Chips ×2 (unless manilha)', () => {

@@ -14,6 +14,7 @@ Since 2026-10-24 the project has 11 releases, numbered in order from 0.1.0 to 0.
 
 ### Added
 
+- **cards:** three special cards, the Clover (Trevo), the Eye (Olho) and the Lightning (Raio), one of each in every run and quick match deck (not in LAN or the tutorial). Played face up like the joker, each draws one of its three effects: bet up, shield (a fold costs 1 tento) and bonus (+2 tentos) · peek (a card of each rival shown), swap (cards left with the partner's) and new hand · freeze (no truco until the hand ends), sure trick and upside down (the weakest wins each trick of the rest of the hand). They count as a 3 and are never the vira (`src/data/specials.ts`, PLAN §5.12.1); `?hand=TV,OL,RA` deals them.
 - **net:** LAN multiplayer for up to 4 people in the Quick Match (plain Truco to 12), built on Colyseus: an authoritative server (`lan/`, `bun run lan-server`, also embedded in the desktop app) plays the real `Match`, validates every action and sends each player a masked view turned so that player sits at the bottom (`src/net/view.ts`); empty seats are bots and a dropped player has 30 s to come back before a bot takes the seat. See `docs/multiplayer.md`.
 - **ui:** "LAN multiplayer" in the menu opens a form (name, host address; "Host a table" in the desktop app) and a lobby where each person picks a seat, with partners across the table, and a portrait from the cast. Hidden on `https://` web pages, which cannot open `ws://` to another computer.
 - **desktop:** `trucoShell.hostLan` starts the LAN table from the Electron app (`lan/server.ts` bundled by `scripts/build-electron.ts`); **mobile:** the Android app allows cleartext `ws://` to join one.
@@ -21,7 +22,12 @@ Since 2026-10-24 the project has 11 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **cards:** every deck has two jokers instead of one (the joker shows up in about 52% of the hands instead of 28%), so a run deck is 45 cards.
 - **docs:** multiplayer leaves the "out of scope" list for the LAN case only (PLAN §1.5, GDD, `docs/decisions.md`).
+
+### Fixed
+
+- **ui:** the ☰ button of the table did nothing in a quick match and in LAN (it lists the Manhas you own, and only a run has any); it now shows only when there are Manhas.
 
 ## [0.11.0] - 2026-10-25
 

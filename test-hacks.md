@@ -10,7 +10,7 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 | `goal=N` | inteiro ≥ 1 | Liga a pontuação roguelite na partida rápida, com meta de N pontos (Fichas × Mult, Quedas), como uma mesa da run. Sem ele, a partida rápida é Truco puro até 12 |
 | `seed=N` | inteiro ≥ 0 | Embaralhamento, vira e sorteios repetíveis (partida rápida e run nova) |
 | `vira=3c` | posto + naipe (`c` paus, `h` copas, `s` espadas, `d` ouros) | Vira da primeira mão |
-| `hand=3c,2h,4d` | 3 cartas; `JK` = coringa | Sua primeira mão |
+| `hand=3c,2h,4d` | 3 cartas; `JK`/`JK2` = coringa, `TV`/`OL`/`RA` = cartas especiais | Sua primeira mão |
 | `score=11-4` | `nós-eles`, cada um < 12 | Placar inicial: `11-x` mão de onze, `11-11` mão de ferro |
 | `reveal=1` | | Mostra as mãos dos rivais |
 | `boss=<id>` | `valentao` `cartomante` `juiz` `agiota` `delegado` `professor` `irmaos` `mudo` `sortuda` `reiDoTruco` | Partida rápida contra esse chefe, com a regra dele na lateral. Continua sem meta, a não ser que `goal=N` também esteja na URL |
@@ -43,6 +43,7 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 | Mesa do Boteco, mão fixa | `?skipMenu=1&seed=1&vira=4c&hand=5h,6c,3d` |
 | ZAP na mão (vira 4 → 6♣ é o ZAP) | `?skipMenu=1&vira=4c&hand=6c,5s,3d` |
 | Coringa e a roleta de efeitos | `?skipMenu=1&hand=JK,3c,2h` |
+| Cartas especiais (`TV` Trevo, `OL` Olho, `RA` Raio) | `?skipMenu=1&hand=TV,OL,RA` |
 | Mão de onze / mão de ferro | `?skipMenu=1&score=11-4` · `?skipMenu=1&score=11-11` |
 | Chefe e a regra dele (partida rápida) | `?skipMenu=1&boss=professor` |
 | Ambiência do Bar de Estrada (Campeonato 2) | `?skipMenu=1&champ=2` |

@@ -54,7 +54,7 @@ import {
 	useConsumable,
 } from '../logic/run/run';
 import { formatPoints } from '../logic/score/format';
-import { type Card, JOKER, RANKS, SUITS } from '../logic/truco/cards';
+import { type Card, isSpecial, RANKS, type Rank, SUITS } from '../logic/truco/cards';
 import { Button, inkIcon } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { itemCard, RARITY_COLOR } from '../ui/item-card';
@@ -1546,8 +1546,9 @@ export class RunScene extends Phaser.Scene {
 	}
 }
 
-/** Deck viewer order: by rank, the joker last (it sits in the clubs row). */
-const deckOrder = (c: Card): number => (c.rank === JOKER ? RANKS.length : RANKS.indexOf(c.rank));
+/** Deck viewer order: by rank, the jokers and special cards last (they sit in the clubs row). */
+const deckOrder = (c: Card): number =>
+	isSpecial(c) ? RANKS.length : RANKS.indexOf(c.rank as Rank);
 
 /** Boss ids appear as rival characters at a boss table. */
 const isBossId = (id: string): boolean =>

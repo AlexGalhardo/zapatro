@@ -93,6 +93,12 @@ export function viewState(s: TableState, me: Seat): TableState {
 				seat: toView(g.seat, me),
 				caughtBy: g.caughtBy.map((x) => toView(x, me)),
 			})),
+		shield: s.shield ? team(s.shield, me) : null,
+		bonus: s.bonus ? team(s.bonus, me) : null,
+		frozen: s.frozen,
+		reversed: s.reversed,
+		// The LAN deck has no Olho, so there is nothing to show (and nothing to leak).
+		known: [],
 		over: s.over ? { ...s.over, winner: s.over.winner ? team(s.over.winner, me) : null } : null,
 	};
 }

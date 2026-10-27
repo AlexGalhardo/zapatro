@@ -77,6 +77,15 @@ Até 4 pessoas na Partida Rápida, em dupla ou não, com Colyseus; detalhes em [
 - [x] Electron cria a mesa (`trucoShell.hostLan`); verificado o anfitrião entrando no próprio lobby.
 - [ ] Verificar entre dois computadores reais (Electron empacotado e Android): `ws://` de LAN sem bloqueio de conteúdo misto, firewall.
 
+### 1.4.2 Cartas especiais e coringa em dobro (pedido do usuário, 2026-10-27)
+
+Detalhes em §5.12.1.
+
+- [x] Trevo, Olho e Raio (3 efeitos cada, 9 no total) no baralho da run e da Partida Rápida; dois coringas por baralho.
+- [x] Botão ☰ da mesa só aparece quando há Manhas (antes não fazia nada na Partida Rápida e na LAN).
+- [x] Testes (`tests/specials.test.ts`) e `bun run balance` (docs/balancing.md).
+- [ ] Playtest: os efeitos são divertidos ou frustram? Revisar números (bônus, escudo) e se a IA deve passar a usar as cartas.
+
 ### 1.5 Fora do escopo até a 1.0
 
 iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a **LAN com até 4 pessoas na Partida Rápida** entrou em 2026-10-27, [docs/multiplayer.md](docs/multiplayer.md)) · backend, contas, telemetria · newsletter · mapa estilo Slay the Spire · relíquias, dívida, superstições, confiança do parceiro, tilt, pressão global, desafios diários, contratos (lista completa em GDD §18.3) · executável Bun de arquivo único.
@@ -347,10 +356,17 @@ Fichas por carta, Lances, metas, dinheiro, preços, raridades, Manhas e modifica
 
 ### 5.12 Coringa (pedido do usuário em 2026-10-15)
 
-- **Um** por baralho (run e partida rápida; o tutorial fica sem). Nunca é a vira: volta para o fundo e vira-se a próxima.
+- **Dois** por baralho (`JK` e `JK2`, run e partida rápida e LAN; o tutorial fica sem; eram um até 2026-10-27, o que dobrou a chance de sair). Nunca é a vira: volta para o fundo e vira-se a próxima.
 - Sem efeito vale como um **3** (força 9, 10 Fichas). Encoberto é só carta coberta (sem efeito).
 - Jogado aberto, sorteia (Rng com seed, chances iguais) **um de 10 efeitos** naquela jogada (`src/data/jokers.ts`): vaza anulada (empate) · virou ZAP · furou (menos que um 4) · vale 3 (a mão passa a valer 3 se valia menos) · zerou (Fichas × Mult da mão = 0) · de ponta-cabeça (a mais fraca vence a vaza; encobertas nunca vencem) · nova vira (do monte; mudam manilhas e ZAP) · imitador (copia a carta mais forte já jogada na vaza) · dobrou (×2 Mult da mão) · mesa aberta (todas as mãos à mostra, inclusive para a IA). Efeito impossível não é sorteado (sem carta no monte → sem nova vira; primeira carta aberta da vaza → sem imitador).
 - Na mesa: roleta de nomes no banner, descrição no popup; "dobrou"/"zerou" aparecem como passos da contagem (`joker:<efeito>`), depois das Manhas.
+
+#### 5.12.1 Cartas especiais: Trevo, Olho e Raio (pedido do usuário, 2026-10-27)
+
+- Uma de cada em todo baralho da **run e da Partida Rápida** (ids `TV`, `OL`, `RA`; a LAN e o tutorial ficam sem): 45 cartas no total. Valem como um **3**, nunca são a vira, e coberta é só carta coberta, como o coringa.
+- Jogada aberta, cada uma sorteia **um dos 3 efeitos dela** (`src/data/specials.ts`, mesma roleta do coringa): **Trevo** (sorte): aposta sobe um degrau de graça · escudo (se a dupla correr nesta mão, perde só 1 tento) · bônus (+2 tentos para a dupla se vencer a mão, nunca além de 12). **Olho** (informação): espiar (uma carta de cada rival aparece para a dupla até o fim da mão) · troca (as cartas que sobram com as do parceiro, na quantidade que os dois têm) · nova mão (as cartas que sobram voltam ao monte e vêm novas). **Raio** (caos): gelo (ninguém pede truco até o fim da mão) · vaza garantida (a vaza é da dupla de quem jogou) · de ponta-cabeça (no resto da mão a mais fraca vence cada vaza).
+- Efeito impossível não é sorteado (aposta já em 12 → sem "aposta sobe"; rivais sem cartas → sem "espiar"). Estado novo em `TableState`: `shield`, `bonus`, `frozen`, `reversed`, `known`. Os efeitos não mexem em Fichas × Mult; a IA não os conhece (joga as cartas como um 3).
+- Arte por código (`drawSpecial`, `card.trevo|olho|raio`); textos `special.<carta>.name` e `joker.<efeito>.name|desc`.
 
 ---
 

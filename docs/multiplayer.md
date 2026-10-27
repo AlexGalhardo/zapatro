@@ -10,6 +10,7 @@ Até 4 pessoas jogam **Truco puro até 12** (a Partida Rápida) na mesma rede, e
 | Servidor | Uma sala `truco` por servidor. `bun run lan-server` num PC da rede, ou o app desktop (Electron) que embute o mesmo servidor ("Criar mesa") |
 | Encontrar a mesa | Digitar `IP` ou `IP:porta` (porta padrão 2567); o anfitrião vê os endereços dele no lobby. Sem descoberta automática |
 | Lobby | 4 assentos em volta da mesa; quem senta de frente é parceiro (assentos 0 e 2 contra 1 e 3). Cada pessoa escolhe assento livre, apelido e retrato do elenco (sem repetir) |
+| Baralho | A LAN joga com os 40 comuns e os 2 coringas, sem as cartas especiais (a visão mascarada ainda não esconde o `Olho`) |
 | Vazios | Viram bots (perfis de IA e retratos do elenco); dá para começar com 1 pessoa. Só o anfitrião (o primeiro a entrar) começa |
 | Autoridade | O servidor roda a lógica pura (`Match`) e valida cada `Action`. Cada cliente recebe só a sua visão |
 | Queda | Mesa espera 30 s pela volta do jogador (o SDK reconecta sozinho); depois um bot (perfil `pro`) assume o assento |

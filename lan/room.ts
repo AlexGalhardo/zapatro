@@ -4,6 +4,7 @@ import { COMPANION_IDS } from '../src/data/companions';
 import { Match, type SeatBrain } from '../src/game/match';
 import { rivalBrain } from '../src/game/run-table';
 import { Rng, randomSeed } from '../src/logic/rng';
+import { jokerCard, standardDeck } from '../src/logic/truco/cards';
 import { type Action, IllegalAction, type Seat, type TableEvent } from '../src/logic/truco/table';
 import {
 	type ClientMessage,
@@ -174,7 +175,12 @@ export class TrucoRoom extends Room {
 				? { kind: 'human' }
 				: rivalBrain(rng.pick(AI_PROFILE_IDS), this.chars[seat] as string);
 		}) as [SeatBrain, SeatBrain, SeatBrain, SeatBrain];
-		this.match = new Match({ rng, brains });
+		// LAN decks have the two jokers but not the special cards (their views are not masked for them).
+		this.match = new Match({
+			rng,
+			brains,
+			deck: [...standardDeck(), jokerCard(), jokerCard(2)],
+		});
 		void this.lock();
 		for (const c of this.clients) this.sendStart(c.sessionId);
 		this.sendLobby();

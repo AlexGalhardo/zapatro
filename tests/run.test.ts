@@ -57,9 +57,11 @@ describe('run (A4)', () => {
 		expect(run.champ).toBe(1);
 		expect(run.table).toBe(0);
 		expect(currentGoal(run)).toBe(CHAMPIONSHIP_GOALS[0]);
-		// 40 cards plus the joker (PLAN §5.12).
-		expect(run.deck).toHaveLength(41);
-		expect(run.deck.filter((c) => c.rank === 'joker')).toHaveLength(1);
+		// 40 cards plus two jokers (PLAN §5.12) and the Clover, the Eye and the Lightning.
+		expect(run.deck).toHaveLength(45);
+		expect(run.deck.filter((c) => c.rank === 'joker')).toHaveLength(2);
+		for (const rank of ['trevo', 'olho', 'raio'])
+			expect(run.deck.filter((c) => c.rank === rank)).toHaveLength(1);
 		expect(run.bosses).toHaveLength(8);
 		expect(run.bosses[7]).toBe('reiDoTruco');
 		expect(run.money).toBe(ECONOMY.startMoney);
@@ -209,8 +211,8 @@ describe('shop (A4.3)', () => {
 		expect(buy(run, 'packs', 0)).toBeNull();
 		expect(shop.opened?.length).toBe(4);
 		expect(choosePack(run, 0)).toBeNull();
-		expect(run.deck).toHaveLength(42);
-		expect(new Set(run.deck.map((c) => c.id)).size).toBe(42);
+		expect(run.deck).toHaveLength(46);
+		expect(new Set(run.deck.map((c) => c.id)).size).toBe(46);
 		expect(shop.opened).toBeNull();
 	});
 
@@ -246,13 +248,13 @@ describe('consumables (A3.5)', () => {
 		run = withItem({ kind: 'simpatia', id: 'figa' });
 		useConsumable(run, 0, '3c');
 		expect(run.deck.filter((c) => c.rank === '3' && c.suit === 'clubs')).toHaveLength(0);
-		expect(run.deck).toHaveLength(41);
+		expect(run.deck).toHaveLength(45);
 	});
 
 	test('Benzedeira removes a card but never below the minimum deck', () => {
 		const run = withItem({ kind: 'simpatia', id: 'benzedeira' });
 		expect(useConsumable(run, 0, '4d')).toBe(true);
-		expect(run.deck).toHaveLength(40);
+		expect(run.deck).toHaveLength(44);
 		run.deck = run.deck.slice(0, ECONOMY.deckMin);
 		run.consumables = [{ kind: 'simpatia', id: 'benzedeira' }];
 		expect(useConsumable(run, 0, run.deck[0]?.id)).toBe(false);

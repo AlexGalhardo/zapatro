@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import { PALETTE, RARITY_COLOR, shade, toCss } from '../config/palette';
 import { RADIUS, SHADOW } from '../config/ui';
 import { MANHA_BY_ID } from '../data/manhas';
-import { type Card, JOKER } from '../logic/truco/cards';
+import { type Card, isSpecial } from '../logic/truco/cards';
 import { drawVectorIcon } from './icons';
 
 /**
@@ -248,9 +248,9 @@ function drawCard(ctx: Ctx, rank: string, name: string, fourColor: boolean, mark
 	} else suit(ctx, name, CARD_W / 2, CARD_H / 2, rank === 'A' ? 26 : 20, c);
 }
 
-/** Texture key of a card face (the joker has one face for the whole deck). */
+/** Texture key of a card face (the joker and each special card have one face for the whole deck). */
 export const cardArt = (card: Card): string =>
-	card.rank === JOKER ? 'card.joker' : `card.${card.rank}.${card.suit}`;
+	isSpecial(card) ? `card.${card.rank}` : `card.${card.rank}.${card.suit}`;
 
 /** The same face framed in gold: `m` a manilha of this hand, `z` the ZAP. */
 export const markedArt = (key: string, mark: 'm' | 'z'): string => `${key}.${mark}`;
@@ -275,6 +275,65 @@ function drawJoker(ctx: Ctx): void {
 	box(ctx, 5, 27, 38, 5, 2, PALETTE.cardFace);
 	star(ctx, 24, 45, 11, PALETTE.manilha);
 	label(ctx, '★', 7, 7, 7, PALETTE.cardFace);
+}
+
+/** The special cards: a coloured card with a big symbol, the Clover, the Eye or the Lightning. */
+const SPECIAL_LOOK = {
+	trevo: PALETTE.suitGreen,
+	olho: PALETTE.chips,
+	raio: PALETTE.mult,
+} as const;
+
+function drawSpecial(ctx: Ctx, rank: keyof typeof SPECIAL_LOOK): void {
+	const body = SPECIAL_LOOK[rank];
+	cardBody(ctx, body);
+	const ink = PALETTE.cardFace;
+	const cx = CARD_W / 2;
+	const cy = CARD_H / 2 + 1;
+	if (rank === 'trevo') {
+		for (const [dx, dy] of [
+			[-6, -6],
+			[6, -6],
+			[-6, 6],
+			[6, 6],
+		] as const)
+			circle(ctx, cx + dx, cy + dy, 7, ink);
+		poly(
+			ctx,
+			[
+				[cx - 1.5, cy],
+				[cx + 1.5, cy],
+				[cx + 5, cy + 20],
+				[cx + 1, cy + 20],
+			],
+			ink,
+		);
+	} else if (rank === 'olho') {
+		ctx.fillStyle = css(ink);
+		ctx.beginPath();
+		ctx.ellipse(cx, cy, 18, 10, 0, 0, Math.PI * 2);
+		ctx.fill();
+		circle(ctx, cx, cy, 7, body);
+		circle(ctx, cx, cy, 3, ink);
+	} else
+		poly(
+			ctx,
+			[
+				[cx + 4, cy - 22],
+				[cx - 12, cy + 3],
+				[cx - 1, cy + 3],
+				[cx - 5, cy + 22],
+				[cx + 12, cy - 5],
+				[cx + 1, cy - 5],
+			],
+			ink,
+		);
+	star(ctx, 9, 9, 4, ink);
+	ctx.save();
+	ctx.translate(CARD_W, CARD_H);
+	ctx.rotate(Math.PI);
+	star(ctx, 9, 9, 4, ink);
+	ctx.restore();
 }
 
 /** Card back: a cream frame, a diamond lattice and a round seal. Each deck has its colour. */
@@ -1132,6 +1191,8 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 	} else if (key.startsWith('card.back')) drawBack(ctx, b || 'default');
 	else if (key.startsWith('card.mod.')) drawMod(ctx, b);
 	else if (key === 'card.joker') drawJoker(ctx);
+	else if (kind === 'card' && !b && a in SPECIAL_LOOK)
+		drawSpecial(ctx, a as keyof typeof SPECIAL_LOOK);
 	else if (kind === 'card') {
 		const flags = parts.slice(3);
 		const mark = flags.includes('z') ? 'z' : flags.includes('m') ? 'm' : '';

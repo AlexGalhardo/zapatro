@@ -24,7 +24,16 @@ import { stakeRules } from '../../data/stakes';
 import { CHEAP_REROLL, DISCOUNT, UPGRADE_IDS, UPGRADES, type UpgradeId } from '../../data/upgrades';
 import { Rng } from '../rng';
 import { type LanceLevels, tableGoal } from '../score/score';
-import { type Card, cardId, JOKER, jokerCard, RANKS, SUITS, standardDeck } from '../truco/cards';
+import {
+	type Card,
+	cardId,
+	fullDeck,
+	JOKER,
+	RANKS,
+	type Rank,
+	SUITS,
+	standardDeck,
+} from '../truco/cards';
 import type { Seat, Team } from '../truco/table';
 
 /**
@@ -182,15 +191,14 @@ export function newRun(
 		manhaSlots: ECONOMY.manhaSlots + (d.manhaSlots ?? 0),
 		consumables: [],
 		consumableSlots: ECONOMY.consumableSlots,
-		// Every deck has one joker (PLAN §5.12).
+		// Every deck has two jokers (PLAN §5.12) and the three special cards.
 		deck: [
-			...standardDeck(),
+			...fullDeck(),
 			...(d.extraSuit
 				? standardDeck()
 						.filter((c) => c.suit === d.extraSuit)
 						.map((c, i) => ({ ...c, id: `${c.id}#${i + 1}` }))
 				: []),
-			jokerCard(),
 		],
 		cardSerial: d.extraSuit ? 10 : 0,
 		levels: {},
@@ -480,7 +488,12 @@ function applyUpgrade(run: RunState, id: UpgradeId): void {
 
 function newCard(run: RunState, rank: Card['rank'], suit: Card['suit'], mod?: string): Card {
 	run.cardSerial++;
-	const base = rank === JOKER ? 'JK' : cardId(rank, suit);
+	const base =
+		rank === JOKER
+			? 'JK'
+			: (RANKS as readonly string[]).includes(rank)
+				? cardId(rank as Rank, suit)
+				: 'SP';
 	return { id: `${base}#${run.cardSerial}`, rank, suit, ...(mod ? { mod } : {}) };
 }
 

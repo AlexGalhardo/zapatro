@@ -55,9 +55,13 @@ describe('partner styles (each partner plays the bets their own way)', () => {
 		for (const def of Object.values(COMPANIONS)) expect(def.style).toBeDefined();
 	});
 
-	test('Tonhão (aggressive) calls truco the most; Dona Cida (cautious) the least', () => {
+	// Tonhão and Zé Malandro (the bluffer) call about equally often (45% each): which one comes
+	// first changes with the deal sequence, so the test asks for the two of them over the rest.
+	test('Tonhão (aggressive) and Zé Malandro call truco the most; Dona Cida (cautious) the least', () => {
 		const rates = Object.values(h).map((x) => x.callRate);
-		expect(h.tonhao.callRate).toBe(Math.max(...rates));
+		const top = [h.tonhao.callRate, h.zeMalandro.callRate];
+		expect(Math.min(...top)).toBeGreaterThan(h.juninho.callRate);
+		expect(Math.min(...top)).toBeGreaterThan(h.donaCida.callRate);
 		expect(h.donaCida.callRate).toBe(Math.min(...rates));
 	});
 
