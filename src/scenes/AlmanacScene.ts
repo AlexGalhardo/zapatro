@@ -20,6 +20,7 @@ import { onKey } from '../ui/keys';
 import { buttonNav } from '../ui/nav';
 import { drawPanel } from '../ui/panel';
 import { fadeTo } from '../ui/screen';
+import { addTitle } from '../ui/title';
 import { touchUi, uiPx } from '../ui/touch';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
@@ -138,14 +139,7 @@ export class AlmanacScene extends Phaser.Scene {
 		);
 		this.body.add(g);
 		this.body.add(this.add.image(L + 38, 30, tex(this, 'icon.book')).setScale(1.3));
-		this.put(L + 62, 30, t('almanac.title'), 25, PALETTE.manilha, [0, 0.5]).setShadow(
-			-2,
-			3,
-			toCss(PALETTE.shadow),
-			0,
-			true,
-			true,
-		);
+		this.body.add(addTitle(this, L + 62, 30, t('almanac.title'), 25, PALETTE.manilha, 0));
 		// Six tabs spanning the grid and detail panels. The active tab is added first so
 		// buttonNav's starting focus lands on it.
 		const tabW = (LIST_W - 5 * GAP.inline) / TABS.length;

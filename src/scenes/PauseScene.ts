@@ -1,15 +1,15 @@
 import Phaser from 'phaser';
-import { PALETTE, shade, toCss } from '../config/palette';
+import { PALETTE, shade } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS } from '../config/ui';
 import { sfx } from '../core/audio';
 import { trackZoom } from '../core/viewport';
 import { getLang, type I18nKey, t } from '../i18n';
 import { Button } from '../ui/Button';
-import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { backHint, showHintLine } from '../ui/key-hint';
 import { onKey, onSceneEvent } from '../ui/keys';
 import { drawPanel } from '../ui/panel';
 import { text } from '../ui/screen';
+import { addTitle } from '../ui/title';
 import { byMode } from '../ui/touch';
 import { fitCamera } from '../view/stage';
 
@@ -93,15 +93,7 @@ export class PauseScene extends Phaser.Scene {
 			cardH,
 			RADIUS.frame,
 		);
-		this.add
-			.text(320, top + pad + CARD.titleH / 2, t('pause.title'), {
-				fontFamily: UI_FONT,
-				fontSize: '22px',
-				fontStyle: '700',
-				color: toCss(PALETTE.manilha),
-				shadow: TEXT_SHADOW,
-			})
-			.setOrigin(0.5);
+		addTitle(this, 320, top + pad + CARD.titleH / 2, t('pause.title'), 22);
 		const buttons = rows.map((row, i) =>
 			new Button(
 				this,
