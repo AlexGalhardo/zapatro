@@ -16,9 +16,27 @@ export function setBackdrop(scene: Phaser.Scene, key: BackdropKey): void {
  * Always-on bottom layer: the painted background covers the whole view, so no screen paints its
  * own grey. Without the image (failed load) it keeps the neutral colour.
  */
+/** Full-screen scenes: the backdrop sits right under the topmost one of them that is running. */
+const OPAQUE = new Set(['Menu', 'Run', 'Settings', 'Keybinds', 'Almanac', 'Rules', 'Lan']);
+
 export class BackdropScene extends Phaser.Scene {
+	private below: string | null = null;
+
 	constructor() {
 		super('Backdrop');
+	}
+
+	/**
+	 * The table is not full-screen (the painting shows around it), so the backdrop is under it;
+	 * a menu opened over the table (Settings, Rules…) hides it, so the backdrop climbs above it.
+	 */
+	override update(): void {
+		const top = this.scene.manager.getScenes(true, true).find((s) => OPAQUE.has(s.scene.key))
+			?.scene.key;
+		if (top === this.below) return;
+		this.below = top ?? null;
+		if (top) this.scene.moveBelow(top, 'Backdrop');
+		else this.scene.sendToBack();
 	}
 
 	create(): void {

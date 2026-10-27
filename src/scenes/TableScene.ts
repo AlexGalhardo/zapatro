@@ -63,7 +63,7 @@ import type { NetClient } from '../net/client';
 import type { ServerMessage, TableSnapshot, TableStart } from '../net/protocol';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
-import { actionHint, hintMode } from '../ui/key-hint';
+import { actionHint, hintMode, keyHint } from '../ui/key-hint';
 import { onKey, onSceneEvent } from '../ui/keys';
 import { type ButtonNav, buttonNav } from '../ui/nav';
 import { drawPanel } from '../ui/panel';
@@ -329,7 +329,6 @@ export class TableScene extends Phaser.Scene {
 	private sideChips!: Phaser.GameObjects.Text;
 	private sideMult!: Phaser.GameObjects.Text;
 	private hudGfx!: Phaser.GameObjects.Graphics;
-	private manhaList = false;
 	private betNote!: Phaser.GameObjects.Text;
 	private manhaRow!: Phaser.GameObjects.Container;
 	private manhaTip!: Phaser.GameObjects.Text;
@@ -906,22 +905,24 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.layoutActions(false);
 		// Bottom bar of the sidebar: settings, pause and the Manha list. Pause is wide enough to
 		// keep its keycap inside (a narrow button drops it below, off the bottom edge).
-		const bar = (label: string, fn: () => void, x: number, w: number, a?: KeyAction) =>
+		const bar = (label: string, fn: () => void, x: number, w: number, key?: () => string) =>
 			new Button(this, label, fn, {
 				w,
 				h: 30,
 				size: 12,
-				...(a ? { hint: hint(a) } : {}),
+				...(key ? { hint: key } : {}),
 			})
 				.setPosition(SIDE.x + x + w / 2, SIDE.bar[0] + SIDE.bar[1] / 2)
 				.setDepth(DEPTH.controls);
-		bar('⚙', () => this.openPause('Settings'), 0, 34);
-		bar('II', () => this.openPause(), 38, 56, 'pause');
-		// The list of owned Manhas: only a run has any, so elsewhere the button would do nothing.
-		const hasManhas = this.match.manhas.length > 0;
-		bar('☰', () => this.toggleManhaList(), 98, 34)
-			.setVisible(hasManhas)
-			.setEnabled(hasManhas);
+		bar('⚙', () => this.openPause('Settings'), 0, 30);
+		bar('II', () => this.openPause(), 33, 52, hint('pause'));
+		bar(
+			'?',
+			() => this.openPause('Rules'),
+			88,
+			44,
+			() => keyHint('F1'),
+		);
 		this.signPicker = this.add.container(0, 0).setDepth(DEPTH.pickers).setVisible(false);
 		const pickerBg = this.add.graphics();
 		drawPanel(pickerBg, -46, -SIGN_ROW() / 2 - 6, 190, SIGNS.length * SIGN_ROW() + 12);
@@ -1226,24 +1227,6 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			if (i < m.rivalQuedas) g.fillStyle(PALETTE.truco, 1).fillCircle(x, HUD.y + 68, 4);
 			else g.lineStyle(1.5, PALETTE.panelLight, 1).strokeCircle(x, HUD.y + 68, 4);
 		}
-	}
-
-	/** The ☰ button: the owned Manhas with their texts, in the tip box. */
-	private toggleManhaList(): void {
-		this.manhaList = !this.manhaList;
-		if (!this.manhaList || !this.match.manhas.length) {
-			this.manhaTip.setVisible(false);
-			this.manhaList = false;
-			return;
-		}
-		const lines = this.match.manhas.map(
-			(id) => `${t(`manha.${id}.name` as I18nKey)}: ${t(`manha.${id}.desc` as I18nKey)}`,
-		);
-		this.manhaTip
-			.setText(lines.join(String.fromCharCode(10)))
-			.setOrigin(0, 1)
-			.setPosition(SIDE.x + SIDE.w + 8, SIDE.bar[0] + SIDE.bar[1])
-			.setVisible(true);
 	}
 
 	private refreshHud(): void {
@@ -2348,6 +2331,11 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			else this.playCard(this.focusCard);
 		});
 		onKey(kb, 'keydown', (e) => {
+			if (e.code === 'F1') {
+				e.preventDefault();
+				this.openPause('Rules');
+				return;
+			}
 			const keys = getSave(this).settings.keys;
 			const a = actionFor(keys, e.code);
 			if (!a) return;
@@ -2375,7 +2363,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		if (this.sys.isActive()) this.openPause();
 	}
 
-	private openPause(overlay: 'Pause' | 'Settings' = 'Pause'): void {
+	private openPause(overlay: 'Pause' | 'Settings' | 'Rules' = 'Pause'): void {
 		if (!this.sys.isActive() || this.endPanel.visible) return;
 		this.scene.pause();
 		this.scene.launch(overlay, { returnTo: 'Table' });

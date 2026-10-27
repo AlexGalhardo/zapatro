@@ -63,6 +63,8 @@ const card = (id: string): Card => parseCard(id) as Card;
  */
 export class RulesScene extends Phaser.Scene {
 	private page = 0;
+	/** Scene to resume when the manual was opened over it (the table); else back to the menu. */
+	private returnTo: string | null = null;
 	private art!: Phaser.GameObjects.Container;
 	private ui!: Phaser.GameObjects.Container;
 	/** Rebuilds the page list (the current page is highlighted). */
@@ -73,6 +75,10 @@ export class RulesScene extends Phaser.Scene {
 
 	constructor() {
 		super('Rules');
+	}
+
+	init(data: { returnTo?: string }): void {
+		this.returnTo = data?.returnTo ?? null;
 	}
 
 	create(): void {
@@ -92,7 +98,14 @@ export class RulesScene extends Phaser.Scene {
 			shadow: undefined,
 		});
 		this.counter = this.add.text(0, 0, '', text(7, PALETTE.textDim)).setOrigin(0.5);
-		const back = () => fadeTo(this, 'Menu');
+		const back = (): void => {
+			if (!this.returnTo) {
+				fadeTo(this, 'Menu');
+				return;
+			}
+			this.scene.stop();
+			this.scene.resume(this.returnTo);
+		};
 		onKey(this.input.keyboard, 'keydown-LEFT', () => this.turn(-1));
 		onKey(this.input.keyboard, 'keydown-RIGHT', () => this.turn(1));
 		onKey(this.input.keyboard, 'keydown-ENTER', () => this.turn(1));
