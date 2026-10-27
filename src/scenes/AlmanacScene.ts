@@ -210,8 +210,7 @@ export class AlmanacScene extends Phaser.Scene {
 
 	private artKey(kind: Kind, id: string): string {
 		if (kind === 'manha') return `manha.${id}`;
-		if (kind === 'boss') return `boss.${id}`;
-		if (kind === 'partner') return `portrait.${id}.neutral`;
+		if (kind === 'boss' || kind === 'partner') return `charcard.${id}`;
 		return `card.back.${id === 'normal' ? 'default' : id}`;
 	}
 

@@ -247,14 +247,14 @@ export class RulesScene extends Phaser.Scene {
 	teams(c: Phaser.GameObjects.Container): void {
 		const seat = (x: number, key: string, name: string, role: I18nKey, color: number) => {
 			c.add([
-				this.add.image(x, 108, tex(this, key)),
+				this.add.image(x, 102, tex(this, key)).setDisplaySize(48, 64),
 				this.label(x, 136, name),
 				this.label(x, 150, t(role), color),
 			]);
 		};
-		seat(-210, 'portrait.bia.neutral', t('char.bia'), 'rules.role.rival', PALETTE.bad);
-		seat(70, 'portrait.tonhao.neutral', t('char.tonhao'), 'rules.role.partner', PALETTE.good);
-		seat(210, 'portrait.ze.neutral', t('char.ze'), 'rules.role.rival', PALETTE.bad);
+		seat(-210, 'charcard.bia', t('char.bia'), 'rules.role.rival', PALETTE.bad);
+		seat(70, 'charcard.tonhao', t('char.tonhao'), 'rules.role.partner', PALETTE.good);
+		seat(210, 'charcard.ze', t('char.ze'), 'rules.role.rival', PALETTE.bad);
 		c.add([
 			this.cardImg('3s', -90, 108, 0.6),
 			this.cardImg('Kh', -70, 108, 0.6),

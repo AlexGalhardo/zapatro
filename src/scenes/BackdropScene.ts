@@ -1,11 +1,14 @@
 import Phaser from 'phaser';
-import { PALETTE } from '../config/palette';
+import { BACKDROP_BRIGHTNESS, PALETTE } from '../config/palette';
 import { trackZoom } from '../core/viewport';
 
 /** Painted backdrops of public/assets/gfx/bg (scripts/portraits.ts); `main` is every other screen. */
 export type BackdropKey = 'main' | 'shop' | 'partner';
 const REGISTRY_KEY = 'backdrop';
-const DIM: Record<BackdropKey, number> = { main: 0.4, shop: 0.15, partner: 0.2 };
+/** Grey multiplied over the painting (same factor on every channel keeps the colours). */
+const DIM_TINT = Phaser.Display.Color.GetColor(
+	...([0, 0, 0].map(() => Math.round(255 * BACKDROP_BRIGHTNESS)) as [number, number, number]),
+);
 
 /** Picks the painting behind the current screen (the Backdrop scene sits under every other). */
 export function setBackdrop(scene: Phaser.Scene, key: BackdropKey): void {
@@ -47,8 +50,7 @@ export class BackdropScene extends Phaser.Scene {
 	create(): void {
 		const cam = this.cameras.main;
 		cam.setBackgroundColor(PALETTE.bgNeutral);
-		const image = this.add.image(0, 0, 'img.bg.main').setVisible(false);
-		const dim = this.add.rectangle(0, 0, 10, 10, PALETTE.night, 0.4).setOrigin(0);
+		const image = this.add.image(0, 0, 'img.bg.main').setVisible(false).setTint(DIM_TINT);
 		let size = { width: 0, height: 0 };
 		const show = (): void => {
 			const key = (this.game.registry.get(REGISTRY_KEY) as BackdropKey | undefined) ?? 'main';
@@ -59,7 +61,6 @@ export class BackdropScene extends Phaser.Scene {
 			image.setTexture(tex);
 			image.setScale(Math.max(size.width / image.width, size.height / image.height));
 			image.setPosition(size.width / 2, size.height / 2);
-			dim.setSize(size.width, size.height).setFillStyle(PALETTE.night, DIM[key]);
 		};
 		trackZoom(this, cam, (view) => {
 			cam.centerOn(view.width / 2, view.height / 2);

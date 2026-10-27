@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CARD_W, cardArt, portraitBg, tex } from '../art/flat';
+import { CARD_W, cardArt, tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
 import { IS_DEMO } from '../config/features';
 import { inkOn, PALETTE, shade, toCss } from '../config/palette';
@@ -372,33 +372,30 @@ export class RunScene extends Phaser.Scene {
 			const x = cx + (i - (offer.length - 1) / 2) * 156;
 			const x0 = x - 73;
 			this.box(x0, 50, 146, 204);
-			const art = `img.card.${id}`;
-			if (this.textures.exists(art)) {
-				// The painted card, cropped to the slot: the face and the shoulders of the tall art.
-				const scale = 138 / 480;
-				const cropY = 20;
-				this.body.add(
-					this.add
-						.image(x0 + 4, 54 - cropY * scale, art)
-						.setOrigin(0, 0)
-						.setScale(scale)
-						.setCrop(0, cropY, 480, 78 / scale),
-				);
-			} else {
-				const g = this.add.graphics();
-				g.fillStyle(portraitBg(id), 1).fillRoundedRect(x0 + 4, 54, 138, 78, RADIUS.button);
-				this.body.add(g);
-				this.body.add(
-					this.add.image(x, 93, tex(this, `portrait.${id}.neutral`)).setScale(78 / 48),
-				);
-			}
-			this.put(x, 141, t(`char.${id}` as I18nKey), 11);
+			// The character card (3:4) on the left; name and play style beside it; perk and flaw below.
+			const [cw, ch] = [66, 88];
+			this.body.add(
+				this.add
+					.image(x0 + 6 + cw / 2, 56 + ch / 2, tex(this, `charcard.${id}`))
+					.setDisplaySize(cw, ch),
+			);
+			const rx = x0 + 6 + cw + 6 + (146 - 6 - cw - 6 - 6) / 2;
+			const rw = 146 - 6 - cw - 6 - 6;
+			this.put(rx, 66, t(`char.${id}` as I18nKey), 10, PALETTE.textLight, [0.5, 0.5], rw);
 			const line = this.add.graphics();
-			line.fillStyle(PALETTE.manilha, 1).fillRect(x - 44, 151, 88, 2);
+			line.fillStyle(PALETTE.manilha, 1).fillRect(rx - rw / 2 + 4, 76, rw - 8, 2);
 			this.body.add(line);
+			const style = this.put(
+				rx,
+				80,
+				t(`partner.style.${COMPANIONS[id].style}` as I18nKey),
+				6,
+				PALETTE.manilha,
+				[0.5, 0],
+				rw,
+			);
 			// Each block starts under the one before, whatever its wrap: the cards keep one rhythm.
 			const traits: [string, number][] = [
-				[t(`partner.style.${COMPANIONS[id].style}` as I18nKey), PALETTE.manilha],
 				[perkText(id), PALETTE.good],
 				[flawText(id), PALETTE.bad],
 				...(hasPassive(id)
@@ -408,7 +405,7 @@ export class RunScene extends Phaser.Scene {
 						][])
 					: []),
 			];
-			let ty = 155;
+			let ty = Math.max(56 + ch + 4, style.getBounds().bottom + 3);
 			for (const [s, color] of traits)
 				ty = this.put(x, ty, s, 6.5, color, [0.5, 0], 136).getBounds().bottom + GAP.list;
 			this.button(
@@ -1093,7 +1090,9 @@ export class RunScene extends Phaser.Scene {
 			}
 			if (size === 'boss' && boss) {
 				add(
-					this.add.image(cx, y0 + 92, tex(this, `boss.${boss}`)).setScale(0.78),
+					this.add
+						.image(cx, y0 + 92, tex(this, `charcard.${boss}`))
+						.setDisplaySize(60, 80),
 					txt(cx, y0 + 138, t(`boss.${boss}.name` as I18nKey), 8, PALETTE.textLight),
 				);
 				add(
@@ -1110,8 +1109,8 @@ export class RunScene extends Phaser.Scene {
 			} else if (now) {
 				run.rivals.chars.forEach((id, k) => {
 					const face = this.add
-						.image(cx + (k ? 33 : -33), y0 + 100, tex(this, `portrait.${id}.neutral`))
-						.setScale(1.2)
+						.image(cx + (k ? 33 : -33), y0 + 100, tex(this, `charcard.${id}`))
+						.setDisplaySize(44, 58)
 						.setInteractive();
 					if (isCompanion(id))
 						face.on('pointerover', () =>
@@ -1497,13 +1496,10 @@ export class RunScene extends Phaser.Scene {
 		const groupW = statsX + Math.max(...stats.map((s) => s.width));
 		const gx = Math.round(cx - groupW / 2);
 		for (const s of stats) s.setX(gx + statsX);
-		const g = this.add.graphics();
-		g.fillStyle(portraitBg(run.partner), 1).fillRoundedRect(gx, 104, face, face, RADIUS.panel);
-		this.body.add(g);
 		this.body.add(
 			this.add
-				.image(gx + face / 2, 142, tex(this, `portrait.${run.partner}.neutral`))
-				.setScale(64 / 48),
+				.image(gx + face / 2, 142, tex(this, `charcard.${run.partner}`))
+				.setDisplaySize((face * 3) / 4, face),
 		);
 		this.put(gx + face / 2, 190, t(`char.${run.partner}` as I18nKey), 9);
 		// The demo pitch for the full game sits between the stats and the Manhas.

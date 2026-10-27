@@ -134,8 +134,10 @@ const BACKGROUNDS: Record<string, string> = {
 	partner: 'background-1.png',
 	main: 'background-3.png',
 };
-/** Card backs: 2:3 art cropped to the middle 3:4 (the card is 48×64). */
+/** Card backs: the whole 2:3 painting, frame included, never cropped (src/art/flat.ts draws it whole). */
+/** `joker` is the joker's face (card-joker.png): same 2:3 size and treatment as a back. */
 const BACKS: Record<string, string> = {
+	joker: 'card-joker.png',
 	default: 'card-1.png',
 	interior: 'card-2.png',
 	blefe: 'card-3.png',
@@ -166,10 +168,14 @@ async function scenery(): Promise<void> {
 			.resize(1920, name.startsWith('menu-') ? undefined : 1080, { fit: 'cover' })
 			.webp({ quality: 78 })
 			.toFile(`${G}/bg/${name}.webp`);
+	// The dark corners outside the painted card are cut by a rounded mask (alpha), nothing else.
+	const [bw, bh] = [288, 432];
+	const mask = Buffer.from(
+		`<svg xmlns="http://www.w3.org/2000/svg" width="${bw}" height="${bh}"><rect width="${bw}" height="${bh}" rx="16" fill="#fff"/></svg>`,
+	);
 	for (const [name, file] of Object.entries(BACKS))
-		await sharp(`${SRC_GTA}/${file}`)
-			.extract({ left: 115, top: 230, width: 794, height: 1058 })
-			.resize(288, 384)
+		await sharp(await sharp(`${SRC_GTA}/${file}`).resize(bw, bh).toBuffer())
+			.composite([{ input: mask, blend: 'dest-in' }])
 			.webp({ quality: 85 })
 			.toFile(`${G}/back/${name}.webp`);
 }

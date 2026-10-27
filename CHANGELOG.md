@@ -22,6 +22,8 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **ui:** every character is now a rectangular 3:4 card (`charcard.<id>`): table seats, partner choice, run rivals and boss, end of run, Almanac and Rules; characters without painted art show the whole pixel portrait on their colour. The NPC hands use the whole 2:3 card-back painting (32×48), unstretched, and the big back and the joker face (`card-joker.png`) use the same 2:3 treatment.
+- **ui:** the main menu is the full painting like the concept art, with the game's buttons laid over the painted ones; speech bubbles clear of cards and portraits; the manual button replaces the Manha list.
 - **art:** the card back is painted (`card-1`; `card-2` and `card-3` for the Interior and Blefe decks) with the frame and corners still drawn by code; the table felt is painted (`board-game-1`) and tinted blue and red in the later Championships.
 - **ui:** the partner cards show the painted card art; the shop title sits on a plate over the painted counter.
 - **docs:** display names of the cast in the docs (Bruto, Cida, Jhony, Nino, Chico, Beti, Mia, Sheila, Ayla); ids in code unchanged. `docs/balancing.md` has the 1.0 balance review (no number changed).

@@ -135,7 +135,8 @@ const SEAT_POS: Record<Seat, { portrait: [number, number]; play: [number, number
 };
 
 /** Avatars on the table: characters (48 px art) and bosses (96 px art) both end up this wide. */
-const AVATAR = 64;
+/** A seat's character card, 3:4 like the painted art; the name plate hangs under it. */
+const SEAT_CARD = { w: 54, h: 72 };
 
 /**
  * Per seat: top-left of the avatar card (portrait + name plate below it), top-left of the first
@@ -160,7 +161,7 @@ const SEAT_UI: Record<
 	1: {
 		avatar: [554, 130],
 		backs: [513, 112],
-		step: [0, 38.5],
+		step: [0, 36],
 		// Above the portrait and right of the card-back column, inside the felt.
 		bubble: [626, 127],
 		tail: 'bottom',
@@ -168,11 +169,11 @@ const SEAT_UI: Record<
 		wrap: 62,
 	},
 	// The partner's group ends 16 px (2 × GAP.panel) left of the HUD block.
-	2: { avatar: [313, 14], backs: [382, 45], step: [39, 0], bubble: [382, 25], tail: 'left' },
+	2: { avatar: [313, 14], backs: [382, 45], step: [38, 0], bubble: [382, 25], tail: 'left' },
 	3: {
 		avatar: [163, 130],
 		backs: [236, 112],
-		step: [0, 38.5],
+		step: [0, 36],
 		bubble: [156, 127],
 		tail: 'bottom',
 		anchor: [0, 1],
@@ -687,24 +688,29 @@ export class TableScene extends Phaser.Scene {
 			const id = chars[seat];
 			const ui = SEAT_UI[seat];
 			const [ax, ay] = ui.avatar;
-			const key = tex(this, this.portraitKey(id, 'neutral'));
-			const portrait = this.add.image(ax + AVATAR / 2, ay + AVATAR / 2, key);
-			portrait.setScale(AVATAR / portrait.width);
+			const portrait = this.add
+				.image(ax + SEAT_CARD.w / 2, ay + SEAT_CARD.h / 2, tex(this, `charcard.${id}`))
+				.setDisplaySize(SEAT_CARD.w, SEAT_CARD.h);
 			// The name plate hangs under the portrait, part of the same card.
 			const plate = this.add.graphics();
 			plate
 				.fillStyle(PALETTE.panelDark, 0.96)
-				.fillRoundedRect(ax, ay + AVATAR - 3, AVATAR, 17, { tl: 0, tr: 0, bl: 5, br: 5 });
+				.fillRoundedRect(ax, ay + SEAT_CARD.h - 3, SEAT_CARD.w, 17, {
+					tl: 0,
+					tr: 0,
+					bl: 5,
+					br: 5,
+				});
 			const name = this.add
 				.text(
-					ax + AVATAR / 2,
-					ay + AVATAR + 5.5,
+					ax + SEAT_CARD.w / 2,
+					ay + SEAT_CARD.h + 5.5,
 					this.seatNames[seat] ||
 						t((isBoss(id) ? `boss.${id}.name` : `char.${id}`) as I18nKey),
 					this.bold(8, isBoss(id) ? PALETTE.bad : PALETTE.textLight),
 				)
 				.setOrigin(0.5);
-			while (name.width > AVATAR - 6 && name.style.fontSize !== '5px')
+			while (name.width > SEAT_CARD.w - 6 && name.style.fontSize !== '5px')
 				name.setFontSize(Number.parseInt(String(name.style.fontSize), 10) - 1);
 			const backs = this.add.container(...ui.backs);
 			const [bx, by] = ui.bubble;
@@ -731,7 +737,7 @@ export class TableScene extends Phaser.Scene {
 				.setDepth(DEPTH.speech);
 			// Your partner's signal, as a category mark in a round bubble at the card's corner.
 			const expression = this.add
-				.container(ax + AVATAR - 2, ay + 4, [
+				.container(ax + SEAT_CARD.w - 2, ay + 4, [
 					this.add.circle(0, 0, 11, PALETTE.cardFace),
 					this.add
 						.text(0, 0, '', { ...this.bold(13, PALETTE.textDark), shadow: undefined })
@@ -1592,7 +1598,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		else
 			v.tail
 				.setPosition(
-					Math.min(Math.max(ui.avatar[0] + AVATAR / 2, b.left + 9), b.right - 9),
+					Math.min(Math.max(ui.avatar[0] + SEAT_CARD.w / 2, b.left + 9), b.right - 9),
 					b.bottom + 2,
 				)
 				.setAngle(105);
@@ -1603,19 +1609,18 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		});
 	}
 
-	/** Bosses have one big portrait (`boss.<id>`); characters have expressions. */
-	private portraitKey(id: string, expr: string): string {
-		return isBoss(id) ? `boss.${id}` : `portrait.${id}.${expr}`;
-	}
-
-	private face(seat: Seat, expr: Expression, ms: number = TABLE_TIMING.signalFace): void {
+	/** A reaction (a signal caught, a bet): the painted card has one pose, so it pops instead. */
+	private face(seat: Seat, _expr: Expression, ms: number = TABLE_TIMING.signalFace): void {
 		const v = this.seats.get(seat);
-		// Bosses have one pose.
-		if (!v || isBoss(v.charId)) return;
-		v.portrait.setTexture(tex(this, `portrait.${v.charId}.${expr}`));
-		this.time.delayedCall(this.dur(ms), () =>
-			v.portrait.setTexture(tex(this, `portrait.${v.charId}.neutral`)),
-		);
+		if (!v || comfort.reduceFlashes) return;
+		const base = v.portrait.scaleX;
+		this.tweens.add({
+			targets: v.portrait,
+			scale: base * 1.08,
+			duration: this.dur(Math.min(ms, 260)),
+			yoyo: true,
+			ease: 'Quad.easeOut',
+		});
 	}
 
 	/**

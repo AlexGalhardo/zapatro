@@ -17,6 +17,9 @@ type Ctx = CanvasRenderingContext2D;
 export const CARD_W = 48;
 export const CARD_H = 64;
 export const PORTRAIT = 48;
+/** The small card-back of an NPC's hand: the whole 2:3 painting, never cropped or stretched. */
+export const BACK_TILE_W = 32;
+export const BACK_TILE_H = 48;
 export const ICON = 48;
 
 /** Raster scale: the logical-to-screen zoom of this display (2–6). */
@@ -257,6 +260,15 @@ export const markedArt = (key: string, mark: 'm' | 'z'): string => `${key}.${mar
 
 /** The joker: a purple card with a gold star and the three-tip hat over it. */
 function drawJoker(ctx: Ctx): void {
+	// The painted face (back/joker.webp) is 2:3 like the painted back: same size, centred.
+	const painted = backBitmaps.get('joker');
+	if (painted) {
+		const pw = (CARD_H * 2) / 3;
+		ctx.imageSmoothingEnabled = true;
+		ctx.imageSmoothingQuality = 'high';
+		ctx.drawImage(painted, (CARD_W - pw) / 2, 0, pw, CARD_H);
+		return;
+	}
 	cardBody(ctx, PALETTE.jokerPurple);
 	const tips = [PALETTE.suitRed, PALETTE.manilha, PALETTE.suitGreen];
 	tips.forEach((c, i) => {
@@ -345,20 +357,21 @@ const BACK_COLOR: Record<string, number> = {
 	viciado: 0x2e5f8f,
 };
 
-function drawBack(ctx: Ctx, deck: string): void {
+/**
+ * The painted back is a 2:3 picture: drawn whole (frame included) at the height of the box and
+ * centred, so the 48×64 back is a little narrower than a face and the NPC tiles are exactly 2:3;
+ * nothing is cropped or stretched.
+ */
+function drawBack(ctx: Ctx, deck: string, w = CARD_W, h = CARD_H): void {
 	const painted = backBitmaps.get(deck);
 	if (painted) {
-		box(ctx, 0, 0, CARD_W, CARD_H, 5, PALETTE.inkPlum);
-		ctx.save();
-		ctx.beginPath();
-		ctx.roundRect(1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card);
-		ctx.clip();
+		const pw = Math.min(w, (h * 2) / 3);
 		ctx.imageSmoothingEnabled = true;
 		ctx.imageSmoothingQuality = 'high';
-		ctx.drawImage(painted, 0, 0, CARD_W, CARD_H);
-		ctx.restore();
+		ctx.drawImage(painted, (w - pw) / 2, 0, pw, h);
 		return;
 	}
+	if (w !== CARD_W || h !== CARD_H) ctx.scale(w / CARD_W, h / CARD_H);
 	const c = BACK_COLOR[deck] ?? PALETTE.cardBack;
 	box(ctx, 0, 0, CARD_W, CARD_H, 5, shade(c, -0.35));
 	box(ctx, 1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card, c);
@@ -834,6 +847,8 @@ export function registerPortraits(scene: Phaser.Scene): void {
 			iconBitmaps.set(key.slice(ICON_PREFIX.length), source());
 		else if (key.startsWith(BACK_PREFIX))
 			backBitmaps.set(key.slice(BACK_PREFIX.length), source());
+		else if (key.startsWith(CHAR_CARD_PREFIX))
+			charCardBitmaps.set(key.slice(CHAR_CARD_PREFIX.length), source());
 	}
 	// A portrait or icon asked for before this ran (a scene started while Boot was still
 	// loading) was cached with the drawn fallback; redraw it in place now that the PNGs exist.
@@ -860,7 +875,36 @@ export const ICON_PREFIX = 'img.icon.';
 export const PORTRAIT_PREFIX = 'img.portrait.';
 /** Painted card backs (public/assets/gfx/back, scripts/portraits.ts); decks without one stay vector. */
 export const BACK_PREFIX = 'img.back.';
+/** Painted 3:4 character cards (public/assets/gfx/card, scripts/portraits.ts). */
+export const CHAR_CARD_PREFIX = 'img.card.';
+const charCardBitmaps = new Map<string, CanvasImageSource>();
+/** Logical size of a character card (`charcard.<id>`): 3:4, like the painted art. */
+export const CHAR_W = 48;
+export const CHAR_H = 64;
 const backBitmaps = new Map<string, CanvasImageSource>();
+
+/** A character as a portrait card (3:4): the painted art, or the pixel portrait on its colour. */
+function drawCharCard(ctx: Ctx, id: string, w: number, h: number): void {
+	const look = LOOKS[id] ?? FALLBACK;
+	const rad = w * 0.1;
+	ctx.save();
+	ctx.beginPath();
+	ctx.roundRect(0, 0, w, h, rad);
+	ctx.clip();
+	const painted = charCardBitmaps.get(id);
+	const pixel = bitmaps.get(id);
+	if (painted) {
+		ctx.imageSmoothingEnabled = true;
+		ctx.imageSmoothingQuality = 'high';
+		ctx.drawImage(painted, 0, 0, w, h);
+	} else if (pixel) {
+		// No painted card yet: the pixel portrait, whole and unstretched, on its colour.
+		box(ctx, 0, 0, w, h, 0, look.bg);
+		ctx.imageSmoothingEnabled = false;
+		ctx.drawImage(pixel, 0, (h - w) / 2, w, w);
+	} else face(ctx, look, 'neutral', 0, (h - w) / 2, w);
+	ctx.restore();
+}
 
 function drawAvatar(ctx: Ctx, id: string, expr: string, s: number, boss: boolean): void {
 	const look = LOOKS[id] ?? FALLBACK;
@@ -1190,9 +1234,10 @@ function drawRoom(ctx: Ctx, id: string, w: number, h: number): void {
 /** Logical size of a key (docs/visual.md). */
 function sizeOf(key: string): [number, number] {
 	if (key.startsWith('icon.')) return [24, 24];
-	if (key === 'card.back.tile') return [34, 32];
+	if (key === 'card.back.tile') return [BACK_TILE_W, BACK_TILE_H];
 	if (key.startsWith('card.') || key.startsWith('pack.')) return [CARD_W, CARD_H];
 	if (key.startsWith('portrait.')) return [PORTRAIT, PORTRAIT];
+	if (key.startsWith('charcard.')) return [CHAR_W, CHAR_H];
 	if (key.startsWith('boss.')) return [96, 96];
 	if (key.startsWith('bg.')) return [160, 90];
 	if (key === 'ui.slot.manha') return [52, 52];
@@ -1207,8 +1252,7 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 	const [kind = '', a = '', b = ''] = parts;
 	if (key === 'card.back.tile') {
 		// A card back squeezed into a tile: the hands of the other players.
-		ctx.scale(w / CARD_W, h / CARD_H);
-		drawBack(ctx, 'default');
+		drawBack(ctx, 'default', w, h);
 	} else if (key.startsWith('card.back')) drawBack(ctx, b || 'default');
 	else if (key.startsWith('card.mod.')) drawMod(ctx, b);
 	else if (key === 'card.joker') drawJoker(ctx);
@@ -1225,6 +1269,7 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 			ctx.drawImage(bmp, 0, 0, w, h);
 		} else drawVectorIcon(ctx, a, w);
 	} else if (kind === 'portrait') drawAvatar(ctx, a, b || 'neutral', w, false);
+	else if (kind === 'charcard') drawCharCard(ctx, a, w, h);
 	else if (kind === 'boss') drawAvatar(ctx, a, 'neutral', w, true);
 	else if (kind === 'pack') drawPack(ctx, a);
 	else if (kind === 'bg') drawRoom(ctx, a, w, h);
@@ -1270,7 +1315,7 @@ export function drawKey(ctx: Ctx, key: string): void {
 export function tex(scene: Phaser.Scene, key: string): string {
 	const [w, h] = sizeOf(key);
 	// Portraits are shown at 2× on the table: they get twice the raster.
-	const extra = key.startsWith('portrait.') ? 2 : 1;
+	const extra = key.startsWith('portrait.') || key.startsWith('charcard.') ? 2 : 1;
 	return canvasTex(scene, key, w, h, (ctx) => draw(ctx, key, w, h), extra);
 }
 
