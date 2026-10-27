@@ -26,6 +26,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **ui:** a signal shown on a seat's card (partner, or a rival's caught one) is the bare signal icon, without the round cream backing; its dark outline keeps it readable on the felt and on the portrait. The picker and the manual already showed it bare.
 - **ui:** the table's sidebar opens with the HUD card (Manha slots spread over its width and shrinking to one row with Mais Manha, Fame, our tentos, their quedas); the Championship card moves to the felt's top right as "Campeonato N / Mesa 1 · Mesa 2 · Chefão" (EN "Table 1 · Table 2 · Boss"; the quick match keeps "Partida rápida"); the boss's rule lives in the "in play" box. The Manilha/ZAP box and the money card are hidden by flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL` in `src/config/features.ts`); the code stays.
 - **ui:** Settings in one style: vector icons only (`gear` and `sound` now drawn by code everywhere, the pixel ones are skipped; new `arrowLeft`, `arrowRight`, `chevron`), volumes as ◀ 80% ▶ rows in 10% steps like Language and Speed, one inner padding (`INSET`) for cards, rows, headers and Back, every row the same height and long labels shrink clear of their control.
 - **rules:** only the player answers the rivals' truco (accept, run or raise); the AI partner never does, but still calls truco on his turn by his style. The "Partner may run from a truco" option is gone (old saves ignore the field). LAN tables with a human partner keep answering per human.

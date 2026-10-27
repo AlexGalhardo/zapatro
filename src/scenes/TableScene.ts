@@ -1859,7 +1859,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			Phaser.GameObjects.Image,
 		];
 		mark.setText('');
-		disc.setRadius(14);
+		// Only the gesture face and its card badge: no round backing (their dark outline reads
+		// on the felt and on the portrait).
+		disc.setVisible(false);
 		icon.setTexture(tex(this, `icon.signal.${sign}`))
 			.setDisplaySize(26, 26)
 			.setVisible(true);
