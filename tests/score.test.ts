@@ -139,7 +139,7 @@ describe('scoring (A2, D-02)', () => {
 	});
 
 	test('table goal and outcome (§5.10)', () => {
-		expect(CHAMPIONSHIP_GOALS).toEqual([220, 280, 360, 450, 580, 730, 920, 1170]);
+		expect(CHAMPIONSHIP_GOALS).toEqual([130, 170, 220, 270, 350, 440, 550, 700]);
 		expect(tableGoal(1, 'small')).toBe(CHAMPIONSHIP_GOALS[0]);
 		expect(tableGoal(1, 'big')).toBe(Math.round(CHAMPIONSHIP_GOALS[0] * 1.5));
 		expect(tableGoal(8, 'boss')).toBe(CHAMPIONSHIP_GOALS[7] * 2);

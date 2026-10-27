@@ -413,3 +413,11 @@ Medição (`bun scripts/balance-partners.ts --runs 1000`, bot bom, Estaca 1, see
 | Sheila | 26,5% | 5,45 | 85,0 |
 
 `bun run balance` (3 seeds × 500): bot bom 22,6% / 26,0% / 26,2%, aleatório 0%, 7,0 mãos por mesa: passa. Para calibrar: Nino fica muito acima (o +1 Mult por mesa não tem teto; testar teto de +5 ou +1 a cada 2 mesas), Beti e Jhony abaixo de 20% (Renovar, que o bot usa) e Bruto/Mia/Jhony perto do piso.
+
+## Metas para o release 0.13.0 (2026-10-27)
+
+Com a loja simples (`SHOP_SIMPLE`, 4 ofertas, sem Renovar nem pacotes) e a seleção de mesa desligada (`TABLE_SELECT=false`), o bot bom caiu para 13,2 · 10,8 · 8,6% (meta D-39: 20–35%). A causa é a economia mais curta, não os parceiros. Ajuste de metas: `CHAMPIONSHIP_GOALS` de 220 · 280 · 360 · 450 · 580 · 730 · 920 · 1170 para **130 · 170 · 220 · 270 · 350 · 440 · 550 · 700** (×0,6 da fonte, que já era ×2 de 2026-10-25). Teste de sim (1000 runs, seed 1): ×0,7 → 20,3%; ×0,6 → 24,7%.
+
+Gate `bun run balance` após o ajuste: bot bom **24,4 · 25,4 · 24,4%** (antes 13,2 · 10,8 · 8,6%); aleatório 0,2 · 0,0 · 0,0%; 6,36 · 6,36 · 6,27 mãos por mesa. PASS nas 3 seeds.
+
+Nota: esta mudança reverte parte da dobra de metas de 2026-10-25, a pedido da calibração para o release 0.13.0; o dev aprovou calibrar antes do release.

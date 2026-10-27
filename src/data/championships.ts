@@ -20,7 +20,7 @@ export type ChampionshipId = (typeof CHAMPIONSHIPS)[number];
  * ~×1.27 per Championship (A5, D-60), doubled on 2026-10-25 at the dev's request (harder, longer
  * tables; docs/balancing.md). Every table goal, Stake and endless goal derives from these.
  */
-export const CHAMPIONSHIP_GOALS = [220, 280, 360, 450, 580, 730, 920, 1170] as const;
+export const CHAMPIONSHIP_GOALS = [130, 170, 220, 270, 350, 440, 550, 700] as const;
 
 /** Endless mode (after Championship 8): each Championship multiplies the last goal by this. */
 export const ENDLESS_GOAL_GROWTH = 1.4;
