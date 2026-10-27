@@ -1266,6 +1266,10 @@ export class RunScene extends Phaser.Scene {
 		const mid = (left + right) / 2;
 		const bigW = 153;
 		const bigH = 36;
+		// The sign hangs over the painted counter: a plate keeps the gold title readable on it.
+		const plate = this.add.graphics();
+		drawPanel(plate, mid - 150, 6, 300, 42, { radius: RADIUS.frame, shadow: SHADOW.panel });
+		this.body.add(plate);
 		this.screenTitle(mid, t('run.shop'), 'cart');
 		// "Próxima mesa" first: Enter never buys by accident.
 		this.button(
