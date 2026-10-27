@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { PALETTE, RARITY_COLOR, shade, toCss } from '../config/palette';
-import { RADIUS, SHADOW } from '../config/ui';
+import { PANEL_LOOK, RADIUS, SHADOW } from '../config/ui';
 import { MANHA_BY_ID } from '../data/manhas';
 import { type Card, isSpecial } from '../logic/truco/cards';
 import { drawSignalIcon, drawVectorIcon, VECTOR_ICONS } from './icons';
@@ -95,14 +95,35 @@ export function panelTex(
 	shadow = 0,
 ): string {
 	const key = `ui.panel.${w}x${h}.${fill.toString(16)}.${radius}.${shadow}`;
-	return canvasTex(scene, key, w, h + shadow, (ctx) => {
+	const L = PANEL_LOOK;
+	const soft = shadow ? L.soft : 0;
+	return canvasTex(scene, key, w, h + shadow + soft, (ctx) => {
 		const r = Math.min(radius, w / 2, h / 2);
 		if (shadow) {
+			ctx.globalAlpha = L.softAlpha;
+			box(ctx, 0, shadow + soft, w, h, r, PALETTE.shadow);
 			ctx.globalAlpha = SHADOW.panelAlpha;
 			box(ctx, 0, shadow, w, h, r, PALETTE.shadow);
 			ctx.globalAlpha = 1;
 		}
-		box(ctx, 0, 0, w, h, r, fill);
+		// The button look (PANEL_LOOK): gradient, top highlight, thin dark border.
+		const g = ctx.createLinearGradient(0, 0, 0, h);
+		g.addColorStop(0, css(shade(fill, L.light)));
+		g.addColorStop(1, css(shade(fill, L.dark)));
+		ctx.fillStyle = g;
+		ctx.beginPath();
+		ctx.roundRect(0, 0, w, h, r);
+		ctx.fill();
+		ctx.globalAlpha = L.highlightAlpha;
+		ctx.fillStyle = css(shade(fill, L.highlight));
+		ctx.fillRect(r, 1, Math.max(0, w - 2 * r), 1);
+		ctx.globalAlpha = L.borderAlpha;
+		ctx.strokeStyle = css(shade(fill, L.border));
+		ctx.lineWidth = 1;
+		ctx.beginPath();
+		ctx.roundRect(0.5, 0.5, w - 1, h - 1, Math.max(0, r - 0.5));
+		ctx.stroke();
+		ctx.globalAlpha = 1;
 	});
 }
 

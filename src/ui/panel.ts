@@ -1,10 +1,11 @@
 import type Phaser from 'phaser';
-import { PALETTE, toCss } from '../config/palette';
-import { RADIUS, SHADOW } from '../config/ui';
+import { PALETTE, shade, toCss } from '../config/palette';
+import { PANEL_LOOK, RADIUS, SHADOW } from '../config/ui';
 import { menuPx, TEXT_SHADOW, TITLE_FONT } from './font';
 
 /**
- * Flat panel: a rounded block over a solid drop shadow, optionally with a darker header band.
+ * Panel with the buttons' depth (PANEL_LOOK): a rounded block over a solid and a soft shadow,
+ * optionally with a darker header band.
  * `fill` changes the colour (coloured boards, the HUD plates).
  */
 export function drawPanel(
@@ -17,8 +18,28 @@ export function drawPanel(
 ): void {
 	const r = Math.min(opts.radius ?? RADIUS.panel, w / 2, h / 2);
 	const drop = opts.shadow ?? SHADOW.panel;
-	if (drop) g.fillStyle(PALETTE.shadow, SHADOW.panelAlpha).fillRoundedRect(x, y + drop, w, h, r);
-	g.fillStyle(opts.fill ?? PALETTE.panel, opts.alpha ?? 1).fillRoundedRect(x, y, w, h, r);
+	const fill = opts.fill ?? PALETTE.panel;
+	const alpha = opts.alpha ?? 1;
+	const L = PANEL_LOOK;
+	if (drop) {
+		g.fillStyle(PALETTE.shadow, L.softAlpha).fillRoundedRect(x, y + drop + L.soft, w, h, r);
+		g.fillStyle(PALETTE.shadow, SHADOW.panelAlpha).fillRoundedRect(x, y + drop, w, h, r);
+	}
+	// The button look (PANEL_LOOK): base colour, a gradient over the straight middle (the rounded
+	// ends keep the base, a step the eye does not catch), a top highlight and a thin dark border.
+	g.fillStyle(fill, alpha).fillRoundedRect(x, y, w, h, r);
+	if (h > 2 * r) {
+		const top = shade(fill, L.light);
+		const base = shade(fill, L.dark);
+		g.fillGradientStyle(top, top, base, base, alpha).fillRect(x, y + r, w, h - 2 * r);
+	}
+	g.fillStyle(shade(fill, L.highlight), L.highlightAlpha * alpha).fillRect(
+		x + r,
+		y + 1,
+		w - 2 * r,
+		1,
+	);
+	g.lineStyle(1, shade(fill, L.border), L.borderAlpha * alpha).strokeRoundedRect(x, y, w, h, r);
 	if (opts.header)
 		g.fillStyle(PALETTE.panelDark, 1).fillRoundedRect(x, y, w, opts.header, {
 			tl: r,

@@ -48,6 +48,24 @@ export const SHADOW = {
 	buttonAlpha: 0.6,
 } as const;
 
+/**
+ * The panels' depth, like the buttons: a vertical gradient from the panel's colour (top lighter,
+ * base darker), a 1 px highlight inside the top edge, a thin dark border, the solid drop shadow
+ * and a softer, wider shadow under it. Inner panels (no drop shadow) keep the gradient, highlight
+ * and border only.
+ */
+export const PANEL_LOOK = {
+	light: 0.07,
+	dark: -0.08,
+	highlight: 0.22,
+	highlightAlpha: 0.55,
+	border: -0.5,
+	borderAlpha: 0.7,
+	/** The soft shadow: extra offset below the solid one and its opacity. */
+	soft: 2,
+	softAlpha: 0.18,
+} as const;
+
 /** Draw order on the table, bottom to top. */
 export const DEPTH = {
 	/** Bars, ovals and dots redrawn over the sidebar and HUD panels. */
