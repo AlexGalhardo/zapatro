@@ -934,7 +934,7 @@ export const en = {
 		'The deck has 40 cards (no 8, 9 or 10). From weakest to strongest: 4, 5, 6, 7, Q, J, K, A, 2, 3. Suits do not matter for common cards: two 3s tie.\nExample: a K beats a J, but loses to an A, a 2 or a 3. In the game, hover a card in your hand to see its strength in that hand.',
 	'rules.manilha.title': 'Vira and manilha',
 	'rules.manilha.body':
-		'After dealing, one card is turned face up: the vira. The rank right above it is the manilha, and the four manilhas beat every other card. Among them the suit decides: pica-fumo (♦) < espadilha (♠) < copas (♥) < paus (♣). Above them all is the ZAP: the clubs card two ranks above the vira.\nExample: vira K → the As are the manilhas and the ZAP is the 2♣, as in the picture. If the vira is a 3, it wraps around: manilha 4, ZAP 5♣. Manilhas glow gold at the table; the ZAP glows in every color.',
+		'After dealing, one card is turned face up: the vira. The rank right above it is the manilha, and the four manilhas beat every other card. Among them the suit decides: pica-fumo (♦) < espadilha (♠) < copas (♥) < paus (♣). Above them all is the ZAP: the clubs card two ranks above the vira.\nExample: vira K → the As are the manilhas and the ZAP is the 2♣. If the vira is a 3, it wraps around: manilha 4, ZAP 5♣. Manilhas glow gold at the table; the ZAP glows in every color.',
 	'rules.tricks.title': 'Tricks (vazas)',
 	'rules.tricks.body':
 		'Each hand has up to 3 tricks. In turn (counter-clockwise), each player puts down one card; the strongest card wins the trick for its team, and the winner leads the next one. Win 2 tricks and you take the hand.\nTies ("cangou"): if the 1st trick ties, the 2nd decides; if the 2nd or 3rd ties, whoever won the 1st takes it; three ties and nobody scores. From the 2nd trick on you may play a card face down: it hides your card but never wins.',
@@ -946,10 +946,10 @@ export const en = {
 		'Before your first card you may send your partner one secret signal (S, or the Signal button), and your partner sends you theirs by changing face. Rivals catch a signal 20% of the time and learn what you have.\nA signal can be a bluff: the rivals may fall for it, but so does your partner (except Cida).',
 	'rules.score.title': 'Points: Chips × Mult',
 	'rules.score.body':
-		'A hand you win is counted step by step. Chips: every card in the tricks you won (common cards 1–10 by rank, manilhas 12–15) plus the Lance. Mult: the bet (1, 3, 6, 9 or 12) plus the Lance. Then the Manhas trigger, left to right, adding Chips or Mult or multiplying the Mult.\nThe example above is a Clean Sweep with truco accepted. A lost hand scores nothing.',
+		'A hand you win is counted step by step. Chips: every card in the tricks you won (common cards 1–10 by rank, manilhas 12–15) plus the Lance. Mult: the bet (1, 3, 6, 9 or 12) plus the Lance. Then the Manhas trigger, left to right, adding Chips or Mult or multiplying the Mult.\nA lost hand scores nothing.',
 	'rules.lances.title': 'Lances',
 	'rules.lances.body':
-		'The Lance is how you won the hand, and it adds the Chips and Mult in the table above (level 1). Lance levels rise in the shop and in packs, and the L key shows your current levels during a match.',
+		'The Lance is how you won the hand, and it adds Chips and Mult by Lance (level 1). Lance levels rise in the shop and in packs, and the L key shows your current levels during a match.',
 	'rules.manhas.title': 'Manhas and the shop',
 	'rules.manhas.body':
 		'Manhas are passive bonuses: each one has a condition and an effect, and they trigger from left to right, so their order matters. Between tables you visit the shop: buy Manhas, packs, card modifiers, Simpatias (one-use helpers) and Lance levels with the money ($) you won.\nHover a Manha at the table to read what it does.',

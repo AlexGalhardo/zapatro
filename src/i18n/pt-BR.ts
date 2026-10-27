@@ -939,7 +939,7 @@ export const ptBR: Record<I18nKey, string> = {
 		'O baralho tem 40 cartas (sem 8, 9 e 10). Da mais fraca para a mais forte: 4, 5, 6, 7, Q, J, K, A, 2, 3. Nas cartas comuns o naipe não importa: dois 3 empatam.\nExemplo: um K ganha de um J, mas perde para um A, um 2 ou um 3. No jogo, passe o mouse numa carta da sua mão para ver a força dela naquela mão.',
 	'rules.manilha.title': 'Vira e manilha',
 	'rules.manilha.body':
-		'Depois da distribuição, uma carta é virada para cima: a vira. O valor logo acima dela é a manilha, e as quatro manilhas ganham de todas as outras cartas. Entre elas decide o naipe: pica-fumo ♦ < espadilha ♠ < copas ♥ < paus ♣. Acima de todas fica o ZAP: a carta de paus duas acima da vira.\nExemplo: vira K → as manilhas são os A e o ZAP é o 2♣, como na imagem. Se a vira é 3, dá a volta: manilha 4, ZAP 5♣. Na mesa, as manilhas brilham em dourado e o ZAP brilha em todas as cores.',
+		'Depois da distribuição, uma carta é virada para cima: a vira. O valor logo acima dela é a manilha, e as quatro manilhas ganham de todas as outras cartas. Entre elas decide o naipe: pica-fumo ♦ < espadilha ♠ < copas ♥ < paus ♣. Acima de todas fica o ZAP: a carta de paus duas acima da vira.\nExemplo: vira K → as manilhas são os A e o ZAP é o 2♣. Se a vira é 3, dá a volta: manilha 4, ZAP 5♣. Na mesa, as manilhas brilham em dourado e o ZAP brilha em todas as cores.',
 	'rules.tricks.title': 'Vazas',
 	'rules.tricks.body':
 		'Cada mão tem até 3 vazas. Na sua vez (sentido anti-horário), cada um joga uma carta; a mais forte ganha a vaza para a dupla dela, e quem venceu abre a próxima. Ganhou 2 vazas, levou a mão.\nEmpates ("cangou"): se a 1ª empata, a 2ª decide; se a 2ª ou a 3ª empata, leva quem venceu a 1ª; três empates e ninguém pontua. Da 2ª vaza em diante dá para jogar a carta encoberta: esconde a carta, mas nunca vence.',
@@ -951,10 +951,10 @@ export const ptBR: Record<I18nKey, string> = {
 		'Antes da sua primeira carta você pode mandar um sinal secreto ao parceiro (S, ou o botão Sinal), e ele manda os dele mudando a cara. Os rivais flagram o sinal 20% das vezes e descobrem o que você tem.\nO sinal pode ser blefe: os rivais podem cair, mas o parceiro também acredita (menos a Cida).',
 	'rules.score.title': 'Pontos: Fichas × Mult',
 	'rules.score.body':
-		'A mão vencida é contada passo a passo. Fichas: todas as cartas das vazas que você venceu (comuns de 1 a 10 pela força, manilhas de 12 a 15) mais o Lance. Mult: a aposta (1, 3, 6, 9 ou 12) mais o Lance. Depois as Manhas disparam, da esquerda para a direita, somando Fichas ou Mult ou multiplicando o Mult.\nO exemplo acima é uma Vaza Limpa com truco aceito. Mão perdida não pontua.',
+		'A mão vencida é contada passo a passo. Fichas: todas as cartas das vazas que você venceu (comuns de 1 a 10 pela força, manilhas de 12 a 15) mais o Lance. Mult: a aposta (1, 3, 6, 9 ou 12) mais o Lance. Depois as Manhas disparam, da esquerda para a direita, somando Fichas ou Mult ou multiplicando o Mult.\nMão perdida não pontua.',
 	'rules.lances.title': 'Lances',
 	'rules.lances.body':
-		'O Lance é o jeito que você venceu a mão e soma as Fichas e o Mult da tabela acima (nível 1). Os níveis de Lance sobem na loja e nos pacotes, e a tecla L mostra seus níveis durante a partida.',
+		'O Lance é o jeito que você venceu a mão e soma Fichas e Mult conforme o Lance (nível 1). Os níveis de Lance sobem na loja e nos pacotes, e a tecla L mostra seus níveis durante a partida.',
 	'rules.manhas.title': 'Manhas e a loja',
 	'rules.manhas.body':
 		'Manhas são bônus passivos: cada uma tem uma condição e um efeito, e disparam da esquerda para a direita, então a ordem importa. Entre as mesas você passa na loja: compre Manhas, pacotes, modificadores de carta, Simpatias (ajudas de uso único) e níveis de Lance com o dinheiro ($) ganho.\nNa mesa, passe o mouse numa Manha para ler o que ela faz.',
