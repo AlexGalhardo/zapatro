@@ -1311,12 +1311,12 @@ export class RunScene extends Phaser.Scene {
 		);
 		const items = shop.offers;
 		const top = slate.y + 30;
-		const cardH = slate.h - 30 - pad;
 		const gap = 8;
-		const cardW = Math.min(
-			124,
-			Math.floor((slate.w - 2 * pad - (items.length - 1) * gap) / Math.max(items.length, 1)),
+		const cardW = Math.floor(
+			(slate.w - 2 * pad - (items.length - 1) * gap) / Math.max(items.length, 1),
 		);
+		// A portrait card: as tall as the board allows under the title.
+		const cardH = slate.h - 30 - pad;
 		const rowW = items.length * cardW + (items.length - 1) * gap;
 		for (const [k, o] of items.entries()) {
 			const rarity = this.offerRarity(o);
@@ -1334,20 +1334,24 @@ export class RunScene extends Phaser.Scene {
 					kind: o.kind === 'manha' ? t('kind.manha') : this.offerTag(o).tag,
 					desc: this.offerDesc(o),
 					rarity: {
+						id: rarity,
 						label: t(`shop.rarity.${rarity}` as I18nKey),
 						color: SHOP_RARITY_COLOR[rarity],
 					},
 					w: cardW,
 					h: cardH,
-					dim: o.sold,
+					...(o.sold ? { sold: { label: t('run.sold') } } : {}),
 					price: {
-						label: o.sold ? t('run.sold') : `$${offerPrice(run, o)}`,
+						label: `$${offerPrice(run, o)}`,
 						enabled: !o.sold && run.money >= offerPrice(run, o),
 						onClick: tryBuy,
 						...(o.sold ? {} : { onBlocked: tryBuy }),
 					},
 				})
-					.setPosition(mid - rowW / 2 + cardW / 2 + k * (cardW + gap), top + cardH / 2)
+					.setPosition(
+						mid - rowW / 2 + cardW / 2 + k * (cardW + gap),
+						top + (slate.h - 30 - pad) / 2,
+					)
 					.setData('offer', `offers:${k}`),
 			);
 		}

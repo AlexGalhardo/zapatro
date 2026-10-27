@@ -21,7 +21,7 @@ export const ECONOMY = {
 	/** The deck never goes below this (4 × 3 cards + the vira must always deal). */
 	deckMin: 20,
 	/** Shop: offers and packs per visit. */
-	offers: 2,
+	offers: 4,
 	packs: 2,
 	/** Offer kind weights: Manha, Simpatia, Lance card. */
 	offerWeights: { manha: 6, simpatia: 2, lance: 2 },
