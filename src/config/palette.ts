@@ -32,6 +32,9 @@ export const PALETTE = {
 	// Felt of the other rooms: blue (Championships 4–6) and red (7–8).
 	feltBlue: 0x2f5c86,
 	feltRed: 0x8e2f2a,
+	/** Multiplied over the green painted felt of the table in Championships 4–6 and 7–8. */
+	feltBlueTint: 0x6f9bff,
+	feltRedTint: 0xff7a6a,
 	wood: 0x7a4b2b,
 	woodDark: 0x543320,
 	// Cards.

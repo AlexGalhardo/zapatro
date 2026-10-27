@@ -405,6 +405,8 @@ export class TableScene extends Phaser.Scene {
 			this.match = remote;
 			this.startTable(start.chars);
 			client.listen((m) => this.onNet(m));
+			// Back from an overlay: `pump` skipped while paused, so ask for the turn again.
+			onSceneEvent(this, 'resume', () => this.pump());
 			this.events.once('shutdown', () => {
 				// Out of this table for good (menu, quit): leave the room. The lobby button keeps it.
 				if (this.net) client.leave();
@@ -670,7 +672,7 @@ export class TableScene extends Phaser.Scene {
 		const board = this.add.image(x + w / 2, y + h / 2, 'img.bg.table').setDisplaySize(w, h);
 		// The painting is green: later Championships tint it blue and red (docs/visual.md §3).
 		const champ = this.runState?.champ ?? getParams(this).champ ?? 1;
-		if (champ > 3) board.setTint(champ <= 6 ? 0x6f9bff : 0xff7a6a);
+		if (champ > 3) board.setTint(champ <= 6 ? PALETTE.feltBlueTint : PALETTE.feltRedTint);
 	}
 
 	/** Felt by Championship: green 1–3, blue 4–6, red 7–8 (docs/visual.md §3). */
@@ -1480,7 +1482,6 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			alpha: k === 'normal' ? 0 : k === 'iron' ? 0.55 : 0.3,
 			duration: this.dur(300),
 		});
-		if (k !== 'normal') this.cameras.main.setBackgroundColor(PALETTE.night);
 		sfx(this, 'sfx.card.shuffle');
 	}
 
@@ -1725,14 +1726,16 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		if (this.draining) return;
 		this.draining = true;
 		const match = this.match as RemoteMatch;
+		// A paused table (manual, settings) keeps animating what arrives; only a stopped one quits.
+		const gone = (): boolean => this.sys.settings.status >= Phaser.Scenes.SHUTDOWN;
 		for (let m = this.netQueue.shift(); m; m = this.netQueue.shift()) {
-			if (!this.sys.isActive()) break;
+			if (gone()) break;
 			this.busy = true;
 			this.updateControls(false);
 			match.load(m.snap);
 			if (m.type === 'step') {
 				for (const e of m.events) {
-					if (!this.sys.isActive()) return;
+					if (gone()) return;
 					await this.animate(e);
 				}
 			} else {
@@ -2206,7 +2209,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				if (!net) return this.scene.restart();
 				this.net = null;
 				net.client.listen(null);
-				fadeTo(this, 'Lobby', { client: net.client });
+				fadeTo(this, 'Lan', { client: net.client });
 			},
 			{
 				w: 100,

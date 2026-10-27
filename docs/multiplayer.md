@@ -42,6 +42,8 @@ bun run dev                        # cada jogador abre o jogo e escolhe "Multipl
 bun test tests/lan.test.ts tests/net-view.test.ts
 ```
 
+`scripts/lan-smoke.ts` é o teste de ponta a ponta no navegador (fora do CI por enquanto): com `bun run dev` rodando, `bun scripts/lan-smoke.ts [--url http://localhost:5191] [--shots pasta] [--cli]` sobe o servidor (ou, com `--cli`, o `lan/cli.ts` de verdade, com bots lentos), abre dois clientes Playwright e joga três partidas inteiras pelas cenas do jogo: formulário, lobby, mesa com bots jogando ações aleatórias (truco, aceitar, correr, sinal), manual (F1) aberto sobre a mesa, fim, volta ao lobby; uma queda de socket com reconexão (código 4010); uma saída no meio (um bot assume); e um lobby novo depois que todos saíram. Falha com erros de console de qualquer cliente ou do servidor.
+
 `tests/lan.test.ts` sobe um servidor real e joga partidas completas com clientes do SDK (lobby, 1 pessoa + 3 bots, 4 pessoas, saída no meio). `tests/net-view.test.ts` cobre a rotação e o que fica escondido.
 
 ## Desktop e Android
