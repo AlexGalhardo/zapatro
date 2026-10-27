@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { parseRun } from '../src/logic/run/run';
+import { leaveShop, parseRun, projectedReward } from '../src/logic/run/run';
 import { parseSave } from '../src/logic/save';
 
 /**
@@ -10,6 +10,9 @@ import { parseSave } from '../src/logic/save';
 const FIXTURES = [
 	{ version: '0.1.0-beta.1', partner: 'donaCida' },
 	{ version: '0.10.0', partner: 'bia' },
+	// partnerFolds false, the Interior deck and a run waiting in the shop (before the 0.13 traits,
+	// the hidden table choice and the optional key hints).
+	{ version: '0.12.0', partner: 'tiao' },
 ] as const;
 
 describe('save compatibility (RC1.3)', () => {
@@ -27,6 +30,11 @@ describe('save compatibility (RC1.3)', () => {
 			expect(run?.stake).toBe(2);
 			expect(run?.money).toBe(17);
 			expect(run?.manhas).toEqual(['seuZe', 'malandro']);
+			expect(res.save.settings.keyHints).toBe(false);
+			// The current run code plays on from it.
+			if (!run) return;
+			expect(() => projectedReward(run, 0, 0)).not.toThrow();
+			if (run.phase === 'shop') expect(() => leaveShop(run)).not.toThrow();
 		});
 	}
 });
