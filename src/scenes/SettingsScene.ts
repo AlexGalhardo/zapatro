@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { tex } from '../art/flat';
 import { GAME_SPEEDS } from '../config/constants';
 import { buttonFill, PALETTE, shade, toCss } from '../config/palette';
-import { BUTTON_H, GAP, PAD, RADIUS, SAFE, SHADOW, TYPE } from '../config/ui';
+import { BUTTON_H, GAP, RADIUS, SAFE, SHADOW, TYPE } from '../config/ui';
 import { sfx } from '../core/audio';
 import { getSave, persist, setSave } from '../core/context';
 import { setResolution } from '../core/display';
@@ -33,15 +33,21 @@ const COLUMNS = [
 	{ title: 'settings.col.game', x: [430, 634], icon: 'gamepad' },
 ] as const;
 const PANEL = { y: 76, h: 258 };
-/** Top of the first row, row heights by kind, and the gap between rows. */
-const ROWS_TOP = 112;
-const HEIGHT = { slider: 28, toggle: 19, choice: 19, action: 19 } as const;
-/** Row height; on touch screens the short rows grow to the Button's touch minimum. */
-const rowH = (kind: Kind): number => (touchUi.on ? Math.max(HEIGHT[kind], 22) : HEIGHT[kind]);
+/** One inner padding for every card: border to rows, header and Back, on all four sides. */
+const INSET = 8;
+/** Inside a row: its edge to the label (left) and to the control (right). */
+const ROW_PAD = 6;
+/** Header line (icon and title) and the gold divider under it. */
+const HEAD_Y = PANEL.y + INSET + 12;
+const DIVIDER_Y = PANEL.y + 40;
+/** Top of the first row: one INSET under the divider. */
+const ROWS_TOP = DIVIDER_Y + INSET;
+/** Every row has the same height; on touch screens it grows to the Button's touch minimum. */
+const rowH = (): number => (touchUi.on ? 22 : 19);
 /** Row gap: the list gap, tighter on touch so the taller rows still fit the first column. */
 const rowGap = (): number => (touchUi.on ? 2 : GAP.list);
-/** The Back button sits 8 px above the panel's base (shadow included). */
-const BACK_Y = PANEL.y + PANEL.h - 8 - SHADOW.button - BUTTON_H.primary / 2;
+/** The Back button keeps the card's INSET from its base (shadow included). */
+const BACK_Y = PANEL.y + PANEL.h - INSET - SHADOW.button - BUTTON_H.primary / 2;
 /** Half the distance between a choice's ◀ ▶ (wider on touch, where the text is bigger). */
 const choiceHalf = (): number => (touchUi.on ? 51 : 44);
 /** A choice value lives between its ◀ ▶ (14 wide), 2 px clear of each. */
@@ -49,17 +55,15 @@ const choiceW = (): number => 2 * choiceHalf() - 14 - 4;
 /** Row positions are assigned by `place`; rows are declared in order. */
 const R = (_i: number): number => 0;
 
-type Kind = 'slider' | 'toggle' | 'choice' | 'action';
+type Kind = 'toggle' | 'choice' | 'action';
 
 interface Row {
 	col: 0 | 1 | 2;
 	y: number;
 	kind: Kind;
 	label: I18nKey;
-	/** Shown value (slider %, choice text) or the toggle state. */
+	/** Shown value (choice text, volumes in %) or the toggle state. */
 	value?: () => string | boolean;
-	/** Slider fill, 0–1. */
-	level?: () => number;
 	onAdjust?: (dir: -1 | 1) => void;
 	onSelect?: () => void;
 	disabled?: () => boolean;
@@ -112,9 +116,8 @@ export class SettingsScene extends Phaser.Scene {
 		): Row => ({
 			col: 0,
 			y,
-			kind: 'slider',
+			kind: 'choice',
 			label,
-			level: () => s.volume[key],
 			value: () => `${Math.round(s.volume[key] * 100)}%`,
 			onAdjust: (d) => vol(key, d),
 		});
@@ -332,7 +335,7 @@ export class SettingsScene extends Phaser.Scene {
 				row.y = BACK_Y;
 				continue;
 			}
-			const h = rowH(row.kind);
+			const h = rowH();
 			row.y = (next[row.col] ?? ROWS_TOP) + h / 2;
 			next[row.col] = (next[row.col] ?? ROWS_TOP) + h + rowGap();
 		}
@@ -354,22 +357,18 @@ export class SettingsScene extends Phaser.Scene {
 				RADIUS.panel,
 			);
 			// Gold divider with a diamond under the header, at the panel's padding.
-			g.fillStyle(PALETTE.manilha, 1).fillRect(
-				x0 + PAD.panel,
-				PANEL.y + 40,
-				x1 - x0 - 2 * PAD.panel,
-				1,
-			);
-			g.fillStyle(PALETTE.panel, 1).fillRect(mx - 5, PANEL.y + 36, 10, 9);
+			const D = DIVIDER_Y;
+			g.fillStyle(PALETTE.manilha, 1).fillRect(x0 + INSET, D, x1 - x0 - 2 * INSET, 1);
+			g.fillStyle(PALETTE.panel, 1).fillRect(mx - 5, D - 4, 10, 9);
 			g.fillStyle(PALETTE.manilha, 1)
-				.fillTriangle(mx, PANEL.y + 36, mx + 4, PANEL.y + 40.5, mx, PANEL.y + 45)
-				.fillTriangle(mx, PANEL.y + 36, mx - 4, PANEL.y + 40.5, mx, PANEL.y + 45);
+				.fillTriangle(mx, D - 4, mx + 4, D + 0.5, mx, D + 5)
+				.fillTriangle(mx, D - 4, mx - 4, D + 0.5, mx, D + 5);
+			// The header starts where the rows' labels start.
+			const hx = x0 + INSET + ROW_PAD;
+			this.add.image(hx + 9, HEAD_Y, tex(this, `icon.${c.icon}`)).setDisplaySize(18, 18);
+			const head = this.label(hx + 24, HEAD_Y, t(c.title).toUpperCase(), 12);
 			this.add
-				.image(x0 + PAD.panel + 12, PANEL.y + 19, tex(this, `icon.${c.icon}`))
-				.setScale(0.85);
-			const head = this.label(x0 + 44, PANEL.y + 19, t(c.title).toUpperCase(), 12);
-			this.add
-				.zone(mx, PANEL.y + 19, x1 - x0, 36)
+				.zone(mx, HEAD_Y, x1 - x0, 2 * (HEAD_Y - PANEL.y))
 				.setInteractive({ useHandCursor: true })
 				.on('pointerup', () => this.setFocus(rows.findIndex((r) => r.col === i)));
 			this.redrawers.push(() => {
@@ -387,17 +386,17 @@ export class SettingsScene extends Phaser.Scene {
 		const [x0, x1] = c.x;
 		const { y } = row;
 		const isBack = row.label === 'menu.back';
-		const h = isBack ? BUTTON_H.primary : rowH(row.kind);
-		const left = x0 + 8;
-		const right = x1 - 8;
+		const h = isBack ? BUTTON_H.primary : rowH();
+		const left = x0 + INSET + ROW_PAD;
+		const right = x1 - INSET - ROW_PAD;
 		// The row's dark card; its frame lights up while focused.
 		const card = this.add.graphics();
 		let name: Phaser.GameObjects.Text | null = null;
 		let back: Button | null = null;
 		if (isBack) {
 			back = new Button(this, t(row.label), () => this.select(i), {
-				// As wide as the row cards above it (x0 + 5 to x1 - 5).
-				w: x1 - x0 - 10,
+				// As wide as the row cards above it.
+				w: x1 - x0 - 2 * INSET,
 				h: BUTTON_H.primary,
 				size: TYPE.panelTitle,
 				color: PALETTE.truco,
@@ -406,48 +405,20 @@ export class SettingsScene extends Phaser.Scene {
 				icon: 'back2',
 				iconScale: 0.8,
 			}).setPosition((x0 + x1) / 2, y);
-		} else name = this.label(left + 6, row.kind === 'slider' ? y - 8 : y, t(row.label), 9);
+		} else name = this.label(left, y, t(row.label), 9);
 		const value = this.label(0, y, '', 8, PALETTE.textDim);
 		const g = this.add.graphics();
 		/** Where a click lowers (left of it) or raises the value. */
 		let mid = (x0 + x1) / 2;
-		let level: ((v: number) => void) | null = null;
+		/** Left edge of the row's control: the label must end before it. */
+		let controlLeft = right;
 		let toggle: ((on: boolean) => void) | null = null;
-		if (row.kind === 'slider') {
-			const tx = left + 26;
-			const tw = right - left - 52;
-			const by = y + 7;
-			mid = tx + tw / 2;
-			value
-				.setOrigin(1, 0.5)
-				.setX(right - 6)
-				.setY(y - 8);
-			this.add.image(left + 12, by, tex(this, 'icon.mute')).setScale(0.55);
-			this.add.image(right - 12, by, tex(this, 'icon.sound')).setScale(0.5);
-			level = (v) => {
-				g.clear();
-				g.fillStyle(PALETTE.shadow, 0.7).fillRoundedRect(tx, by - 3.5, tw, 7, 3.5);
-				if (v > 0)
-					g.fillStyle(PALETTE.good, 1).fillRoundedRect(
-						tx,
-						by - 3.5,
-						Math.max(7, tw * v),
-						7,
-						3.5,
-					);
-				g.fillStyle(PALETTE.manilha, 1).fillRoundedRect(
-					tx + (tw - 6) * v,
-					by - 6.5,
-					6,
-					13,
-					2,
-				);
-			};
-		} else if (row.kind === 'toggle') {
+		if (row.kind === 'toggle') {
 			// SIM | NÃO segmented control.
 			const w = 54;
 			// Ends where the ◀ ▶ of the choice rows end.
-			const tx = right - w - 1;
+			const tx = right - w;
+			controlLeft = tx;
 			value.setVisible(false);
 			const yes = this.label(tx + w / 4, y, t('settings.toggle.on'), 7)
 				.setOrigin(0.5)
@@ -470,25 +441,35 @@ export class SettingsScene extends Phaser.Scene {
 				no.setColor(toCss(on ? PALETTE.textDim : PALETTE.textDark));
 			};
 		} else if (row.kind === 'choice') {
-			mid = right - 8 - choiceHalf();
+			mid = right - 7 - choiceHalf();
+			controlLeft = mid - choiceHalf() - 7;
 			value.setOrigin(0.5).setX(mid).setColor(toCss(PALETTE.textLight));
-			for (const [x, s] of [
-				[mid - choiceHalf(), '◀'],
-				[mid + choiceHalf(), '▶'],
+			for (const [x, icon] of [
+				[mid - choiceHalf(), 'arrowLeft'],
+				[mid + choiceHalf(), 'arrowRight'],
 			] as const) {
 				this.add
 					.graphics()
 					.fillStyle(PALETTE.buttonLight, 1)
 					.fillRoundedRect(x - 7, y - 7, 14, 14, RADIUS.card);
-				this.label(x, y - 0.5, s, 7, PALETTE.textDark)
-					.setOrigin(0.5)
-					.setShadow(0, 0, '', 0, false, false);
+				this.add
+					.image(x, y, tex(this, `icon.${icon}`))
+					.setDisplaySize(8, 8)
+					.setTint(PALETTE.textDark);
 			}
-		} else if (!isBack) this.label(right - 6, y, '›', 14, PALETTE.textLight).setOrigin(0.5);
+		} else if (!isBack) {
+			controlLeft = right - 10;
+			this.add.image(right - 4, y, tex(this, 'icon.chevron')).setDisplaySize(10, 10);
+		}
+		// A long label ("Animation speed") shrinks to stay clear of its control.
+		if (name) {
+			let px = uiPx(9);
+			while (name.width > controlLeft - left - 4 && px > TYPE.min) name.setFontSize(--px);
+		}
 		this.children.bringToTop(value);
 		// The whole row answers the mouse: hover focuses; a click left of the value lowers it.
 		const hit = this.add
-			.zone((x0 + x1) / 2, y, x1 - x0, isBack ? 1 : h)
+			.zone((x0 + x1) / 2, y, x1 - x0 - 2 * INSET, isBack ? 1 : h)
 			.setInteractive({ useHandCursor: true });
 		hit.on('pointerover', () => this.setFocus(i));
 		hit.on('pointerup', (p: Phaser.Input.Pointer) => {
@@ -503,9 +484,9 @@ export class SettingsScene extends Phaser.Scene {
 			card.clear();
 			if (!isBack) {
 				card.fillStyle(PALETTE.panelDark, 1).fillRoundedRect(
-					x0 + 5,
+					x0 + INSET,
 					y - h / 2,
-					x1 - x0 - 10,
+					x1 - x0 - 2 * INSET,
 					h,
 					RADIUS.button,
 				);
@@ -513,7 +494,7 @@ export class SettingsScene extends Phaser.Scene {
 					focused ? 2 : 1,
 					focused ? PALETTE.manilha : PALETTE.panelLight,
 					1,
-				).strokeRoundedRect(x0 + 5, y - h / 2, x1 - x0 - 10, h, RADIUS.button);
+				).strokeRoundedRect(x0 + INSET, y - h / 2, x1 - x0 - 2 * INSET, h, RADIUS.button);
 			}
 			back?.setFocus(focused);
 			name?.setColor(toCss(focused ? PALETTE.manilha : PALETTE.textLight));
@@ -527,7 +508,6 @@ export class SettingsScene extends Phaser.Scene {
 				value.setFontSize(px);
 				while (value.width > choiceW() && px > TYPE.min - 1) value.setFontSize(--px);
 			}
-			level?.(row.level?.() ?? 0);
 		});
 	}
 

@@ -29,6 +29,11 @@ export const VECTOR_ICONS = [
 	'megaphone',
 	'calc',
 	'people',
+	'gear',
+	'sound',
+	'arrowLeft',
+	'arrowRight',
+	'chevron',
 ] as const;
 export type VectorIcon = (typeof VECTOR_ICONS)[number];
 
@@ -217,6 +222,39 @@ export function drawVectorIcon(
 			rr(7.5, 4.5, 9, 4, 1);
 			for (const y of [12, 15.5, 19])
 				for (const x of [8, 12, 16]) ctx.fillRect(x - 1, y - 1, 2, 2);
+			break;
+		case 'gear':
+			// Eight teeth around a ring; the hole is cut out (transparent on any background).
+			for (let i = 0; i < 8; i++) {
+				ctx.save();
+				ctx.translate(12, 12);
+				ctx.rotate((i * TAU) / 8);
+				rr(-2.4, -11, 4.8, 6, 1);
+				ctx.restore();
+			}
+			dot(12, 12, 7.6);
+			ctx.globalCompositeOperation = 'destination-out';
+			dot(12, 12, 3.2);
+			ctx.globalCompositeOperation = 'source-over';
+			break;
+		case 'sound':
+			poly(2, 9, 7, 9, 12, 4, 12, 20, 7, 15, 2, 15);
+			ctx.beginPath();
+			ctx.arc(12, 12, 4.5, -0.9, 0.9);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.arc(12, 12, 8.5, -0.9, 0.9);
+			ctx.stroke();
+			break;
+		case 'arrowLeft':
+			poly(17, 4, 17, 20, 5, 12);
+			break;
+		case 'arrowRight':
+			poly(7, 4, 7, 20, 19, 12);
+			break;
+		case 'chevron':
+			ctx.lineWidth = 3.2;
+			line(9, 4, 17, 12, 9, 20);
 			break;
 		case 'people':
 			dot(9, 8, 3.4);

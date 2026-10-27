@@ -25,6 +25,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **ui:** Settings in one style: vector icons only (`gear` and `sound` now drawn by code everywhere, the pixel ones are skipped; new `arrowLeft`, `arrowRight`, `chevron`), volumes as ◀ 80% ▶ rows in 10% steps like Language and Speed, one inner padding (`INSET`) for cards, rows, headers and Back, every row the same height and long labels shrink clear of their control.
 - **ui:** every character is now a rectangular 3:4 card (`charcard.<id>`): table seats, partner choice, run rivals and boss, end of run, Almanac and Rules; characters without painted art show the whole pixel portrait on their colour. The NPC hands use the whole 2:3 card-back painting (32×48), unstretched, and the big back and the joker face (`card-joker.png`) use the same 2:3 treatment.
 - **ui:** the main menu is the full painting like the concept art, with the game's buttons laid over the painted ones; speech bubbles clear of cards and portraits; the manual button replaces the Manha list.
 - **art:** the card back is painted (`card-1`; `card-2` and `card-3` for the Interior and Blefe decks) with the frame and corners still drawn by code; the table felt is painted (`board-game-1`) and tinted blue and red in the later Championships.

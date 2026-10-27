@@ -27,7 +27,11 @@ describe('UI icons', () => {
 		}
 	});
 
-	test('vector icons do not repeat a bitmap name', () => {
-		for (const v of VECTOR_ICONS) expect(BITMAPS).not.toContain(v);
+	test('only gear and sound have both: the vector drawing replaces the pixel one', () => {
+		// Settings and the menus use one vector style (2026-10-27); flat.ts prefers the vector.
+		expect(VECTOR_ICONS.filter((v) => (BITMAPS as readonly string[]).includes(v))).toEqual([
+			'gear',
+			'sound',
+		]);
 	});
 });

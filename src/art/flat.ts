@@ -3,7 +3,7 @@ import { PALETTE, RARITY_COLOR, shade, toCss } from '../config/palette';
 import { RADIUS, SHADOW } from '../config/ui';
 import { MANHA_BY_ID } from '../data/manhas';
 import { type Card, isSpecial } from '../logic/truco/cards';
-import { drawSignalIcon, drawVectorIcon } from './icons';
+import { drawSignalIcon, drawVectorIcon, VECTOR_ICONS } from './icons';
 
 /**
  * The flat art of the game (docs/visual.md): every visual key is drawn by code on a 2D canvas,
@@ -1279,7 +1279,10 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 	} else if (key.startsWith('icon.signal.') || key.startsWith('ui.sign.')) {
 		drawSignalIcon(ctx, b, w);
 	} else if (kind === 'icon') {
-		const bmp = iconBitmaps.get(a);
+		// A vector drawing wins over a pixel bitmap of the same name (Settings and menus: one style).
+		const bmp = (VECTOR_ICONS as readonly string[]).includes(a)
+			? undefined
+			: iconBitmaps.get(a);
 		if (bmp) {
 			ctx.imageSmoothingEnabled = false;
 			ctx.drawImage(bmp, 0, 0, w, h);
