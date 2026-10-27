@@ -270,8 +270,11 @@ export class RulesScene extends Phaser.Scene {
 		const room = Math.max(0, this.pageBottom - this.pageTop);
 		const max = Math.max(0, this.body.height - room);
 		this.scroll = Phaser.Math.Clamp(this.scroll + dy, 0, max);
-		this.body.setY(this.pageTop - this.scroll);
-		if (max > 0) this.body.setCrop(0, this.scroll, this.body.width, room);
+		// The crop is in the text's texture pixels (its resolution follows the zoom), and the cropped
+		// part is drawn that many units down: the text moves up by the same amount.
+		const k = this.body.frame.width / this.body.width;
+		this.body.setY(this.pageTop - this.scroll * k);
+		if (max > 0) this.body.setCrop(0, this.scroll * k, this.body.frame.width, room * k);
 		else this.body.setCrop();
 		const g = this.scrollBar.clear();
 		if (max <= 0) return;
