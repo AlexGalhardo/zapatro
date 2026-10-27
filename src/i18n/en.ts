@@ -947,6 +947,7 @@ export const en = {
 	'rarity.uncommon': 'Uncommon',
 	'rarity.rare': 'Rare',
 	'rarity.legendary': 'Legendary',
+	'shop.free': 'FREE',
 	'shop.rarity.common': 'Normal',
 	'shop.rarity.uncommon': 'Rare',
 	'shop.rarity.rare': 'Special',

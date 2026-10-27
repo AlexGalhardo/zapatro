@@ -951,6 +951,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'rarity.uncommon': 'Incomum',
 	'rarity.rare': 'Rara',
 	'rarity.legendary': 'Lendária',
+	'shop.free': 'GRÁTIS',
 	'shop.rarity.common': 'Normal',
 	'shop.rarity.uncommon': 'Raro',
 	'shop.rarity.rare': 'Especial',

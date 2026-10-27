@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { BACKDROP_BRIGHTNESS, PALETTE, SHOP_BACKDROP_BRIGHTNESS } from '../config/palette';
 import { trackZoom } from '../core/viewport';
+import { shopImageRect } from '../view/shop-slate';
 
 /** Painted backdrops of public/assets/gfx/bg (scripts/portraits.ts); `main` is every other screen. */
 export type BackdropKey = 'main' | 'shop' | 'partner';
@@ -76,8 +77,15 @@ export class BackdropScene extends Phaser.Scene {
 			image.setVisible(ok);
 			if (!ok) return;
 			image.setTexture(tex).setTint(key === 'shop' ? SHOP_TINT : DIM_TINT);
-			image.setScale(Math.max(size.width / image.width, size.height / image.height));
-			image.setPosition(size.width / 2, size.height / 2);
+			if (key === 'shop') {
+				// The chalkboard stays in view on any window shape (src/view/shop-slate.ts).
+				const r = shopImageRect(size);
+				image.setOrigin(0, 0).setScale(r.scale).setPosition(r.x, r.y);
+			} else {
+				image.setOrigin(0.5, 0.5);
+				image.setScale(Math.max(size.width / image.width, size.height / image.height));
+				image.setPosition(size.width / 2, size.height / 2);
+			}
 		};
 		trackZoom(this, cam, (view) => {
 			cam.centerOn(view.width / 2, view.height / 2);

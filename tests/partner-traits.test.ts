@@ -233,3 +233,20 @@ describe('Sheila (neide)', () => {
 		expect(doubled / n).toBeLessThan(0.32);
 	});
 });
+
+describe('shop offers', () => {
+	test('a visit never shows the same Manha or consumable twice', () => {
+		for (let seed = 1; seed <= 300; seed++) {
+			const run = newRun(seed, 'tonhao');
+			finishTable(run, win());
+			const keys = (run.shop?.offers ?? []).map((o) =>
+				o.kind === 'manha'
+					? `m:${o.id}`
+					: o.kind === 'consumable'
+						? `c:${o.item.id}`
+						: o.kind,
+			);
+			expect(new Set(keys).size).toBe(keys.length);
+		}
+	});
+});

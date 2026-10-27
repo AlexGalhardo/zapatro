@@ -436,27 +436,42 @@ function pickConsumable(rng: Rng, kind?: 'simpatia' | 'lance'): Consumable {
 		: { kind: 'lance', id: rng.pick(LANCE_IDS) };
 }
 
+/** Same Manha or same consumable: the shop never shows one twice in a visit. */
+const offerKey = (o: Offer): string =>
+	o.kind === 'manha'
+		? `m:${o.id}`
+		: o.kind === 'consumable'
+			? `c:${o.item.kind}:${o.item.id}`
+			: `${o.kind}`;
+
 function makeOffers(run: RunState, rng: Rng): Offer[] {
 	const w = ECONOMY.offerWeights;
 	const out: Offer[] = [];
-	for (let i = 0; i < ECONOMY.offers; i++) {
+	const draw = (): Offer => {
 		const k = rng.weightedIndex([w.manha, w.simpatia, w.lance]);
 		const id = k === 0 ? pickManha(run, rng) : null;
 		if (id) {
 			const def = MANHA_BY_ID.get(id);
-			out.push({
+			return {
 				kind: 'manha',
 				id,
 				price: priceOf(run, def?.price ?? 5, 'manha'),
 				sold: false,
-			});
-		} else
-			out.push({
-				kind: 'consumable',
-				item: pickConsumable(rng, k === 2 ? 'lance' : 'simpatia'),
-				price: priceOf(run, ECONOMY.consumablePrice),
-				sold: false,
-			});
+			};
+		}
+		return {
+			kind: 'consumable',
+			item: pickConsumable(rng, k === 2 ? 'lance' : 'simpatia'),
+			price: priceOf(run, ECONOMY.consumablePrice),
+			sold: false,
+		};
+	};
+	for (let i = 0; i < ECONOMY.offers; i++) {
+		let o = draw();
+		// Redraw a repeat (bounded: the pools are far larger than the offers).
+		for (let tries = 0; tries < 20 && out.some((x) => offerKey(x) === offerKey(o)); tries++)
+			o = draw();
+		out.push(o);
 	}
 	return out;
 }

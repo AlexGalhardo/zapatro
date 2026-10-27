@@ -63,7 +63,7 @@ import { type ButtonNav, buttonNav } from '../ui/nav';
 import { offerCard, offerCardHeight } from '../ui/offer-card';
 import { drawPanel } from '../ui/panel';
 import { fadeTo, setupScreen } from '../ui/screen';
-import { screenTitle } from '../ui/title';
+import { addTitle, screenTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { uiPx } from '../ui/touch';
 import { shopSlate } from '../view/shop-slate';
@@ -1287,39 +1287,39 @@ export class RunScene extends Phaser.Scene {
 		shop: ShopState,
 		slate: { x: number; y: number; w: number; h: number },
 	): void {
-		const pad = 6;
 		const mid = slate.x + slate.w / 2;
 		const items = shop.offers;
+		// The block uses 80% of the board's width (10% free each side) and keeps 6% of its height
+		// free above and below, so nothing touches the wooden frame.
+		const usableW = slate.w * 0.8;
+		const margin = slate.h * 0.06;
 		const gap = 8;
-		const cardW = Math.floor(
-			(slate.w - 2 * pad - (items.length - 1) * gap) / Math.max(items.length, 1),
-		);
+		const cardW = Math.floor((usableW - (items.length - 1) * gap) / Math.max(items.length, 1));
 		const rowW = items.length * cardW + (items.length - 1) * gap;
 		const left = mid - rowW / 2;
 		const right = mid + rowW / 2;
-		const cardH = offerCardHeight(
-			this,
-			cardW,
-			items.map((o) => this.offerDesc(o)),
+		const nextH = 24;
+		// The cards take their content's height, but never more than what is left under the title
+		// once "Next table" and its gap are in: it sits below them, inside the board.
+		const cardH = Math.min(
+			offerCardHeight(
+				this,
+				cardW,
+				items.map((o) => this.offerDesc(o)),
+			),
+			slate.h - 2 * margin - nextH - gap - 26,
 		);
-		const titleY = slate.y + 14;
-		// Title at the left edge of the first card; the money at the right edge of the last one.
-		const title = this.put(
-			left,
-			titleY,
-			t('run.shop'),
-			TYPE.screenTitle,
-			PALETTE.manilha,
-			[0, 0.5],
-		);
-		title.setShadow(-2, 3, toCss(PALETTE.shadow), 0, true, true);
-		const money = this.put(right, titleY, `$${run.money}`, 14, PALETTE.money, [1, 0.5]);
+		// The whole block (title row, cards, button) sits in the middle of the board, top and bottom.
+		const yOff = Math.max(margin, (slate.h - (26 + cardH + gap + nextH)) / 2);
+		const titleY = slate.y + yOff + 12;
+		const top = slate.y + yOff + 26;
+		// Title at the left edge of the first card; the money, the same lettering, at the right.
 		this.body.add(
-			this.add
-				.image(money.getBounds().left - 7, titleY - 1, tex(this, 'icon.coin'))
-				.setScale(0.8),
+			addTitle(this, left, titleY, t('run.shop'), TYPE.screenTitle, PALETTE.manilha, 0),
 		);
-		const top = slate.y + 30;
+		this.body.add(
+			addTitle(this, right, titleY, `$${run.money}`, TYPE.screenTitle, PALETTE.manilha, 1),
+		);
 		for (const [k, o] of items.entries()) {
 			const rarity = this.offerRarity(o);
 			const tryBuy = (): void => {
@@ -1344,20 +1344,16 @@ export class RunScene extends Phaser.Scene {
 					h: cardH,
 					...(o.sold ? { sold: { label: t('run.sold') } } : {}),
 					price: {
-						label: `$${offerPrice(run, o)}`,
+						label: offerPrice(run, o) === 0 ? t('shop.free') : `$${offerPrice(run, o)}`,
 						enabled: !o.sold && run.money >= offerPrice(run, o),
 						onClick: tryBuy,
 						...(o.sold ? {} : { onBlocked: tryBuy }),
 					},
 				})
-					.setPosition(
-						mid - rowW / 2 + cardW / 2 + k * (cardW + gap),
-						top + (slate.h - 30 - pad) / 2,
-					)
+					.setPosition(left + cardW / 2 + k * (cardW + gap), top + cardH / 2)
 					.setData('offer', `offers:${k}`),
 			);
 		}
-		const nextH = 30;
 		const nextW = 2 * cardW + gap;
 		this.button(
 			mid,
@@ -1389,10 +1385,16 @@ export class RunScene extends Phaser.Scene {
 		// On windows that are not 16:9 the board can reach under the sidebar or off the stage: the
 		// UI keeps to the part of it that is inside the stage, with room for the buttons below.
 		const raw = shopSlate(getView(this));
-		const x0 = Math.max(raw.x, L + SIDEBAR.x + SIDEBAR.w + GAP.panel);
+		const x0 = Math.max(
+			raw.x,
+			SHOP_SIMPLE ? L + SAFE.stage : L + SIDEBAR.x + SIDEBAR.w + GAP.panel,
+		);
 		const x1 = Math.min(raw.x + raw.w, L + 640 - SAFE.stage);
 		const y0 = Math.max(raw.y, SAFE.stage);
-		const y1 = Math.min(raw.y + raw.h, 360 - SAFE.stage - 8 - BUTTON_H.primary);
+		const y1 = Math.min(
+			raw.y + raw.h,
+			360 - SAFE.stage - (SHOP_SIMPLE ? 0 : 8 + BUTTON_H.primary),
+		);
 		const slate = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 		if (SHOP_SIMPLE) {
 			this.drawShopSimple(run, shop, slate);
