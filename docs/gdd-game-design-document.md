@@ -411,12 +411,12 @@ Cada companheiro tem **uma Vantagem e um Defeito roguelite exclusivos**, que val
 |---|---|---|---|---|
 | Bruto | agressivo | +3 Mult por vaza que ele vence | as cartas dele valem metade das Fichas (arredonda para baixo) | inicial |
 | Cida | conservadora | +$1 por mão vencida | itens da loja custam +$1 | inicial |
-| Jhony | blefador | juros: +$1 a cada $5 guardados no fim de cada mesa (máx +$5) | renovar a loja custa +$1 | feito `mentiroso` |
+| Jhony | blefador | juros: +$1 a cada $5 guardados no fim de cada mesa (máx +$5) | a recompensa de Rapidez cai pela metade (arredonda para baixo) | feito `mentiroso` |
 | Nino | destemido | sobe 1 nível a cada mesa vencida: +1 Mult base por nível | começa a run com −1 Mult base (nível 0 = −1; o Mult base nunca fica abaixo de 1) | feito `campeonato4` |
 | Zé | conservador | o item mais barato da primeira loja de cada Campeonato sai de graça | 1 espaço de Manha a menos | inicial |
 | Mia | agressiva | manilhas valem +15 Fichas | cartas comuns valem −2 Fichas (mín 0) | inicial |
 | Chico | conservador | +20 Fichas por vaza vencida com carta de paus | copas e ouros valem −5 Fichas (mín 0) | inicial |
-| Beti | blefadora | 1 Renovar grátis por loja | Manhas custam +$1 | inicial |
+| Beti | blefadora | a primeira Manha comprada em cada loja custa $1 a menos | Manhas custam +$1 | inicial |
 | Ayla | conservadora | ×1,5 Mult quando a dupla vence as duas primeiras vazas | mão perdida custa $1 (mín $0) | inicial |
 | Sheila | conservadora | 1 chance em 4 de dobrar o dinheiro ganho ao vencer a mesa | metas de pontos da mesa +10% | inicial |
 

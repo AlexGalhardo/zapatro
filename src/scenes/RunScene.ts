@@ -60,7 +60,7 @@ import { itemCard, RARITY_COLOR } from '../ui/item-card';
 import { backHint } from '../ui/key-hint';
 import { onKey, onSceneEvent } from '../ui/keys';
 import { type ButtonNav, buttonNav } from '../ui/nav';
-import { offerCard } from '../ui/offer-card';
+import { offerCard, offerCardHeight } from '../ui/offer-card';
 import { drawPanel } from '../ui/panel';
 import { fadeTo, setupScreen } from '../ui/screen';
 import { screenTitle } from '../ui/title';
@@ -1289,35 +1289,37 @@ export class RunScene extends Phaser.Scene {
 	): void {
 		const pad = 6;
 		const mid = slate.x + slate.w / 2;
-		this.screenTitle(mid, t('run.shop'), 'cart', slate.y + 14);
-		// Money: a quiet indicator at the foot of the board, left of "Next table" (not a button).
-		const nextH = BUTTON_H.primary;
-		this.body.add(
-			this.add
-				.image(
-					slate.x + pad + 8,
-					slate.y + slate.h + 8 + nextH / 2 - 1,
-					tex(this, 'icon.coin'),
-				)
-				.setScale(0.7),
-		);
-		this.put(
-			slate.x + pad + 20,
-			slate.y + slate.h + 8 + nextH / 2,
-			`$${run.money}`,
-			14,
-			PALETTE.money,
-			[0, 0.5],
-		);
 		const items = shop.offers;
-		const top = slate.y + 30;
 		const gap = 8;
 		const cardW = Math.floor(
 			(slate.w - 2 * pad - (items.length - 1) * gap) / Math.max(items.length, 1),
 		);
-		// A portrait card: as tall as the board allows under the title.
-		const cardH = slate.h - 30 - pad;
 		const rowW = items.length * cardW + (items.length - 1) * gap;
+		const left = mid - rowW / 2;
+		const right = mid + rowW / 2;
+		const cardH = offerCardHeight(
+			this,
+			cardW,
+			items.map((o) => this.offerDesc(o)),
+		);
+		const titleY = slate.y + 14;
+		// Title at the left edge of the first card; the money at the right edge of the last one.
+		const title = this.put(
+			left,
+			titleY,
+			t('run.shop'),
+			TYPE.screenTitle,
+			PALETTE.manilha,
+			[0, 0.5],
+		);
+		title.setShadow(-2, 3, toCss(PALETTE.shadow), 0, true, true);
+		const money = this.put(right, titleY, `$${run.money}`, 14, PALETTE.money, [1, 0.5]);
+		this.body.add(
+			this.add
+				.image(money.getBounds().left - 7, titleY - 1, tex(this, 'icon.coin'))
+				.setScale(0.8),
+		);
+		const top = slate.y + 30;
 		for (const [k, o] of items.entries()) {
 			const rarity = this.offerRarity(o);
 			const tryBuy = (): void => {
@@ -1355,10 +1357,11 @@ export class RunScene extends Phaser.Scene {
 					.setData('offer', `offers:${k}`),
 			);
 		}
-		const nextW = 150;
+		const nextH = 30;
+		const nextW = 2 * cardW + gap;
 		this.button(
 			mid,
-			slate.y + slate.h + 8 + nextH / 2,
+			top + cardH + gap + nextH / 2,
 			t('run.next'),
 			() => {
 				leaveShop(run);
@@ -1367,7 +1370,7 @@ export class RunScene extends Phaser.Scene {
 			},
 			nextW,
 			PALETTE.good,
-			{ h: nextH, size: 11 },
+			{ h: nextH, size: 13 },
 		);
 	}
 

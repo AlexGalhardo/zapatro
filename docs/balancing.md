@@ -388,12 +388,12 @@ Substituem todos os traços antigos (`Trait`). Valem só com o companheiro como 
 |---|---|---|---|
 | Bruto (`tonhao`) | +3 Mult por vaza que ele vence | as cartas dele valem metade das Fichas (↓) | `trickMult` 3, `chipsDivisor` 2 |
 | Cida (`donaCida`) | +$1 por mão vencida | itens da loja +$1 | `moneyPerWin` 1, `priceUp` 1 |
-| Jhony (`zeMalandro`) | juros +$1 por $5 no fim da mesa (máx +$5) | Renovar +$1 | `interestStep` 5, `interestPer` 1, `interestCap` 5, `rerollUp` 1 |
+| Jhony (`zeMalandro`) | juros +$1 por $5 no fim da mesa (máx +$5) | Rapidez pela metade (↓) | `interestStep` 5, `interestPer` 1, `interestCap` 5, `speedDivisor` 2 |
 | Nino (`juninho`) | +1 Mult base por mesa vencida | começa com −1 Mult base (mín 1) | `multPerLevel` 1, `startMult` −1 |
 | Zé (`ze`) | item mais barato da 1ª loja do Campeonato grátis | −1 espaço de Manha | `freeOffers` 1, `manhaSlotsDown` 1 |
 | Mia (`bia`) | manilhas +15 Fichas | cartas comuns −2 Fichas (mín 0) | `manilhaChips` 15, `commonChips` −2 |
 | Chico (`joca`) | +20 Fichas por vaza vencida com ♣ | ♥ e ♦ −5 Fichas (mín 0) | `clubTrickChips` 20, `redChips` −5 |
-| Beti (`lurdes`) | 1 Renovar grátis por loja | Manhas +$1 | `freeRerolls` 1, `manhaPriceUp` 1 |
+| Beti (`lurdes`) | 1ª Manha comprada em cada loja −$1 | Manhas +$1 | `firstManhaOff` 1, `manhaPriceUp` 1 |
 | Ayla (`tiao`) | ×1,5 Mult se a dupla vence as 2 primeiras vazas | mão perdida −$1 | `firstTwoTricksX` 1,5, `lostHandCost` 1 |
 | Sheila (`neide`) | 1 em 4 de dobrar o dinheiro da mesa vencida | metas +10% | `doubleMoneyChance` 0,25, `goalMult` 1,1 |
 

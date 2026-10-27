@@ -47,6 +47,36 @@ const text = (
 });
 
 /**
+ * Height of the cards of a row: the content (ribbon, medallion, name, kind, the longest
+ * description, the price), so every card is as tall as the tallest and nothing floats.
+ */
+export function offerCardHeight(scene: Phaser.Scene, w: number, descs: string[]): number {
+	const inner = w - 2 * CARD_PAD - 5;
+	const probe = (str: string, px: number, wrap?: number): number => {
+		const t = scene.add.text(0, 0, str, text(px, PALETTE.textLight, wrap));
+		const h = t.height;
+		t.destroy();
+		return h;
+	};
+	const desc = Math.max(...descs.map((d) => probe(d, 6, inner)), 0);
+	return Math.ceil(
+		RIBBON_H +
+			CARD_PAD +
+			MEDAL +
+			GAP +
+			probe('Mg', 9) +
+			1 +
+			probe('Mg', 6) +
+			GAP +
+			desc +
+			GAP +
+			PRICE_H +
+			CARD_PAD +
+			3,
+	);
+}
+
+/**
  * The card's body as one canvas texture (cached by size and rarity): drop shadow, thick lower
  * edge, a frame with a lit gradient in the rarity's colour, a softly shaded inside, a ribbon
  * strip on top, and the medallion behind the icon.
@@ -181,13 +211,13 @@ export function offerCard(scene: Phaser.Scene, o: OfferCardOpts): Phaser.GameObj
 		c.setAlpha(0.45);
 		c.add(
 			scene.add
-				.text(0, 0, o.sold.label.toLocaleUpperCase(), {
-					...text(12, PALETTE.textLight),
+				.text(0, medalY, o.sold.label.toLocaleUpperCase(), {
+					...text(9, PALETTE.textLight),
 					backgroundColor: toCss(PALETTE.truco),
 					padding: { x: 4, y: 1 },
 				})
 				.setOrigin(0.5)
-				.setAngle(-14),
+				.setAngle(-12),
 		);
 	}
 	let base: number | null = null;
