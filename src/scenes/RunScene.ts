@@ -94,7 +94,6 @@ export class RunScene extends Phaser.Scene {
 	private stakeChoice = 1;
 	/** Closes the panel open over the screen (Esc), if any. */
 	private closePanel: (() => void) | null = null;
-	private partnerFoldsChoice = true;
 	/** The three partners on offer and the seed of the run they were drawn for. */
 	private candidates: CompanionId[] = [];
 	private runSeed = 0;
@@ -371,21 +370,34 @@ export class RunScene extends Phaser.Scene {
 		const { cx } = this;
 		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
-		const [rowW, rowH, gap, top] = [384, 90, 3, 43];
-		const x0 = cx - rowW / 2;
+		// Three panels side by side across the stage: card (3:4) on the left, then in a column the
+		// name, style, perk, flaw and the pick button under the text, the same height in all three.
+		const [panelW, panelH, gap, top] = [196, 150, GAP.card, 70];
+		const x0 = cx - (3 * panelW + 2 * gap) / 2;
+		const [cw, ch] = [60, 80];
+		const btnY = top + panelH - 22;
 		offer.forEach((id, i) => {
-			const y = top + i * (rowH + gap);
-			this.box(x0, y, rowW, rowH);
-			const ch = rowH - 6;
-			const cw = (ch * 3) / 4;
+			const px = x0 + i * (panelW + gap);
+			this.box(px, top, panelW, panelH);
 			this.body.add(
 				this.add
-					.image(x0 + 4 + cw / 2, y + rowH / 2, tex(this, `charcard.${id}`))
+					.image(px + 5 + cw / 2, top + 5 + ch / 2, tex(this, `charcard.${id}`))
 					.setDisplaySize(cw, ch),
 			);
-			const btnW = 96;
-			const tx = x0 + 4 + cw + 10;
-			const tw = rowW - (tx - x0) - btnW - 16;
+			const tx = px + 5 + cw + 6;
+			const tw = panelW - (tx - px) - 5;
+			// One text size for all: long texts wrap, they never shrink.
+			let ty = top + 6;
+			ty =
+				this.put(
+					tx,
+					ty,
+					t(`char.${id}` as I18nKey),
+					10,
+					PALETTE.textLight,
+					[0, 0],
+					tw,
+				).getBounds().bottom + 1;
 			const lines: [string, number][] = [
 				[t(`partner.style.${COMPANIONS[id].style}` as I18nKey), PALETTE.manilha],
 				[perkText(id), PALETTE.good],
@@ -397,57 +409,27 @@ export class RunScene extends Phaser.Scene {
 						][])
 					: []),
 			];
-			// One size for every card: long texts wrap, they never shrink.
-			let ty = y + 6;
-			const name = this.put(
-				tx,
-				ty,
-				t(`char.${id}` as I18nKey),
-				10,
-				PALETTE.textLight,
-				[0, 0],
-				tw,
-			);
-			ty = name.getBounds().bottom + 1;
 			for (const [text, color] of lines)
-				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 2;
+				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 3;
+			// The card sits left of the text; the lines under it use the whole panel width when the text is longer.
 			this.button(
-				x0 + rowW - btnW / 2 - 6,
-				y + rowH / 2,
+				tx + tw / 2,
+				btnY,
 				t('run.pick', { name: t(`char.${id}` as I18nKey) }),
 				() => this.choosePartner(id),
-				btnW,
+				tw,
 				PALETTE.good,
-				{ h: 30, size: 9 },
+				{ h: 24, size: 8 },
 			);
 		});
-		// Back and the partner-folds toggle: one row centred under the partners.
-		const backW = 100;
-		const foldW = 250;
-		const row = cx - (backW + GAP.card + foldW) / 2;
-		const by = top + 3 * (rowH + gap) + 14;
 		this.button(
-			row + backW / 2,
-			by,
+			cx,
+			top + panelH + 22,
 			t('menu.back'),
 			() => fadeTo(this, 'Menu'),
-			backW,
+			100,
 			undefined,
 			{ hint: backHint },
-		);
-		// Who answers the rivals' truco: the partner too (classic) or only you.
-		this.button(
-			row + backW + GAP.card + foldW / 2,
-			by,
-			t('run.partnerFolds', {
-				v: t(this.partnerFoldsChoice ? 'settings.toggle.on' : 'settings.toggle.off'),
-			}),
-			() => {
-				this.partnerFoldsChoice = !this.partnerFoldsChoice;
-				this.draw();
-			},
-			foldW,
-			this.partnerFoldsChoice ? PALETTE.good : undefined,
 		);
 	}
 
@@ -476,7 +458,7 @@ export class RunScene extends Phaser.Scene {
 			this.stakeChoice,
 			isUnlocked(meta, 'legendary'),
 			IS_DEMO || getParams(this).demo,
-			this.partnerFoldsChoice,
+			true,
 		);
 		// Test hacks for a new run (test-hacks.md): starting money and Manhas.
 		const params = getParams(this);
