@@ -38,6 +38,7 @@ import {
 	needsTarget,
 	newRun,
 	type Offer,
+	offerPrice,
 	type PackOption,
 	parseRun,
 	type RunState,
@@ -1340,8 +1341,8 @@ export class RunScene extends Phaser.Scene {
 					h: cardH,
 					dim: o.sold,
 					price: {
-						label: o.sold ? t('run.sold') : `$${o.price}`,
-						enabled: !o.sold && run.money >= o.price,
+						label: o.sold ? t('run.sold') : `$${offerPrice(run, o)}`,
+						enabled: !o.sold && run.money >= offerPrice(run, o),
 						onClick: tryBuy,
 						...(o.sold ? {} : { onBlocked: tryBuy }),
 					},

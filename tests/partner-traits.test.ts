@@ -4,12 +4,12 @@ import { type CompanionId, PARTNER_TRAITS } from '../src/data/companions';
 import { ECONOMY } from '../src/data/economy';
 import { Rng } from '../src/logic/rng';
 import {
+	buy,
 	finishTable,
 	goalOf,
 	newRun,
+	offerPrice,
 	priceOf,
-	reroll,
-	rerollCost,
 	type TableResult,
 } from '../src/logic/run/run';
 import { type ScoreStep, scoreHand } from '../src/logic/score/score';
@@ -109,12 +109,17 @@ describe('Jhony (zeMalandro)', () => {
 		expect(finishTable(other, win({ money: 3 }))?.partner).toBe(0);
 	});
 
-	test('rerolling costs +$1', () => {
-		const a = newRun(1, 'zeMalandro');
-		const b = newRun(1, 'tonhao');
-		finishTable(a, win());
-		finishTable(b, win());
-		expect(rerollCost(a)).toBe(rerollCost(b) + 1);
+	test('the speed reward is halved (rounded down)', () => {
+		for (const [partner, tentos] of [
+			['zeMalandro', 9],
+			['zeMalandro', 6],
+			['tonhao', 9],
+		] as const) {
+			const run = newRun(1, partner);
+			const full = Math.min(ECONOMY.speedCap, Math.max(0, 12 - tentos));
+			const r = finishTable(run, win({ rivalTentos: tentos }));
+			expect(r?.speed).toBe(partner === 'zeMalandro' ? Math.floor(full / 2) : full);
+		}
 	});
 });
 
@@ -179,15 +184,17 @@ describe('Chico (joca)', () => {
 });
 
 describe('Beti (lurdes)', () => {
-	test('one free reroll per shop; Manhas cost +$1', () => {
+	test('the first Manha bought in each shop costs $1 less; Manhas cost +$1', () => {
 		const run = newRun(1, 'lurdes');
-		run.money = 20;
+		run.money = 40;
 		finishTable(run, win());
-		expect(rerollCost(run)).toBe(0);
+		const [first, second] = (run.shop?.offers ?? []).filter((o) => o.kind === 'manha');
+		if (!first || !second) throw new Error('the shop has fewer than two Manhas for this seed');
+		expect(offerPrice(run, first)).toBe(first.price - 1);
 		const before = run.money;
-		expect(reroll(run)).toBeNull();
-		expect(run.money).toBe(before);
-		expect(rerollCost(run)).toBe(ECONOMY.rerollBase);
+		expect(buy(run, 'offers', (run.shop?.offers ?? []).indexOf(first))).toBeNull();
+		expect(before - run.money).toBe(first.price - 1);
+		expect(offerPrice(run, second)).toBe(second.price);
 		const other = newRun(1, 'tonhao');
 		expect(priceOf(run, 5, 'manha')).toBe(priceOf(other, 5, 'manha') + 1);
 		expect(priceOf(run, 5, 'pack')).toBe(priceOf(other, 5, 'pack'));

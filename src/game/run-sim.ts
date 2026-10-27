@@ -1,3 +1,4 @@
+import { SHOP_SIMPLE, TABLE_SELECT } from '../config/features';
 import { AI_PROFILES, type AiProfile } from '../data/ai-profiles';
 import { COMPANION_IDS, type CompanionId } from '../data/companions';
 import type { Consumable } from '../data/consumables';
@@ -14,6 +15,7 @@ import {
 	finishTable,
 	leaveShop,
 	newRun,
+	offerPrice,
 	type PackOption,
 	type Phase,
 	type RunState,
@@ -104,7 +106,7 @@ function swapFor(run: RunState, id: ManhaId): { index: number; gain: number } {
 
 /** Room for a Manha: free slot, or (good bot) sells the weakest one when `id` beats it. */
 function makeRoom(run: RunState, id: ManhaId): void {
-	if (run.manhas.length < run.manhaSlots || !HABITS.sell) return;
+	if (run.manhas.length < run.manhaSlots || !HABITS.sell || SHOP_SIMPLE) return;
 	const { index, gain } = swapFor(run, id);
 	if (gain > 0) sellManha(run, index);
 }
@@ -186,16 +188,19 @@ export function botShop(run: RunState, bot: RunBot, rng: Rng): void {
 	for (let guard = 0; guard < 12; guard++) {
 		const choices: { where: 'offers' | 'packs' | 'upgrade'; i: number; v: number }[] = [];
 		s.offers.forEach((o, i) => {
-			if (o.sold || o.price > run.money - (o.price === 0 ? 0 : keep)) return;
+			const price = offerPrice(run, o);
+			if (o.sold || price > run.money - (price === 0 ? 0 : keep)) return;
 			if (o.kind === 'manha' && run.manhas.length < run.manhaSlots)
 				choices.push({ where: 'offers', i, v: manhaValue(run, o.id) + 2 });
-			else if (o.kind === 'manha' && bot === 'good' && HABITS.sell) {
+			else if (o.kind === 'manha' && bot === 'good' && HABITS.sell && !SHOP_SIMPLE) {
 				const { index, gain } = swapFor(run, o.id);
 				const old = run.manhas[index];
 				if (gain > 0 && old && o.price <= run.money + sellPrice(old) - keep)
 					choices.push({ where: 'offers', i, v: gain + 1 });
 			}
+			// The reduced shop has no sidebar: consumables could not be used, so they are not bought.
 			if (
+				!SHOP_SIMPLE &&
 				o.kind === 'consumable' &&
 				run.consumables.length < run.consumableSlots &&
 				(bot === 'random' || wantsConsumable(run, o.item))
@@ -203,14 +208,14 @@ export function botShop(run: RunState, bot: RunBot, rng: Rng): void {
 				choices.push({ where: 'offers', i, v: 1 });
 		});
 		s.packs.forEach((o, i) => {
-			if (!o.sold && o.price <= run.money - (o.price === 0 ? 0 : keep))
+			if (!SHOP_SIMPLE && !o.sold && o.price <= run.money - (o.price === 0 ? 0 : keep))
 				choices.push({
 					where: 'packs',
 					i,
 					v: o.kind === 'pack' && o.pack === 'manha' ? 2 : 0.5,
 				});
 		});
-		if (s.upgrade && !s.upgrade.sold && s.upgrade.price <= run.money - keep)
+		if (!SHOP_SIMPLE && s.upgrade && !s.upgrade.sold && s.upgrade.price <= run.money - keep)
 			choices.push({ where: 'upgrade', i: 0, v: 1.5 });
 		if (!choices.length) break;
 		const c =
@@ -257,7 +262,12 @@ export function simulateRun(
 	let bestHand = 0;
 	let lostAt: RunSummary['lostAt'];
 	while (run.phase === 'select' && run.champ <= maxChamp) {
-		if (bot === 'good' && canSkip(run) && HABITS.skip[tableSize(run) as 'small' | 'big']) {
+		if (
+			TABLE_SELECT &&
+			bot === 'good' &&
+			canSkip(run) &&
+			HABITS.skip[tableSize(run) as 'small' | 'big']
+		) {
 			skipTable(run);
 			continue;
 		}

@@ -60,8 +60,8 @@ export interface ShopState {
 	packs: Offer[];
 	upgrade: Offer | null;
 	rerolls: number;
-	/** Beti's free reroll of this shop was used. */
-	freeRerollUsed?: boolean;
+	/** Beti's discount on the first Manha bought in this shop was used. */
+	firstManhaBought?: boolean;
 	/** Options of the pack being opened. */
 	opened: PackOption[] | null;
 }
@@ -300,11 +300,16 @@ export function tableReward(
 			run.table === 0 && !stakeRules(run.stake).smallPrize
 				? 0
 				: ECONOMY.prize[tableSize(run)],
-		speed: Math.min(ECONOMY.speedCap, Math.max(0, 12 - rivalTentos)),
+		// Jhony's flaw: the speed reward is halved (rounded down).
+		speed: Math.floor(
+			Math.min(ECONOMY.speedCap, Math.max(0, 12 - rivalTentos)) /
+				(run.partner === 'zeMalandro' ? PARTNER_TRAITS.zeMalandro.speedDivisor : 1),
+		),
 		interest: interest(before, stakeRules(run.stake).interestCap),
 		partner: 0,
 		doubled: false,
 	};
+	// Jhony's perk: interest on the money he helps you keep.
 	if (run.partner === 'zeMalandro') {
 		const t = PARTNER_TRAITS.zeMalandro;
 		reward.partner = Math.min(
@@ -405,14 +410,8 @@ export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'pack
 }
 
 export function rerollCost(run: RunState): number {
-	// Beti: the first reroll of every shop is free.
-	if (run.partner === 'lurdes' && run.shop && !run.shop.freeRerollUsed) return 0;
 	const cheap = run.upgrades.includes('rerollBarato') ? CHEAP_REROLL : 0;
-	const up = run.partner === 'zeMalandro' ? PARTNER_TRAITS.zeMalandro.rerollUp : 0;
-	return Math.max(
-		0,
-		ECONOMY.rerollBase + (run.shop?.rerolls ?? 0) * ECONOMY.rerollStep - cheap + up,
-	);
+	return Math.max(0, ECONOMY.rerollBase + (run.shop?.rerolls ?? 0) * ECONOMY.rerollStep - cheap);
 }
 
 function pickManha(run: RunState, rng: Rng, rarity?: Rarity): ManhaId | null {
@@ -534,6 +533,12 @@ const hasRoom = (run: RunState, o: Offer): boolean =>
 			: true;
 
 /** Buys an offer (`where`: offers, packs or the upgrade). A pack opens its options. */
+/** What `o` costs the player now: Beti's first Manha of each shop is $1 cheaper. */
+export function offerPrice(run: RunState, o: Offer): number {
+	const first = run.partner === 'lurdes' && o.kind === 'manha' && !run.shop?.firstManhaBought;
+	return Math.max(0, o.price - (first ? PARTNER_TRAITS.lurdes.firstManhaOff : 0));
+}
+
 export function buy(
 	run: RunState,
 	where: 'offers' | 'packs' | 'upgrade',
@@ -544,10 +549,12 @@ export function buy(
 	const o = where === 'upgrade' ? shop.upgrade : shop[where][index];
 	if (!o) return 'none';
 	if (o.sold) return 'sold';
-	if (run.money < o.price) return 'money';
+	const price = offerPrice(run, o);
+	if (run.money < price) return 'money';
 	if (!hasRoom(run, o)) return 'slots';
-	run.money -= o.price;
+	run.money -= price;
 	o.sold = true;
+	if (o.kind === 'manha') shop.firstManhaBought = true;
 	if (o.kind === 'manha') run.manhas.push(o.id);
 	if (o.kind === 'consumable') run.consumables.push(o.item);
 	if (o.kind === 'upgrade') applyUpgrade(run, o.id);
@@ -624,8 +631,7 @@ export function reroll(run: RunState): ShopError | null {
 	const cost = rerollCost(run);
 	if (run.money < cost) return 'money';
 	run.money -= cost;
-	if (run.partner === 'lurdes' && !shop.freeRerollUsed) shop.freeRerollUsed = true;
-	else shop.rerolls++;
+	shop.rerolls++;
 	shop.offers = roll(run, (rng) => makeOffers(run, rng));
 	return null;
 }

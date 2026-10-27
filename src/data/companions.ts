@@ -77,8 +77,8 @@ export const PARTNER_TRAITS = {
 	tonhao: { trickMult: 3, chipsDivisor: 2 },
 	/** Perk: money per hand won. Flaw: shop items cost more. */
 	donaCida: { moneyPerWin: 1, priceUp: 1 },
-	/** Perk: interest on saved money at the end of each table. Flaw: rerolling costs more. */
-	zeMalandro: { interestStep: 5, interestPer: 1, interestCap: 5, rerollUp: 1 },
+	/** Perk: interest on saved money at the end of each table. Flaw: the speed reward is divided (rounded down). */
+	zeMalandro: { interestStep: 5, interestPer: 1, interestCap: 5, speedDivisor: 2 },
 	/** Perk: +base Mult per level (a level per table won). Flaw: starts at -1 base Mult. */
 	juninho: { multPerLevel: 1, startMult: -1 },
 	/** Perk: the cheapest offer of the first shop of each Championship is free. Flaw: slots. */
@@ -87,8 +87,8 @@ export const PARTNER_TRAITS = {
 	bia: { manilhaChips: 15, commonChips: -2 },
 	/** Perk: Chips per trick won with a club. Flaw: hearts and diamonds worth fewer Chips. */
 	joca: { clubTrickChips: 20, redChips: -5 },
-	/** Perk: a free reroll per shop. Flaw: Manhas cost more. */
-	lurdes: { freeRerolls: 1, manhaPriceUp: 1 },
+	/** Perk: the first Manha bought in each shop costs less. Flaw: Manhas cost more. */
+	lurdes: { firstManhaOff: 1, manhaPriceUp: 1 },
 	/** Perk: ×Mult when the pair wins the first two tricks. Flaw: a lost hand costs money. */
 	tiao: { firstTwoTricksX: 1.5, lostHandCost: 1 },
 	/** Perk: chance to double the money earned winning a table. Flaw: bigger table goals. */
