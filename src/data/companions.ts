@@ -103,8 +103,8 @@ export const COMPANIONS: Record<CompanionId, CompanionDef> = {
 		style: 'bluffer',
 		profile: base('zeMalandro', 'bluffer', 'bluffer'),
 		perk: { k: 'signals', delta: 1 },
-		flaw: { k: 'falseSignals', rate: 0.5 },
-		bluffChips: [20, 40, 70],
+		flaw: { k: 'falseSignals', rate: 0.7 },
+		bluffChips: [10, 20, 35],
 	},
 	juninho: {
 		style: 'fearless',

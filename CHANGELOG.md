@@ -27,6 +27,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 - **art:** the card back is painted (`card-1`; `card-2` and `card-3` for the Interior and Blefe decks) with the frame and corners still drawn by code; the table felt is painted (`board-game-1`) and tinted blue and red in the later Championships.
 - **ui:** the partner cards show the painted card art; the shop title sits on a plate over the painted counter.
 - **docs:** display names of the cast in the docs (Bruto, Cida, Jhony, Nino, Chico, Beti, Mia, Sheila, Ayla); ids in code unchanged. `docs/balancing.md` has the 1.0 balance review (no number changed).
+- **balance:** Jhony (`zeMalandro`): `bluffChips` [20, 40, 70] → [10, 20, 35] and `falseSignals` rate 0.5 → 0.7 (good bot 35% → 30% at 1000 runs); `tests/content-beta.test.ts` follows the new level-2 value. Details in `docs/balancing.md`.
 
 ### Removed
 

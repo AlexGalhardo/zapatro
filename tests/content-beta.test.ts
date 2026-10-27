@@ -235,7 +235,7 @@ describe('bosses and partners (B1.3)', () => {
 			partner: { id: 'zeMalandro', level: 2 },
 			manhas: ['malandro'],
 		});
-		expect(ze.steps.some((x) => x.source === 'partner:zeMalandro' && x.chips === 40)).toBe(
+		expect(ze.steps.some((x) => x.source === 'partner:zeMalandro' && x.chips === 20)).toBe(
 			true,
 		);
 		expect(ze.steps.some((x) => x.source === 'manha:malandro')).toBe(true);

@@ -304,3 +304,34 @@ Outliers observados:
 - **Manhas mais frequentes:** `asNaManga` (155 de 500 runs na mix geral) e `seuZe` (136) lideram. Frequência não é poder: não há dado de força por Manha nesta rodada, então não foi mexido.
 
 Decisão: **sem mudança em `src/data/`**. Nenhuma correção pequena ficou claramente justificada: o gate passa e os outliers são de desenho de parceiro (perk × defeito), que pedem decisão do dev, não um ajuste de número. Próximo passo sugerido: testar `catchBonus` da Cida e o `levelsPerTable` do Nino em 300 runs cada, uma por vez, com `bun run balance` depois de cada.
+
+## Calibração dos parceiros para a 1.0 (2026-10-27)
+
+Condições de referência: `--skip none` (sem pular mesa), baralho padrão e Estaca 1. Não há escolha de mesa nem de baralho no sim, e o gate `bun run balance` já roda com `HABITS.skip` padrão (`none`). Meta do Game Director: cada parceiro entre ~18% e ~30% no bot bom.
+
+Linha de base (300 runs, seed 1, bot bom):
+
+| Parceiro (id) | Antes | Depois | Situação |
+|---|---|---|---|
+| Bruto (`tonhao`) | 21,3% | 21,3% | dentro |
+| Cida (`donaCida`) | 12,7% | 12,7% | fora (decisão do dev, ver abaixo) |
+| Jhony (`zeMalandro`) | 35,3% | 30,4% (1000 runs) | ajustado |
+| Nino (`juninho`) | 17,3% | 17,3% | pendente |
+| Ze (`ze`) | 35,7% | 35,7% | pendente |
+| Mia (`bia`) | 8,7% | 8,7% | pendente |
+| Chico (`joca`) | 35,0% | 35,0% | pendente |
+| Beti (`lurdes`) | 25,3% | 25,3% | dentro |
+| Ayla (`tiao`) | 12,7% | 12,7% | pendente |
+| Sheila (`neide`) | 32,7% | 32,7% | pendente |
+
+Mudança feita:
+
+- **Jhony (`zeMalandro`):** `bluffChips` [20, 40, 70] → [10, 20, 35] e defeito `falseSignals` `rate` 0,5 → 0,7 (mais mentiras, mais sinais que a mesa flagra). Medido com 1000 runs (seed 1): 35,0% → 30,4%. Com 300 runs, a combinação deu 28,7% e a taxa sozinha 35,0%: a diferença de 300 runs era ruído (erro padrão ~2,7 p.p.), por isso a medida de decisão é a de 1000 runs. Gate `bun run balance`: PASS nas 3 seeds (23,6 · 21,2 · 26,2%; antes 26,0 · 21,6 · 27,0%; aleatório < 0,5%; 5,96–6,07 mãos por mesa).
+
+Testado e descartado:
+
+- **Cida (`donaCida`), `catchBonus`:** [0; 0,1; 0,2] → [0; 0,15; 0,3] deu 11,7%; [0; 0,3; 0,6] deu 16,3%. A alavanca não chega a 18% sem um valor grande no nível 3. Voltou ao original. Decisão do dev: o defeito `foldsRaises` (corre de seis, nove e doze) é o que pesa, e mexer nele muda o tipo do traço.
+
+Pendências: Nino, Ze, Mia, Chico, Ayla e Sheila ainda fora da faixa. Próximas medidas: Mia (8,7%, o mais baixo) e Ayla (12,7%), depois Nino, Ze, Chico e Sheila, um por vez, cada um com sim de 1000 runs e `bun run balance`.
+
+Teste ajustado: `tests/content-beta.test.ts` ("10 companions; Juninho levels up every table, Zé Malandro bluffs count as yours") afirmava `chips === 40` para o Zé Malandro no nível 2; com o novo `bluffChips` o valor é 20.
