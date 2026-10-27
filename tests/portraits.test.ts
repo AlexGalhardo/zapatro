@@ -15,8 +15,8 @@ describe('portraits', () => {
 			expect(existsSync(file(id))).toBe(true);
 	});
 
-	test('the pixel converter maps 9 files and leaves Pedrão out', () => {
-		expect(Object.keys(PORTRAITS)).toHaveLength(9);
+	test('the pixel converter maps 7 files and leaves Pedrão out', () => {
+		expect(Object.keys(PORTRAITS)).toHaveLength(7);
 		expect(Object.keys(PORTRAITS)).not.toContain('char-pedrao');
 	});
 
