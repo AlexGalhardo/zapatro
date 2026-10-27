@@ -8,9 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The engine, tooling and CI come from the previous game, Gridbound
 (`AlexGalhardo/tibia-roguelite-game`, branch `dev`, commit `f4fb29a`), whose history lives there.
 
-Since 2026-10-24 the project has 13 releases, numbered in order from 0.1.0 to 0.13.0 (the next ones are 0.13.1 for a small fix and 0.14.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, and 0.13.0 the painted look. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
+Since 2026-10-24 the project has 14 releases, numbered in order from 0.1.0 to 0.13.1 (the next ones are 0.13.2 for a small fix and 0.14.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, and 0.13.0 the painted look. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
 
 ## [Unreleased]
+
+## [0.13.1] - 2026-10-27
+
+### Fixed
+
+- **build:** the Poki build leaves out the extra menu and table paintings (the menu keeps its first painting), so it stays under 8 MB.
 
 ## [0.13.0] - 2026-10-27
 
@@ -584,7 +590,8 @@ Since 2026-10-24 the project has 13 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.1...HEAD
+[0.13.1]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/AlexGalhardo/zeta-c/releases/tag/v0.11.0
