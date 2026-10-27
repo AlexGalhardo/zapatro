@@ -38,7 +38,7 @@
 | M-04 | P1 | Seleção de mesas | Mockup ✓ · implementada (`v1.0.0-rc.46`) | [x] |
 | M-05 | P2 | Configurações | Mockup ✓ · falta refazer o spec e implementar | [~] |
 | M-06 | P1 | mesa | `hand-1/2.png` com as mãos certas, mas sem SEATING: refazer depois do novo Boteco | obsoleto pela art bible v2 (jogador sem avatar) |
-| M-07 | P1 | mesa, retratos | Folhas: Neide, Tonhão, Tião, Zé ✓*; Bia e Juninho ✗ (marcas reais); falta Zé Malandro | [x] substituído por `references/concept-art/zapatro/` (20 retratos) |
+| M-07 | P1 | mesa, retratos | Folhas: Sheila, Bruto, Ayla, Zé ✓*; Mia e Nino ✗ (marcas reais); falta Jhony | [x] substituído por `references/concept-art/zapatro/` (20 retratos) |
 | M-08 | P1 | mesa do chefe | Folhas: Rei do Truco ✓; Valentão, Agiota, Delegado, Mudo, Sortuda ✓*; faltam Cartomante, Juiz, Irmãos | [x] substituído por `references/concept-art/zapatro/` |
 | M-09 | P2 | todas com concept | `menu-21-9.png` ✗ (miolo diferente); faltam mesa, loja, Configurações | obsoleto pela art bible v2 |
 | M-10 | P2 | mesa | `joker.png` ✓* (coroa, naipe extra, proporção) · falta implementar | [~] |
@@ -72,7 +72,7 @@
 ### B-03 · P1 · Retratos borrados
 
 - [ ] **Visto em:** 2026-10-15. Prints: [`imagens-borradas-personagens-nao-feitos.png`](bugs/15-10-2026/imagens-borradas-personagens-nao-feitos.png), [`fazer-mockups-segurando-2-e-1-carta-e-atualizar-na-tela.png`](bugs/15-10-2026/fazer-mockups-segurando-2-e-1-carta-e-atualizar-na-tela.png), [`fazer-mockup-proximos-rounds.png`](bugs/15-10-2026/fazer-mockup-proximos-rounds.png).
-- **Sintoma:** Tonhão, Bia, Tião e Neide aparecem como o retrato PixelLab antigo ampliado 2×, borrado e de outro estilo ao lado dos recortes do concept (Dona Cida, Lurdes).
+- **Sintoma:** Bruto, Mia, Ayla e Sheila aparecem como o retrato PixelLab antigo ampliado 2×, borrado e de outro estilo ao lado dos recortes do concept (Cida, Beti).
 - **Causa:** só tem recorte quem está no concept da sala (`cast` em `src/data/concept-art.ts`); o resto cai no retrato 48×48 em 2×.
 - **Para resolver:** M-07 e M-08 (folhas de personagem) → recorte por personagem, usável em qualquer sala e nas telas de seleção/regras.
 - **Feito em:** · **Commit:** · **Versão:**
@@ -155,7 +155,7 @@
 - **Regra (dev, 2026-10-15):** os três jogadores IA jogam **apoiados na mesma mesa** do jogador: antebraços na borda de madeira, a borda esconde a cintura para baixo.
 - **Para resolver:** **SEATING BLOCK** em todo prompt com personagens (skill `svg-concept-art`); refazer M-01, M-06 e as salas (M-12); recortes `cast` novos.
 - **Feito em:** 2026-10-15 · **Commit:** `1.0.0-rc.47` (tag) · **Versão:** `v1.0.0-rc.47` (parcial)
-- **O que mudou:** No Bar de Estrada, Tonhão, Tião e Zé jogam apoiados na mesma mesa. Falta: Boteco (mockup novo) e a oficina do Professor (`table-garage-v2.png`).
+- **O que mudou:** No Bar de Estrada, Bruto, Ayla e Zé jogam apoiados na mesma mesa. Falta: Boteco (mockup novo) e a oficina do Professor (`table-garage-v2.png`).
 
 ### B-14 · P1 · Tela congelada sem aviso depois de crash da GPU
 
@@ -188,18 +188,18 @@ Legenda: ✓ aprovado · ✓* aprovado com ressalva (corrigir quando der) · ✗
 
 | Imagem | Item | Veredito | Problema | Correção |
 | --- | --- | --- | --- | --- |
-| `pause.png` | M-01 | ✓* | Assentos certos (Lurdes e Joca na mesma mesa); sumiu o monte de cartas à direita do painel | `Keep everything identical except restore the face-down deck on the felt to the right of the panel, as in the previous version.` |
-| `hand-2.png`, `hand-1.png` | M-06 | ✗ | Mãos e cartas certas, mas Lurdes e Joca continuam em mesinhas separadas (SEATING BLOCK ignorado) | Refazer depois do novo Boteco (M-12), anexando-o: `Keep everything identical except the seating: Lurdes and Joca move to the left and right sides of the same green table, forearms on its rim, no side tables, nothing below the waist visible.` |
-| `table-bar-estrada.png` (era `-v2`) | M-12 | ✓ implementado em `v1.0.0-rc.47` | Veio salvo como `table-boteco.png`, mas é o Bar de Estrada (Tonhão, Tião, Zé), com os assentos certos. Renomeado; o `table-boteco.png` original foi restaurado (o jogo usa os recortes dele) | — |
-| `table-garage-v2.png` | M-12 | ✓* | Tião e O Professor na mesma mesa; a dica usa "-" no lugar de "·" (o texto é do jogo, sai no `erase`) | — |
-| Boteco (Dona Cida, Lurdes, Joca) | M-12 | falta | Ainda não entregue | Prompt de M-12 com o `table-boteco.png` atual anexado |
+| `pause.png` | M-01 | ✓* | Assentos certos (Beti e Chico na mesma mesa); sumiu o monte de cartas à direita do painel | `Keep everything identical except restore the face-down deck on the felt to the right of the panel, as in the previous version.` |
+| `hand-2.png`, `hand-1.png` | M-06 | ✗ | Mãos e cartas certas, mas Beti e Chico continuam em mesinhas separadas (SEATING BLOCK ignorado) | Refazer depois do novo Boteco (M-12), anexando-o: `Keep everything identical except the seating: Beti and Chico move to the left and right sides of the same green table, forearms on its rim, no side tables, nothing below the waist visible.` |
+| `table-bar-estrada.png` (era `-v2`) | M-12 | ✓ implementado em `v1.0.0-rc.47` | Veio salvo como `table-boteco.png`, mas é o Bar de Estrada (Bruto, Ayla, Zé), com os assentos certos. Renomeado; o `table-boteco.png` original foi restaurado (o jogo usa os recortes dele) | — |
+| `table-garage-v2.png` | M-12 | ✓* | Ayla e O Professor na mesma mesa; a dica usa "-" no lugar de "·" (o texto é do jogo, sai no `erase`) | — |
+| Boteco (Cida, Beti, Chico) | M-12 | falta | Ainda não entregue | Prompt de M-12 com o `table-boteco.png` atual anexado |
 | `menu-21-9.png` | M-09 | ✗ | A cena foi recomposta em outra escala: o miolo não é idêntico ao `menu-16-9.png` | `Keep everything identical except: paste the attached 16:9 image unchanged, at the same scale, in the centre (x 100–740), and paint only the two new 100-px side strips with street and bar (no people, text or buttons).` |
 | `joker.png` | M-10 | ✓* | Chapéu de bobo em vez da coroa de tampinhas; naipe roxo extra sob "JK"; carta mais alta que 3:4 | `Keep everything identical except: replace the jester hat with a crown of bottle caps, remove the purple suit symbol under both "JK", make the card 3:4 (48×64).` |
 | `char-bia.png` | M-07 | ✗ | Escudo estilo CBF na camisa (marca real); frase descritiva extra; amostras genéricas | `Keep everything identical except remove the description line, remove the crest from the shirt, and make the swatches the colours actually used.` |
 | `char-juninho.png` | M-07 | ✗ | Logo de banda real no boné, camiseta e fones; frase extra | `Keep everything identical except replace every band logo with an original generic doodle and remove the description line.` |
 | `char-neide.png` | M-07 | ✓* | Frase extra; amostras genéricas | `Keep everything identical except remove the description line and use only her real colours in the swatches.` |
-| `char-tonhao.png` | M-07 | ✓* | Fiel ao Tonhão da mesa; frase extra; cartas amassadas na expressão 2 | `Keep everything identical except remove the description line and redraw the cards in expression 2 as a clean fan.` |
-| `char-tiao.png` | M-07 | ✓* | Destoa do Tião da mesa (camisa marrom de trabalho, barba branca cheia) | `Keep everything identical except match the in-game Tião: brown work shirt and full white beard; remove the description line.` |
+| `char-tonhao.png` | M-07 | ✓* | Fiel ao Bruto da mesa; frase extra; cartas amassadas na expressão 2 | `Keep everything identical except remove the description line and redraw the cards in expression 2 as a clean fan.` |
+| `char-tiao.png` | M-07 | ✓* | Destoa da Ayla da mesa (camisa marrom de trabalho, barba branca cheia) | `Keep everything identical except match the in-game Ayla: brown work shirt and full white beard; remove the description line.` |
 | `char-ze.png` | M-07 | ✓* | Frase extra | `Keep everything identical except remove the description line.` |
 | `boss-valentao.png` | M-08 | ✓* | Frase extra (renomeado de `char-`) | `Keep everything identical except remove the description line.` |
 | `boss-agiota.png` | M-08 | ✓* | Uma mão erguida com notas, não apoiada; notas lembram o Real | `Keep everything identical except both forearms rest on the rim in the main view, banknotes generic (no real currency design), remove the description line.` |
@@ -208,7 +208,7 @@ Legenda: ✓ aprovado · ✓* aprovado com ressalva (corrigir quando der) · ✗
 | `boss-sortuda.png` | M-08 | ✓* | A versão 2× é outra pose; expressão 4 não é irritada; a figa parece uma hamsa | `Keep everything identical except the 2x and 1x views copy the main pose, expression 4 annoyed, the amulet is a closed-fist figa, remove the description line.` |
 | `boss-reiDoTruco.png` | M-08 | ✓ | Coroa de tampinhas, capa e expressões certas; só a frase extra e amostras genéricas | `Keep everything identical except remove the description line and use his real colours in the swatches.` |
 
-**Ainda falta:** folha do Zé Malandro (M-07, visual a definir); chefes A Cartomante, O Juiz e Os Irmãos (M-08); fundos 21:9 de mesa, loja e Configurações (M-09); Boteco com todos à mesa (M-12); telas da run e kit de ícones (M-11); mapas dos Campeonatos 3 a 8 (M-13).
+**Ainda falta:** folha do Jhony (M-07, visual a definir); chefes A Cartomante, O Juiz e Os Irmãos (M-08); fundos 21:9 de mesa, loja e Configurações (M-09); Boteco com todos à mesa (M-12); telas da run e kit de ícones (M-11); mapas dos Campeonatos 3 a 8 (M-13).
 
 ### M-01 · Pausa
 
@@ -218,9 +218,9 @@ Legenda: ✓ aprovado · ✓* aprovado com ressalva (corrigir quando der) · ✗
 ```text
 NOW GENERATE THIS IMAGE
 Keep the attached pause screen identical (the wooden "Pausa" panel, its three buttons "Continuar", "Configurações", "Sair da mesa", the hint strip "Esc continuar · ↑↓ escolher · Enter confirmar", the player's hands and cards, the room) except the seating, which must follow the SEATING BLOCK:
-- Dona Cida stays at the top of the green table, forearms on its rim.
-- Lurdes (pink curlers) moves from her small side table to the LEFT side of the same green card table, leaning on its wooden rim with both forearms, cards in hand, facing the centre.
-- Joca (green cap, white t-shirt) moves from his small side table to the RIGHT side of the same green card table, leaning on its rim, cards in hand, facing the centre.
+- Cida stays at the top of the green table, forearms on its rim.
+- Beti (pink curlers) moves from her small side table to the LEFT side of the same green card table, leaning on its wooden rim with both forearms, cards in hand, facing the centre.
+- Chico (green cap, white t-shirt) moves from his small side table to the RIGHT side of the same green card table, leaning on its rim, cards in hand, facing the centre.
 - Below the waist nobody is visible: the table rim hides hips and legs. No separate side tables next to them.
 The whole scene behind the panel is darkened to about 40% with a flat dark brown overlay, no blur. No other text.
 ```
@@ -263,10 +263,10 @@ No other text.
 ```text
 NOW GENERATE THIS IMAGE
 Championship table-selection screen mockup of ZAPATRO, same bar room, status bar and Manhas shelf as the attached shop. Follow the GEOMETRY BLOCK.
-Top: the same status bar ("Boteco do Bairro · Campeonato 1", "Dona Cida nv 1", blue "Baralho (41)" button, coins "$3") and the Manhas shelf with five empty slots and "Manhas 0/5".
+Top: the same status bar ("Boteco do Bairro · Campeonato 1", "Cida nv 1", blue "Baralho (41)" button, coins "$3") and the Manhas shelf with five empty slots and "Manhas 0/5".
 Centre: three tall wooden boards side by side (each 180 by 210), like menu boards hanging on the wall:
 1 "Mesa Pequena": darker, with a big green stamped tick and the word "Feita".
-2 "Mesa Grande": focused with a gold frame; two round portrait medallions of two rivals, the line "Rivais: Bia e Joca", a big blue "Meta: 165 pontos", a gold "Prêmio $4", and two buttons at the bottom: green "Jogar" and blue "Pular (Promessa)".
+2 "Mesa Grande": focused with a gold frame; two round portrait medallions of two rivals, the line "Rivais: Mia e Chico", a big blue "Meta: 165 pontos", a gold "Prêmio $4", and two buttons at the bottom: green "Jogar" and blue "Pular (Promessa)".
 3 "Mesa do Chefe": red frame, one larger portrait medallion of a stern referee in a striped shirt holding a red card, the name "O Juiz", one short rule line "A Manha mais à esquerda fica desativada", "Meta: 220 pontos", "Prêmio $5", locked padlock icon.
 No other text.
 ```
@@ -294,7 +294,7 @@ Mensagem 1:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same Boteco table scene and framing as the attached table-boteco image, seating as in the SEATING BLOCK (Dona Cida top, Lurdes left, Joca right, all leaning on the same green table). Keep the HUD, buttons and panels identical. Only change the player's hands at the bottom centre: the two hands hold a fan of TWO cards (a 5 of clubs and a queen of hearts) tilted -4 and +4 degrees, each thumb pressing the lower inner corner of one card, both card faces fully readable, exactly like the left half of the attached hands reference.
+One single 16:9 image. Same Boteco table scene and framing as the attached table-boteco image, seating as in the SEATING BLOCK (Cida top, Beti left, Chico right, all leaning on the same green table). Keep the HUD, buttons and panels identical. Only change the player's hands at the bottom centre: the two hands hold a fan of TWO cards (a 5 of clubs and a queen of hearts) tilted -4 and +4 degrees, each thumb pressing the lower inner corner of one card, both card faces fully readable, exactly like the left half of the attached hands reference.
 Thumbs with clean 1-pixel outlines, the same skin tone as the reference, no fingernail of a different colour.
 ```
 
@@ -307,19 +307,19 @@ Same image as the previous one, keep everything identical except the hands: the 
 
 ### M-07 · Folhas de personagem (parceiros e rivais)
 
-- [~] **Mockups** da 2ª leva na revisão acima · **Salvar como:** `char-<id>.png` (3:2), um por personagem: `bia`, `neide`, `juninho`, `zeMalandro`, `tonhao`, `tiao`, `ze` · **Anexar:** `table-boteco.png` (Dona Cida e Lurdes como referência de estilo).
+- [~] **Mockups** da 2ª leva na revisão acima · **Salvar como:** `char-<id>.png` (3:2), um por personagem: `bia`, `neide`, `juninho`, `zeMalandro`, `tonhao`, `tiao`, `ze` · **Anexar:** `table-boteco.png` (Cida e Beti como referência de estilo).
 
 ```text
 NOW GENERATE THIS IMAGE
 Character model sheet for ZAPATRO, ratio 3:2, flat background in one colour #3b2a20, no scenery.
 Character: <NAME> — <one-line description: age, build, clothes, hair, signature item, personality>.
-Main view, left half: the character seated at the green card table seen from the front, leaning forward with both forearms resting on the table's wooden rim and holding a fan of cards; the rim hides everything below the waist (no legs, no chair seat), as in the SEATING BLOCK, drawn on a 96 by 96 art-pixel grid enlarged 6 times. Same outline, light and skin rendering as Dona Cida in the attached image.
+Main view, left half: the character seated at the green card table seen from the front, leaning forward with both forearms resting on the table's wooden rim and holding a fan of cards; the rim hides everything below the waist (no legs, no chair seat), as in the SEATING BLOCK, drawn on a 96 by 96 art-pixel grid enlarged 6 times. Same outline, light and skin rendering as Cida in the attached image.
 Right half: the same pose at 2x and 1x; then four small expressions at 2x numbered 1 to 4: 1 neutral, 2 confident (calling truco), 3 doubtful (thinking), 4 annoyed (lost the hand).
 Bottom strip: square swatches of every colour used, no labels.
 Labels exactly: "<NAME>", "1", "2", "3", "4". No other text, no description sentence. The 2x and 1x views are the same main pose scaled down, not new poses. Expressions exactly: 1 neutral, 2 confident, 3 doubtful, 4 annoyed. Swatches: only the colours this character actually uses. No real logos, crests, flags, bands or currency designs on clothes or props.
 ```
 
-Descrições (uma linha cada, preencha `<NAME>` e a descrição): **Bia** (rival, jovem, cabelo black power, camisa amarela da seleção, confiante) · **Neide** (rival, cabelo preto longo liso, óculos grandes, blusa roxa, calculista) · **Juninho** (parceiro; visual a definir pelo dev) · **Zé Malandro** (parceiro; visual a definir pelo dev) · **Tonhão** (careca, barba, regata vermelha, tatuagens, braços enormes) · **Tião** (idoso, chapéu de couro, bigode branco, camisa xadrez, sério) · **Zé** (chapéu de palha, camisa jeans azul, cigarro de palha, barba por fazer; igual ao retrato atual).
+Descrições (uma linha cada, preencha `<NAME>` e a descrição): **Mia** (rival, jovem, cabelo black power, camisa amarela da seleção, confiante) · **Sheila** (rival, cabelo preto longo liso, óculos grandes, blusa roxa, calculista) · **Nino** (parceiro; visual a definir pelo dev) · **Jhony** (parceiro; visual a definir pelo dev) · **Bruto** (careca, barba, regata vermelha, tatuagens, braços enormes) · **Ayla** (idoso, chapéu de couro, bigode branco, camisa xadrez, sério) · **Zé** (chapéu de palha, camisa jeans azul, cigarro de palha, barba por fazer; igual ao retrato atual).
 
 ### M-08 · Folhas dos chefes
 
@@ -370,56 +370,56 @@ Keep the attached table room identical (room, lighting, HUD panel, buttons, the 
 | `07-estadual.png` | Estadual (Campeonato 7) | [ ] | [ ] |
 | `08-reiDoTruco.png` | Rei do Truco (Campeonato 8) | [ ] | [ ] |
 
-**Quermesse** · salvar como `table-quermesse.png` · captura atual: [`references/maps/03-quermesse.png`](references/maps/03-quermesse.png) · anexar `table-boteco.png`, a captura e as folhas de Bia e Lurdes:
+**Quermesse** · salvar como `table-quermesse.png` · captura atual: [`references/maps/03-quermesse.png`](references/maps/03-quermesse.png) · anexar `table-boteco.png`, a captura e as folhas de Mia e Beti:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Bia and Lurdes on the sides as in their attached sheets, a third player at the top.
+One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Mia and Beti on the sides as in their attached sheets, a third player at the top.
 Change only the room around the table: a festa junina at night on a dirt churchyard: strings of colourful paper bunting overhead, wooden fences, hay bales, a small bonfire glow, quentão and pamonha stalls with lanterns in the background, a simple chapel facade far behind.
 Same pixel size, palette family and lighting quality as the attached image. No text except what is already on the UI of the attached image.
 ```
 
-**Clube** · salvar como `table-clube.png` · captura atual: [`references/maps/04-clube.png`](references/maps/04-clube.png) · anexar `table-boteco.png`, a captura e as folhas de Joca e Tião:
+**Clube** · salvar como `table-clube.png` · captura atual: [`references/maps/04-clube.png`](references/maps/04-clube.png) · anexar `table-boteco.png`, a captura e as folhas de Chico e Ayla:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Joca and Tião on the sides as in their attached sheets, a third player at the top.
+One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Chico and Ayla on the sides as in their attached sheets, a third player at the top.
 Change only the room around the table: the card room of an old social club (clube de bocha e carteado): dark wood panelling, a trophy shelf with small cups, framed old team photos, green felt side tables for dominoes, a ceiling fan and warm lamps, wooden parquet floor.
 Same pixel size, palette family and lighting quality as the attached image. No text except what is already on the UI of the attached image.
 ```
 
-**Festa do Peão** · salvar como `table-festaDoPeao.png` · captura atual: [`references/maps/05-festaDoPeao.png`](references/maps/05-festaDoPeao.png) · anexar `table-boteco.png`, a captura e as folhas de Neide e Joca:
+**Festa do Peão** · salvar como `table-festaDoPeao.png` · captura atual: [`references/maps/05-festaDoPeao.png`](references/maps/05-festaDoPeao.png) · anexar `table-boteco.png`, a captura e as folhas de Sheila e Chico:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Neide and Joca on the sides as in their attached sheets, a third player at the top.
+One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Sheila and Chico on the sides as in their attached sheets, a third player at the top.
 Change only the room around the table: a card table set up inside a rodeo arena (festa do peão) at night: wooden arena fences with saddles hanging on them, hay bales, tall floodlights, a dark crowd in the stands behind the fence, dirt ground with hoof marks, a bull-riding chute far in the background.
 Same pixel size, palette family and lighting quality as the attached image. No text except what is already on the UI of the attached image.
 ```
 
-**Regional** · salvar como `table-regional.png` · captura atual: [`references/maps/06-regional.png`](references/maps/06-regional.png) · anexar `table-boteco.png`, a captura e as folhas de Bia e Neide:
+**Regional** · salvar como `table-regional.png` · captura atual: [`references/maps/06-regional.png`](references/maps/06-regional.png) · anexar `table-boteco.png`, a captura e as folhas de Mia e Sheila:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Bia and Neide on the sides as in their attached sheets, a third player at the top.
+One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Mia and Sheila on the sides as in their attached sheets, a third player at the top.
 Change only the room around the table: a regional truco tournament in a school gym (ginásio): wooden court floor with painted lines, rows of blue plastic chairs, pennants of the local teams hanging from the rafters (no real logos), a scoreboard on the wall showing only numbers, fluorescent lights.
 Same pixel size, palette family and lighting quality as the attached image. No text except what is already on the UI of the attached image.
 ```
 
-**Estadual** · salvar como `table-estadual.png` · captura atual: [`references/maps/07-estadual.png`](references/maps/07-estadual.png) · anexar `table-boteco.png`, a captura e as folhas de Bia e Tião:
+**Estadual** · salvar como `table-estadual.png` · captura atual: [`references/maps/07-estadual.png`](references/maps/07-estadual.png) · anexar `table-boteco.png`, a captura e as folhas de Mia e Ayla:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Bia and Tião on the sides as in their attached sheets, a third player at the top.
+One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Mia and Ayla on the sides as in their attached sheets, a third player at the top.
 Change only the room around the table: the state championship on a theatre stage: red velvet curtains, brass stanchions with red velvet ropes around the table, spotlights from above, a red carpet floor, an audience in the dark seats in front of and behind the stage.
 Same pixel size, palette family and lighting quality as the attached image. No text except what is already on the UI of the attached image.
 ```
 
-**Rei do Truco** · salvar como `table-reiDoTruco.png` · captura atual: [`references/maps/08-reiDoTruco.png`](references/maps/08-reiDoTruco.png) · anexar `table-boteco.png`, a captura e as folhas de Tião e Neide:
+**Rei do Truco** · salvar como `table-reiDoTruco.png` · captura atual: [`references/maps/08-reiDoTruco.png`](references/maps/08-reiDoTruco.png) · anexar `table-boteco.png`, a captura e as folhas de Ayla e Sheila:
 
 ```text
 NOW GENERATE THIS IMAGE
-One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Tião and Neide on the sides as in their attached sheets, a third player at the top.
+One single 16:9 image. Same layout as the attached table-boteco image, pixel for pixel: HUD panel top left, gear and menu buttons top right, the green card table and its wooden rim in the same place and size, the vira and deck, the "Jogadas" panel bottom left, the red/green/blue answer buttons bottom right, the player's two hands with three cards at the bottom centre. Seating as in the SEATING BLOCK (top, left and right players at the same table, forearms on its rim): Ayla and Sheila on the sides as in their attached sheets, a third player at the top.
 Change only the room around the table: the final table of the Rei do Truco: an old luxurious bar with a black-and-gold checkered floor, a wall of bottles lit from below, golden trophies and a championship belt on the counter, chandeliers, a framed portrait of past champions; the Rei do Truco himself sits at the top of the table (attach his sheet).
 Same pixel size, palette family and lighting quality as the attached image. No text except what is already on the UI of the attached image.
 ```
@@ -427,7 +427,7 @@ Same pixel size, palette family and lighting quality as the attached image. No t
 ### M-11 · Telas restantes da run e kit de ícones
 
 - [ ] **Salvar como:** `partner-select.png`, `pack-open.png`, `run-end.png`, `almanac.png`, `tutorial.png`, `lances.png` (16:9) e `icons.png` (kit) · **Anexar:** `shop.png`, `menu.png`.
-- Base: o prompt de M-04 trocando o centro pelo conteúdo da tela (escolha entre 4 parceiros com nível e passiva; pacote aberto com 3 opções; resumo de fim de run com placar, melhor mão, Manhas e botões "Nova run"/"Menu"; Almanaque com abas Manhas/Chefes/Feitos/Estatísticas; tutorial com balão de fala da Dona Cida; painel de Lances com a lista de mãos e níveis). Kit de ícones: 16×16 ampliado 4×, mesmo traço dos ícones do menu: sair (porta), voltar, som, música, idioma, velocidade, baralho, dinheiro, troféu, cadeado, estrela, sinal.
+- Base: o prompt de M-04 trocando o centro pelo conteúdo da tela (escolha entre 4 parceiros com nível e passiva; pacote aberto com 3 opções; resumo de fim de run com placar, melhor mão, Manhas e botões "Nova run"/"Menu"; Almanaque com abas Manhas/Chefes/Feitos/Estatísticas; tutorial com balão de fala da Cida; painel de Lances com a lista de mãos e níveis). Kit de ícones: 16×16 ampliado 4×, mesmo traço dos ícones do menu: sair (porta), voltar, som, música, idioma, velocidade, baralho, dinheiro, troféu, cadeado, estrela, sinal.
 
 ## Patch notes
 

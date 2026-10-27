@@ -37,13 +37,13 @@ Oculta = "sim" só para feitos que estragam surpresa. Aqui, só vencer o chefe f
 | `professor` | Schooled | Beat The Professor | Lição aprendida | Vença O Professor | não | óculos sobre um livro fechado |
 | `sortuda` | Luck runs out | Beat The Lucky One | Acabou a sorte | Vença A Sortuda | não | trevo de quatro folhas partido |
 | `campeonato2` | On the road | Reach Championship 2 | Pé na estrada | Chegue ao Campeonato 2 | não | estrada de terra com placa de ida |
-| `campeonato4` | Club member | Reach Championship 4 (unlocks Juninho) | Sócio do clube | Chegue ao Campeonato 4 (destrava o Juninho) | não | crachá de clube com estrela |
+| `campeonato4` | Club member | Reach Championship 4 (unlocks Nino) | Sócio do clube | Chegue ao Campeonato 4 (destrava o Nino) | não | crachá de clube com estrela |
 | `campeonato6` | Regional fame | Reach Championship 6 | Fama regional | Chegue ao Campeonato 6 | não | troféu regional de bronze |
 | `reiDoTruco` | Rei do Truco | Win a run | Rei do Truco | Vença uma run | **sim** | coroa sobre um maço de cartas |
-| `comTonhao` | Big friend | Win a run with Tonhão | Amigão | Vença uma run com o Tonhão | não | moldura dourada com o retrato do companheiro |
-| `comDonaCida` | Granny knows | Win a run with Dona Cida | A vó sabe | Vença uma run com a Dona Cida | não | moldura dourada com o retrato da companheira |
-| `comZe` | Smooth operator | Win a run with Zé Malandro | Jogo de cintura | Vença uma run com o Zé Malandro | não | moldura dourada com o retrato do companheiro |
-| `comJuninho` | The kid made it | Win a run with Juninho | O moleque chegou | Vença uma run com o Juninho | não | moldura dourada com o retrato do companheiro |
+| `comTonhao` | Big friend | Win a run with Bruto | Amigão | Vença uma run com o Bruto | não | moldura dourada com o retrato do companheiro |
+| `comDonaCida` | Granny knows | Win a run with Cida | A vó sabe | Vença uma run com a Cida | não | moldura dourada com o retrato da companheira |
+| `comZe` | Smooth operator | Win a run with Jhony | Jogo de cintura | Vença uma run com o Jhony | não | moldura dourada com o retrato do companheiro |
+| `comNino` | The kid made it | Win a run with Nino | O moleque chegou | Vença uma run com o Nino | não | moldura dourada com o retrato do companheiro |
 | `doInterior` | Countryside champion | Win a run with the Countryside deck | Campeão do interior | Vença uma run com o Baralho do Interior | não | baralho com estrela e espiga |
 | `doDinheiro` | Money talks | Win a run with the Money deck | Dinheiro fala | Vença uma run com o Baralho do Dinheiro | não | maço de notas com moeda |
 | `estaca4` | Getting serious | Win a run at Stake 4 | Ficando sério | Vença uma run na Estaca 4 | não | placa de estaca com quatro riscos |
@@ -55,7 +55,7 @@ Oculta = "sim" só para feitos que estragam surpresa. Aqui, só vencer o chefe f
 | `baralhoGordo` | Fat deck | Play with 50 cards or more | Baralho gordo | Jogue com 50 cartas ou mais | não | maço alto de cartas |
 | `cemMaos` | Regular | Win 100 hands | Freguesia | Vença 100 mãos | não | balcão de boteco com marcas de contagem |
 | `trucador` | Truco caller | Call truco 100 times | Trucador | Peça truco 100 vezes | não | balão de fala com um sinal de "!" |
-| `mentiroso` | Liar | Win 5 bluffs (unlocks Zé Malandro) | Mentiroso | Vença 5 blefes (destrava o Zé Malandro) | não | carta com nariz de palhaço escondido |
+| `mentiroso` | Liar | Win 5 bluffs (unlocks Jhony) | Mentiroso | Vença 5 blefes (destrava o Jhony) | não | carta com nariz de palhaço escondido |
 | `fregues` | Back again | Play 10 runs | De volta | Jogue 10 runs | não | cartão de fidelidade do balcão com dez selos |
 
 Nota: os textos EN e PT-BR acima são os de hoje. Se algum for trocado no jogo, a planilha deve acompanhar.

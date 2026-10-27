@@ -12,6 +12,24 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Added
+
+- **art:** Art Bible v3 ("summer, sunset, Hawaii"): painted character cards and busts from `art-src/gta/` (`bun scripts/portraits.ts`: cards 480x640 and busts 256x256 WebP, backgrounds 1920x1080, card backs), replacing the pixel portraits of the ten renamed cast members (the old PNGs are kept in `art-src/backup-pixel/portrait/`). `ze` and the bosses keep the pixel art until new art arrives.
+- **ui:** `BackdropScene`, a bottom layer with a painted background under every screen (no more flat grey); the shop, the partner choice and the table have their own paintings and the main menu rotates `menu-1..3` every 7 s with a crossfade and a slow zoom (left/right keys or the dots change it by hand), over a dark panel that hides the logo and buttons painted into the art.
+- **ui:** a manual button (`?`, key F1) on the table opens the Rules book over the match and returns to it with no state lost.
+- **site:** painted sunset page background with a dark veil, in three WebP sizes by breakpoint.
+- **tools:** `scripts/gta-shots.ts` takes before/after captures of the menu, partner choice, shop and table (`docs/media/gta-before`, `gta-after`).
+
+### Changed
+
+- **art:** the card back is painted (`card-1`; `card-2` and `card-3` for the Interior and Blefe decks) with the frame and corners still drawn by code; the table felt is painted (`board-game-1`) and tinted blue and red in the later Championships.
+- **ui:** the partner cards show the painted card art; the shop title sits on a plate over the painted counter.
+- **docs:** display names of the cast in the docs (Bruto, Cida, Jhony, Nino, Chico, Beti, Mia, Sheila, Ayla); ids in code unchanged. `docs/balancing.md` has the 1.0 balance review (no number changed).
+
+### Removed
+
+- **ui:** the hamburger button of the table (the Manha list tip) in favour of the manual button; the menu's drawn fan of cards.
+
 ## [0.12.0] - 2026-10-27
 
 ### Added

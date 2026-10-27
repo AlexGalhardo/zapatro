@@ -296,7 +296,7 @@ O equivalente dos Jokers do Balatro.
 - Fichas e Mult só contam na mão vencida; dinheiro conta sempre (Mão de Lixo paga mesmo perdendo). Toda ativação aparece como `[MÃO DE LIXO] Perdeu a 1ª vaza · +$2`.
 - Condições típicas: pediu truco sem manilha (`malandro`), perdeu a 1ª vaza (`maoDeLixo`), perdeu a 1ª e venceu a 3ª (`ultimaCartada`), aposta ≥ N (`sangueFrio`), rival correu sem você ter manilha (`teatro`), tem o ZAP (`zapZap`), Lance X (`ferroQuente`, `onzeLetras`), alguma vaza cangou (`cangaceiro`), faixa de Fama. Efeitos "por vaza vencida" filtram por quem venceu (parceiro), posto ou naipe da carta, ou manilha.
 - Algumas Manhas mudam a mesa em vez da conta (`rule`): Rei da Mesa, Gritador, Contador de Cartas, Bisbilhoteiro, Vira Viciada, Cara de Pau.
-- 11 tags de sinergia: `BLEFE`, `MANILHA`, `APOSTA`, `PERDA`, `VAZA-1`, `VAZA-2`, `VAZA-3`, `PARCEIRO`, `OURO`, `FAMA`, `SINAL`; ligam Manhas a parceiros (Zé Malandro) e ao bot.
+- 11 tags de sinergia: `BLEFE`, `MANILHA`, `APOSTA`, `PERDA`, `VAZA-1`, `VAZA-2`, `VAZA-3`, `PARCEIRO`, `OURO`, `FAMA`, `SINAL`; ligam Manhas a parceiros (Jhony) e ao bot.
 - Meta de conteúdo cumprida: 20 no MVP, 60 na 1.0 (fonte de ideias: [brainstorm.md](brainstorm.md) §9).
 - Lista completa e números: [balancing.md](balancing.md) e `src/data/manhas.ts`. Conteúdo novo segue a skill `add-game-content`.
 
@@ -405,20 +405,20 @@ Existe **um único baralho**, editado durante a run, do qual **os 4 jogadores co
 
 Um só elenco para parceiros e rivais (revisão de direção de 2026-10-24). A cada run o jogo sorteia **3 candidatos** entre os destravados (`src/logic/run/draw.ts`: determinístico pela seed, estilos diferentes quando dá, o parceiro da run anterior fica de fora com 4+ destravados) e você escolhe 1. Os outros 9 podem sentar como rivais; **o escolhido nunca é rival** na mesma run.
 
-Cada companheiro tem **uma vantagem e um defeito** (`Trait`) que valem para a **dupla em que ele estiver sentado**: como parceiro ajudam você, como rival jogam contra você. As passivas de nível (Fichas × Mult, só existem para a sua dupla) continuam só para o parceiro. Nível 1–3 sobe a cada Campeonato vencido (Juninho: a cada mesa); cada nível reduz o erro da IA (× 1 / 0,7 / 0,4). Números dos traços são **proposta** validada por `bun run balance` (docs/balancing.md).
+Cada companheiro tem **uma vantagem e um defeito** (`Trait`) que valem para a **dupla em que ele estiver sentado**: como parceiro ajudam você, como rival jogam contra você. As passivas de nível (Fichas × Mult, só existem para a sua dupla) continuam só para o parceiro. Nível 1–3 sobe a cada Campeonato vencido (Nino: a cada mesa); cada nível reduz o erro da IA (× 1 / 0,7 / 0,4). Números dos traços são **proposta** validada por `bun run balance` (docs/balancing.md).
 
 | Companheiro | Estilo | Vantagem | Defeito | Passiva de parceiro (nív. 1/2/3) | Destrave |
 |---|---|---|---|---|---|
-| Tonhão | agressivo | mão que a dupla vence depois de ele pedir truco vale +1 tento | nunca corre de truco | +3/+5/+8 Mult quando ele pede truco | inicial |
-| Dona Cida | conservadora | sempre sinaliza, nunca mente | sempre corre de seis, nove e doze | você flagra +0/+10/+20% dos sinais rivais | inicial |
-| Zé Malandro | blefador | +1 sinal por mão | metade dos sinais dele é mentira | blefes dele contam como seus; +20/+40/+70 Fichas | feito `mentiroso` |
-| Juninho | destemido | a dupla flagra +15% | erros ×2 | sobe de nível a cada mesa vencida | feito `campeonato4` |
+| Bruto | agressivo | mão que a dupla vence depois de ele pedir truco vale +1 tento | nunca corre de truco | +3/+5/+8 Mult quando ele pede truco | inicial |
+| Cida | conservadora | sempre sinaliza, nunca mente | sempre corre de seis, nove e doze | você flagra +0/+10/+20% dos sinais rivais | inicial |
+| Jhony | blefador | +1 sinal por mão | metade dos sinais dele é mentira | blefes dele contam como seus; +20/+40/+70 Fichas | feito `mentiroso` |
+| Nino | destemido | a dupla flagra +15% | erros ×2 | sobe de nível a cada mesa vencida | feito `campeonato4` |
 | Zé | conservador | a dupla começa cada mesa com +1 tento | a dupla flagra −15% | — | inicial |
-| Bia | agressiva | rivais flagram os sinais da dupla ×0,5 | nunca corre de truco | — | inicial |
-| Joca | conservador | mão vencida sem manilha vale +1 tento | −1 sinal por mão | — | inicial |
-| Lurdes | blefadora | a dupla flagra +20% | os sinais da dupla são flagrados ×2 | — | inicial |
-| Tião | conservador | erros ×0,25 | sempre corre de seis, nove e doze | — | inicial |
-| Neide | conservadora | sempre sinaliza, nunca mente | −1 sinal por mão | — | inicial |
+| Mia | agressiva | rivais flagram os sinais da dupla ×0,5 | nunca corre de truco | — | inicial |
+| Chico | conservador | mão vencida sem manilha vale +1 tento | −1 sinal por mão | — | inicial |
+| Beti | blefadora | a dupla flagra +20% | os sinais da dupla são flagrados ×2 | — | inicial |
+| Ayla | conservadora | erros ×0,25 | sempre corre de seis, nove e doze | — | inicial |
+| Sheila | conservadora | sempre sinaliza, nunca mente | −1 sinal por mão | — | inicial |
 
 Os traços mexem num número que já existe nas duas duplas (`TableRules`, `AiProfile`, tentos), nunca em Fichas × Mult. Texto: `companion.trait.<k>` (i18n). Chefes ficam fora do elenco.
 
@@ -455,7 +455,7 @@ Limiares (`src/logic/ai/decide.ts`, PA2; `p` = chance de vencer a mão):
 | Sistema | Regra |
 |---|---|
 | Sinais | Tabela fixa ensinada no tutorial (PLAN §5.8): piscada = ZAP · sobrancelha = copas (ou paus) · boca torta = espadilha · língua = pica-fumo · morder o lábio = um 3 · olhar para o alto = nada. 1 por mão antes da 1ª carta (baralho do Blefe e "Cara de conversa" dão +1); flagra base 20%, ajustada pelo perfil; sinal flagrado vira informação real na crença da IA rival |
-| Sinal falso | Permitido de propósito, para ser flagrado: blefe em outra camada. O parceiro também acredita (exceto Dona Cida) |
+| Sinal falso | Permitido de propósito, para ser flagrado: blefe em outra camada. O parceiro também acredita (exceto Cida) |
 | Sinal do parceiro | Balão só com a categoria (★ forte = ZAP ou manilha · 3 · ✗ nada), nunca qual carta |
 | Fama | **Único medidor psicológico**: Honesto ↔ Blefador [−1, 1], vale a run inteira e fica visível. Muda só quando um truco seu chega às cartas mostradas: +0,25 blefe (sem manilha nem 3), −0,15 mão forte; Corrida não muda (o rival não viu as cartas), salvo Manha que diga o contrário |
 | Efeito da Fama | Blefador → rivais aceitam mais (mão forte rende); Honesto → rivais correm mais (blefe funciona). O loop é alternar o estilo para confundir a mesa |
@@ -501,7 +501,7 @@ Meta só desbloqueia **variedade e dificuldade**, nunca poder: a run 1 tem a for
 
 ### 10.3 Feitos — 37 (`src/data/feats.ts`)
 
-Checados no fim da mão, da mesa e da run; espelham as conquistas Steam (D-28). Destravam: 4 baralhos, 2 parceiros (Zé Malandro, Juninho) e as Manhas lendárias (`doze`). O design original listava outros destraves (mão com 3 cartas fracas → Manha de `PERDA`; vencer o C8 com o Juninho → parceiro); o código ficou com a tabela de GDD 10.2 e 8.1. Cada Estaca destrava a seguinte ao ser vencida com aquele baralho.
+Checados no fim da mão, da mesa e da run; espelham as conquistas Steam (D-28). Destravam: 4 baralhos, 2 parceiros (Jhony, Nino) e as Manhas lendárias (`doze`). O design original listava outros destraves (mão com 3 cartas fracas → Manha de `PERDA`; vencer o C8 com o Nino → parceiro); o código ficou com a tabela de GDD 10.2 e 8.1. Cada Estaca destrava a seguinte ao ser vencida com aquele baralho.
 
 ### 10.4 Estacas — 8 por baralho ⚖ (`src/data/stakes.ts`, cumulativas)
 

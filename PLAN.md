@@ -336,7 +336,7 @@ Chaves `truco-roguelite.save` / `.bak` / `.corrupt.<ts>`; `SAVE_VERSION = 1`; to
 
 - 1 sinal por mão (Manhas/Melhorias dão mais), enviado antes de jogar a 1ª carta.
 - Chance base de **flagra** pelos rivais: **20%**, modificada pelo perfil. Sinal flagrado vira informação para a crença da IA rival.
-- **Sinal falso:** permitido; o parceiro também acredita (exceto a Dona Cida).
+- **Sinal falso:** permitido; o parceiro também acredita (exceto a Cida).
 - O parceiro também manda sinais para você: um balão ao lado dele mostra só a **categoria** (★ carta forte = ZAP ou manilha · 3 · ✗ nada) e a barra de status diz em palavras, sem revelar qual carta (pedido do usuário em 2026-10-15). Os rivais (laterais) nunca mostram balão; um sinal rival flagrado aparece só na barra de status.
 
 ### 5.9 Mão de 11 e mão de ferro
@@ -646,7 +646,7 @@ Bot (sobre legalActions) ─→ sim ─→ balance (CI)
 - [x] A1.1 Paleta mestre (`art-src/palette/master.hex` + tokens) e prancha de regras em `docs/visual.md` — worktree `assets`
 - [~] A1.2 Carta âncora (3♣ e zap) + verso; aprovação do usuário antes do lote — aguarda aprovação; faces por código + J/Q/K PixelLab no jogo
 - [~] A1.3 Lote das 40 faces + J/Q/K com personagens; modo 4 cores — 40 faces por código com figuras PixelLab e variantes `.4c`; lote pago das faces espera o A1.2
-- [x] A1.4 Retratos: você (costas/mãos), Tonhão, Dona Cida, 6 perfis rivais, com 10 expressões — 10 personagens × 10 expressões (+ Zé Malandro e Juninho)
+- [x] A1.4 Retratos: você (costas/mãos), Bruto, Cida, 6 perfis rivais, com 10 expressões — 10 personagens × 10 expressões (+ Jhony e Nino)
 - [x] A1.5 Mesa + fundo do Boteco do Bairro (640×360) + UI básica (botões, painéis 9-slice, ícone de ficha e Mult) — + fundos dos 8 Campeonatos
 - [x] A1.6 Validação (`assets-validate.ts`), status (`docs/asset-status.md`), custo por categoria registrado — 432/432 chaves do catálogo
 
@@ -681,7 +681,7 @@ Bot (sobre legalActions) ─→ sim ─→ balance (CI)
 - [x] A4.3 Loja: 2 vagas, 2 pacotes, 1 Melhoria por Campeonato, reroll crescente, vender; `ShopScene` + `PackScene` — numa cena só (`RunScene`): seleção, loja, pacotes, consumíveis e fim
 - [x] A4.4 Pular mesa → Promessa (3 Promessas no ALPHA)
 - [x] A4.5 5 chefes do pool (Valentão, Cartomante, Juiz, Agiota, Delegado) + Rei do Truco fixo no C8
-- [x] A4.6 Parceiros Tonhão e Dona Cida com passiva e nível 1–3; escolha na `NewRunScene` — escolha na `RunScene`
+- [x] A4.6 Parceiros Bruto e Cida com passiva e nível 1–3; escolha na `NewRunScene` — escolha na `RunScene`
 - [x] A4.7 Rivais: dupla aleatória de perfis por mesa, com nome e retrato — pool de perfis por Campeonato (`RIVAL_POOLS`)
 - [x] A4.8 Save por mão (D-32) + "Continuar" no menu; E2E: reload no meio da mão retoma o início da mão — grupo `continue` do `qa.ts`
 - [x] A4.9 Fim da run (vitória/derrota) com resumo
@@ -733,7 +733,7 @@ Bot (sobre legalActions) ─→ sim ─→ balance (CI)
 
 - [x] B1.1 60 Manhas (Comum 24, Incomum 18, Rara 12, Lendária 6), cada uma com teste e ícone — 40 novas com condições novas no motor; `tests/manhas-beta.test.ts`
 - [x] B1.2 7 modificadores de carta, 8 Simpatias, 7 Lances, 6 Melhorias do Boteco, 8 Promessas — Nervosa, Mentirosa (IA), Marcada (parceiro), Vidro (quebra); Espiar o monte; Vida extra etc.
-- [x] B1.3 10 chefes + Rei do Truco; 4 parceiros (Tonhão, Dona Cida, Zé Malandro, Juninho) — 9 no pool + Rei (Professor, Irmãos, Mudo, Sortuda novos)
+- [x] B1.3 10 chefes + Rei do Truco; 4 parceiros (Bruto, Cida, Jhony, Nino) — 9 no pool + Rei (Professor, Irmãos, Mudo, Sortuda novos)
 - [x] B1.4 8 fundos de Campeonato — e ambiências por Campeonato
 - [x] B1.5 Rebalancear (`bun run balance` verde) — 47,0 · 52,7 · 54,0%; 4,0–4,1 mãos por mesa
 
@@ -741,7 +741,7 @@ Bot (sobre legalActions) ─→ sim ─→ balance (CI)
 
 - [x] B2.1 5 baralhos iniciais (Normal, do Interior, do Blefe, do Dinheiro, Viciado) — Viciado = cópia extra de cada ♣
 - [x] B2.2 8 Estacas com regra cada (bot bom perde 5–8 p.p. por Estaca, medido) — recalibrado: 48,7 · 43 · 35,5 · 30,3 · 24,5 · 19,5 · 14,2 · 7,7% (degraus 5,0–7,5 p.p.) com `bun scripts/stakes.ts --runs 600`; tabela em `docs/balancing.md`
-- [x] B2.3 Feitos (≥ 30) e destraves; Almanaque completo (Manhas, parceiros, chefes, baralhos vistos) — 37 feitos; destravam baralhos, Zé Malandro, Juninho e as lendárias
+- [x] B2.3 Feitos (≥ 30) e destraves; Almanaque completo (Manhas, parceiros, chefes, baralhos vistos) — 37 feitos; destravam baralhos, Jhony, Nino e as lendárias
 - [x] B2.4 Estatísticas vitalícias e histórico das últimas runs — aba Estatísticas do Almanaque
 
 ### B3 — Áudio · `0.1.0-beta.3`
@@ -800,7 +800,7 @@ Pipeline em [docs/visual.md](docs/visual.md): concept → 640×360 → pixels2sv
 
 - [x] CA.1 Pipeline: `references/concept-art/` versionado, `src/data/concept-art.ts` (recortes, máscaras, apagar texto, inpainting), `bun run concept:art` (pixels2svg com traçado O(n)), `scripts/concept-raster.ts` no `dev`, `build` e builds Electron/Android; PNG idêntico ao pixel antes da vetorização (29/29)
 - [x] CA.2 Menu inicial igual ao concept (substitui o menu animado da UX.1): botão dourado = foco, sete linhas fixas, EN/PT-BR
-- [x] CA.3 Primeira sala (Boteco do Bairro) igual ao concept: HUD, plaquinhas, vira, status com seta, painel Jogadas, coluna de resposta, chat (sinais), ⚙/☰, leque da mão com polegares; Dona Cida, Lurdes e Joca recortados (espelhados na outra cadeira; demais personagens em retrato 2×, expressões no balão); câmera em *fit* com espelho nas outras proporções
+- [x] CA.3 Primeira sala (Boteco do Bairro) igual ao concept: HUD, plaquinhas, vira, status com seta, painel Jogadas, coluna de resposta, chat (sinais), ⚙/☰, leque da mão com polegares; Cida, Beti e Chico recortados (espelhados na outra cadeira; demais personagens em retrato 2×, expressões no balão); câmera em *fit* com espelho nas outras proporções
 - [x] CA.4 Segunda leva (2026-10-15): Bar de Estrada (Campeonato 2), oficina do Professor (mesa do chefe), loja, baralho e Configurações; painel da mesa com a escada de pedidos e Fama no HUD; `fill`/`cast`/`room` no spec; `?boss=<id>` na partida rápida
 - [ ] CA.5 Próximas telas (seleção de mesa, pacotes, fim de run, outras salas e chefes) quando chegarem os concepts
 

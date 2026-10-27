@@ -87,7 +87,7 @@ Passo a passo completo (conta, depots, página da loja, SteamPipe, lançamento):
 | `comTonhao` | Big friend | Amigão |
 | `comDonaCida` | Granny knows | A vó sabe |
 | `comZe` | Smooth operator | Malandragem |
-| `comJuninho` | The kid made it | O moleque chegou |
+| `comNino` | The kid made it | O moleque chegou |
 | `doInterior` | Countryside champion | Campeão do interior |
 | `doDinheiro` | Money talks | Dinheiro fala |
 | `estaca4` | Getting serious | Ficando sério |
