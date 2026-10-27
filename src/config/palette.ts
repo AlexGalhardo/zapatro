@@ -162,6 +162,13 @@ export function buttonHover(fill: number): number {
 	return fromHsl([h, s, Math.min(0.92, l + 0.07)]);
 }
 
+/**
+ * Brightness of every painted backdrop behind the game's screens (the main menu keeps its own,
+ * at full brightness): a multiply tint, so the sunset keeps its hue while panels, cards and HUD
+ * stand out on it.
+ */
+export const BACKDROP_BRIGHTNESS = 0.4;
+
 export const RARITY_COLOR: Record<Rarity, number> = {
 	common: PALETTE.rarityCommon,
 	uncommon: PALETTE.rarityUncommon,
