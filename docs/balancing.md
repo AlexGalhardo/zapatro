@@ -274,3 +274,7 @@ Juninho com coragem 0,8 caía para ~31%; com 0,6 fica perto de antes (ele compen
 **`bun run balance` (`--seeds 3`, 500 runs, parceiro sorteado entre Tonhão e Dona Cida):** bot bom 50,2% · 54,0% · 55,0%; aleatório 0,8% · 0,4% · 0,8%; 4,10 · 4,19 · 4,12 mãos por mesa. **PASS.**
 
 A partida rápida continua com os arquétipos de `src/data/characters.ts` (Tonhão valentão, Dona Cida calculista): os testes de QA usam seeds fixas nela.
+
+## Cartas especiais e dois coringas (2026-10-27)
+
+O baralho passa de 41 para 45 cartas (2 coringas e Trevo, Olho e Raio, PLAN §5.12.1). Os efeitos não mexem em Fichas × Mult e a IA joga as cartas novas como um 3. `bun run balance`: **PASS** nas seeds 1 e 2 (bot bom 26,0 e 21,6%; aleatório 0,4 e 0,2%; 6,04 e 5,98 mãos por mesa). A seed 3 não terminou: o comando foi encerrado pelo tempo limite de 550 s, então o gate está confirmado em 2 de 3 seeds. O bot bom ficou perto do piso da faixa D-39 (20–35%); rodar as 3 seeds de novo antes do próximo release.
