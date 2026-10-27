@@ -14,11 +14,14 @@ import { text } from '../ui/screen';
 import { byMode } from '../ui/touch';
 import type { TableScene } from './TableScene';
 
-const PANEL_W = 320;
+const PANEL_W = 380;
 /** Width of the Next and Skip buttons. */
-const BTN_W = 110;
-/** Top of the body text, under the 20 px header band. */
-const BODY_Y = 26;
+const BTN_W = 150;
+/** Header band height and the top of the body text under it. */
+const HEAD_H = 28;
+const BODY_Y = HEAD_H + PAD.panel;
+/** Text sizes of the card (read at 1080p): body, title, step counter and buttons. */
+const SIZE = { body: 9, title: 14, count: 8, button: 12 } as const;
 
 /**
  * Coach of the played tutorial (PLAN A6.1), launched over the table. Each step waits for a moment
@@ -101,44 +104,40 @@ export class TutorialScene extends Phaser.Scene {
 		const last = this.current === TUTORIAL_STEPS.length - 1;
 		const bodyKey = `tutorial.${step.id}.body` as I18nKey;
 		const body = this.add.text(0, 0, t(step.keys ? byMode(bodyKey) : bodyKey), {
-			...text(7, PALETTE.textLight, PANEL_W - 2 * PAD.panel),
+			...text(SIZE.body, PALETTE.textLight, PANEL_W - 2 * PAD.panel),
 			align: 'left',
 		});
 		// Header band, body, a card gap, the buttons and the panel padding below them.
-		const h = BODY_Y + body.height + GAP.card + BUTTON_H.action + PAD.panel;
-		const x = Math.round((view.width - PANEL_W) / 2);
-		// The card sits next to the highlight, on the side with more room, never over it.
-		const below = !area || view.height - area.bottom >= area.top;
-		const y = !area
-			? view.height - h - 28
-			: below
-				? Math.min(area.bottom + PAD.panel, view.height - h - SAFE.stage)
-				: Math.max(area.top - h - PAD.panel, SAFE.stage);
+		const h = BODY_Y + body.height + GAP.card + BUTTON_H.primary + PAD.panel;
+		const { x, y } = this.place(area, h);
 		const g = this.add.graphics();
-		drawPanel(g, x, y, PANEL_W, h, { header: 20 });
-		const title = this.add.text(
-			x + PAD.panel,
-			y + 3,
-			t(`tutorial.${step.id}.title` as I18nKey),
-			panelTitle(10),
-		);
+		drawPanel(g, x, y, PANEL_W, h, { header: HEAD_H });
+		const title = this.add
+			.text(
+				x + PAD.panel,
+				y + HEAD_H / 2,
+				t(`tutorial.${step.id}.title` as I18nKey),
+				panelTitle(SIZE.title),
+			)
+			.setOrigin(0, 0.5);
 		const count = this.add
 			.text(
 				x + PANEL_W - PAD.panel,
-				y + 5,
+				y + HEAD_H / 2,
 				`${this.shown.size}/${TUTORIAL_STEPS.filter((st, i) => !st.optional || this.shown.has(i)).length}`,
-				text(6, PALETTE.textDim),
+				text(SIZE.count, PALETTE.textDim),
 			)
-			.setOrigin(1, 0);
+			.setOrigin(1, 0.5);
 		body.setPosition(x + PAD.panel, y + BODY_Y);
-		const btnY = y + h - PAD.panel - BUTTON_H.action / 2;
+		const btnY = y + h - PAD.panel - BUTTON_H.primary / 2;
 		const ok = new Button(
 			this,
 			t(last ? 'tutorial.keepPlaying' : 'tutorial.next'),
 			() => this.advance(),
 			{
 				w: BTN_W,
-				h: BUTTON_H.action,
+				h: BUTTON_H.primary,
+				size: SIZE.button,
 				color: PALETTE.good,
 				hint: () => keyHint('Enter'),
 			},
@@ -149,11 +148,36 @@ export class TutorialScene extends Phaser.Scene {
 			() => this.leave(),
 			{
 				w: BTN_W,
-				h: BUTTON_H.action,
+				h: BUTTON_H.primary,
+				size: SIZE.button,
 				hint: backHint,
 			},
 		).setPosition(x + PAD.panel + BTN_W / 2, btnY);
 		this.ui.add([g, title, count, body, ok, out]).setVisible(true);
+	}
+
+	/**
+	 * Where the card goes: under or over the highlight (the side with room), else beside it, always
+	 * inside the view and never over the highlighted element; with no highlight, at the bottom.
+	 */
+	private place(area: Phaser.Geom.Rectangle | null, h: number): { x: number; y: number } {
+		const view = this.view as ViewSize;
+		const clampX = (v: number): number =>
+			Math.round(Phaser.Math.Clamp(v, SAFE.stage, view.width - PANEL_W - SAFE.stage));
+		const clampY = (v: number): number =>
+			Math.round(Phaser.Math.Clamp(v, SAFE.stage, view.height - h - SAFE.stage));
+		const centre = clampX((view.width - PANEL_W) / 2);
+		if (!area) return { x: centre, y: clampY(view.height - h - 28) };
+		const gap = PAD.panel;
+		if (view.height - area.bottom - gap - SAFE.stage >= h)
+			return { x: centre, y: area.bottom + gap };
+		if (area.top - gap - SAFE.stage >= h) return { x: centre, y: area.top - gap - h };
+		// No room above or below: beside it, on the wider side, level with it.
+		const right = view.width - area.right >= area.left;
+		return {
+			x: clampX(right ? area.right + gap : area.left - gap - PANEL_W),
+			y: clampY(area.centerY - h / 2),
+		};
 	}
 
 	private advance(): void {
