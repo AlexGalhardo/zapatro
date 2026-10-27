@@ -71,8 +71,6 @@ export interface MatchOptions {
 	/** Owned Manhas, left to right (roguelite mode). */
 	manhas?: ManhaId[];
 	partner?: { id: CompanionId; level: number };
-	/** false: the player answers every truco against the team (the partner never runs). */
-	partnerFolds?: boolean;
 	boss?: BossId;
 	/** Extra signals per hand for the player (Boteco upgrade). */
 	extraSignals?: number;
@@ -189,7 +187,9 @@ export class Match {
 			...(this.has('startBet3') || this.boss === 'reiDoTruco'
 				? { startBet: 3 as const }
 				: {}),
-			...(opts.partnerFolds === false ? { humanAnswers: true } : {}),
+			// The partner never answers a rival's truco: the seat-0 player (or its bot) does. With a
+			// human at seat 2 (LAN) each human answers for themselves.
+			...(opts.brains[2].kind === 'human' ? {} : { humanAnswers: true }),
 		};
 		this.dealer = r?.dealer ?? opts.dealer ?? 3;
 		this.points = r?.points ?? 0;

@@ -459,7 +459,6 @@ export class RunScene extends Phaser.Scene {
 			this.stakeChoice,
 			isUnlocked(meta, 'legendary'),
 			IS_DEMO || getParams(this).demo,
-			true,
 		);
 		// Test hacks for a new run (test-hacks.md): starting money and Manhas.
 		const params = getParams(this);

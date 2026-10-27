@@ -243,7 +243,6 @@ export const en = {
 	'menu.rules': 'Rules',
 	'run.title': 'Zapatro',
 	'run.choosePartner': 'Choose your partner',
-	'run.partnerFolds': 'Partner may run from a truco: {v}',
 	'run.pick': 'Play with {name}',
 	'run.champ': 'Championship {n}',
 	'run.endless': 'Endless',

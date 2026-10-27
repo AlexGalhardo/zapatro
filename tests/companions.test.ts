@@ -132,23 +132,4 @@ describe('traits work for the pair the companion sits in', () => {
 		expect(seated('bia', 'x').rules.catchChance[1]).toBeCloseTo(base[1] * 0.5);
 		expect(seated('x', 'bia').rules.catchChance[0]).toBeCloseTo(base[0] * 0.5);
 	});
-
-	test('neverFolds: Tonhão accepts every truco', () => {
-		const m = seated('tonhao', 'x', {
-			brains: [ai(), ai('coward'), ai('coward'), ai('coward')],
-		});
-		let answered = 0;
-		for (let hand = 0; hand < 40 && !m.winner; hand++) {
-			for (let seat = m.actor(); seat !== null; seat = m.actor()) {
-				const a = m.aiAction(seat);
-				if (seat === 2 && m.state.pending?.responder === 2) {
-					answered++;
-					expect(a.kind).not.toBe('fold');
-				}
-				m.act(a);
-			}
-			if (!m.winner) m.nextHand();
-		}
-		expect(answered).toBeGreaterThan(0);
-	});
 });

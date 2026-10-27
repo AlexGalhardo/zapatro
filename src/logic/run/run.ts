@@ -134,7 +134,6 @@ export interface RunState {
 	partner: CompanionId;
 	partnerLevel: number;
 	/** The partner may accept or run from a truco on its own; false: the player decides. */
-	partnerFolds: boolean;
 	fame: number;
 	upgrades: UpgradeId[];
 	/** Championship of the last upgrade bought (one per Championship). */
@@ -165,7 +164,6 @@ export function newRun(
 	stake = 1,
 	legendary = false,
 	demo = false,
-	partnerFolds = true,
 ): RunState {
 	const d = DECKS[startDeck];
 	const rules = stakeRules(stake);
@@ -204,7 +202,6 @@ export function newRun(
 		levels: {},
 		partner,
 		partnerLevel: 1,
-		partnerFolds,
 		fame: d.fame ?? 0,
 		upgrades: [],
 		upgradeChamp: 0,
@@ -631,6 +628,5 @@ export function parseRun(raw: unknown): RunState | null {
 		stake: run.stake ?? 1,
 		legendary: run.legendary ?? false,
 		demo: run.demo ?? false,
-		partnerFolds: run.partnerFolds ?? true,
 	};
 }

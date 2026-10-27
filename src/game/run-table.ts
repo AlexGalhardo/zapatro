@@ -59,7 +59,6 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		manhas: run.manhas,
 		partner: { id: run.partner, level: run.partnerLevel },
 		traits: seatTraits({ 0: 'player', 1: c1, 2: run.partner, 3: c3 }),
-		partnerFolds: run.partnerFolds,
 		boss: currentBoss(run),
 		extraSignals:
 			(run.upgrades.includes('maisSinal') ? 1 : 0) + (DECKS[run.startDeck].extraSignals ?? 0),

@@ -71,8 +71,4 @@ describe('partner styles (each partner plays the bets their own way)', () => {
 			expect(h.zeMalandro.bluffRate).toBeGreaterThan(h[p].bluffRate);
 		expect(h.donaCida.bluffRate).toBeLessThan(0.1);
 	});
-
-	test('Juninho (fearless) runs from calls less than Dona Cida', () => {
-		expect(h.juninho.foldRate).toBeLessThan(h.donaCida.foldRate);
-	});
 });

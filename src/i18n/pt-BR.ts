@@ -247,7 +247,6 @@ export const ptBR: Record<I18nKey, string> = {
 	'menu.rules': 'Regras',
 	'run.title': 'Zapatro',
 	'run.choosePartner': 'Escolha seu parceiro',
-	'run.partnerFolds': 'Parceiro pode correr do truco: {v}',
 	'run.pick': 'Jogar com {name}',
 	'run.champ': 'Campeonato {n}',
 	'run.endless': 'Infinito',
