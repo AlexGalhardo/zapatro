@@ -133,6 +133,9 @@ const BACKGROUNDS: Record<string, string> = {
 	shop: 'shop.jpeg',
 	partner: 'background-1.png',
 	street: 'background-2.png',
+	bg4: 'background-4.png',
+	bg5: 'background-5.png',
+	bg6: 'background-6.png',
 	main: 'background-3.png',
 };
 /** Card backs: the whole 2:3 painting, frame included, never cropped (src/art/flat.ts draws it whole). */

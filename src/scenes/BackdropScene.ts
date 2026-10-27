@@ -13,8 +13,8 @@ const grey = (b: number): number => {
 const DIM_TINT = grey(BACKDROP_BRIGHTNESS);
 const SHOP_TINT = grey(SHOP_BACKDROP_BRIGHTNESS);
 
-/** Gameplay paintings (background-1/2/3): `main` and `partner` show one of them, drawn at random. */
-const VARIANTS = ['partner', 'street', 'main'] as const;
+/** Gameplay paintings (background-1 to 6): `main` and `partner` show one of them, drawn at random. */
+const VARIANTS = ['partner', 'street', 'main', 'bg4', 'bg5', 'bg6'] as const;
 const VARIANT_KEY = 'backdropVariant';
 
 /**
