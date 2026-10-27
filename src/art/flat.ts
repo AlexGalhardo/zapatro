@@ -1279,33 +1279,5 @@ export function createArt(scene: Phaser.Scene): void {
 	tex(scene, 'card.back.default');
 }
 
-// --- Menu ---------------------------------------------------------------------------------
-
-/** Logical size of the menu's fan of cards (right side of the neutral menu, docs/visual.md). */
-export const MENU_FAN = { w: 340, h: 260 };
-
-/** Three cards fanned out: the 4 of clubs (a manilha), the 7 of hearts and the Ace of spades. */
-export function drawMenuFan(ctx: Ctx): void {
-	const card = (key: string, x: number, y: number, deg: number): void => {
-		const s = 2.3;
-		ctx.save();
-		ctx.translate(x, y);
-		ctx.rotate((deg * Math.PI) / 180);
-		ctx.scale(s, s);
-		ctx.translate(-CARD_W / 2, -CARD_H / 2);
-		ctx.fillStyle = css(PALETTE.shadow);
-		ctx.globalAlpha = 0.45;
-		ctx.beginPath();
-		ctx.roundRect(3, 5, CARD_W, CARD_H, 5);
-		ctx.fill();
-		ctx.globalAlpha = 1;
-		drawKey(ctx, key);
-		ctx.restore();
-	};
-	card('card.4.clubs', 79, 132, -13);
-	card('card.7.hearts', 170, 117, -1);
-	card('card.A.spades', 261, 137, 12);
-}
-
 /** Background colour of a character's portrait card (the cast has one each). */
 export const portraitBg = (id: string): number => (LOOKS[id] ?? FALLBACK).bg;

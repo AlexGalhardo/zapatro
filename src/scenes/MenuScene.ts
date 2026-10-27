@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { canvasTex, drawMenuFan, MENU_FAN } from '../art/flat';
 import { PALETTE, toCss } from '../config/palette';
 import { BUTTON_H, GAP } from '../config/ui';
 import { sfx } from '../core/audio';
@@ -15,6 +14,7 @@ import { onKey, onSceneEvent } from '../ui/keys';
 import { fadeTo, text } from '../ui/screen';
 import { uiPx } from '../ui/touch';
 import { buildLabel } from '../ui/version-footer';
+import { MenuBackdrop } from '../view/menu-backdrop';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
 
@@ -98,7 +98,9 @@ export class MenuScene extends Phaser.Scene {
 		// A saved run: Enter resumes it.
 		this.focus = saved ? 1 : 0;
 
-		this.add.image(439, 207, canvasTex(this, 'menu.fan', MENU_FAN.w, MENU_FAN.h, drawMenuFan));
+		const backdrop = new MenuBackdrop(this, { x: 320, y: 326 });
+		onKey(this.input.keyboard, 'keydown-LEFT', () => backdrop.step(-1));
+		onKey(this.input.keyboard, 'keydown-RIGHT', () => backdrop.step(1));
 		// Title: gold letters, a dark outline and a solid drop under them.
 		this.add
 			// Left edge on the button column below it.
@@ -171,7 +173,15 @@ export class MenuScene extends Phaser.Scene {
 		on(['DOWN', 'S'], () => this.move(rows, 1));
 		on(['ENTER', 'SPACE'], () => this.select(rows));
 		this.redraw();
-		trackZoom(this, cam, (view) => fitCamera(cam, view));
+		trackZoom(this, cam, (view) => {
+			fitCamera(cam, view);
+			backdrop.layout({
+				x: 320 - cam.width / cam.zoom / 2,
+				y: 180 - cam.height / cam.zoom / 2,
+				width: cam.width / cam.zoom,
+				height: cam.height / cam.zoom,
+			});
+		});
 	}
 
 	private redraw: () => void = () => {};
