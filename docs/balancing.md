@@ -335,3 +335,47 @@ Testado e descartado:
 Pendências: Nino, Ze, Mia, Chico, Ayla e Sheila ainda fora da faixa. Próximas medidas: Mia (8,7%, o mais baixo) e Ayla (12,7%), depois Nino, Ze, Chico e Sheila, um por vez, cada um com sim de 1000 runs e `bun run balance`.
 
 Teste ajustado: `tests/content-beta.test.ts` ("10 companions; Juninho levels up every table, Zé Malandro bluffs count as yours") afirmava `chips === 40` para o Zé Malandro no nível 2; com o novo `bluffChips` o valor é 20.
+
+## Calibração dos 10 parceiros: rodada de 2026-10-27 (1000 runs)
+
+Meta do Game Director: cada parceiro entre ~18% e ~30% no bot bom, com `bun run balance` PASS nas 3 seeds. Referência: `--skip none`, baralho padrão e Estaca 1 (o sim não tem escolha de mesa nem de baralho; `balance.ts` usa `HABITS.skip` padrão, `none`). Medidas com 300 runs têm erro padrão de ~2,7 p.p.; onde está "1000", a medida é de 1000 runs.
+
+| Parceiro (id) | Antes | Depois | Situação |
+|---|---|---|---|
+| Bruto (`tonhao`) | 21,3% (300) | 21,3% (300) | dentro, sem mudança |
+| Cida (`donaCida`) | 12,7% (300) | 12,7% (300) | fora; decisão do dev |
+| Jhony (`zeMalandro`) | 35,3% (300) → 35,0% (1000) | **30,4% (1000)** | dentro (topo), ajustado |
+| Nino (`juninho`) | 17,3% (300) | 17,3% (300) | fora; não testado nesta rodada |
+| Zé (`ze`) | 35,7% (1000) | 35,7% (1000) | fora; decisão do dev |
+| Mia (`bia`) | 8,7% (300) | 8,7% (300) | fora; decisão do dev |
+| Chico (`joca`) | 35,0% (300) | 35,0% (300) | fora; decisão do dev |
+| Beti (`lurdes`) | 25,3% (300) | 25,3% (300) | dentro, sem mudança |
+| Ayla (`tiao`) | 12,7% (300) | 12,7% (300) | fora; não testado nesta rodada |
+| Sheila (`neide`) | 32,7% (300) | 32,7% (300) | fora; decisão do dev |
+
+Mudança feita:
+
+- **Jhony (`zeMalandro`):** `bluffChips` [20, 40, 70] → [10, 20, 35] e defeito `falseSignals` rate 0,5 → 0,7 (um passo, dois números do mesmo traço de blefe). Com 1000 runs, 35,0% → 30,4%. Gate `bun run balance`: PASS (23,6 · 21,2 · 26,2%; antes 26,0 · 21,6 · 27,0%; aleatório < 0,5%; 5,96–6,07 mãos por mesa).
+
+Testado e revertido (sem efeito ou efeito contrário):
+
+- **Cida, `catchBonus`:** [0; 0,1; 0,2] → [0; 0,15; 0,3] deu 11,7%; [0; 0,3; 0,6] deu 16,3% (300 runs). Não chega a 18% com número razoável.
+- **Zé, defeito `catch` delta −0,15 → −0,30:** 35,7% → 35,7% (1000). Sem efeito no bot bom.
+- **Zé, perk `headStart` n 1 → 0:** 35,7% → 36,5% (1000). Sobe em vez de descer.
+- **Mia, perk `caughtMult` x 0,5 → 0,3:** 8,7% → 8,0% (1000). Desce em vez de subir.
+
+Por que os números não chegam à faixa (achados do código):
+
+- **Chico (`joca`) e Sheila (`neide`), defeito `signals` delta −1:** o número de sinais do parceiro é `max(0, 1 + delta)`, então com delta −1 já são zero sinais. Baixar mais não faz nada (o limite inferior é 0). Não há alavanca numérica nesse traço.
+- **Sheila, perk `honestSignals`:** não tem número.
+- **Zé, defeito `catch`:** o efeito não aparece no bot bom (ver acima).
+
+Decisões do dev (mudança de tipo de traço, fora do escopo de números):
+
+1. **Cida:** o defeito `foldsRaises` (corre de seis, nove e doze) é o que pesa. Trocar por um defeito de tipo mais brando, ou dar a ela um perk de tipo com número (ex.: `catch`), levaria para a faixa.
+2. **Zé (`ze`), 35,7%:** trocar o perk ou o defeito por outro traço existente (ex.: um defeito de `signals` ou de `error`).
+3. **Chico (`joca`), 35,0%:** o defeito `signals −1` está saturado; trocar por outro defeito existente.
+4. **Sheila (`neide`), 32,7%:** o perk `honestSignals` e o defeito `signals −1` não têm número; trocar um dos dois por traço com número.
+5. **Mia (`bia`), 8,7%:** o perk `caughtMult` não sobe a taxa por número; o defeito `neverFolds` não tem número. Trocar o defeito ou o perk.
+
+Pendentes (não testados nesta rodada): Nino (`juninho`, 17,3%): a alavanca natural é o defeito `error` x2 (testar x1,5, o que o tornaria mais forte e subiria a taxa). Ayla (`tiao`, 12,7%): o perk `error` x0,25 (testar x0,15). Ambos precisam de 1000 runs e `bun run balance`.
