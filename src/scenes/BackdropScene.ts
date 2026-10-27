@@ -1,14 +1,17 @@
 import Phaser from 'phaser';
-import { BACKDROP_BRIGHTNESS, PALETTE } from '../config/palette';
+import { BACKDROP_BRIGHTNESS, PALETTE, SHOP_BACKDROP_BRIGHTNESS } from '../config/palette';
 import { trackZoom } from '../core/viewport';
 
 /** Painted backdrops of public/assets/gfx/bg (scripts/portraits.ts); `main` is every other screen. */
 export type BackdropKey = 'main' | 'shop' | 'partner';
 const REGISTRY_KEY = 'backdrop';
 /** Grey multiplied over the painting (same factor on every channel keeps the colours). */
-const DIM_TINT = Phaser.Display.Color.GetColor(
-	...([0, 0, 0].map(() => Math.round(255 * BACKDROP_BRIGHTNESS)) as [number, number, number]),
-);
+const grey = (b: number): number => {
+	const v = Math.round(255 * b);
+	return Phaser.Display.Color.GetColor(v, v, v);
+};
+const DIM_TINT = grey(BACKDROP_BRIGHTNESS);
+const SHOP_TINT = grey(SHOP_BACKDROP_BRIGHTNESS);
 
 /** Gameplay paintings (background-1/2/3): `main` and `partner` show one of them, drawn at random. */
 const VARIANTS = ['partner', 'street', 'main'] as const;
@@ -72,7 +75,7 @@ export class BackdropScene extends Phaser.Scene {
 			const ok = this.textures.exists(tex);
 			image.setVisible(ok);
 			if (!ok) return;
-			image.setTexture(tex);
+			image.setTexture(tex).setTint(key === 'shop' ? SHOP_TINT : DIM_TINT);
 			image.setScale(Math.max(size.width / image.width, size.height / image.height));
 			image.setPosition(size.width / 2, size.height / 2);
 		};

@@ -8,6 +8,7 @@ import { sfx } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
 import { playAmbience, playMusic } from '../core/music';
 import { openStore } from '../core/platform';
+import { getView } from '../core/viewport';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
 import { TABLE_SIZES } from '../data/championships';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
@@ -60,6 +61,7 @@ import { fadeTo, setupScreen } from '../ui/screen';
 import { screenTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { uiPx } from '../ui/touch';
+import { shopSlate } from '../view/shop-slate';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
 
@@ -258,8 +260,8 @@ export class RunScene extends Phaser.Scene {
 	}
 
 	/** The shared full-screen title (icon and text centred as a pair) on the body. */
-	private screenTitle(cx: number, s: string, icon: string): void {
-		const { title, icon: img } = screenTitle(this, cx, s, icon);
+	private screenTitle(cx: number, s: string, icon: string, y?: number): void {
+		const { title, icon: img } = screenTitle(this, cx, s, icon, y);
 		this.body.add([img, title]);
 	}
 
@@ -1190,22 +1192,104 @@ export class RunScene extends Phaser.Scene {
 			this.drawPack(run, shop.opened);
 			return;
 		}
-		// The room right of the sidebar: title, offers and the gold rule are centred in it, packs
-		// start at its left edge and the two big buttons end at its right edge.
-		const left = L + SIDEBAR.x + SIDEBAR.w + GAP.panel;
-		const right = L + 640 - SAFE.stage;
-		const mid = (left + right) / 2;
-		const bigW = 153;
-		const bigH = 36;
-		// The sign hangs over the painted counter: a plate keeps the gold title readable on it.
-		const plate = this.add.graphics();
-		drawPanel(plate, mid - 150, 6, 300, 42, { radius: RADIUS.frame, shadow: SHADOW.panel });
-		this.body.add(plate);
-		this.screenTitle(mid, t('run.shop'), 'cart');
+		// Everything sits on the painted chalkboard (its place follows the backdrop's cover fit):
+		// title on top, the offers in a row, the packs as slim buttons under them; Renew and Next
+		// table go right under the board, on the counter.
+		// On windows that are not 16:9 the board can reach under the sidebar or off the stage: the
+		// UI keeps to the part of it that is inside the stage, with room for the buttons below.
+		const raw = shopSlate(getView(this));
+		const x0 = Math.max(raw.x, L + SIDEBAR.x + SIDEBAR.w + GAP.panel);
+		const x1 = Math.min(raw.x + raw.w, L + 640 - SAFE.stage);
+		const y0 = Math.max(raw.y, SAFE.stage);
+		const y1 = Math.min(raw.y + raw.h, 360 - SAFE.stage - 8 - BUTTON_H.primary);
+		const slate = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+		const pad = 6;
+		const inL = slate.x + pad;
+		const inW = slate.w - 2 * pad;
+		const mid = slate.x + slate.w / 2;
+		this.screenTitle(mid, t('run.shop'), 'cart', slate.y + 13);
+		const items = [
+			...shop.offers.map((o, i) => ({ o, where: 'offers' as const, i })),
+			...(shop.upgrade ? [{ o: shop.upgrade, where: 'upgrade' as const, i: 0 }] : []),
+		];
+		const packs = shop.packs.map((o, i) => ({ o, where: 'packs' as const, i }));
+		type Entry = (typeof items)[number] | (typeof packs)[number];
+		const buyer = (e: Entry) => (): void => {
+			if (!this.err(buy(run, e.where, e.i))) return;
+			sfx(this, 'sfx.shop.buy');
+			this.save();
+			this.draw();
+			this.focusNextBuy(`${e.where}:${e.i}`);
+		};
+		const titleH = 31;
+		const packH = 22;
+		const gap = 4;
+		const offersTop = slate.y + titleH;
+		const cardH = slate.h - titleH - packH - 2 * gap - pad;
+		const cardW = Math.min(
+			118,
+			Math.floor((inW - (Math.max(items.length, 1) - 1) * gap) / Math.max(items.length, 1)),
+		);
+		const rowW = items.length * cardW + (items.length - 1) * gap;
+		for (const [k, e] of items.entries()) {
+			const { tag, color } = this.offerTag(e.o);
+			const tryBuy = buyer(e);
+			this.body.add(
+				itemCard(this, {
+					art: tex(this, this.offerArt(e.o)),
+					title: this.offerName(e.o),
+					desc: this.offerDesc(e.o),
+					tag,
+					color: e.o.sold ? PALETTE.panelLight : color,
+					w: cardW,
+					h: cardH,
+					dim: e.o.sold,
+					button: {
+						label: e.o.sold ? t('run.sold') : `$${e.o.price}`,
+						color: PALETTE.buttonLight,
+						enabled: !e.o.sold && run.money >= e.o.price,
+						onClick: tryBuy,
+						// A click on a price you cannot pay still says why (error sound + message).
+						...(e.o.sold ? {} : { onBlocked: tryBuy }),
+					},
+				})
+					.setPosition(
+						mid - rowW / 2 + cardW / 2 + k * (cardW + gap),
+						offersTop + cardH / 2,
+					)
+					// Which offer the card sells (QA picks the pack by this, not by its price).
+					.setData('offer', `${e.where}:${e.i}`),
+			);
+		}
+		const packW = Math.floor(
+			(inW - (Math.max(packs.length, 1) - 1) * gap) / Math.max(packs.length, 1),
+		);
+		for (const [k, e] of packs.entries()) {
+			const tryBuy = buyer(e);
+			const holder = this.add
+				.container(inL + packW / 2 + k * (packW + gap), slate.y + slate.h - pad - packH / 2)
+				.setData('offer', `${e.where}:${e.i}`);
+			const b = new Button(
+				this,
+				`${this.offerName(e.o)} · ${e.o.sold ? t('run.sold') : `$${e.o.price}`}`,
+				tryBuy,
+				{
+					w: packW,
+					h: packH,
+					size: 8,
+					color: PALETTE.buttonLight,
+					...(e.o.sold ? {} : { onBlocked: tryBuy }),
+				},
+			).setEnabled(!e.o.sold && run.money >= e.o.price);
+			holder.add(b);
+			this.body.add(holder);
+		}
 		// "Próxima mesa" first: Enter never buys by accident.
+		const btnY = slate.y + slate.h + 8 + BUTTON_H.primary / 2;
+		const bigW = Math.floor((inW - gap) / 2);
 		this.button(
-			right - bigW / 2,
-			269 + bigH + GAP.card,
+			mid + gap / 2 + bigW / 2,
+			btnY,
 			t('run.next'),
 			() => {
 				leaveShop(run);
@@ -1214,78 +1298,29 @@ export class RunScene extends Phaser.Scene {
 			},
 			bigW,
 			PALETTE.good,
-			{ h: bigH, size: 13, left: 14 },
+			{ h: BUTTON_H.primary, size: 11, left: 10 },
 		);
-		const items = [
-			...shop.offers.map((o, i) => ({ o, where: 'offers' as const, i })),
-			...(shop.upgrade ? [{ o: shop.upgrade, where: 'upgrade' as const, i: 0 }] : []),
-		];
-		const packs = shop.packs.map((o, i) => ({ o, where: 'packs' as const, i }));
-		const card = (
-			e: { o: Offer; where: 'offers' | 'packs' | 'upgrade'; i: number },
-			x: number,
-			y: number,
-			w: number,
-			h: number,
-			pack: boolean,
-		): void => {
-			const { tag, color } = this.offerTag(e.o);
-			const id = `${e.where}:${e.i}`;
-			const tryBuy = (): void => {
-				if (!this.err(buy(run, e.where, e.i))) return;
-				sfx(this, 'sfx.shop.buy');
-				this.save();
-				this.draw();
-				this.focusNextBuy(id);
-			};
-			this.body.add(
-				itemCard(this, {
-					art: tex(this, this.offerArt(e.o)),
-					title: this.offerName(e.o),
-					desc: pack ? '' : this.offerDesc(e.o),
-					tag,
-					color: e.o.sold ? PALETTE.panelLight : color,
-					w,
-					h,
-					dim: e.o.sold,
-					button: {
-						label: e.o.sold ? t('run.sold') : `$${e.o.price}`,
-						// Light wood when you can pay; disabled grey when you cannot (red is danger).
-						color: PALETTE.buttonLight,
-						enabled: !e.o.sold && run.money >= e.o.price,
-						onClick: tryBuy,
-						// A click on a price you cannot pay still says why (error sound + message).
-						...(e.o.sold ? {} : { onBlocked: tryBuy }),
-					},
-				})
-					.setPosition(x, y)
-					// Which offer the card sells (QA picks the pack by this, not by its price).
-					.setData('offer', `${e.where}:${e.i}`),
-			);
-		};
-		// Offers and packs share one column width and the card gap.
-		const colW = 118;
-		const step = colW + GAP.card;
-		for (const [k, e] of items.entries())
-			card(e, mid + (k - (items.length - 1) / 2) * step, 130, colW, 154, false);
-		const line = this.add.graphics();
-		line.fillStyle(PALETTE.manilha, 1).fillRect(left, 215, right - left, 1.5);
-		this.body.add(line);
-		for (const [k, e] of packs.entries())
-			card(e, left + colW / 2 + k * step, 281, colW, 114, true);
 		const doReroll = (): void => {
 			if (!this.err(reroll(run))) return;
 			sfx(this, 'sfx.shop.reroll');
 			this.save();
 			this.draw();
 		};
-		this.button(right - bigW / 2, 269, t('run.reroll'), doReroll, bigW, PALETTE.manilha, {
-			h: bigH,
-			size: 13,
-			left: 14,
-			hint: () => `$${rerollCost(run)}`,
-			onBlocked: doReroll,
-		}).setEnabled(run.money >= rerollCost(run));
+		this.button(
+			mid - gap / 2 - bigW / 2,
+			btnY,
+			t('run.reroll'),
+			doReroll,
+			bigW,
+			PALETTE.manilha,
+			{
+				h: BUTTON_H.primary,
+				size: 11,
+				left: 10,
+				hint: () => `$${rerollCost(run)}`,
+				onBlocked: doReroll,
+			},
+		).setEnabled(run.money >= rerollCost(run));
 	}
 
 	/**

@@ -168,6 +168,8 @@ export function buttonHover(fill: number): number {
  * stand out on it.
  */
 export const BACKDROP_BRIGHTNESS = 0.4;
+/** The shop's chalkboard holds the UI: its painting stays brighter than the other backdrops. */
+export const SHOP_BACKDROP_BRIGHTNESS = 0.75;
 
 export const RARITY_COLOR: Record<Rarity, number> = {
 	common: PALETTE.rarityCommon,
