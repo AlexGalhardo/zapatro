@@ -26,6 +26,11 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 ### Changed
 
 - **ui:** Settings in one style: vector icons only (`gear` and `sound` now drawn by code everywhere, the pixel ones are skipped; new `arrowLeft`, `arrowRight`, `chevron`), volumes as ◀ 80% ▶ rows in 10% steps like Language and Speed, one inner padding (`INSET`) for cards, rows, headers and Back, every row the same height and long labels shrink clear of their control.
+- **rules:** only the player answers the rivals' truco (accept, run or raise); the AI partner never does, but still calls truco on his turn by his style. The "Partner may run from a truco" option is gone (old saves ignore the field). LAN tables with a human partner keep answering per human.
+- **companions:** every old trait, level passive and signal bonus is gone. Each companion now has an exclusive roguelite Perk and Flaw that work only as the player's partner (`PARTNER_TRAITS`): Bruto +3 Mult per trick he wins / his cards worth half the Chips; Cida +$1 per hand won / shop items +$1; Jhony interest +$1 per $5 saved (max +$5) / reroll +$1; Nino +1 base Mult per table won / starts at -1; Zé cheapest offer of each Championship's first shop free / 1 Manha slot fewer; Mia manilhas +15 Chips / common cards -2; Chico +20 Chips per trick won with a club / hearts and diamonds -5; Beti 1 free reroll per shop / Manhas +$1; Ayla ×1.5 Mult on the first two tricks / a lost hand costs $1; Sheila 1 in 4 table wins pays double / table goals +10%. No Manha, Simpatia, Lance or joker gave a signal-catching bonus, so none changed.
+- **ui:** the partner choice is three panels with the card over the full height (name in capitals on its footer) and Style, Perk and Flaw sub-cards; the table-choice screen is skipped (`TABLE_SELECT = false`); the shop sits on the painted chalkboard.
+- **net:** a `start` message that reaches an open LAN table rebuilds the table (portraits and names) instead of being queued as a deal.
+
 - **ui:** every character is now a rectangular 3:4 card (`charcard.<id>`): table seats, partner choice, run rivals and boss, end of run, Almanac and Rules; characters without painted art show the whole pixel portrait on their colour. The NPC hands use the whole 2:3 card-back painting (32×48), unstretched, and the big back and the joker face (`card-joker.png`) use the same 2:3 treatment.
 - **ui:** the main menu is the full painting like the concept art, with the game's buttons laid over the painted ones; speech bubbles clear of cards and portraits; the manual button replaces the Manha list.
 - **art:** the card back is painted (`card-1`; `card-2` and `card-3` for the Interior and Blefe decks) with the frame and corners still drawn by code; the table felt is painted (`board-game-1`) and tinted blue and red in the later Championships.
@@ -38,6 +43,8 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 - **perf:** the painted character cards, the shop, partner and extra menu paintings and the painted backs and faces other than the standard deck load after the first screen (`LATER` in `BootScene`); the first web download goes from 9.39 MB to 7.55 MB (GD-017) and the drawn fallbacks are redrawn in place when the pictures land.
 
 ### Removed
+
+- **companions:** `Trait`, `src/game/traits.ts`, partner levels (except Nino's), `companion.trait.*` and `partner.*.passive` texts, the deck and Stake pickers of the partner screen (always the normal deck, Stake 1).
 
 - **data:** `SIGN_FACE` removed from `src/data/characters.ts` (no usage left).
 - **ui:** the hamburger button of the table (the Manha list tip) in favour of the manual button; the menu's drawn fan of cards.

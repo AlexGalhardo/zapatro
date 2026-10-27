@@ -405,22 +405,22 @@ Existe **um único baralho**, editado durante a run, do qual **os 4 jogadores co
 
 Um só elenco para parceiros e rivais (revisão de direção de 2026-10-24). A cada run o jogo sorteia **3 candidatos** entre os destravados (`src/logic/run/draw.ts`: determinístico pela seed, estilos diferentes quando dá, o parceiro da run anterior fica de fora com 4+ destravados) e você escolhe 1. Os outros 9 podem sentar como rivais; **o escolhido nunca é rival** na mesma run.
 
-Cada companheiro tem **uma vantagem e um defeito** (`Trait`) que valem para a **dupla em que ele estiver sentado**: como parceiro ajudam você, como rival jogam contra você. As passivas de nível (Fichas × Mult, só existem para a sua dupla) continuam só para o parceiro. Nível 1–3 sobe a cada Campeonato vencido (Nino: a cada mesa); cada nível reduz o erro da IA (× 1 / 0,7 / 0,4). Números dos traços são **proposta** validada por `bun run balance` (docs/balancing.md).
+Cada companheiro tem **uma Vantagem e um Defeito roguelite exclusivos**, que valem **só quando ele é o parceiro do jogador**; como rival ele joga apenas pelo estilo (perfil de IA). Os efeitos entram na pontuação como `ScoreStep`s em `scoreHand` (o total continua derivado dos steps) ou na economia da run (`src/logic/run/run.ts`); os números estão em `PARTNER_TRAITS` (`src/data/companions.ts`) e em `docs/balancing.md`. Nenhum traço mexe em aceitar ou correr de truco nem em flagrar sinais dos rivais: o parceiro IA **nunca responde** ao truco dos rivais (quem aceita, corre ou aumenta é só o jogador; ele ainda pode pedir truco na vez dele, conforme o estilo), e a chance base de os rivais flagrarem sinais não tem bônus nem defeito.
 
-| Companheiro | Estilo | Vantagem | Defeito | Passiva de parceiro (nív. 1/2/3) | Destrave |
-|---|---|---|---|---|---|
-| Bruto | agressivo | mão que a dupla vence depois de ele pedir truco vale +1 tento | nunca corre de truco | +3/+5/+8 Mult quando ele pede truco | inicial |
-| Cida | conservadora | sempre sinaliza, nunca mente | sempre corre de seis, nove e doze | você flagra +0/+10/+20% dos sinais rivais | inicial |
-| Jhony | blefador | +1 sinal por mão | metade dos sinais dele é mentira | blefes dele contam como seus; +20/+40/+70 Fichas | feito `mentiroso` |
-| Nino | destemido | a dupla flagra +15% | erros ×2 | sobe de nível a cada mesa vencida | feito `campeonato4` |
-| Zé | conservador | a dupla começa cada mesa com +1 tento | a dupla flagra −15% | — | inicial |
-| Mia | agressiva | rivais flagram os sinais da dupla ×0,5 | nunca corre de truco | — | inicial |
-| Chico | conservador | mão vencida sem manilha vale +1 tento | −1 sinal por mão | — | inicial |
-| Beti | blefadora | a dupla flagra +20% | os sinais da dupla são flagrados ×2 | — | inicial |
-| Ayla | conservadora | erros ×0,25 | sempre corre de seis, nove e doze | — | inicial |
-| Sheila | conservadora | sempre sinaliza, nunca mente | −1 sinal por mão | — | inicial |
+| Companheiro | Estilo | Vantagem | Defeito | Destrave |
+|---|---|---|---|---|
+| Bruto | agressivo | +3 Mult por vaza que ele vence | as cartas dele valem metade das Fichas (arredonda para baixo) | inicial |
+| Cida | conservadora | +$1 por mão vencida | itens da loja custam +$1 | inicial |
+| Jhony | blefador | juros: +$1 a cada $5 guardados no fim de cada mesa (máx +$5) | renovar a loja custa +$1 | feito `mentiroso` |
+| Nino | destemido | sobe 1 nível a cada mesa vencida: +1 Mult base por nível | começa a run com −1 Mult base (nível 0 = −1; o Mult base nunca fica abaixo de 1) | feito `campeonato4` |
+| Zé | conservador | o item mais barato da primeira loja de cada Campeonato sai de graça | 1 espaço de Manha a menos | inicial |
+| Mia | agressiva | manilhas valem +15 Fichas | cartas comuns valem −2 Fichas (mín 0) | inicial |
+| Chico | conservador | +20 Fichas por vaza vencida com carta de paus | copas e ouros valem −5 Fichas (mín 0) | inicial |
+| Beti | blefadora | 1 Renovar grátis por loja | Manhas custam +$1 | inicial |
+| Ayla | conservadora | ×1,5 Mult quando a dupla vence as duas primeiras vazas | mão perdida custa $1 (mín $0) | inicial |
+| Sheila | conservadora | 1 chance em 4 de dobrar o dinheiro ganho ao vencer a mesa | metas de pontos da mesa +10% | inicial |
 
-Os traços mexem num número que já existe nas duas duplas (`TableRules`, `AiProfile`, tentos), nunca em Fichas × Mult. Texto: `companion.trait.<k>` (i18n). Chefes ficam fora do elenco.
+A tela de escolha mostra, em três cards por parceiro, o **Estilo**, a **Vantagem** e o **Defeito** (`companion.<id>.perk|flaw` em i18n). Chefes ficam fora do elenco.
 
 ### 8.2 Rivais (personagens das mesas comuns)
 
