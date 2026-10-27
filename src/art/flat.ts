@@ -3,7 +3,7 @@ import { PALETTE, RARITY_COLOR, shade, toCss } from '../config/palette';
 import { RADIUS, SHADOW } from '../config/ui';
 import { MANHA_BY_ID } from '../data/manhas';
 import { type Card, isSpecial } from '../logic/truco/cards';
-import { drawVectorIcon } from './icons';
+import { drawSignalIcon, drawVectorIcon } from './icons';
 
 /**
  * The flat art of the game (docs/visual.md): every visual key is drawn by code on a 2D canvas,
@@ -1262,6 +1262,8 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 		const flags = parts.slice(3);
 		const mark = flags.includes('z') ? 'z' : flags.includes('m') ? 'm' : '';
 		drawCard(ctx, a, b, flags.includes('4c'), mark);
+	} else if (key.startsWith('icon.signal.') || key.startsWith('ui.sign.')) {
+		drawSignalIcon(ctx, b, w);
 	} else if (kind === 'icon') {
 		const bmp = iconBitmaps.get(a);
 		if (bmp) {
@@ -1273,15 +1275,6 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 	else if (kind === 'boss') drawAvatar(ctx, a, 'neutral', w, true);
 	else if (kind === 'pack') drawPack(ctx, a);
 	else if (kind === 'bg') drawRoom(ctx, a, w, h);
-	else if (key.startsWith('ui.sign.'))
-		face(
-			ctx,
-			{ ...FALLBACK, bg: 0, skin: PALETTE.manilha, shirt: 0, hair: 'bald' },
-			signExpr(b),
-			-w * 0.5,
-			-w * 0.31,
-			w * 2,
-		);
 	else if (key.startsWith('ui.suit.')) {
 		// A cream disc keeps the black suits readable on dark panels.
 		circle(ctx, w / 2, h / 2, w / 2, PALETTE.cardFace);
@@ -1294,15 +1287,6 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 		ctx.roundRect(2, 2, w - 4, h - 4, 10);
 		ctx.stroke();
 	} else drawIcon(ctx, kind, a, w, h);
-}
-
-/** Expression shown by each signal's face (D-35). */
-function signExpr(sign: string): string {
-	return (
-		{ zap: 'wink', copas: 'eyebrow', espadilha: 'mouth', picafumo: 'tongue', three: 'lip' }[
-			sign
-		] ?? 'up'
-	);
 }
 
 /** Draws `key` at its logical size into a context (rotated or scaled compositions). */

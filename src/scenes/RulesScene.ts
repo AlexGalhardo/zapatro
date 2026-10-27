@@ -4,7 +4,6 @@ import { LOGICAL_H } from '../config/constants';
 import { PALETTE, shade } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS } from '../config/ui';
 import { CHAMPIONSHIPS } from '../data/championships';
-import { SIGN_FACE } from '../data/characters';
 import { JOKER_EFFECTS } from '../data/jokers';
 import { LANCE_IDS } from '../data/lances';
 import { type I18nKey, t } from '../i18n';
@@ -357,12 +356,18 @@ export class RulesScene extends Phaser.Scene {
 		SIGNS.forEach((sign, i) => {
 			const x = (i - 2.5) * 92;
 			c.add([
-				this.add.image(x, 102, tex(this, `portrait.tonhao.${SIGN_FACE[sign]}`)),
+				this.add.image(x, 102, tex(this, `icon.signal.${sign}`)).setScale(2.2),
 				this.add
-					.text(x, 130, t(`sign.${sign}` as I18nKey), {
-						...text(6),
-						wordWrap: { width: 86 },
-					})
+					.text(
+						x,
+						130,
+						`${t(`sign.${sign}.gesture` as I18nKey)}
+${t(`sign.${sign}` as I18nKey)}`,
+						{
+							...text(6),
+							wordWrap: { width: 86 },
+						},
+					)
 					.setOrigin(0.5, 0),
 			]);
 		});

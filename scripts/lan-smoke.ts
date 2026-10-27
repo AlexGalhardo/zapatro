@@ -3,7 +3,7 @@
  * game's own scenes (form, lobby, table, end panel, lobby), including a dropped connection, a
  * player who leaves mid-match and a fresh lobby afterwards. Exits non-zero on any failure or
  * console error. Not wired into CI yet.
- *   bun scripts/lan-smoke.ts [--url http://localhost:5191] [--cli] [--shots docs/media/gta-after]
+ *   bun run build && bun scripts/lan-smoke.ts [--url http://localhost:5191] [--cli] [--shots docs/media/gta-after]
  * `--cli` runs the real `bun lan/cli.ts` (slow bots: a match takes minutes) instead of an
  * in-process server with short pauses.
  */
@@ -15,7 +15,22 @@ const arg = (name: string, fallback: string): string => {
 	const i = process.argv.indexOf(name);
 	return i >= 0 ? (process.argv[i + 1] ?? fallback) : fallback;
 };
-const url = arg('--url', 'http://localhost:5191');
+// Default: the production build (`bun run build`) served from dist/. A dev server reloads the
+// pages whenever someone edits a source file, which breaks a long run.
+let url = arg('--url', '');
+const dist = url
+	? null
+	: Bun.serve({
+			port: 0,
+			async fetch(req) {
+				const path = new URL(req.url).pathname;
+				const file = Bun.file(`dist${path.endsWith('/') ? `${path}index.html` : path}`);
+				return (await file.exists())
+					? new Response(file)
+					: new Response('not found', { status: 404 });
+			},
+		});
+if (dist) url = `http://localhost:${dist.port}`;
 const shots = arg('--shots', '');
 const PORT = 25990;
 const errors: string[] = [];
@@ -112,7 +127,7 @@ try {
 
 	// Match 1: a whole match, with the manual opened over the table (and closed) on A.
 	await start(a, b);
-	await Bun.sleep(3000);
+	await Bun.sleep(600);
 	if (shots) await a.screenshot({ path: `${shots}/05-table-lan-pt.png` });
 	await a.keyboard.press('F1');
 	await until(a, `window.__GAME__.scene.keys.Rules?.sys.isActive()`);
@@ -163,6 +178,7 @@ try {
 } finally {
 	await browser.close();
 	await stop();
+	dist?.stop();
 }
 
 if (errors.length) {
