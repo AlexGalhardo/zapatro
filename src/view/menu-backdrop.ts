@@ -7,6 +7,8 @@ const KEYS = [
 	'img.bg.menu-3',
 	'img.bg.menu-4',
 	'img.bg.menu-5',
+	'img.bg.menu-6',
+	'img.bg.menu-7',
 ] as const;
 /** Time each painting stays and the crossfade between two. */
 const HOLD_MS = 7000;
@@ -36,6 +38,10 @@ export const BAKED_UI: readonly BakedUi[] = [
 	// menu-4 (1671 px wide, scaled to 1600): it bakes 8 buttons; `bottom` is its 7th, like the others.
 	{ x: 50, top: 244, bottom: 668 },
 	// menu-5 (1672 px wide, scaled to 1600): 8 baked buttons too; `bottom` is the 7th.
+	{ x: 62, top: 273, bottom: 706 },
+	// menu-6 and menu-7 paint only the logo: the column is placed as if their buttons started right
+	// under it, with menu-5's span (same logo size and place).
+	{ x: 62, top: 273, bottom: 706 },
 	{ x: 62, top: 273, bottom: 706 },
 ];
 

@@ -132,6 +132,8 @@ const BACKGROUNDS: Record<string, string> = {
 	'menu-3': 'menu-3.jpeg',
 	'menu-4': 'menu-4.png',
 	'menu-5': 'menu-5.png',
+	'menu-6': 'menu-6.png',
+	'menu-7': 'menu-7.png',
 	shop: 'shop.jpeg',
 	partner: 'background-1.png',
 	street: 'background-2.png',
