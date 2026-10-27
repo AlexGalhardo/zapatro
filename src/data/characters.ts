@@ -15,16 +15,6 @@ export const EXPRESSIONS = [
 ] as const;
 export type Expression = (typeof EXPRESSIONS)[number];
 
-/** Face that shows each signal (D-35). */
-export const SIGN_FACE = {
-	zap: 'wink',
-	copas: 'eyebrow',
-	espadilha: 'mouth',
-	picafumo: 'tongue',
-	three: 'lip',
-	nothing: 'up',
-} as const satisfies Record<string, Expression>;
-
 /**
  * What your partner's signal says on the table: only the kind of card, never which one (the
  * ZAP and every manilha are "strong").

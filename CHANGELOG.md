@@ -37,6 +37,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Removed
 
+- **data:** `SIGN_FACE` removed from `src/data/characters.ts` (no usage left).
 - **ui:** the hamburger button of the table (the Manha list tip) in favour of the manual button; the menu's drawn fan of cards.
 
 ### Fixed
