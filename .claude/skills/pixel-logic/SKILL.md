@@ -4,6 +4,8 @@ description: "Knowledge base from \"Pixel Logic\" by Michael Azzi (2022 edition)
 ---
 
 # Pixel Logic
+
+> **Zapatro, Art Bible v3 (2026-10-27):** o jogo na `main` não usa mais pixel art para personagens, cartas nem fundos (pinturas em `art-src/gta/`, skill `game-art-assets`). Este livro só vale para os ícones de UI da folha (`ui-icons.png`), os 8 retratos de chefe ainda em pixel e a branch `pixel-art`.
 **Author**: Michael Azzi (Michafrar) | **Pages**: ~242 | **Chapters**: Introduction + 9 | **Generated**: 2026-10-10
 
 ## How to use

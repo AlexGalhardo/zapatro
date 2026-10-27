@@ -1,34 +1,39 @@
 ---
 name: game-art-assets
-description: Use when creating, regenerating or replacing any visual asset of Zapatro (Truco Roguelite) — card faces and backs, card modifiers, portraits and expressions, bosses, Manha/Simpatia/Lance icons, packs, table and backgrounds, UI (buttons, panels, chips, signals), app icon or key art — with PixelLab or drawn by code, or when touching public/assets/gfx, art-src/, scripts/pl-*.ts, scripts/assets-*.ts or src/art/*. Keeps the file contract the game loads and the Style Bible (PLAN §6–7).
+description: Use when creating, regenerating or replacing any visual asset of Zapatro (Truco Roguelite) — painted character cards and busts, bosses, painted backgrounds, card backs, joker and special card faces, card faces and modifiers drawn by code, UI icons, signal icons, app icon or key art — or when touching public/assets/gfx, art-src/, scripts/portraits.ts, scripts/icons.ts or src/art/*. Keeps the file contract the game loads and the Art Bible v3 (docs/visual.md §0).
 ---
 
 # game-art-assets
 
-Fonte da verdade: **[docs/visual.md](../../../docs/visual.md)** (contrato, tamanhos, pipeline, custos, armadilhas) e **[docs/asset-status.md](../../../docs/asset-status.md)** (chave a chave). Estilo: PLAN §6 (Style Bible); chaves: PLAN §7.2 (status em `docs/asset-status.md`).
+Fonte da verdade: **[docs/visual.md](../../../docs/visual.md) §0 (Art Bible v3, 2026-10-27)**. O resto do `visual.md` é a base v2 (layout, medidas e cores da UI). `docs/asset-status.md` é histórico da linha em pixel.
 
-> **Art Bible v2 (2026-10-24):** os personagens que já têm `references/concept-art/zapatro/char-*.png` **não** vão ao PixelLab; convertem-se com `bun scripts/portraits.ts`. PixelLab só para o que falta (ex.: O Mudo, `art-src/portrait/mudo.png`, com `juiz.png` como `style_image_base64`). Fonte da verdade: [docs/visual.md](../../../docs/visual.md) (v2); referências a `docs/asset-status.md`, contrato 9-slice e tamanhos antigos abaixo valem só na branch `pixel-art`.
+## O que é cada coisa
+
+| Asset | Técnica | Origem → arquivo | Chave |
+|---|---|---|---|
+| Personagens (elenco, Zé, Sortuda, Rei do Truco) | pintura | `art-src/gta/char-*` → `public/assets/gfx/card/<id>.webp` (480×640, 3:4) e `portrait/<id>.webp` (256×256) | `charcard.<id>`, `portrait.<id>.<expr>` (um retrato só; `<expr>` é ignorado) |
+| Chefes sem pintura (8) | pixel 128×128 (legado) | `public/assets/gfx/portrait/<id>.png` | idem; trocar por pintura é pendência (BUGS M-16) |
+| Fundos | pintura 1920×1080 | `art-src/gta/*` → `bg/{main,shop,partner,table,menu-1..3}.webp` | `img.bg.<nome>`; telas usam `setBackdrop` |
+| Versos, coringa, especiais | pintura inteira 2:3 | `art-src/gta/card-*` → `back/<nome>.webp` | `img.back.<nome>`, desenhados por `drawBack`/`paintedFace` |
+| Cartas comuns, modificadores, painéis, botões | vetor por código | `src/art/flat.ts` | `card.<rank>.<suit>` (`.m` e `.z` com moldura), `card.mod.*` |
+| Ícones de UI | pixel (folha) ou vetor | `ui-icons.png` → `bun scripts/icons.ts` → `icon/*.png`; o resto em `src/art/icons.ts` | `icon.<nome>` |
+| Sinais secretos | vetor (paths SVG) | `SIGNAL_ICON` em `src/art/icons.ts` | `icon.signal.<sinal>` (e `ui.sign.<sinal>`) |
+| Ícone do app | vetor | `art-src/app-icon.svg` → `bun run app-icons` | — |
 
 ## Regras
 
-- **Telas inteiras** (menu, salas da mesa, loja, baralho, Configurações) vêm de concept art vetorizado (pixels2svg), não do PixelLab: skill `svg-concept-art`. PixelLab fica para cartas, retratos, ícones, chefes e pacotes.
-- **Onde:** toda geração vive na worktree `../jogo-truco-assets` (branch `assets`, PLAN §12.1). Antes de cada lote: `git merge dev` (pega chaves novas de `src/data/`). O fio principal integra com `git merge assets` em `dev` depois dos gates.
-- **Contrato:** o jogo lê `public/assets/gfx/index.json` (`images`); `tex(scene, key)` desenha placeholder por código para qualquer chave ausente. Só entra no índice o que existe no disco. Cartas 48×64, retratos/ícones 48×48, chefes 96×96, fundos 640×360; alpha só 0/255.
-- **Referência:** presskit do Balatro em `references/` só para princípios (legibilidade, hierarquia, juice). Nunca copiar arte, logo, fonte, layout ou paleta. Identidade: boteco do interior paulista.
-- **Custo:** `bun scripts/pl-truco.ts --plan` mostra o que falta e quanto custa (sem `--plan`, gasta). Confira o saldo (`mcp__pixellab__get_balance`) antes de cada lote; lote acima de ~15% do saldo restante → pare e pergunte. Registre o custo por categoria em `docs/visual.md`.
-- **Aprovação:** a carta âncora (3♣, zap) e o verso precisam de aprovação do usuário antes do lote completo das faces (A1.2).
-- **Segredos:** `PIXELLAB_API_TOKEN` só no `.env` do checkout principal; nunca imprimir nem commitar.
+- **Pintura nova:** mesmo estilo e enquadramento de `art-src/gta/` (verão, pôr do sol), **sem texto, logo ou marca real** dentro da imagem (lista de pendências em BUGS M-15/M-18). Salve o original em `art-src/gta/` e rode `bun scripts/portraits.ts` (local, sem rede; gera os WebP e o `public/assets/gfx/index.json`).
+- **Nunca** gere personagem do elenco no PixelLab nem volte ao pixel: os pixel antigos ficam só em `art-src/backup-pixel/`.
+- **Peso:** imagem que a primeira tela não usa entra no `LATER` do `BootScene` (primeiro download web < 8 MB, GD-017). Meça com o build de produção antes de commitar.
+- **Fallback:** toda chave tem desenho de reserva em `flat.ts`; quando o bitmap chega, `registerPortraits` redesenha a textura no lugar. Não crie chave que só funcione com a imagem.
+- **Cores** novas só em `src/config/palette.ts`; nada de hex solto em `src/art`.
+- **Referência:** presskits de terceiros só para princípios (legibilidade, hierarquia, "juice"). Nunca copiar arte, logo, fonte, layout ou paleta.
+- **Segredos:** `PIXELLAB_API_TOKEN` e `ELEVENLABS_API_KEY` só no `.env`; nunca imprimir nem commitar.
 
 ## Fluxo
 
-1. `bun scripts/pl-truco.ts --plan [--tier 1|2] [--only <prefixo>]` → `bun scripts/pl-truco.ts [--edits] [--reserve 40]`.
-2. Escolher candidatos em `art-src/pixellab/picks.json` (reprovado → `raw/_rejected/`).
-3. `bun scripts/assets-build.ts` → `public/assets/gfx/**` + `index.json` (+ `art-src/app-icon.png`; no fio principal, `bun run app-icons`).
-4. `bun scripts/assets-validate.ts` e `bun scripts/assets-status.ts`.
-5. Ver na mesa: `bunx --bun vite --port 5192 --strictPort` + `bun scripts/shot.ts --url http://localhost:5192 --out <scratch> table signals end`.
-6. Atualizar `docs/asset-status.md` e `docs/visual.md`; commit na branch `assets` (sem push; o fio principal integra).
-
-## Do lado do jogo (fio principal)
-
-- Chave nova usada pela cena → placeholder em `src/art/placeholders.ts` (padrão de chave) e linha em PLAN §7.2.
-- Modo 4 cores: `TableScene.cardKey` prefere `card.<rank>.<suit>.4c` quando a textura existe; sem ela, o placeholder desenha a variante.
+1. Original em `art-src/gta/` (ou ícone em `art-src/`).
+2. `bun scripts/portraits.ts` (pinturas) ou `bun scripts/icons.ts` (folha de ícones).
+3. Reinicie o Vite se a lista de arquivos de `public/` mudou; confira em 1920×1080 e 2560×1440 (`bun scripts/gta-shots.ts` tira antes/depois).
+4. `bun run build` e meça o primeiro download; `bun run check`, `bun run typecheck`, `bun test`.
+5. Atualize `docs/visual.md` §0 (tabela), CHANGELOG `[Unreleased]` e, se for pendência resolvida, BUGS.md.
