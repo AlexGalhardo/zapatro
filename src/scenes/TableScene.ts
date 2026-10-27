@@ -1817,7 +1817,15 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 
 	/** A message from the LAN server: steps and deals queue up and play one after the other. */
 	private onNet(m: ServerMessage): void {
-		if (m.type === 'step' || m.type === 'deal' || m.type === 'start') {
+		// A new `start` while the table is open (the host began another match): portraits and
+		// names may differ, so the table is built again instead of queued as a deal.
+		if (m.type === 'start' && this.net) {
+			const { client } = this.net;
+			// Detached first: leaving the scene must not leave the room (the shutdown hook checks).
+			this.net = null;
+			client.listen(null);
+			this.scene.restart({ net: { client, start: m.start, snap: m.snap } });
+		} else if (m.type === 'step' || m.type === 'deal' || m.type === 'start') {
 			this.netQueue.push(m);
 			void this.drain();
 		} else if (m.type === 'rejected') {
