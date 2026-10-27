@@ -1,5 +1,11 @@
 import Phaser from 'phaser';
-import { createArt, ICON_PREFIX, PORTRAIT_PREFIX, registerPortraits } from '../art/flat';
+import {
+	BACK_PREFIX,
+	createArt,
+	ICON_PREFIX,
+	PORTRAIT_PREFIX,
+	registerPortraits,
+} from '../art/flat';
 import { PALETTE, toCss } from '../config/palette';
 import { getParams } from '../core/context';
 import { pokiLoaded } from '../core/poki';
@@ -41,8 +47,14 @@ export class BootScene extends Phaser.Scene {
 			if (LATER.test(file)) continue;
 			const m = /^assets\/audio\/(sfx|music)\/(.+)\.mp3$/.exec(file);
 			if (m?.[2]) this.load.audio(m[2], file);
-			const p = /^assets\/gfx\/portrait\/(.+)\.png$/.exec(file);
+			const p = /^assets\/gfx\/portrait\/(.+)\.(?:png|webp)$/.exec(file);
 			if (p?.[1]) this.load.image(`${PORTRAIT_PREFIX}${p[1]}`, file);
+			const g = /^assets\/gfx\/(card|bg|back)\/(.+)\.webp$/.exec(file);
+			if (g?.[1] && g[2])
+				this.load.image(
+					g[1] === 'back' ? `${BACK_PREFIX}${g[2]}` : `img.${g[1]}.${g[2]}`,
+					file,
+				);
 			const i = /^assets\/gfx\/icon\/(.+)\.png$/.exec(file);
 			if (i?.[1]) this.load.image(`${ICON_PREFIX}${i[1]}`, file);
 		}

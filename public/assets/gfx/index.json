@@ -1,42 +1,6 @@
 {
 	"images": {
-		"portrait.tonhao": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.donaCida": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.zeMalandro": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.juninho": {
-			"w": 128,
-			"h": 128
-		},
 		"portrait.ze": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.bia": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.joca": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.lurdes": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.tiao": {
-			"w": 128,
-			"h": 128
-		},
-		"portrait.neide": {
 			"w": 128,
 			"h": 128
 		},
@@ -72,13 +36,49 @@
 			"w": 128,
 			"h": 128
 		},
-		"portrait.reiDoTruco": {
-			"w": 128,
-			"h": 128
-		},
 		"portrait.mudo": {
 			"w": 128,
 			"h": 128
+		},
+		"portrait.tonhao": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.donaCida": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.zeMalandro": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.juninho": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.joca": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.lurdes": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.bia": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.neide": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.tiao": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.reiDoTruco": {
+			"w": 256,
+			"h": 256
 		}
 	}
 }

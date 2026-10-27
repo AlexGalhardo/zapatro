@@ -346,6 +346,19 @@ const BACK_COLOR: Record<string, number> = {
 };
 
 function drawBack(ctx: Ctx, deck: string): void {
+	const painted = backBitmaps.get(deck);
+	if (painted) {
+		box(ctx, 0, 0, CARD_W, CARD_H, 5, 0x2a1220);
+		ctx.save();
+		ctx.beginPath();
+		ctx.roundRect(1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card);
+		ctx.clip();
+		ctx.imageSmoothingEnabled = true;
+		ctx.imageSmoothingQuality = 'high';
+		ctx.drawImage(painted, 0, 0, CARD_W, CARD_H);
+		ctx.restore();
+		return;
+	}
 	const c = BACK_COLOR[deck] ?? PALETTE.cardBack;
 	box(ctx, 0, 0, CARD_W, CARD_H, 5, shade(c, -0.35));
 	box(ctx, 1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card, c);
@@ -819,6 +832,8 @@ export function registerPortraits(scene: Phaser.Scene): void {
 			bitmaps.set(key.slice(PORTRAIT_PREFIX.length), source());
 		else if (key.startsWith(ICON_PREFIX))
 			iconBitmaps.set(key.slice(ICON_PREFIX.length), source());
+		else if (key.startsWith(BACK_PREFIX))
+			backBitmaps.set(key.slice(BACK_PREFIX.length), source());
 	}
 	// A portrait or icon asked for before this ran (a scene started while Boot was still
 	// loading) was cached with the drawn fallback; redraw it in place now that the PNGs exist.
@@ -843,6 +858,9 @@ export function registerPortraits(scene: Phaser.Scene): void {
 const iconBitmaps = new Map<string, CanvasImageSource>();
 export const ICON_PREFIX = 'img.icon.';
 export const PORTRAIT_PREFIX = 'img.portrait.';
+/** Painted card backs (public/assets/gfx/back, scripts/portraits.ts); decks without one stay vector. */
+export const BACK_PREFIX = 'img.back.';
+const backBitmaps = new Map<string, CanvasImageSource>();
 
 function drawAvatar(ctx: Ctx, id: string, expr: string, s: number, boss: boolean): void {
 	const look = LOOKS[id] ?? FALLBACK;
@@ -857,7 +875,10 @@ function drawAvatar(ctx: Ctx, id: string, expr: string, s: number, boss: boolean
 	ctx.roundRect(inset, inset, s - inset * 2, s - inset * 2, Math.max(1, rad - inset));
 	ctx.clip();
 	if (bitmap) {
-		ctx.imageSmoothingEnabled = false;
+		// 128 px bitmaps are the pixel-art portraits (nearest); the painted ones are larger (smooth).
+		const painted = (bitmap as { width: number }).width > 128;
+		ctx.imageSmoothingEnabled = painted;
+		if (painted) ctx.imageSmoothingQuality = 'high';
 		ctx.drawImage(bitmap, 0, 0, s, s);
 	} else if (id === 'irmaos') {
 		face(ctx, { ...look, shirt: 0x6f4f2f }, expr, s * 0.04, s * 0.1, s * 0.62);
