@@ -34,7 +34,7 @@ Tudo em `site/public` é gerado por `scripts/site-build.ts` (gitignored); `site/
 
 ## Identidade visual (Art Bible v2, `game-director-feedback.md` §7)
 
-- Fundo chapado `#2B2B2B`, sem key art nem cena de boteco; leque de três cartas em SVG como marca-d'água atrás do título (só desktop).
+- Fundo pintado (Art Bible v3): `art-src/gta/background-2.png` em WebP de 640, 1280 e 1920 px (`/img/bg-<largura>.webp`, gerados por `scripts/site-build.ts`; `globals.css` escolhe por breakpoint) sob um véu escuro `rgb(26 17 22 / .62 → .8)` para o texto manter contraste; `#2B2B2B` só como cor de reserva. Leque de três cartas em SVG como marca-d'água atrás do título (só desktop).
 - Tokens num lugar só, `site/app/globals.css` (`@theme` + `:root`): cores do jogo (`--color-bg`, `panel`, `panel-dark`, `gold`, `cream`, `text`, `chips`, `mult`, `cta` verde `#47B468` com texto `#1A1A1A`, `felt`), raio 8/6/4 (`rounded-panel|button|seal`), sombra sólida `0 4px 0 #1A1A1A` (`shadow-solid`), foco 3 px dourado com offset 2 px, movimento 150 ms `ease-out` (zerado com `prefers-reduced-motion`). Utilitários `btn`, `btn-cta`, `card`.
 - Fonte única Rubik 400/500/700 via `next/font/google` (`display: swap`, self-hosted no build).
 - Trailer (`src/components/Trailer.tsx`): `<video controls preload="metadata" playsinline>` com `poster` e `<track kind="subtitles">`; sem o MP4, o quadro 16:9 mostra o poster com o aviso "Trailer coming soon / Trailer em produção" marcado como imagem provisória. Poster por idioma: `/img/trailer-poster-<en|pt-BR>.webp` (960 px, da captura `store-shot-02-count-<idioma>.png`).

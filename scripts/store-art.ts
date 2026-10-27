@@ -59,7 +59,8 @@ async function paintAll(flatUrl: string): Promise<Record<string, string>> {
 	const images = new Map<string, HTMLImageElement>();
 	for (const id of ['tonhao', 'donaCida', 'zeMalandro']) {
 		const img = new Image();
-		img.src = `/assets/gfx/portrait/${id}.png`;
+		// Painted portraits are WebP (scripts/portraits.ts).
+		img.src = `/assets/gfx/portrait/${id}.webp`;
 		await img.decode();
 		images.set(id, img);
 	}
@@ -145,7 +146,7 @@ async function paintAll(flatUrl: string): Promise<Record<string, string>> {
 		ctx.fill();
 		ctx.save();
 		ctx.clip();
-		ctx.imageSmoothingEnabled = false;
+		ctx.imageSmoothingEnabled = true;
 		ctx.drawImage(img, x, y, s, s);
 		ctx.restore();
 	};

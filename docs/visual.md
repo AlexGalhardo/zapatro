@@ -1,8 +1,27 @@
-# Art Bible v2 — Zapatro (híbrido: pixel art + vetor)
+# Art Bible v3 — Zapatro (pintura + vetor; base v2 híbrida)
 
 Versão 2 de 2026-10-24 (revisão de direção). Substitui a Art Bible anterior (pixel art 640×360, cena de boteco, PixelLab e pipeline concept → SVG), que ficou na branch `pixel-art`. As imagens de referência estão em `references/concept-art/zapatro/` e os prompts em [prompts-new-concept-art-using-pixel-art.md](../prompts-new-concept-art-using-pixel-art.md).
 
 Regra de ouro: **pessoas e ícones pequenos são pixel art; todo o resto é vetor chapado desenhado por código.** Os princípios de UI do Balatro (legibilidade, hierarquia, "juice") inspiram; nunca copie arte, logo, fonte, layout ou paleta de terceiros. A identidade é de boteco do interior paulista, nas pessoas, nas cores quentes e nos nomes.
+
+## 0. Art Bible v3 (2026-10-27): "verão tropical, pôr do sol"
+
+A v3 troca a identidade de pixel/chapado por **arte pintada** (cores saturadas, pôr do sol laranja → rosa → roxo, turquesa do mar, Havaí/praia brasileira), inspirada só no *estilo* dos materiais de lançamento de jogos atuais: nada de logo, nome, marca ou personagem de terceiros. Onde esta seção contradiz §1, §2, §6 e §7 (que descrevem a v2), **vale a v3**. A UI (painéis escuros de cantos arredondados, sombra sólida, botões, números grandes) e a fonte Rubik continuam; layout e regras da mesa (§5) não mudam.
+
+| Elemento | v3 | Origem e arquivo |
+|---|---|---|
+| Cards dos personagens | pintados, 3:4, sem a faixa do nome nem a borda (o nome vem do i18n) | `art-src/gta/char-*.jpeg` → `public/assets/gfx/card/<id>.webp` (480×640); textura `img.card.<id>`; usado na escolha de parceiro |
+| Retrato quadrado (mesa, regras, Almanaque, LAN) | busto pintado, suave (nunca nearest) | mesmos JPEG → `public/assets/gfx/portrait/<id>.webp` (256×256); `registerPortraits` desenha com filtro suave quando o bitmap é maior que 128 px |
+| Retratos ainda em pixel art | `ze`, chefes e O Mudo; seguem 128×128 PNG, nearest | `references/concept-art/zapatro/` e `art-src/portrait/` (pendência: arte nova) |
+| Fundos | pintados, 1920×1080 WebP, camada `BackdropScene` embaixo de todas as telas (nunca cinza); o menu principal tem o próprio | `art-src/gta/*` → `public/assets/gfx/bg/{main,shop,partner,table,menu-1..3}.webp` |
+| Verso das cartas | pintado (palmeiras e mar), recorte central 3:4 de `card-1`; moldura e canto arredondado por código | `public/assets/gfx/back/{default,interior,blefe}.webp` (`card-1`, `card-2`, `card-3`); os baralhos `dinheiro` e `viciado` seguem o verso vetor tingido |
+| Mesa | feltro pintado (`bg/table.webp`, cantos arredondados em alfa) no retângulo `FELT`; Campeonatos 4 a 8 tingem o feltro de azul e vermelho | `board-game-1.jpeg` |
+| Menu principal | fundos `menu-1..3` com crossfade a cada 7 s e zoom lento (desligado com "reduzir flashes"); ←/→ e os pontinhos trocam; um painel escuro cobre o logo e os botões em PT pintados na imagem | `src/view/menu-backdrop.ts` |
+| Site | `background-2` sob um véu escuro, 3 larguras de WebP por breakpoint | `scripts/site-build.ts`, `site/app/globals.css` |
+
+Pipeline: `bun scripts/portraits.ts` gera tudo acima a partir de `art-src/gta/` (originais versionados; `references/` é ignorado pelo git). Não há expressões pintadas: o retrato é um só por personagem (a chave `portrait.<id>.<expr>` ignora `<expr>`, como na v2). Fundos e cards entram pelo `BootScene` (`img.bg.*`, `img.card.*`, `img.back.*`); sem a imagem, a tela cai no fallback (fundo cinza `bgNeutral`, retrato desenhado, verso vetor).
+
+Telas e peso (WebP): cards 10 × ~60 kB, retratos 10 × ~27 kB, fundos 8 × ~190 kB, versos 3 × ~50 kB.
 
 ## 1. Identidade em três frases
 
