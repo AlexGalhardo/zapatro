@@ -21,6 +21,7 @@ import { isManhaId } from '../data/manhas';
 import { DUCK, type VoLine } from '../data/sfx';
 import { TUTORIAL_DEAL, type TutorialAnchor, type TutorialTrigger } from '../data/tutorial';
 import { Match, manilhasSeen, type SeatBrain } from '../game/match';
+import { RemoteMatch } from '../game/remote-match';
 import { GOOD_BOT } from '../game/run-sim';
 import { rivalBrain, tableMatch } from '../game/run-table';
 import { seatTraits } from '../game/traits';
@@ -55,6 +56,8 @@ import {
 	teamOf,
 } from '../logic/truco/table';
 import type { ViewSize } from '../logic/viewport';
+import type { NetClient } from '../net/client';
+import type { ServerMessage, TableSnapshot, TableStart } from '../net/protocol';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { actionHint, hintMode } from '../ui/key-hint';
@@ -250,6 +253,12 @@ interface SeatView {
  */
 export class TableScene extends Phaser.Scene {
 	match!: Match;
+	/** A LAN match: the server plays, this scene only shows what it is sent (see `onNet`). */
+	private net: { client: NetClient; start: TableStart } | null = null;
+	private netQueue: Extract<ServerMessage, { type: 'step' | 'deal' | 'start' }>[] = [];
+	private draining = false;
+	/** Names people typed in the lobby, by seat (bots keep their character's name). */
+	private seatNames: Partial<Record<Seat, string>> = {};
 	private speed: GameSpeed = 1;
 	private busy = false;
 	private auto = false;
@@ -338,7 +347,11 @@ export class TableScene extends Phaser.Scene {
 		super('Table');
 	}
 
-	create(data: { run?: boolean; tutorial?: boolean }): void {
+	create(data: {
+		run?: boolean;
+		tutorial?: boolean;
+		net?: { client: NetClient; start: TableStart; snap: TableSnapshot };
+	}): void {
 		const params = getParams(this);
 		const save = getSave(this);
 		this.speed = params.speed ?? save.settings.gameSpeed;
@@ -347,6 +360,10 @@ export class TableScene extends Phaser.Scene {
 		this.chatter = new Rng(params.seed ?? randomSeed());
 		this.ended = null;
 		this.pinned = null;
+		this.net = null;
+		this.netQueue = [];
+		this.draining = false;
+		this.seatNames = {};
 		this.input.on(
 			'pointerdown',
 			(_p: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
@@ -368,6 +385,21 @@ export class TableScene extends Phaser.Scene {
 		this.played = [];
 		this.tutorial = Boolean(data?.tutorial);
 		this.runState = data?.run ? parseRun(save.run) : null;
+		if (data?.net) {
+			const { client, start, snap } = data.net;
+			this.net = { client, start };
+			this.seatNames = start.names;
+			const remote = new RemoteMatch();
+			remote.load(snap);
+			this.match = remote;
+			this.startTable(start.chars);
+			client.listen((m) => this.onNet(m));
+			this.events.once('shutdown', () => {
+				// Out of this table for good (menu, quit): leave the room. The lobby button keeps it.
+				if (this.net) client.leave();
+			});
+			return;
+		}
 		// parseRun returns a copy (old saves get defaults): the save must hold the same object.
 		if (this.runState) save.run = this.runState;
 		if (this.runState) {
@@ -648,7 +680,8 @@ export class TableScene extends Phaser.Scene {
 				.text(
 					ax + AVATAR / 2,
 					ay + AVATAR + 5.5,
-					t((isBoss(id) ? `boss.${id}.name` : `char.${id}`) as I18nKey),
+					this.seatNames[seat] ||
+						t((isBoss(id) ? `boss.${id}.name` : `char.${id}`) as I18nKey),
 					this.bold(8, isBoss(id) ? PALETTE.bad : PALETTE.textLight),
 				)
 				.setOrigin(0.5);
@@ -1606,7 +1639,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	 * over another bubble (a call, a brag): one line per event at most.
 	 */
 	private chat(seat: Seat, prefix: string, n: number, chance = 1): void {
-		if (seat === 0 || !this.seats.has(seat)) return;
+		if (this.net || seat === 0 || !this.seats.has(seat)) return;
 		for (const v of this.seats.values()) if (v.bubble.visible) return;
 		if (!this.chatter.chance(chance)) return;
 		this.say(seat, `${prefix}.${this.chatter.int(0, n - 1)}` as I18nKey);
@@ -1638,6 +1671,8 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		if (this.busy || !this.sys.isActive()) return;
 		const m = this.match;
 		const actor = m.actor();
+		// A LAN table waits for the server: it deals the next hand and plays the bots.
+		if (actor === null && this.net) return;
 		if (actor === null) {
 			void this.endHand();
 			return;
@@ -1651,11 +1686,58 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			return;
 		}
 		this.status.setText('');
+		if (this.net) return;
 		this.busy = true;
 		this.time.delayedCall(this.dur(TABLE_TIMING.think), () => {
 			if (!this.sys.isActive()) return;
 			void this.run(m.aiAction(actor));
 		});
+	}
+
+	/** A message from the LAN server: steps and deals queue up and play one after the other. */
+	private onNet(m: ServerMessage): void {
+		if (m.type === 'step' || m.type === 'deal' || m.type === 'start') {
+			this.netQueue.push(m);
+			void this.drain();
+		} else if (m.type === 'rejected') {
+			sfx(this, 'sfx.ui.error');
+			this.busy = false;
+			this.pump();
+		} else if (m.type === 'closed') {
+			this.netQueue = [];
+			this.showBanner(t('net.closed'), 2000);
+			this.time.delayedCall(2200, () => fadeTo(this, 'Menu'));
+		}
+	}
+
+	private async drain(): Promise<void> {
+		if (this.draining) return;
+		this.draining = true;
+		const match = this.match as RemoteMatch;
+		for (let m = this.netQueue.shift(); m; m = this.netQueue.shift()) {
+			if (!this.sys.isActive()) break;
+			this.busy = true;
+			this.updateControls(false);
+			match.load(m.snap);
+			if (m.type === 'step') {
+				for (const e of m.events) {
+					if (!this.sys.isActive()) return;
+					await this.animate(e);
+				}
+			} else {
+				for (const img of this.played) img.destroy();
+				this.played = [];
+				this.renderHand(true);
+				this.announceKind();
+				await this.wait(400);
+			}
+			this.busy = false;
+			this.refreshHud();
+			const winner = match.winner;
+			if (winner) this.showEnd(winner);
+			else this.pump();
+		}
+		this.draining = false;
 	}
 
 	private human(action: Action): void {
@@ -1667,6 +1749,11 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		}
 		this.signPicker.setVisible(false);
 		this.busy = true;
+		if (this.net) {
+			this.updateControls(false);
+			this.net.client.send({ type: 'action', action });
+			return;
+		}
 		void this.run(action);
 	}
 
@@ -2092,11 +2179,22 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			this.endPanel.add([box, title, info, next]).setVisible(true);
 			return;
 		}
-		const again = new Button(this, t('table.again'), () => this.scene.restart(), {
-			w: 100,
-			h: BUTTON_H.action,
-			color: PALETTE.good,
-		});
+		const net = this.net;
+		const again = new Button(
+			this,
+			t(net ? 'net.backToLobby' : 'table.again'),
+			() => {
+				if (!net) return this.scene.restart();
+				this.net = null;
+				net.client.listen(null);
+				fadeTo(this, 'Lobby', { client: net.client });
+			},
+			{
+				w: 100,
+				h: BUTTON_H.action,
+				color: PALETTE.good,
+			},
+		);
 		const menu = new Button(this, t('table.menu'), () => fadeTo(this, 'Menu'), {
 			w: 100,
 			h: BUTTON_H.action,

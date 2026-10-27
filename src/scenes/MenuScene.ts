@@ -5,7 +5,7 @@ import { BUTTON_H, GAP } from '../config/ui';
 import { sfx } from '../core/audio';
 import { getSave } from '../core/context';
 import { playAmbience, playMusic } from '../core/music';
-import { isElectron } from '../core/platform';
+import { isElectron, lanAvailable } from '../core/platform';
 import { trackZoom } from '../core/viewport';
 import { getLang, type I18nKey, t } from '../i18n';
 import { parseRun } from '../logic/run/run';
@@ -76,6 +76,9 @@ export class MenuScene extends Phaser.Scene {
 				color: PALETTE.calm,
 				onSelect: () => fadeTo(this, 'Table', { run: false }),
 			},
+			...(lanAvailable()
+				? [{ label: 'menu.lan' as const, onSelect: () => fadeTo(this, 'Lan') }]
+				: []),
 			{ label: 'menu.tutorial', onSelect: () => fadeTo(this, 'Table', { tutorial: true }) },
 			{ label: 'menu.almanac', onSelect: () => fadeTo(this, 'Almanac') },
 			{ label: 'menu.rules', onSelect: () => fadeTo(this, 'Rules') },
@@ -112,6 +115,10 @@ export class MenuScene extends Phaser.Scene {
 				},
 			})
 			.setOrigin(0, 0.5);
+		// Nine rows (desktop with LAN and Quit) squeeze together to stay above the stage's base.
+		const tight = rows.length > 8;
+		const step = tight ? COLUMN.step - 2 : COLUMN.step;
+		const top = tight ? COLUMN.y - 6 : COLUMN.y;
 		const buttons = rows.map((row, i) =>
 			new Button(
 				this,
@@ -129,7 +136,7 @@ export class MenuScene extends Phaser.Scene {
 					onHover: () => this.move(rows, i - this.focus, true),
 				},
 			)
-				.setPosition(COLUMN.x, COLUMN.y + i * COLUMN.step)
+				.setPosition(COLUMN.x, top + i * step)
 				.setEnabled(!row.disabled),
 		);
 		this.redraw = () => {

@@ -3,6 +3,30 @@ export function isElectron(): boolean {
 	return navigator.userAgent.includes('Electron/');
 }
 
+/** A table served from this computer: its port and the addresses friends type to join. */
+export interface LanHost {
+	port: number;
+	addresses: string[];
+}
+
+const shellBridge = (): { hostLan?: () => Promise<LanHost> } | undefined =>
+	(window as unknown as { trucoShell?: { hostLan?: () => Promise<LanHost> } }).trucoShell;
+
+/** Only the desktop app can serve a LAN table (desktop/main.js runs the Colyseus server). */
+export const canHostLan = (): boolean => Boolean(shellBridge()?.hostLan);
+
+export const hostLan = (): Promise<LanHost> => {
+	const host = shellBridge()?.hostLan;
+	return host ? host() : Promise.reject(new Error('no LAN host'));
+};
+
+/**
+ * LAN play needs a plain `ws://` connection to another computer, which a browser blocks from an
+ * `https://` page (the website, itch.io, Poki). The desktop and Android apps allow it.
+ */
+export const lanAvailable = (): boolean =>
+	isElectron() || capacitor() !== null || location.protocol === 'http:';
+
 /**
  * Starts the game over. In Electron the shell relaunches the whole app (desktop/preload.cjs): once
  * Chromium has turned the GPU off, only a new process gets WebGL back. Elsewhere, a page reload.

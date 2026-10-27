@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { AlmanacScene } from '../scenes/AlmanacScene';
 import { BootScene } from '../scenes/BootScene';
 import { KeybindsScene } from '../scenes/KeybindsScene';
+import { LanScene } from '../scenes/LanScene';
 import { MenuScene } from '../scenes/MenuScene';
 import { PauseScene } from '../scenes/PauseScene';
 import { RulesScene } from '../scenes/RulesScene';
@@ -36,5 +37,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
 		AlmanacScene,
 		SettingsScene,
 		KeybindsScene,
+		LanScene,
 	],
 };
