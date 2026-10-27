@@ -13,12 +13,13 @@ import { text } from '../ui/screen';
 import { byMode } from '../ui/touch';
 import { fitCamera } from '../view/stage';
 
-/** The three buttons: centre x, first row, row step and size. */
+/** The card: one padding on every side and between title, buttons and hint line. */
+const CARD = { x: 210, w: 220, pad: 20, titleH: 26, hintH: 8 };
+/** The three buttons: centre x, row step and size (as wide as the card minus its padding). */
 const BUTTON = {
 	x: 320,
-	y: 146,
 	step: BUTTON_H.primary + GAP.card,
-	w: 180,
+	w: CARD.w - 2 * CARD.pad,
 	h: BUTTON_H.primary,
 };
 
@@ -77,17 +78,23 @@ export class PauseScene extends Phaser.Scene {
 			},
 		];
 
+		const hintLine = showHintLine();
+		const { pad } = CARD;
+		const buttonsH = rows.length * BUTTON.h + (rows.length - 1) * GAP.card;
+		const cardH = pad + CARD.titleH + pad + buttonsH + pad + (hintLine ? CARD.hintH + pad : 0);
+		const top = Math.round(180 - cardH / 2);
+		const firstRow = top + pad + CARD.titleH + pad + BUTTON.h / 2;
 		const card = this.add.graphics();
-		drawPanel(card, 210, 82, 220, 184, { radius: RADIUS.frame, shadow: 5 });
+		drawPanel(card, CARD.x, top, CARD.w, cardH, { radius: RADIUS.frame, shadow: 5 });
 		card.lineStyle(2, shade(PALETTE.panel, -0.3), 1).strokeRoundedRect(
-			210,
-			82,
-			220,
-			184,
+			CARD.x,
+			top,
+			CARD.w,
+			cardH,
 			RADIUS.frame,
 		);
 		this.add
-			.text(320, 102, t('pause.title'), {
+			.text(320, top + pad + CARD.titleH / 2, t('pause.title'), {
 				fontFamily: UI_FONT,
 				fontSize: '22px',
 				fontStyle: '700',
@@ -115,15 +122,20 @@ export class PauseScene extends Phaser.Scene {
 						draw();
 					},
 				},
-			).setPosition(BUTTON.x, BUTTON.y + i * BUTTON.step),
+			).setPosition(BUTTON.x, firstRow + i * BUTTON.step),
 		);
 		const draw = () => {
 			for (const [i, b] of buttons.entries()) b.setFocus(i === this.focus);
 		};
 		this.add
-			.text(320, 250, t(byMode('pause.hint')), text(6, PALETTE.textDim))
+			.text(
+				320,
+				top + cardH - pad - CARD.hintH / 2,
+				t(byMode('pause.hint')),
+				text(6, PALETTE.textDim),
+			)
 			.setOrigin(0.5)
-			.setVisible(showHintLine());
+			.setVisible(hintLine);
 
 		const kb = this.input.keyboard;
 		const on = (keys: string[], fn: () => void) => {
