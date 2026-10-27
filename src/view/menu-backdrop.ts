@@ -76,9 +76,9 @@ export class MenuBackdrop {
 			PALETTE.night,
 			PALETTE.night,
 			PALETTE.night,
-			0.94,
+			1,
 			0,
-			0.94,
+			1,
 			0,
 		).fillRect(edge, view.y - 40, 56, view.height + 80);
 		for (let i = 0; i < this.images.length; i++) this.apply(i);
