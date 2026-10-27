@@ -258,17 +258,23 @@ export const cardArt = (card: Card): string =>
 /** The same face framed in gold: `m` a manilha of this hand, `z` the ZAP. */
 export const markedArt = (key: string, mark: 'm' | 'z'): string => `${key}.${mark}`;
 
+/**
+ * The painted faces of the joker and the special cards (back/<key>.webp) are 2:3 like the painted
+ * back: the whole picture at the card's height, centred, so face and back have the same size.
+ */
+function paintedFace(ctx: Ctx, key: string): boolean {
+	const painted = backBitmaps.get(key);
+	if (!painted) return false;
+	const pw = (CARD_H * 2) / 3;
+	ctx.imageSmoothingEnabled = true;
+	ctx.imageSmoothingQuality = 'high';
+	ctx.drawImage(painted, (CARD_W - pw) / 2, 0, pw, CARD_H);
+	return true;
+}
+
 /** The joker: a purple card with a gold star and the three-tip hat over it. */
 function drawJoker(ctx: Ctx): void {
-	// The painted face (back/joker.webp) is 2:3 like the painted back: same size, centred.
-	const painted = backBitmaps.get('joker');
-	if (painted) {
-		const pw = (CARD_H * 2) / 3;
-		ctx.imageSmoothingEnabled = true;
-		ctx.imageSmoothingQuality = 'high';
-		ctx.drawImage(painted, (CARD_W - pw) / 2, 0, pw, CARD_H);
-		return;
-	}
+	if (paintedFace(ctx, 'joker')) return;
 	cardBody(ctx, PALETTE.jokerPurple);
 	const tips = [PALETTE.suitRed, PALETTE.manilha, PALETTE.suitGreen];
 	tips.forEach((c, i) => {
@@ -297,6 +303,7 @@ const SPECIAL_LOOK = {
 } as const;
 
 function drawSpecial(ctx: Ctx, rank: keyof typeof SPECIAL_LOOK): void {
+	if (paintedFace(ctx, rank)) return;
 	const body = SPECIAL_LOOK[rank];
 	cardBody(ctx, body);
 	const ink = PALETTE.cardFace;

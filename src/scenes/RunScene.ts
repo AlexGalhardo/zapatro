@@ -25,7 +25,7 @@ import { MAX_STAKE } from '../data/stakes';
 import { botShop } from '../game/run-sim';
 import { getLang, type I18nKey, t } from '../i18n';
 import { flawText, perkText } from '../i18n/companion';
-import { isUnlocked, maxStake, recordRunState, unlockedDecks } from '../logic/meta';
+import { isUnlocked, recordRunState } from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
 import { drawCandidates } from '../logic/run/draw';
 import {
@@ -70,7 +70,6 @@ import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
 
 /** Width of the Deck and Stake pickers on the partner screen. */
-const PICKER_W = 148;
 
 /** Height of the bar of icon shortcuts at the foot of the sidebar. */
 const ICON_BAR_H = 32;
@@ -354,48 +353,44 @@ export class RunScene extends Phaser.Scene {
 
 	// --- Partner -------------------------------------------------------------------------
 
-	/** screen-partner.png: title, cards of the three partners on offer, deck and stake pickers. */
+	/**
+	 * Partner choice: three rows, each a character card (3:4) on the left and the partner's name,
+	 * play style, perk, flaw and passive beside it, with the pick button at the row's right end.
+	 * Rows (not columns) because three side-by-side panels leave the texts too narrow at 640 px.
+	 * The deck is always the normal one and the Stake 1 (`?stake=N` still presets it for tests).
+	 */
 	private drawPartners(): void {
 		const { cx } = this;
-		const meta = getSave(this).meta;
-		const decks = unlockedDecks(meta) as DeckId[];
-		if (!decks.includes(this.deckChoice)) this.deckChoice = 'normal';
-		const debugStake = getParams(this).stake;
-		const top = Math.max(
-			maxStake(meta, this.deckChoice),
-			debugStake === undefined ? 1 : Math.min(MAX_STAKE, debugStake),
-		);
-		this.stakeChoice = Math.min(this.stakeChoice, top);
-		this.title(cx, 28, t('run.choosePartner'), TYPE.screenTitle);
+		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
+		const [rowW, rowH, gap, top] = [604, 88, 4, 42];
+		const x0 = cx - rowW / 2;
 		offer.forEach((id, i) => {
-			const x = cx + (i - (offer.length - 1) / 2) * 156;
-			const x0 = x - 73;
-			this.box(x0, 50, 146, 204);
-			// The character card (3:4) on the left; name and play style beside it; perk and flaw below.
-			const [cw, ch] = [66, 88];
+			const y = top + i * (rowH + gap);
+			this.box(x0, y, rowW, rowH);
+			const [cw, ch] = [63, 84];
 			this.body.add(
 				this.add
-					.image(x0 + 6 + cw / 2, 56 + ch / 2, tex(this, `charcard.${id}`))
+					.image(x0 + 4 + cw / 2, y + rowH / 2, tex(this, `charcard.${id}`))
 					.setDisplaySize(cw, ch),
 			);
-			const rx = x0 + 6 + cw + 6 + (146 - 6 - cw - 6 - 6) / 2;
-			const rw = 146 - 6 - cw - 6 - 6;
-			this.put(rx, 66, t(`char.${id}` as I18nKey), 10, PALETTE.textLight, [0.5, 0.5], rw);
-			const line = this.add.graphics();
-			line.fillStyle(PALETTE.manilha, 1).fillRect(rx - rw / 2 + 4, 76, rw - 8, 2);
-			this.body.add(line);
-			const style = this.put(
-				rx,
-				80,
-				t(`partner.style.${COMPANIONS[id].style}` as I18nKey),
-				6,
-				PALETTE.manilha,
-				[0.5, 0],
-				rw,
-			);
-			// Each block starts under the one before, whatever its wrap: the cards keep one rhythm.
-			const traits: [string, number][] = [
+			const btnW = 128;
+			const tx = x0 + 4 + cw + 10;
+			const tw = rowW - (tx - x0) - btnW - 20;
+			// Each block starts under the one before, whatever its wrap: the rows keep one rhythm.
+			let ty = y + 6;
+			ty =
+				this.put(
+					tx,
+					ty,
+					t(`char.${id}` as I18nKey),
+					11,
+					PALETTE.textLight,
+					[0, 0],
+					tw,
+				).getBounds().bottom + 1;
+			const lines: [string, number][] = [
+				[t(`partner.style.${COMPANIONS[id].style}` as I18nKey), PALETTE.manilha],
 				[perkText(id), PALETTE.good],
 				[flawText(id), PALETTE.bad],
 				...(hasPassive(id)
@@ -405,69 +400,26 @@ export class RunScene extends Phaser.Scene {
 						][])
 					: []),
 			];
-			let ty = Math.max(56 + ch + 4, style.getBounds().bottom + 3);
-			for (const [s, color] of traits)
-				ty = this.put(x, ty, s, 6.5, color, [0.5, 0], 136).getBounds().bottom + GAP.list;
+			for (const [text, color] of lines)
+				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 2;
 			this.button(
-				x,
-				237,
+				x0 + rowW - btnW / 2 - 6,
+				y + rowH / 2,
 				t('run.pick', { name: t(`char.${id}` as I18nKey) }),
 				() => this.choosePartner(id),
-				138,
+				btnW,
 				PALETTE.good,
+				{ h: 30, size: 9 },
 			);
 		});
-		// Deck and Stake pickers: a dark box with a label, the value and two gold arrows.
-		const picker = (
-			x: number,
-			label: string,
-			value: string,
-			desc: string,
-			prev: () => void,
-			next: () => void,
-		): void => {
-			this.box(x - PICKER_W / 2, 258, PICKER_W, 52);
-			this.put(x, 264, label, 7, PALETTE.textDim, [0.5, 0]);
-			this.put(x, 275, value, value.length > 10 ? 10 : 13, PALETTE.textLight, [0.5, 0], 100);
-			this.put(x, 295, desc, 6, PALETTE.textDim, [0.5, 0], 108);
-			this.button(x - 56, 284, '◀', prev, 18, PALETTE.manilha, { h: 20, size: 9 });
-			this.button(x + 56, 284, '▶', next, 18, PALETTE.manilha, { h: 20, size: 9 });
-		};
-		const cycle = (dir: number): void => {
-			const i = decks.indexOf(this.deckChoice);
-			this.deckChoice = decks[(i + dir + decks.length) % decks.length] ?? 'normal';
-			this.draw();
-		};
-		picker(
-			cx - (PICKER_W + GAP.card) / 2,
-			t('run.label.deck'),
-			t(`deck.${this.deckChoice}.name` as I18nKey),
-			t(`deck.${this.deckChoice}.desc` as I18nKey),
-			() => cycle(-1),
-			() => cycle(1),
-		);
-		picker(
-			cx + (PICKER_W + GAP.card) / 2,
-			t('run.label.stake'),
-			`${this.stakeChoice}`,
-			t(`stake.${this.stakeChoice}` as I18nKey),
-			() => {
-				this.stakeChoice = Math.max(1, this.stakeChoice - 1);
-				this.draw();
-			},
-			() => {
-				this.stakeChoice = Math.min(top, this.stakeChoice + 1);
-				this.draw();
-			},
-		);
-		// Back and the partner-folds toggle: one row centred on the stage, a card gap apart.
+		// Back and the partner-folds toggle: one row centred under the partners.
 		const backW = 100;
-		// The row spans exactly the two pickers above it.
-		const foldW = 2 * PICKER_W - backW;
+		const foldW = 250;
 		const row = cx - (backW + GAP.card + foldW) / 2;
+		const by = top + 3 * (rowH + gap) + 14;
 		this.button(
 			row + backW / 2,
-			334,
+			by,
 			t('menu.back'),
 			() => fadeTo(this, 'Menu'),
 			backW,
@@ -477,7 +429,7 @@ export class RunScene extends Phaser.Scene {
 		// Who answers the rivals' truco: the partner too (classic) or only you.
 		this.button(
 			row + backW + GAP.card + foldW / 2,
-			334,
+			by,
 			t('run.partnerFolds', {
 				v: t(this.partnerFoldsChoice ? 'settings.toggle.on' : 'settings.toggle.off'),
 			}),

@@ -138,6 +138,10 @@ const BACKGROUNDS: Record<string, string> = {
 /** `joker` is the joker's face (card-joker.png): same 2:3 size and treatment as a back. */
 const BACKS: Record<string, string> = {
 	joker: 'card-joker.png',
+	// The special cards' faces: Alpha is the Lightning, Betha the Eye, Zetha the Clover.
+	raio: 'card-alpha.png',
+	olho: 'card-betha.png',
+	trevo: 'card-zetha.png',
 	default: 'card-1.png',
 	interior: 'card-2.png',
 	blefe: 'card-3.png',
