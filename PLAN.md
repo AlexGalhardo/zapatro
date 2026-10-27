@@ -86,6 +86,22 @@ Detalhes em §5.12.1.
 - [x] Testes (`tests/specials.test.ts`) e `bun run balance` (docs/balancing.md).
 - [ ] Playtest: os efeitos são divertidos ou frustram? Revisar números (bônus, escudo) e se a IA deve passar a usar as cartas.
 
+### 1.4.3 Art Bible v3 e rodada de revisão (pedido do usuário, 2026-10-27)
+
+Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-71 em [docs/decisions.md](docs/decisions.md).
+
+- [x] Art Bible v3 "verão, pôr do sol": cards 3:4 (`card/<id>.webp`, 480×640) e bustos (`portrait/<id>.webp`, 256×256) pintados do elenco, do Zé, da Sortuda e do Rei do Truco; fontes em `art-src/gta/`, pixel antigos em `art-src/backup-pixel/` (D-63).
+- [x] Fundos pintados sob toda tela (`BackdropScene`/`setBackdrop`), escurecidos por `BACKDROP_BRIGHTNESS` exceto o menu; menu com 3 pinturas em crossfade e `BAKED_UI` por imagem (D-64).
+- [x] Versos, coringa e especiais pintados inteiros em 2:3; feltro pintado tingido por Campeonato.
+- [x] Carregamento tardio das pinturas que a primeira tela não usa: primeiro download web 9,39 → 7,55 MB (GD-017, D-65).
+- [x] Ícones vetoriais dos sinais (`icon.signal.*`) no manual e na escolha; selos de atalho opcionais e desligados por padrão; botões com gradiente e profundidade (D-66, D-67).
+- [x] LAN estável: `resync` para quem volta ao lobby com a partida já começada, validação das mensagens no servidor, `scripts/lan-smoke.ts` cobrindo a sessão inteira (D-68).
+- [x] Seleção de mesas desligada (`TABLE_SELECT = false` em `src/config/features.ts`); baralho e estaca fora da UI da escolha de parceiro (D-69).
+- [~] Sinal do parceiro mostra o gesto exato (o servidor LAN já manda o sinal exato ao parceiro; a mesa está em implementação) (D-70).
+- [~] Só o jogador responde ao truco da dupla e traços roguelite novos dos companheiros (em implementação) (D-71).
+- [x] Resoluções-alvo registradas: 1920×1080 e 2560×1440 no desktop, Android em paisagem 6,5"+ (AGENTS.md).
+- [ ] Pendências de arte e sistemas inalcançáveis listadas em [BUGS.md](BUGS.md) (marcas reais, chefes em pixel, vendedor da loja, peso de `art-src/gta`, material de loja ainda em pixel).
+
 ### 1.5 Fora do escopo até a 1.0
 
 iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a **LAN com até 4 pessoas na Partida Rápida** entrou em 2026-10-27, [docs/multiplayer.md](docs/multiplayer.md)) · backend, contas, telemetria · newsletter · mapa estilo Slay the Spire · relíquias, dívida, superstições, confiança do parceiro, tilt, pressão global, desafios diários, contratos (lista completa em GDD §18.3) · executável Bun de arquivo único.
