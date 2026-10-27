@@ -499,6 +499,15 @@ export class TableScene extends Phaser.Scene {
 		// Nobody's controls work until the first pump decides whose turn it is.
 		this.updateControls(false);
 		this.announceKind();
+		// The boss table is no longer announced by the table-choice screen: name and rule here.
+		if (boss && this.match.state.kind === 'normal')
+			this.time.delayedCall(this.dur(500), () =>
+				this.showBanner(
+					`${t(`boss.${boss}.name` as I18nKey)}
+${t(`boss.${boss}.rule` as I18nKey)}`,
+					3200,
+				),
+			);
 		pokiGameplay(true);
 		this.events.once('shutdown', () => pokiGameplay(false));
 		this.time.delayedCall(250, () => this.pump());

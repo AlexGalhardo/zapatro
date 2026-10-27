@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { CARD_W, cardArt, tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
-import { IS_DEMO } from '../config/features';
+import { IS_DEMO, TABLE_SELECT } from '../config/features';
 import { inkOn, PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx } from '../core/audio';
@@ -88,6 +88,8 @@ const SLOT = 22;
  */
 export class RunScene extends Phaser.Scene {
 	private run: RunState | null = null;
+	/** A table is being entered: draws and key repeats must not start it twice. */
+	private entering = false;
 	private deckChoice: DeckId = 'normal';
 	private stakeChoice = 1;
 	/** Closes the panel open over the screen (Esc), if any. */
@@ -122,6 +124,7 @@ export class RunScene extends Phaser.Scene {
 		const debugStake = getParams(this).stake;
 		if (debugStake !== undefined) this.stakeChoice = Math.min(MAX_STAKE, debugStake);
 		this.tipText = null;
+		this.entering = false;
 		playMusic(this, 'music.menu');
 		playAmbience(this, null);
 		this.body = this.add.container(0, 0);
@@ -213,6 +216,11 @@ export class RunScene extends Phaser.Scene {
 		}
 		if (run.phase === 'won' || run.phase === 'lost') {
 			this.drawEnd(run);
+			return;
+		}
+		// Without the table-choice screen the next table starts at once (a saved run mid-Championship too).
+		if (run.phase === 'select' && !TABLE_SELECT) {
+			this.play();
 			return;
 		}
 		// The main area first: its button is the first one, so it starts focused.
@@ -1156,7 +1164,8 @@ export class RunScene extends Phaser.Scene {
 
 	private play(): void {
 		const run = this.run;
-		if (!run) return;
+		if (!run || this.entering) return;
+		this.entering = true;
 		startTable(run);
 		this.save();
 		fadeTo(this, 'Table', { run: true });

@@ -8,3 +8,10 @@ const flag = (v: string | undefined): boolean => v === '1' || v?.trim().toLowerC
 
 export const IS_DEMO: boolean = flag(import.meta.env.VITE_DEMO);
 export const IS_POKI: boolean = flag(import.meta.env.VITE_POKI);
+
+/**
+ * The Championship's table-choice screen (Small, Big and Boss table, with Skip and Promises).
+ * false: choosing the partner or leaving the shop goes straight to the next table, in order
+ * (Small, Big, Boss), with no skipping. The screen and its rules are kept, only not shown.
+ */
+export const TABLE_SELECT = false;
