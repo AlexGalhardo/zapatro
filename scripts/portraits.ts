@@ -35,6 +35,7 @@ export const PAINTED: Record<string, string> = {
 	'truco-king': 'reiDoTruco',
 	sortuda: 'sortuda',
 	agiota: 'agiota',
+	stuart: 'professor',
 };
 
 /** Source file → portrait id (pixel art). `char-pedrao.png` is left out on purpose (docs/visual.md). */
@@ -43,7 +44,6 @@ export const PORTRAITS: Record<string, string> = {
 	'char-cartomante': 'cartomante',
 	'char-juiz': 'juiz',
 	'char-delegado': 'delegado',
-	'char-professor': 'professor',
 	'char-irmaos': 'irmaos',
 };
 
