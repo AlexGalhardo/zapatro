@@ -15,8 +15,10 @@ src/game/     match.ts: partida/mesa (IA, Fama, pontos, meta, quedas, chefes, pa
               traits.ts: traços por assento;
               run-table.ts: Match da mesa atual da run; run-sim.ts: bot de run (sim/balance/?auto)
    ── nada acima importa Phaser ──
-src/art/      flat.ts (`tex()` desenha cada chave por código; retratos 128×128 de public/assets/gfx/portrait
-              entram por `registerPortraits`), icons.ts (ícones vetoriais `icon.<nome>`)
+src/art/      flat.ts (`tex()` desenha cada chave por código; as pinturas de public/assets/gfx/{card,portrait,back}
+              e os PNG legados entram por `registerPortraits`), icons.ts (ícones vetoriais `icon.<nome>`,
+              sinais `icon.signal.<sinal>`), title.ts (título do menu)
+src/scenes/BackdropScene.ts  fundo pintado sob toda tela (`setBackdrop`), escurecido por `BACKDROP_BRIGHTNESS`
 src/scenes/   Boot → Menu ⇄ Settings → Keybinds; Menu → Almanac (Almanaque + Estatísticas); Menu → Run (parceiro, próxima mesa, loja, fim) ⇄ Table
               (fila de TableEvent; selo do sinal flagrado `signMark` no retrato do rival) ⇄ Pause; Menu → Rules (livro de páginas ilustradas com dados de src/data); Menu → Table (partida rápida: truco puro a 12, sem meta; `?goal=N` só para testes); Menu → Table + Tutorial
               (tutorial jogado: deal fixo em data/tutorial.ts; a mesa emite eventos `tutorial` e expõe `anchor()`)

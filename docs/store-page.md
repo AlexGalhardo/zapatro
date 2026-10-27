@@ -118,7 +118,7 @@ Os limites da Play podem mudar; conferir na Play Console antes de publicar.
 
 ## itch.io
 
-O itch.io não está confirmado aqui: os limites de tagline e de descrição devem ser conferidos em <https://itch.io/docs/creators>. Conferir também a tag `pixel-art`: os retratos são pixel art, mas o resto da arte é vetor (Art Bible v2), então a tag pode ficar imprecisa.
+O itch.io não está confirmado aqui: os limites de tagline e de descrição devem ser conferidos em <https://itch.io/docs/creators>. Conferir também a tag `pixel-art`: desde a Art Bible v3 (2026-10-27) os personagens e fundos são pintados, então a tag não descreve mais o jogo (ver `pending-decisions.md`). Antes: os retratos eram pixel art, mas o resto da arte era vetor (Art Bible v2), então a tag pode ficar imprecisa.
 
 | Campo | EN | PT-BR |
 |---|---|---|

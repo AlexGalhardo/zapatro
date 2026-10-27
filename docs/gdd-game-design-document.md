@@ -42,7 +42,7 @@ Código e PLAN citam "design §N" (o antigo `game-design-principles.md`). Equiva
 | Título | **Zapatro** ("A Truco Paulista Roguelite"); codinome técnico permanente `truco-roguelite` | Q-01, 2026-10-01 · D-21 |
 | Gênero | Roguelite de cartas (estrutura de run tipo Balatro) sobre Truco Paulista 2×2 | D-05 |
 | Câmera | Mesa vista de cima, 4 jogadores em cruz (você embaixo, parceiro em cima, rivais nas laterais) | PLAN §6 |
-| Arte | Híbrido: retratos e ícones em pixel art, o resto vetor por código; palco 640×360, zoom inteiro (docs/visual.md, v2 de 2026-10-24) | revisão de direção |
+| Arte | Art Bible v3 (2026-10-27): personagens, fundos, versos e especiais pintados; cartas comuns e UI vetoriais por código; ícones de UI em pixel; palco 640×360, zoom inteiro (docs/visual.md §0) | revisão de direção |
 | Engine | Phaser 4.2.x + TypeScript + Vite sobre Bun 1.4.2 | **Fixo** |
 | Plataformas | Steam (Electron), Google Play (Capacitor, Android), web (itch.io, Poki, `truco.lekzera.xyz`); um único build Phaser 4 | D-23, D-24, decisão 2026-10-15 |
 | Sessão | Mão ≈ segundos; mesa ≈ 4,1 mãos ⚖; run = até 24 mesas. Duração em minutos: **a confirmar** (medir no playtest) | balancing.md |
@@ -464,7 +464,7 @@ Limiares (`src/logic/ai/decide.ts`, PA2; `p` = chance de vencer a mão):
 
 ## 9. Chefes ⚖ (`src/data/bosses.ts`)
 
-Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 9; o Rei do Truco é fixo no C8. Retrato grande em pixel art 128×128 (`public/assets/gfx/portrait/<id>.png`, GD-015).
+Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 9; o Rei do Truco é fixo no C8. Card pintado 3:4 (`charcard.<id>`) quando há pintura (Sortuda, Rei do Truco); os outros 8 seguem no retrato 128×128 em pixel art (`public/assets/gfx/portrait/<id>.png`, GD-015) até ganharem pintura.
 
 | Chefe | Regra | Eixo do Truco mexido |
 |---|---|---|
@@ -592,7 +592,7 @@ Sidebar esquerda congelada, com 6 cartões: Campeonato · Mesa, Meta (barra de P
 
 - Paisagem 16:9 em todas as plataformas (no celular o jogo gira para paisagem); 640×360 lógico, zoom inteiro.
 - Layout: fundo neutro cinza-grafite, sidebar esquerda de cartões (Campeonato · Mesa, Meta, Fichas × Mult, Aposta, Tentos deles, $; na mesa de chefe, também a regra do chefe), mesa de feltro com 4 jogadores em cruz paralela e, no canto superior direito do feltro, o bloco de Manhas, consumíveis, Fama, tentos NÓS e quedas.
-- Cartas 48×64 px; manilha com placa dourada e ZAP com brilho em todas as cores. Retratos 128×128 em pixel art (só a expressão neutra); o sinal do parceiro vira selo e balão, e um sinal flagrado vira selo no retrato do rival que o flagrou. Chefes iguais aos companheiros. Detalhe em [visual.md](visual.md).
+- Cartas 48×64 px; manilha com placa dourada e ZAP com brilho em todas as cores. Personagens em card pintado 3:4 e busto 256×256 (Art Bible v3; os chefes sem pintura em pixel 128×128), uma expressão só; o sinal do parceiro vira selo e balão, e um sinal flagrado vira selo no retrato do rival que o flagrou. Chefes iguais aos companheiros. Detalhe em [visual.md](visual.md).
 
 ### 13.5 Game feel
 

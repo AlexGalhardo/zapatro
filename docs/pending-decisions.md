@@ -137,7 +137,7 @@ As duas medições divergem em mais de 5 p.p. em alguns degraus, por causa do er
 
 ## 8. Tag `pixel-art` no itch.io
 
-**Contexto.** A Art Bible v2 é híbrida: retratos e ícones em pixel art, o resto é vetor por código. A tag `pixel-art` da página do itch pode ser imprecisa.
+**Contexto.** A Art Bible v2 é híbrida: retratos e ícones em pixel art, o resto é vetor por código. A tag `pixel-art` da página do itch pode ser imprecisa. **Atualização 2026-10-27:** com a Art Bible v3 os personagens e fundos são pintados e só os ícones de UI e 8 chefes seguem em pixel; a tag `pixel-art` deixou de descrever o jogo (a opção A, tirar a tag, ficou mais forte).
 
 **Opções.**
 

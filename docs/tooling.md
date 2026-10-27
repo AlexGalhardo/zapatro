@@ -7,7 +7,7 @@ Skills em `.claude/skills/` (nível de projeto), travadas em `skills-lock.json` 
 | Skill | Use quando… |
 |---|---|
 | **Phaser 4 (24)**: `game-setup-and-config`, `scenes`, `cameras`, `sprites-and-images`, `animations`, `render-textures`, `filters-and-postfx`, `particles`, `tweens`, `groups-and-containers`, `input-keyboard-mouse-touch`, `scale-and-responsive`, `loading-assets`, `audio-and-sound`, `text-and-bitmaptext`, `graphics-and-shapes`, `geometry-and-math`, `v4-new-features`, `v3-to-v4-migration`, … | Qualquer dúvida de API do Phaser. Phaser 4 ≠ Phaser 3 |
-| **`game-art-assets`** | Gerar/trocar qualquer asset visual com o PixelLab e colocá-lo no jogo |
+| **`game-art-assets`** | Gerar/trocar qualquer asset visual (pinturas de `art-src/gta/` via `bun scripts/portraits.ts`, vetor por código, ícones) e colocá-lo no jogo |
 | **`add-game-content`** | Adicionar Manha, modificador, Simpatia, Lance, chefe, parceiro, perfil de IA, baralho, Estaca |
 | **`release-section`** | Fechar um grupo de tarefas: gates, docs, CHANGELOG, versão, commit, push, GitHub Release (inclusive local, sem Actions) e site |
 | **`svg-concept-art`** | Concept/mockup de uma tela → SVG (pixels2svg) → tela do jogo |
@@ -61,7 +61,7 @@ Removidas em 2026-10-15 por não servirem a um jogo de cartas por turnos (sem f�
 | Comando | O quê |
 |---|---|
 | `bun scripts/smoke.ts --url http://localhost:5191 [--seconds 35] [--shot out.png]` | Smoke headless (Playwright): menu e, quando a mesa existir, partida com bot a 4×; falha em qualquer erro de console. Gate antes de push na `main` e job `smoke` do CI |
-| `bun scripts/pl-*.ts` | Geração PixelLab (worktree `assets`, ver docs/visual.md) |
+| `bun scripts/pl-*.ts` | Geração PixelLab da linha em pixel (histórico; na v3 só retratos de chefe legados) |
 | `bun scripts/el-sfx.ts` / `bun scripts/el-music.ts` | ElevenLabs (só com pedido do usuário) |
 | `bun scripts/qa-devices.ts --set mobile\|desktop [--only id,id] [telas…]` | Capturas de menu, configurações, jogo, loja e personagem nos 11 celulares mais vendidos no Brasil ou nas 11 resoluções mais usadas na Steam (`scripts/lib/devices.ts`); falha com erro de console. Saída em `qa-devices/` |
 | `bun scripts/qa-android.ts [--serial …] [--no-install]` | QA no APK real (emulador `gridbound_s20fe` (nome herdado do AVD local) ou celular): ponte Capacitor, plugins, voltar, velocidade, capturas em `qa-android/` |

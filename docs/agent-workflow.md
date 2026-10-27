@@ -32,4 +32,4 @@
 
 - **Continuar**: "Leia AGENTS.md e PLAN.md. Execute a próxima tarefa pendente, verifique, atualize PLAN/CHANGELOG/docs, commite, faça push e o release."
 - **Conteúdo novo**: "Siga a skill `add-game-content` para adicionar <Manha/chefe/parceiro>."
-- **Asset**: "Siga a skill `game-art-assets` para gerar <asset> no PixelLab e colocá-lo no jogo."
+- **Asset**: "Siga a skill `game-art-assets` para criar <asset> (pintura em `art-src/gta/` + `bun scripts/portraits.ts`, ou vetor por código) e colocá-lo no jogo."

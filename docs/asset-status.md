@@ -1,6 +1,6 @@
 # Status dos assets
 
-> **Linha pixel art (branch `pixel-art`, congelada):** este relatório é dela, com a arte gerada pelo PixelLab. Nas `main`/`dev` o visual é o híbrido (Art Bible v2, [visual.md](visual.md)): a arte de UI é desenhada por código (`src/art/flat.ts`) e os scripts que geravam este relatório saíram. Vale só o áudio.
+> **Linha pixel art (branch `pixel-art`, congelada):** este relatório é dela, com a arte gerada pelo PixelLab. Na `main` o visual é a Art Bible v3 pintada desde 2026-10-27 ([visual.md](visual.md) §0; antes, o híbrido da v2): a arte de UI é desenhada por código (`src/art/flat.ts`) e os scripts que geravam este relatório saíram. Vale só o áudio.
 >
 > Gerado por `bun scripts/assets-status.ts` a partir de `scripts/assets-keys.ts` e `scripts/el-catalog.ts`. Não edite à mão.
 > ✅ arte/áudio final · ⬜ placeholder de código (visual) ou silêncio (áudio).
