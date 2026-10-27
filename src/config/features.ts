@@ -21,3 +21,9 @@ export const SHOW_MANILHA_BOX = false;
 
 /** The sidebar's money card on the table ($): hidden; the money still exists (shop, end of table). */
 export const SHOW_MONEY_PANEL = false;
+
+/**
+ * The shop reduced to what buys: no sidebar, no packs, no reroll, no Melhoria; the three offers
+ * on the chalkboard and "Next table". false: the full shop as it was.
+ */
+export const SHOP_SIMPLE = true;

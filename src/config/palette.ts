@@ -171,6 +171,14 @@ export const BACKDROP_BRIGHTNESS = 0.3;
 /** The shop's chalkboard holds the UI: its painting stays brighter than the other backdrops. */
 export const SHOP_BACKDROP_BRIGHTNESS = 0.75;
 
+/** The shop's offer rarities (src/data/rarity.ts): Normal cream, Raro blue, Especial purple, Lendário orange. */
+export const SHOP_RARITY_COLOR: Record<Rarity, number> = {
+	common: 0xf1e6cc,
+	uncommon: 0x4f9bf0,
+	rare: 0xb072f0,
+	legendary: 0xf59a2c,
+};
+
 export const RARITY_COLOR: Record<Rarity, number> = {
 	common: PALETTE.rarityCommon,
 	uncommon: PALETTE.rarityUncommon,

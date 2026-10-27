@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import { CARD_W, COVER_H, COVER_W, cardArt, tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
-import { IS_DEMO, TABLE_SELECT } from '../config/features';
-import { inkOn, PALETTE, shade, toCss } from '../config/palette';
+import { IS_DEMO, SHOP_SIMPLE, TABLE_SELECT } from '../config/features';
+import { inkOn, PALETTE, SHOP_RARITY_COLOR, shade, toCss } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
@@ -15,8 +15,10 @@ import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../dat
 import type { Consumable } from '../data/consumables';
 import type { DeckId } from '../data/decks';
 import { ECONOMY } from '../data/economy';
-import { isManhaId, MANHA_BY_ID } from '../data/manhas';
+import { isManhaId, MANHA_BY_ID, type Rarity } from '../data/manhas';
+import { rarityOfPrice } from '../data/rarity';
 import { MAX_STAKE } from '../data/stakes';
+import { UPGRADES } from '../data/upgrades';
 import { botShop } from '../game/run-sim';
 import { getLang, type I18nKey, t } from '../i18n';
 import { flawText, perkText } from '../i18n/companion';
@@ -42,6 +44,7 @@ import {
 	reroll,
 	rerollCost,
 	type ShopError,
+	type ShopState,
 	sellManha,
 	sellPrice,
 	skipTable,
@@ -56,6 +59,7 @@ import { itemCard, RARITY_COLOR } from '../ui/item-card';
 import { backHint } from '../ui/key-hint';
 import { onKey, onSceneEvent } from '../ui/keys';
 import { type ButtonNav, buttonNav } from '../ui/nav';
+import { offerCard } from '../ui/offer-card';
 import { drawPanel } from '../ui/panel';
 import { fadeTo, setupScreen } from '../ui/screen';
 import { screenTitle } from '../ui/title';
@@ -222,6 +226,7 @@ export class RunScene extends Phaser.Scene {
 		if (run.phase === 'select') this.drawSelect(run);
 		else this.drawShop(run);
 		// Opening a pack takes the whole screen (screen-pack.png).
+		if (SHOP_SIMPLE && run.phase === 'shop') return;
 		if (!run.shop?.opened || run.phase !== 'shop') this.drawSidebar(run);
 	}
 
@@ -1265,6 +1270,102 @@ export class RunScene extends Phaser.Scene {
 		return { tag: t('kind.pack'), color: PALETTE.fame };
 	}
 
+	/** Rarity of an offer: a Manha's own, else the one its base price falls in (src/data/rarity.ts). */
+	private offerRarity(o: Offer): Rarity {
+		if (o.kind === 'manha') return MANHA_BY_ID.get(o.id)?.rarity ?? 'common';
+		if (o.kind === 'upgrade') return rarityOfPrice(UPGRADES[o.id].price);
+		return rarityOfPrice(ECONOMY.consumablePrice);
+	}
+
+	/**
+	 * The reduced shop (`SHOP_SIMPLE`): the money in a corner of the chalkboard, the three offers
+	 * as rarity cards in the middle and "Next table" centred at its foot.
+	 */
+	private drawShopSimple(
+		run: RunState,
+		shop: ShopState,
+		slate: { x: number; y: number; w: number; h: number },
+	): void {
+		const pad = 6;
+		const mid = slate.x + slate.w / 2;
+		this.screenTitle(mid, t('run.shop'), 'cart', slate.y + 14);
+		// Money: a quiet indicator at the foot of the board, left of "Next table" (not a button).
+		const nextH = BUTTON_H.primary;
+		this.body.add(
+			this.add
+				.image(
+					slate.x + pad + 8,
+					slate.y + slate.h + 8 + nextH / 2 - 1,
+					tex(this, 'icon.coin'),
+				)
+				.setScale(0.7),
+		);
+		this.put(
+			slate.x + pad + 20,
+			slate.y + slate.h + 8 + nextH / 2,
+			`$${run.money}`,
+			14,
+			PALETTE.money,
+			[0, 0.5],
+		);
+		const items = shop.offers;
+		const top = slate.y + 30;
+		const cardH = slate.h - 30 - pad;
+		const gap = 8;
+		const cardW = Math.min(
+			124,
+			Math.floor((slate.w - 2 * pad - (items.length - 1) * gap) / Math.max(items.length, 1)),
+		);
+		const rowW = items.length * cardW + (items.length - 1) * gap;
+		for (const [k, o] of items.entries()) {
+			const rarity = this.offerRarity(o);
+			const tryBuy = (): void => {
+				if (!this.err(buy(run, 'offers', k))) return;
+				sfx(this, 'sfx.shop.buy');
+				this.save();
+				this.draw();
+				this.focusNextBuy(`offers:${k}`);
+			};
+			this.body.add(
+				offerCard(this, {
+					art: tex(this, this.offerArt(o)),
+					name: this.offerName(o),
+					kind: o.kind === 'manha' ? t('kind.manha') : this.offerTag(o).tag,
+					desc: this.offerDesc(o),
+					rarity: {
+						label: t(`shop.rarity.${rarity}` as I18nKey),
+						color: SHOP_RARITY_COLOR[rarity],
+					},
+					w: cardW,
+					h: cardH,
+					dim: o.sold,
+					price: {
+						label: o.sold ? t('run.sold') : `$${o.price}`,
+						enabled: !o.sold && run.money >= o.price,
+						onClick: tryBuy,
+						...(o.sold ? {} : { onBlocked: tryBuy }),
+					},
+				})
+					.setPosition(mid - rowW / 2 + cardW / 2 + k * (cardW + gap), top + cardH / 2)
+					.setData('offer', `offers:${k}`),
+			);
+		}
+		const nextW = 150;
+		this.button(
+			mid,
+			slate.y + slate.h + 8 + nextH / 2,
+			t('run.next'),
+			() => {
+				leaveShop(run);
+				this.save();
+				this.draw();
+			},
+			nextW,
+			PALETTE.good,
+			{ h: nextH, size: 11 },
+		);
+	}
+
 	/** screen-shop.png: the counter with items on top, packs below, "Renovar" and "Próxima mesa". */
 	private drawShop(run: RunState): void {
 		const shop = run.shop;
@@ -1285,6 +1386,10 @@ export class RunScene extends Phaser.Scene {
 		const y0 = Math.max(raw.y, SAFE.stage);
 		const y1 = Math.min(raw.y + raw.h, 360 - SAFE.stage - 8 - BUTTON_H.primary);
 		const slate = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+		if (SHOP_SIMPLE) {
+			this.drawShopSimple(run, shop, slate);
+			return;
+		}
 		const pad = 6;
 		const inL = slate.x + pad;
 		const inW = slate.w - 2 * pad;
