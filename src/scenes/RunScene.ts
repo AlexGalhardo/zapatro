@@ -372,12 +372,26 @@ export class RunScene extends Phaser.Scene {
 			const x = cx + (i - (offer.length - 1) / 2) * 156;
 			const x0 = x - 73;
 			this.box(x0, 50, 146, 204);
-			const g = this.add.graphics();
-			g.fillStyle(portraitBg(id), 1).fillRoundedRect(x0 + 4, 54, 138, 78, RADIUS.button);
-			this.body.add(g);
-			this.body.add(
-				this.add.image(x, 93, tex(this, `portrait.${id}.neutral`)).setScale(78 / 48),
-			);
+			const art = `img.card.${id}`;
+			if (this.textures.exists(art)) {
+				// The painted card, cropped to the slot: the face and the shoulders of the tall art.
+				const scale = 138 / 480;
+				const cropY = 20;
+				this.body.add(
+					this.add
+						.image(x0 + 4, 54 - cropY * scale, art)
+						.setOrigin(0, 0)
+						.setScale(scale)
+						.setCrop(0, cropY, 480, 78 / scale),
+				);
+			} else {
+				const g = this.add.graphics();
+				g.fillStyle(portraitBg(id), 1).fillRoundedRect(x0 + 4, 54, 138, 78, RADIUS.button);
+				this.body.add(g);
+				this.body.add(
+					this.add.image(x, 93, tex(this, `portrait.${id}.neutral`)).setScale(78 / 48),
+				);
+			}
 			this.put(x, 141, t(`char.${id}` as I18nKey), 11);
 			const line = this.add.graphics();
 			line.fillStyle(PALETTE.manilha, 1).fillRect(x - 44, 151, 88, 2);
