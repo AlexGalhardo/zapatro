@@ -395,6 +395,9 @@ export class RunScene extends Phaser.Scene {
 			},
 		];
 		const SUB_PAD = 4;
+		/** Name strip at the foot of the card (name at 16 px, capitals) and sub-card title size. */
+		const STRIP_H = 28;
+		const HEAD_PX = 10.5;
 		// Each sub-card's height is that of the tallest of the three panels' in its row, so the
 		// rows line up across the panels.
 		const probe = (text: string, px: number): number => {
@@ -407,7 +410,12 @@ export class RunScene extends Phaser.Scene {
 			Math.max(
 				...offer.map((id) => {
 					const c = cards(id)[row];
-					return SUB_PAD * 2 + probe(c?.title ?? '', 7) + 1 + probe(c?.body ?? '', 6.5);
+					return (
+						SUB_PAD * 2 +
+						probe((c?.title ?? '').toLocaleUpperCase(getLang()), HEAD_PX) +
+						1 +
+						probe(c?.body ?? '', 6.5)
+					);
 				}),
 			),
 		);
@@ -423,7 +431,7 @@ export class RunScene extends Phaser.Scene {
 			const strip = this.add.graphics();
 			strip
 				.fillStyle(PALETTE.panelDark, 0.96)
-				.fillRoundedRect(px + pad, top + pad + ch - 17, cw, 17, {
+				.fillRoundedRect(px + pad, top + pad + ch - STRIP_H, cw, STRIP_H, {
 					tl: 0,
 					tr: 0,
 					bl: 5,
@@ -432,12 +440,15 @@ export class RunScene extends Phaser.Scene {
 			this.body.add(strip);
 			const name = this.put(
 				px + pad + cw / 2,
-				top + pad + ch - 8.5,
-				t(`char.${id}` as I18nKey),
-				8,
+				top + pad + ch - STRIP_H / 2,
+				t(`char.${id}` as I18nKey).toLocaleUpperCase(getLang()),
+				16,
 				PALETTE.textLight,
 			);
-			while (name.width > cw - 6 && Number.parseInt(String(name.style.fontSize), 10) > 5)
+			while (
+				name.width > cw - 2 * pad &&
+				Number.parseInt(String(name.style.fontSize), 10) > 5
+			)
 				name.setFontSize(Number.parseInt(String(name.style.fontSize), 10) - 1);
 			let ty = top + pad;
 			for (const [row, c] of cards(id).entries()) {
@@ -448,8 +459,8 @@ export class RunScene extends Phaser.Scene {
 				const head = this.put(
 					tx(i) + SUB_PAD,
 					ty + SUB_PAD,
-					c.title,
-					7,
+					c.title.toLocaleUpperCase(getLang()),
+					HEAD_PX,
 					c.color,
 					[0, 0],
 					tw - 2 * SUB_PAD,
