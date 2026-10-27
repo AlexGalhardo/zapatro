@@ -23,7 +23,7 @@ export const SHOW_MANILHA_BOX = false;
 export const SHOW_MONEY_PANEL = false;
 
 /**
- * The shop reduced to what buys: no sidebar, no packs, no reroll, no Melhoria; the three offers
- * on the chalkboard and "Next table". false: the full shop as it was.
+ * The shop reduced to what buys: no sidebar, no packs, no reroll, no Melhoria; the offers
+ * on the chalkboard (`ECONOMY.offers`) and "Next table". false: the full shop as it was.
  */
 export const SHOP_SIMPLE = true;
