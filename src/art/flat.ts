@@ -863,12 +863,16 @@ export function registerPortraits(scene: Phaser.Scene): void {
 		if (!source || !(canvas instanceof HTMLCanvasElement)) continue;
 		const ctx = canvas.getContext('2d');
 		if (!ctx) continue;
-		const [w, h] = sizeOf(key);
+		// A rotated copy (`card.raio@-8`, the hand's fan) is redrawn from its base key: drawn as a
+		// key of its own, `raio@-8` reads as a rank and `diamonds@8` as an unknown suit.
+		const tilt = parseTiltedKey(key);
+		const [w, h] = tilt ? tiltedSize(tilt.key, tilt.deg) : sizeOf(key);
 		const res = canvas.width / w;
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.setTransform(res, 0, 0, res, 0, 0);
-		draw(ctx, key, w, h);
+		if (tilt) drawTilted(ctx, tilt.key, tilt.deg);
+		else draw(ctx, key, w, h);
 		source.update();
 	}
 }
@@ -1298,6 +1302,33 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 		ctx.roundRect(2, 2, w - 4, h - 4, 10);
 		ctx.stroke();
 	} else drawIcon(ctx, kind, a, w, h);
+}
+
+/** A rotated copy of a key (the hand's fan): `<key>@<degrees>`. */
+export const tiltedKey = (key: string, deg: number): string => `${key}@${deg}`;
+
+/** The key and angle of a rotated copy, or null for any other key. */
+export function parseTiltedKey(key: string): { key: string; deg: number } | null {
+	const m = /^(.+)@(-?\d+(?:\.\d+)?)$/.exec(key);
+	return m?.[1] && m[2] ? { key: m[1], deg: Number(m[2]) } : null;
+}
+
+/** Logical size of `key` turned by `deg` (the box that holds the rotated card). */
+export function tiltedSize(key: string, deg: number): [number, number] {
+	const [fw, fh] = sizeOf(key);
+	const a = (deg * Math.PI) / 180;
+	const [cos, sin] = [Math.abs(Math.cos(a)), Math.abs(Math.sin(a))];
+	return [Math.ceil(fw * cos + fh * sin), Math.ceil(fw * sin + fh * cos)];
+}
+
+/** Draws `key` turned by `deg`, centred in its `tiltedSize` box. */
+export function drawTilted(ctx: Ctx, key: string, deg: number): void {
+	const [fw, fh] = sizeOf(key);
+	const [w, h] = tiltedSize(key, deg);
+	ctx.translate(w / 2, h / 2);
+	ctx.rotate((deg * Math.PI) / 180);
+	ctx.translate(-fw / 2, -fh / 2);
+	drawKey(ctx, key);
 }
 
 /** Draws `key` at its logical size into a context (rotated or scaled compositions). */

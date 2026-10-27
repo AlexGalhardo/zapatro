@@ -1,5 +1,16 @@
 import Phaser from 'phaser';
-import { CARD_H, CARD_W, canvasTex, cardArt, drawKey, markedArt, panelTex, tex } from '../art/flat';
+import {
+	CARD_H,
+	CARD_W,
+	canvasTex,
+	cardArt,
+	drawTilted,
+	markedArt,
+	panelTex,
+	tex,
+	tiltedKey,
+	tiltedSize,
+} from '../art/flat';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
@@ -1416,17 +1427,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		const f = this.textures.getFrame(key);
 		// A missing or destroyed source texture (B-01) keeps the card straight instead of crashing.
 		if (!deg || !f?.source?.image) return key;
-		const [fw, fh] = [f.realWidth, f.realHeight];
-		const a = Phaser.Math.DegToRad(deg);
-		const [cos, sin] = [Math.abs(Math.cos(a)), Math.abs(Math.sin(a))];
-		const w = Math.ceil(fw * cos + fh * sin);
-		const h = Math.ceil(fw * sin + fh * cos);
-		return canvasTex(this, `${key}@${deg}`, w, h, (ctx) => {
-			ctx.translate(w / 2, h / 2);
-			ctx.rotate(a);
-			ctx.translate(-fw / 2, -fh / 2);
-			drawKey(ctx, key);
-		});
+		// The same size and drawing `registerPortraits` uses when a late picture redraws it.
+		const [w, h] = tiltedSize(key, deg);
+		return canvasTex(this, tiltedKey(key, deg), w, h, (ctx) => drawTilted(ctx, key, deg));
 	}
 
 	/** Manilhas change every hand, so their faces get a gold frame (the ZAP also a star). */
