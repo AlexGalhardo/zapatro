@@ -214,30 +214,10 @@ describe('bosses and partners (B1.3)', () => {
 		expect(match({ boss: 'professor', fame: 0.4 }).fameSeenBy(2)).toBe(0);
 	});
 
-	test('10 companions; Juninho levels up every table, Zé Malandro bluffs count as yours', () => {
+	test('10 companions; Nino levels up every table won', () => {
 		expect(COMPANION_IDS).toHaveLength(10);
 		const run = newRun(1, 'juninho');
 		finishTable(run, win());
-		expect(run.partnerLevel).toBe(2);
-		const s = play(
-			[
-				['3h', '2h', 'Ah'],
-				['4d', '4s', '6d'],
-				['7h', 'Kh', 'Qs'],
-				['4h', '6s', '7d'],
-			],
-			['3h', '4d', '7h', '4h', '2h', '4s', 'Kh', '6s'],
-		);
-		const ze = scoreHand({
-			state: s,
-			queda: false,
-			calls: [2],
-			partner: { id: 'zeMalandro', level: 2 },
-			manhas: ['malandro'],
-		});
-		expect(ze.steps.some((x) => x.source === 'partner:zeMalandro' && x.chips === 20)).toBe(
-			true,
-		);
-		expect(ze.steps.some((x) => x.source === 'manha:malandro')).toBe(true);
+		expect(run.partnerLevel).toBe(1);
 	});
 });

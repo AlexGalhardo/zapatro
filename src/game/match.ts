@@ -2,7 +2,7 @@ import { AI_PROFILES, type AiProfile } from '../data/ai-profiles';
 import { type BossId, SORTUDA_CHANCE } from '../data/bosses';
 import { CARD_MODS } from '../data/card-mods';
 import { RIVAL_QUEDAS_TO_WIN } from '../data/championships';
-import { COMPANIONS, type CompanionId, type Trait } from '../data/companions';
+import type { CompanionId } from '../data/companions';
 import {
 	CARA_DE_PAU_SCALE,
 	MANHA_BY_ID,
@@ -10,7 +10,7 @@ import {
 	type ManhaRule,
 	RIG_VIRA_CHANCE,
 } from '../data/manhas';
-import { decide, honestSign, randomAction } from '../logic/ai/decide';
+import { decide, randomAction } from '../logic/ai/decide';
 import { fameAfterShowdown, isStrongCall } from '../logic/ai/fame';
 import type { HandInfo } from '../logic/meta';
 import { Rng } from '../logic/rng';
@@ -36,17 +36,12 @@ import {
 	matchWinner,
 	nextDealer,
 	type Seat,
-	SIGNS,
 	type TableEvent,
 	type TableRules,
 	type TableState,
 	type Team,
 	teamOf,
 } from '../logic/truco/table';
-
-import { find, pairTraits } from './traits';
-
-const sum = (xs: number[]): number => xs.reduce((a, b) => a + b, 0);
 
 /** Who plays a seat: a person (the scene asks) or an AI profile. */
 export type SeatBrain = { kind: 'human' } | { kind: 'ai'; profile: AiProfile } | { kind: 'random' };
@@ -80,8 +75,6 @@ export interface MatchOptions {
 	doubleChipRanks?: readonly string[];
 	/** Upgrade "espiar o monte": one card out of play is shown every hand. */
 	peekPile?: boolean;
-	/** Traits of whoever sits at each seat (perk and flaw of the companions). */
-	traits?: [Trait[], Trait[], Trait[], Trait[]];
 	/** Continue a saved table (the rng in it replaces `rng`). */
 	resume?: TableProgress;
 }
@@ -124,9 +117,6 @@ export class Match {
 	readonly rivalQuedasNeeded: number;
 	private readonly doubleChipRanks: readonly string[] | undefined;
 	private readonly peekPile: boolean;
-	private readonly traits: [Trait[], Trait[], Trait[], Trait[]];
-	/** Cards each seat was dealt this hand (the state loses them as they are played). */
-	private dealt: Card[][] = [];
 	/** Bisbilhoteiro: a rival card shown to the player this hand. */
 	peek: { seat: Seat; cardId: string } | null = null;
 	/** State at the start of the current hand (what the save stores). */
@@ -152,11 +142,7 @@ export class Match {
 		this.boss = opts.boss;
 		this.rivalQuedasNeeded = RIVAL_QUEDAS_TO_WIN + (opts.extraRivalQuedas ?? 0);
 		this.peekPile = opts.peekPile ?? false;
-		this.traits = opts.traits ?? [[], [], [], []];
 		this.doubleChipRanks = opts.doubleChipRanks;
-		const catchBonus = this.partner
-			? (COMPANIONS[this.partner.id].catchBonus?.[this.partner.level - 1] ?? 0)
-			: 0;
 		const catchOf = (b: SeatBrain): number =>
 			b.kind === 'ai'
 				? b.profile.catchChance
@@ -165,25 +151,10 @@ export class Match {
 			// O Mudo: no signals with your partner.
 			signals: (this.boss === 'mudo'
 				? [0, 1, 0, 1]
-				: [1 + (opts.extraSignals ?? 0), 1, 1, 1]
-			).map((n, i) =>
-				n > 0
-					? Math.max(
-							0,
-							n + sum(find(this.pair(i as Seat), 'signals').map((t) => t.delta)),
-						)
-					: 0,
-			) as TableRules['signals'],
-			// Dona Cida's bonus goes to seat 0 whoever plays it (the player or the balance bot).
-			catchChance: opts.brains.map((b, i) => {
-				const own = sum(find(this.pair(i as Seat), 'catch').map((t) => t.delta));
-				const caught = find(this.pair(((i + 1) % 4) as Seat), 'caughtMult').reduce(
-					(x, t) => x * t.x,
-					1,
-				);
-				const base = catchOf(b) + (i === 0 ? catchBonus : 0) + own;
-				return Math.min(1, Math.max(0, catchChanceFor(this.boss, i, base) * caught));
-			}) as TableRules['catchChance'],
+				: [1 + (opts.extraSignals ?? 0), 1, 1, 1]) as TableRules['signals'],
+			catchChance: opts.brains.map((b, i) =>
+				Math.min(1, Math.max(0, catchChanceFor(this.boss, i, catchOf(b)))),
+			) as TableRules['catchChance'],
 			...(this.has('startBet3') || this.boss === 'reiDoTruco'
 				? { startBet: 3 as const }
 				: {}),
@@ -199,17 +170,7 @@ export class Match {
 		this.gritadorUsed = r?.gritadorUsed ?? false;
 		this.hands = (r?.hands ?? 1) - 1;
 		const start = r?.score ?? opts.score ?? { us: 0, them: 0 };
-		const head = (seat: Seat): number =>
-			sum(find(this.pair(seat), 'headStart').map((t) => t.n));
-		this.dealHand(
-			r ? start : { us: start.us + head(0), them: start.them + head(1) },
-			r ? undefined : opts.firstDeal,
-		);
-	}
-
-	/** Traits of the pair `seat` sits in. */
-	private pair(seat: Seat): Trait[] {
-		return pairTraits(this.traits, seat);
+		this.dealHand(r ? start : { ...start }, r ? undefined : opts.firstDeal);
 	}
 
 	/** Manhas that work this table (the Juiz disables the leftmost). */
@@ -287,7 +248,7 @@ export class Match {
 				this.caraDePau = false;
 		}
 		if (before.rules.bonusStep && !state.rules.bonusStep) this.gritadorUsed = true;
-		this.state = this.withHandBonus(before, state);
+		this.state = state;
 		if (this.goal !== undefined && state.over && !before.over) {
 			this.lastScore = scoreHand({
 				state,
@@ -320,27 +281,6 @@ export class Match {
 		return events;
 	}
 
-	/** Tentos from the winners' traits (a call he made, a win with no manilha), up to 12. */
-	private withHandBonus(before: TableState, state: TableState): TableState {
-		const winner = state.over?.winner;
-		if (!winner || before.over) return state;
-		const seats = ([0, 1, 2, 3] as const).filter((s) => teamOf(s) === winner);
-		const noManilha = seats.every((s) =>
-			(this.dealt[s] ?? []).every((c) => c.rank !== state.manilha),
-		);
-		let bonus = 0;
-		for (const s of seats) {
-			if (this.calls.includes(s))
-				bonus += sum(find(this.traits[s], 'callTentos').map((t) => t.n));
-			if (noManilha) bonus += sum(find(this.traits[s], 'weakWinTento').map((t) => t.n));
-		}
-		if (!bonus) return state;
-		return {
-			...state,
-			score: { ...state.score, [winner]: Math.min(12, state.score[winner] + bonus) },
-		};
-	}
-
 	/** The AI (or random bot) choice for `seat`. */
 	aiAction(seat: Seat): Action {
 		const legal = this.legal(seat);
@@ -358,52 +298,19 @@ export class Match {
 			!this.calls.some((c) => teamOf(c) === 'them')
 		)
 			return call;
-		const own = this.traits[seat];
-		const base = brain.kind === 'ai' ? brain.profile : AI_PROFILES.pro;
-		const profile: AiProfile = {
-			...base,
-			error: base.error * find(own, 'error').reduce((x, t) => x * t.x, 1),
-			...(find(own, 'honestSignals').length ? { signalRate: 1 } : {}),
-		};
+		const profile: AiProfile = brain.kind === 'ai' ? brain.profile : AI_PROFILES.pro;
 		const answeringUs = them && s.pending !== null && teamOf(s.pending.by) === 'us';
-		return this.withTraits(
-			seat,
+		return decide(
+			observe(s, seat),
 			legal,
-			decide(
-				observe(s, seat),
-				legal,
-				{
-					profile,
-					deck: this.deck,
-					rivalFame: this.fameSeenBy(seat),
-					...(answeringUs && this.caraDePau ? { callScale: CARA_DE_PAU_SCALE } : {}),
-				},
-				this.rng,
-			),
+			{
+				profile,
+				deck: this.deck,
+				rivalFame: this.fameSeenBy(seat),
+				...(answeringUs && this.caraDePau ? { callScale: CARA_DE_PAU_SCALE } : {}),
+			},
+			this.rng,
 		);
-	}
-
-	/** The flaws that override the AI: never runs, runs from raises, lies in signals. */
-	private withTraits(seat: Seat, legal: ReturnType<typeof legalActions>, a: Action): Action {
-		const own = this.traits[seat];
-		const s = this.state;
-		if (a.kind === 'fold' && find(own, 'neverFolds').length) {
-			const accept = legal.find((x) => x.kind === 'accept');
-			if (accept) return accept;
-		}
-		if (s.pending && s.pending.to >= 6 && find(own, 'foldsRaises').length) {
-			const fold = legal.find((x) => x.kind === 'fold');
-			if (fold) return fold;
-		}
-		if (a.kind === 'signal') {
-			const lie = find(own, 'falseSignals')[0];
-			if (lie && this.rng.chance(lie.rate)) {
-				const real = honestSign(s.hands[seat], s.manilha);
-				const other = SIGNS.filter((x) => x !== real);
-				return { ...a, sign: this.rng.pick(other), honest: false };
-			}
-		}
-		return a;
 	}
 
 	/** Deals the next hand (the dealer rotates). */
@@ -449,7 +356,6 @@ export class Match {
 			...forced,
 		});
 		this.state = dealt;
-		this.dealt = dealt.hands.map((h) => [...h]);
 		this.peek = null;
 		if (this.peekPile) {
 			const inPlay = new Set([...this.state.hands.flat(), this.state.vira].map((c) => c.id));

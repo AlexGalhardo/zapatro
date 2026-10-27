@@ -25,7 +25,6 @@ import { Match, manilhasSeen, type SeatBrain } from '../game/match';
 import { RemoteMatch } from '../game/remote-match';
 import { GOOD_BOT } from '../game/run-sim';
 import { rivalBrain, tableMatch } from '../game/run-table';
-import { seatTraits } from '../game/traits';
 import { getLang, type I18nKey, t } from '../i18n';
 import { honestSign } from '../logic/ai/decide';
 import { actionFor } from '../logic/keybinds';
@@ -468,7 +467,6 @@ export class TableScene extends Phaser.Scene {
 				{ kind: 'ai', profile: COMPANIONS[partner].profile },
 				rivalBrain(rivalProfiles[1] as AiProfileId, chars[3]),
 			],
-			traits: seatTraits(chars),
 			...(params.score ? { score: params.score } : {}),
 			...(quickBoss ? { boss: quickBoss } : {}),
 			// Quick match is plain Truco to 12 (GDD §11); the tutorial teaches the points goal.
@@ -2212,10 +2210,19 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				? t('table.reward', {
 						p: reward.prize,
 						s: reward.speed,
-						i: reward.interest,
+						i: reward.interest + reward.partner,
 						m: reward.table,
-						total: reward.prize + reward.speed + reward.interest + reward.table,
-					})
+						total:
+							reward.prize +
+							reward.speed +
+							reward.interest +
+							reward.partner +
+							reward.table,
+					}) +
+					(reward.doubled
+						? `
+${t('table.reward.doubled')}`
+						: '')
 				: '';
 			const info = this.add
 				.text(0, 0, lines, { ...this.text(8), wordWrap: { width: END_W - 2 * PAD.panel } })

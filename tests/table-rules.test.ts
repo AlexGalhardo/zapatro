@@ -128,37 +128,6 @@ describe('bosses (A4.5)', () => {
 	});
 });
 
-describe('partners (A4.6)', () => {
-	test('Tonhão: +Mult by level when he called truco', () => {
-		let s = deal(standardDeck(), 0, { us: 0, them: 0 }, new Rng(1));
-		const rng = new Rng(1);
-		// Dealer 0 → seat 1 starts; seat 2 is next.
-		s = apply(
-			s,
-			{ kind: 'play', seat: 1, cardId: (s.hands[1][0] as { id: string }).id },
-			rng,
-		).state;
-		s = apply(s, { kind: 'truco', seat: 2 }, rng).state;
-		s = apply(s, { kind: 'fold', seat: 3 }, rng).state;
-		const step = (level: number) =>
-			scoreHand({
-				state: s,
-				queda: false,
-				calls: [2],
-				partner: { id: 'tonhao', level },
-			}).steps.find((x) => x.source === 'partner:tonhao');
-		expect(step(1)?.addMult).toBe(3);
-		expect(step(3)?.addMult).toBe(8);
-	});
-
-	test('Dona Cida raises your catch chance by level', () => {
-		const base = match().rules.catchChance[0];
-		expect(match({ partner: { id: 'donaCida', level: 3 } }).rules.catchChance[0]).toBeCloseTo(
-			base + 0.2,
-		);
-	});
-});
-
 describe('table save (A4.8, D-32)', () => {
 	test('resuming a saved hand deals the same cards and keeps the table', () => {
 		const m = match({ manhas: ['seuZe'] });

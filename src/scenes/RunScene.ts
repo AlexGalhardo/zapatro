@@ -10,13 +10,7 @@ import { playAmbience, playMusic } from '../core/music';
 import { openStore } from '../core/platform';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
 import { TABLE_SIZES } from '../data/championships';
-import {
-	COMPANION_IDS,
-	COMPANIONS,
-	type CompanionId,
-	hasPassive,
-	isCompanion,
-} from '../data/companions';
+import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import type { Consumable } from '../data/consumables';
 import type { DeckId } from '../data/decks';
 import { ECONOMY } from '../data/economy';
@@ -404,12 +398,6 @@ export class RunScene extends Phaser.Scene {
 				[t(`partner.style.${COMPANIONS[id].style}` as I18nKey), PALETTE.manilha],
 				[perkText(id), PALETTE.good],
 				[flawText(id), PALETTE.bad],
-				...(hasPassive(id)
-					? ([[t(`partner.${id}.passive` as I18nKey), PALETTE.textDim]] as [
-							string,
-							number,
-						][])
-					: []),
 			];
 			for (const [text, color] of lines)
 				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 3;
@@ -500,7 +488,7 @@ export class RunScene extends Phaser.Scene {
 		const partner = this.put(
 			mid,
 			0,
-			`${t(`char.${run.partner}` as I18nKey)} · ${t('table.lance.level', { n: run.partnerLevel })}`,
+			`${t(`char.${run.partner}` as I18nKey)}${run.partner === 'juninho' ? ` · ${t('table.lance.level', { n: run.partnerLevel })}` : ''}`,
 			6.5,
 			PALETTE.textDim,
 			[0.5, 1],

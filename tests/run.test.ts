@@ -73,7 +73,14 @@ describe('run (A4)', () => {
 		startTable(run);
 		const r = finishTable(run, win({ rivalTentos: 9, money: 3 }));
 		// Prize 3 (small), speed 12-9 = 3, interest floor(15/5) = 3.
-		expect(r).toEqual({ table: 3, prize: 3, speed: 3, interest: 3 });
+		expect(r).toEqual({
+			table: 3,
+			prize: 3,
+			speed: 3,
+			interest: 3,
+			partner: 0,
+			doubled: false,
+		});
 		expect(run.money).toBe(12 + 3 + 3 + 3 + 3);
 		expect(run.phase).toBe('shop');
 		expect(run.table).toBe(1);
@@ -94,19 +101,17 @@ describe('run (A4)', () => {
 		expect(run.phase).toBe('lost');
 	});
 
-	test('the boss table and the partner level up; Championship 8 ends the run, endless goes on', () => {
+	test('the boss table; Championship 8 ends the run, endless goes on', () => {
 		const run = newRun(3, 'donaCida');
 		reach(run, 1, 2);
 		expect(currentBoss(run)).toBe(run.bosses[0]);
 		expect(canSkip(run)).toBe(false);
 		finishTable(run, win());
-		expect(run.partnerLevel).toBe(2);
 		leaveShop(run);
 		reach(run, 8, 2);
 		expect(currentBoss(run)).toBe('reiDoTruco');
 		finishTable(run, win());
 		expect(run.phase).toBe('won');
-		expect(run.partnerLevel).toBe(3);
 		continueEndless(run);
 		expect(run.champ).toBe(9);
 		expect(run.phase).toBe('shop');

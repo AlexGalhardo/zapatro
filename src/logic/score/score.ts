@@ -7,7 +7,7 @@ import {
 	TABLE_GOAL_MULT,
 	type TableSize,
 } from '../../data/championships';
-import { COMPANIONS, type CompanionId } from '../../data/companions';
+import { type CompanionId, PARTNER_TRAITS } from '../../data/companions';
 import { JOKER_CHIPS, JOKER_DOUBLE_X } from '../../data/jokers';
 import { LANCES, type LanceId } from '../../data/lances';
 import { MANHA_BY_ID, type ManhaId } from '../../data/manhas';
@@ -88,6 +88,28 @@ export function totals(steps: readonly ScoreStep[]): {
 	return { chips, mult, points: chips * mult };
 }
 
+/**
+ * Chips of one card with the partner's card traits: Bruto's own cards are worth half (rounded
+ * down), Mia's manilhas +15 and common cards -2, Chico's hearts and diamonds -5 (never below 0).
+ */
+function partnerCardChips(
+	partner: CompanionId | undefined,
+	card: Card,
+	seat: Seat,
+	manilha: Rank,
+	chips: number,
+): number {
+	if (partner === 'tonhao' && seat === 2)
+		return Math.floor(chips / PARTNER_TRAITS.tonhao.chipsDivisor);
+	if (partner === 'bia' && !isSpecial(card))
+		return card.rank === manilha
+			? chips + PARTNER_TRAITS.bia.manilhaChips
+			: Math.max(0, chips + PARTNER_TRAITS.bia.commonChips);
+	if (partner === 'joca' && (card.suit === 'hearts' || card.suit === 'diamonds'))
+		return Math.max(0, chips + PARTNER_TRAITS.joca.redChips);
+	return chips;
+}
+
 export interface ScoreContext {
 	/** The finished hand. */
 	state: TableState;
@@ -109,7 +131,8 @@ export interface ScoreContext {
 /**
  * Points of the player's team for a finished hand, in order: the cards of every trick it took
  * (each followed by its modifier, when your team played it), the Lance Chips, the bet as base
- * Mult, the Lance Mult, then the Manhas left to right. Face-down cards are worth 0 chips (they
+ * Mult, the Lance Mult, the partner's own Perk and Flaw (`PARTNER_TRAITS`), then the Manhas left
+ * to right. Face-down cards are worth 0 chips (they
  * never count in the trick either). Losing or folding scores 0: only money steps remain.
  */
 export function scoreHand(ctx: ScoreContext): HandScore {
@@ -118,6 +141,9 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 	const steps: ScoreStep[] = [];
 	// ×Mult modifiers wait until the bet and the Lance have set the base Mult.
 	const late: ScoreStep[] = [];
+	const me = ctx.partner?.id;
+	/** Perks and flaws that depend on one trick, kept for after the base Mult is set. */
+	const tricks: ScoreStep[] = [];
 	s.tricks.forEach((trick, index) => {
 		if (trick.result !== 'us') return;
 		for (const p of trick.plays) {
@@ -125,10 +151,21 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 			const double = ctx.doubleChipRanks?.includes(p.card.rank) && p.card.rank !== s.manilha;
 			steps.push({
 				source: `card:${p.card.id}`,
-				chips: cardChips(p.card, s.manilha) * (double ? 2 : 1),
+				chips: partnerCardChips(
+					me,
+					p.card,
+					p.seat,
+					s.manilha,
+					cardChips(p.card, s.manilha) * (double ? 2 : 1),
+				),
 			});
 			for (const m of modSteps(p, s, index)) (m.xMult ? late : steps).push(m);
 		}
+		const win = trick.plays.find((p) => p.seat === trick.winner)?.card;
+		if (me === 'tonhao' && trick.winner === 2)
+			tricks.push({ source: 'partner:tonhao', addMult: PARTNER_TRAITS.tonhao.trickMult });
+		if (me === 'joca' && win?.suit === 'clubs')
+			tricks.push({ source: 'partner:joca', chips: PARTNER_TRAITS.joca.clubTrickChips });
 	});
 	if (lance) {
 		const lv = lanceValue(lance, ctx.levels?.[lance]);
@@ -136,26 +173,25 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 		steps.push({ source: 'bet', addMult: s.bet });
 		steps.push({ source: `lance:${lance}`, addMult: lv.mult });
 	}
+	if (lance) {
+		steps.push(...tricks);
+		if (me === 'juninho') {
+			// A level per table won; the base Mult never drops below 1.
+			const base = s.bet + lanceValue(lance, ctx.levels?.[lance]).mult;
+			const adj =
+				(ctx.partner?.level ?? 0) * PARTNER_TRAITS.juninho.multPerLevel +
+				PARTNER_TRAITS.juninho.startMult;
+			if (adj) steps.push({ source: 'partner:juninho', addMult: Math.max(adj, 1 - base) });
+		}
+		if (me === 'tiao' && s.tricks[0]?.result === 'us' && s.tricks[1]?.result === 'us')
+			late.push({ source: 'partner:tiao', xMult: PARTNER_TRAITS.tiao.firstTwoTricksX });
+		if (me === 'donaCida')
+			steps.push({ source: 'partner:donaCida', money: PARTNER_TRAITS.donaCida.moneyPerWin });
+	}
+	if (me === 'tiao' && s.over?.winner === 'them')
+		steps.push({ source: 'partner:tiao', money: -PARTNER_TRAITS.tiao.lostHandCost });
 	steps.push(...late);
-	const partner = ctx.partner && COMPANIONS[ctx.partner.id];
-	if (lance && partner?.callMult && ctx.calls?.includes(2))
-		steps.push({
-			source: `partner:${ctx.partner?.id}`,
-			addMult: partner.callMult[(ctx.partner?.level ?? 1) - 1] ?? partner.callMult[0],
-		});
-	// Zé Malandro: his calls count as yours for the Manhas; his bluffs pay Chips.
-	const ze = ctx.partner?.id === 'zeMalandro';
-	const calls = ze ? (ctx.calls ?? []).map((c) => (c === 2 ? 0 : c)) : (ctx.calls ?? []);
-	const bluff = partner?.bluffChips?.[(ctx.partner?.level ?? 1) - 1];
-	if (
-		lance &&
-		ze &&
-		bluff &&
-		ctx.calls?.includes(2) &&
-		!s.hands[2].concat(playedBy(s, 2)).some((c) => c.rank === s.manilha)
-	)
-		steps.push({ source: 'partner:zeMalandro', chips: bluff });
-	const facts = handFacts(s, lance, calls, ctx.fame ?? 0);
+	const facts = handFacts(s, lance, ctx.calls ?? [], ctx.fame ?? 0);
 	for (const id of ctx.manhas ?? []) {
 		const def = MANHA_BY_ID.get(id);
 		if (def) steps.push(...manhaSteps(def, facts));
@@ -174,10 +210,6 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 	const money = kept.reduce((sum, st) => sum + (st.money ?? 0), 0);
 	return { lance, steps: kept, ...totals(kept), money };
 }
-
-/** Cards a seat played in the hand. */
-const playedBy = (s: TableState, seat: Seat): Card[] =>
-	s.tricks.flatMap((t) => t.plays.filter((p) => p.seat === seat).map((p) => p.card));
 
 /**
  * Goal of a table: championship base × table size (design §3.2). Endless mode (beyond 8): the

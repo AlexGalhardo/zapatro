@@ -2,12 +2,7 @@ import { AI_PROFILE_IDS, type AiProfileId } from '../../data/ai-profiles';
 import { BOSS_POOL, type BossId, FINAL_BOSS } from '../../data/bosses';
 import { CARD_MODS, type CardModId } from '../../data/card-mods';
 import { CHAMPIONSHIPS, RIVAL_POOLS, TABLE_SIZES, type TableSize } from '../../data/championships';
-import {
-	COMPANION_IDS,
-	COMPANIONS,
-	type CompanionId,
-	PARTNER_MAX_LEVEL,
-} from '../../data/companions';
+import { COMPANION_IDS, type CompanionId, PARTNER_TRAITS } from '../../data/companions';
 import { type Consumable, SIMPATIA_IDS, SIMPATIAS } from '../../data/consumables';
 import { DECKS, type DeckId } from '../../data/decks';
 import {
@@ -65,6 +60,8 @@ export interface ShopState {
 	packs: Offer[];
 	upgrade: Offer | null;
 	rerolls: number;
+	/** Beti's free reroll of this shop was used. */
+	freeRerollUsed?: boolean;
 	/** Options of the pack being opened. */
 	opened: PackOption[] | null;
 }
@@ -87,6 +84,10 @@ export interface Reward {
 	prize: number;
 	speed: number;
 	interest: number;
+	/** The partner's own money (Jhony's interest). */
+	partner: number;
+	/** Sheila doubled everything earned at this table. */
+	doubled: boolean;
 }
 
 /**
@@ -133,7 +134,7 @@ export interface RunState {
 	levels: LanceLevels;
 	partner: CompanionId;
 	partnerLevel: number;
-	/** The partner may accept or run from a truco on its own; false: the player decides. */
+	/** Nino's level (a level per table won); 1 for the others, who do not level. */
 	fame: number;
 	upgrades: UpgradeId[];
 	/** Championship of the last upgrade bought (one per Championship). */
@@ -186,7 +187,12 @@ export function newRun(
 		bosses,
 		money: (rules.startMoney ?? ECONOMY.startMoney) + (d.money ?? 0),
 		manhas: [],
-		manhaSlots: ECONOMY.manhaSlots + (d.manhaSlots ?? 0),
+		manhaSlots: Math.max(
+			1,
+			ECONOMY.manhaSlots +
+				(d.manhaSlots ?? 0) -
+				(partner === 'ze' ? PARTNER_TRAITS.ze.manhaSlotsDown : 0),
+		),
 		consumables: [],
 		consumableSlots: ECONOMY.consumableSlots,
 		// Every deck has two jokers (PLAN §5.12) and the three special cards.
@@ -201,7 +207,7 @@ export function newRun(
 		cardSerial: d.extraSuit ? 10 : 0,
 		levels: {},
 		partner,
-		partnerLevel: 1,
+		partnerLevel: partner === 'juninho' ? 0 : 1,
 		fame: d.fame ?? 0,
 		upgrades: [],
 		upgradeChamp: 0,
@@ -235,7 +241,11 @@ export const championshipId = (run: RunState): (typeof CHAMPIONSHIPS)[number] =>
 	CHAMPIONSHIPS[Math.min(run.champ, CHAMPIONSHIPS.length) - 1] ?? 'reiDoTruco';
 
 export const goalOf = (run: RunState, size: TableSize): number =>
-	Math.round(tableGoal(run.champ, size) * stakeRules(run.stake).goalMult);
+	Math.round(
+		tableGoal(run.champ, size) *
+			stakeRules(run.stake).goalMult *
+			(run.partner === 'neide' ? PARTNER_TRAITS.neide.goalMult : 1),
+	);
 
 export const currentGoal = (run: RunState): number => goalOf(run, tableSize(run));
 
@@ -298,11 +308,28 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 				: ECONOMY.prize[tableSize(run)],
 		speed: Math.min(ECONOMY.speedCap, Math.max(0, 12 - r.rivalTentos)),
 		interest: interest(before, stakeRules(run.stake).interestCap),
+		partner: 0,
+		doubled: false,
 	};
-	run.money = before + reward.prize + reward.speed + reward.interest;
+	if (run.partner === 'zeMalandro') {
+		const t = PARTNER_TRAITS.zeMalandro;
+		reward.partner = Math.min(
+			t.interestCap,
+			Math.floor(before / t.interestStep) * t.interestPer,
+		);
+	}
+	run.money = before + reward.prize + reward.speed + reward.interest + reward.partner;
+	// Sheila: one table win in four pays double.
+	if (
+		run.partner === 'neide' &&
+		roll(run, (rng) => rng.chance(PARTNER_TRAITS.neide.doubleMoneyChance))
+	) {
+		reward.doubled = true;
+		run.money +=
+			Math.max(0, r.money) + reward.prize + reward.speed + reward.interest + reward.partner;
+	}
 	const wonChampionship = run.table === 2;
-	if (wonChampionship || COMPANIONS[run.partner].levelsPerTable)
-		run.partnerLevel = Math.min(PARTNER_MAX_LEVEL, run.partnerLevel + 1);
+	if (run.partner === 'juninho') run.partnerLevel++;
 	const last = run.demo ? DEMO_LAST_CHAMP : CHAMPIONSHIPS.length;
 	if (wonChampionship && run.champ === last && !run.endless) {
 		run.phase = 'won';
@@ -336,14 +363,25 @@ export function skipTable(run: RunState): PromiseId | null {
 
 // --- Shop ----------------------------------------------------------------------------------
 
-export function priceOf(run: RunState, base: number): number {
+export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'pack'): number {
 	const p = base * stakeRules(run.stake).priceMult;
-	return Math.max(0, Math.round(run.upgrades.includes('desconto') ? p * DISCOUNT : p));
+	const own = Math.round(run.upgrades.includes('desconto') ? p * DISCOUNT : p);
+	// Cida's flaw: everything costs more; Beti's: Manhas do.
+	const up =
+		(run.partner === 'donaCida' ? PARTNER_TRAITS.donaCida.priceUp : 0) +
+		(run.partner === 'lurdes' && kind === 'manha' ? PARTNER_TRAITS.lurdes.manhaPriceUp : 0);
+	return Math.max(0, own + up);
 }
 
 export function rerollCost(run: RunState): number {
+	// Beti: the first reroll of every shop is free.
+	if (run.partner === 'lurdes' && run.shop && !run.shop.freeRerollUsed) return 0;
 	const cheap = run.upgrades.includes('rerollBarato') ? CHEAP_REROLL : 0;
-	return Math.max(0, ECONOMY.rerollBase + (run.shop?.rerolls ?? 0) * ECONOMY.rerollStep - cheap);
+	const up = run.partner === 'zeMalandro' ? PARTNER_TRAITS.zeMalandro.rerollUp : 0;
+	return Math.max(
+		0,
+		ECONOMY.rerollBase + (run.shop?.rerolls ?? 0) * ECONOMY.rerollStep - cheap + up,
+	);
 }
 
 function pickManha(run: RunState, rng: Rng, rarity?: Rarity): ManhaId | null {
@@ -376,7 +414,12 @@ function makeOffers(run: RunState, rng: Rng): Offer[] {
 		const id = k === 0 ? pickManha(run, rng) : null;
 		if (id) {
 			const def = MANHA_BY_ID.get(id);
-			out.push({ kind: 'manha', id, price: priceOf(run, def?.price ?? 5), sold: false });
+			out.push({
+				kind: 'manha',
+				id,
+				price: priceOf(run, def?.price ?? 5, 'manha'),
+				sold: false,
+			});
 		} else
 			out.push({
 				kind: 'consumable',
@@ -441,6 +484,11 @@ function openShop(run: RunState): void {
 			if (p === 'vidaExtra') run.extraLife = true;
 		}
 		run.promises = [];
+		// Zé: in the first shop of each Championship the cheapest offer is free.
+		if (run.partner === 'ze' && run.table === 1) {
+			const cheapest = offers.filter((o) => o.price > 0).sort((a, b) => a.price - b.price)[0];
+			if (cheapest) cheapest.price = 0;
+		}
 		return { offers, packs, upgrade, rerolls: 0, opened: null };
 	});
 }
@@ -545,7 +593,8 @@ export function reroll(run: RunState): ShopError | null {
 	const cost = rerollCost(run);
 	if (run.money < cost) return 'money';
 	run.money -= cost;
-	shop.rerolls++;
+	if (run.partner === 'lurdes' && !shop.freeRerollUsed) shop.freeRerollUsed = true;
+	else shop.rerolls++;
 	shop.offers = roll(run, (rng) => makeOffers(run, rng));
 	return null;
 }

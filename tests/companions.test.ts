@@ -1,29 +1,22 @@
 import { describe, expect, test } from 'bun:test';
-import { AI_PROFILES } from '../src/data/ai-profiles';
-import { COMPANION_IDS, COMPANIONS, type CompanionId } from '../src/data/companions';
+import {
+	COMPANION_IDS,
+	COMPANIONS,
+	type CompanionId,
+	PARTNER_TRAITS,
+} from '../src/data/companions';
 import { DEFAULT_UNLOCKS } from '../src/data/feats';
-import { Match, type SeatBrain } from '../src/game/match';
 import { simulateRun } from '../src/game/run-sim';
-import { seatTraits } from '../src/game/traits';
 import { TABLES_FOR_TEST } from '../src/i18n';
-import { Rng } from '../src/logic/rng';
 import { drawCandidates } from '../src/logic/run/draw';
 import { newRun, startTable } from '../src/logic/run/run';
 
 const all = [...COMPANION_IDS];
-const ai = (id: keyof typeof AI_PROFILES = 'pro'): SeatBrain => ({
-	kind: 'ai',
-	profile: AI_PROFILES[id],
-});
-const brains: [SeatBrain, SeatBrain, SeatBrain, SeatBrain] = [ai(), ai(), ai(), ai()];
-
 describe('companions data', () => {
-	test('10 ids, each with a perk and a different flaw', () => {
+	test('10 ids, each with its own Perk and Flaw numbers', () => {
 		expect(COMPANION_IDS).toHaveLength(10);
-		for (const id of COMPANION_IDS) {
-			const c = COMPANIONS[id];
-			expect(c.perk.k).not.toBe(c.flaw.k);
-		}
+		for (const id of COMPANION_IDS)
+			expect(Object.keys(PARTNER_TRAITS[id]).length).toBeGreaterThan(1);
 	});
 
 	test('names and trait texts exist in EN and PT-BR', () => {
@@ -31,8 +24,8 @@ describe('companions data', () => {
 			const table = TABLES_FOR_TEST[lang] as Record<string, string>;
 			for (const id of COMPANION_IDS) expect(table[`char.${id}`]).toBeDefined();
 			for (const id of COMPANION_IDS)
-				for (const tr of [COMPANIONS[id].perk, COMPANIONS[id].flaw])
-					expect(table[`companion.trait.${tr.k}`]).toBeDefined();
+				for (const k of ['perk', 'flaw'])
+					expect(table[`companion.${id}.${k}`]).toBeDefined();
 			for (const id of COMPANION_IDS) expect(table[`partner.${id}.name`]).toBeUndefined();
 		}
 	});
@@ -96,40 +89,5 @@ describe('rivals are never the chosen partner', () => {
 
 	test('a whole run still plays', () => {
 		expect(simulateRun(7, 'good', 1).champ).toBeGreaterThanOrEqual(1);
-	});
-});
-
-/** A Match with `a` at seat 2 (our side) and `b` at seat 1 (their side), everybody else neutral. */
-function seated(a: string, b: string, extra: object = {}): Match {
-	const chars = { 0: 'player', 1: b, 2: a, 3: 'x' } as const;
-	return new Match({ rng: new Rng(5), brains, traits: seatTraits(chars), ...extra });
-}
-
-describe('traits work for the pair the companion sits in', () => {
-	test('headStart: his pair starts with tentos, wherever he sits', () => {
-		expect(seated('ze', 'x').score).toEqual({ us: 1, them: 0 });
-		expect(seated('x', 'ze').score).toEqual({ us: 0, them: 1 });
-	});
-
-	test('signals: the pair sends more (Zé Malandro) or fewer (Joca)', () => {
-		expect(seated('zeMalandro', 'x').rules.signals).toEqual([2, 1, 2, 1]);
-		expect(seated('x', 'zeMalandro').rules.signals).toEqual([1, 2, 1, 2]);
-		expect(seated('joca', 'x').rules.signals).toEqual([0, 1, 0, 1]);
-	});
-
-	test('catch: Lurdes catches more for her pair and is caught twice as often', () => {
-		const base = seated('x', 'x').rules.catchChance;
-		const us = seated('lurdes', 'x').rules.catchChance;
-		expect(us[0]).toBeGreaterThan(base[0]);
-		expect(us[1]).toBeGreaterThan(base[1]);
-		const them = seated('x', 'lurdes').rules.catchChance;
-		expect(them[1]).toBeGreaterThan(base[1]);
-		expect(them[0]).toBeGreaterThan(base[0]);
-	});
-
-	test("caughtMult: Bia's pair is caught half as often", () => {
-		const base = seated('x', 'x').rules.catchChance;
-		expect(seated('bia', 'x').rules.catchChance[1]).toBeCloseTo(base[1] * 0.5);
-		expect(seated('x', 'bia').rules.catchChance[0]).toBeCloseTo(base[0] * 0.5);
 	});
 });

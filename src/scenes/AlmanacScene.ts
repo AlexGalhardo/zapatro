@@ -5,7 +5,7 @@ import { BUTTON_H, GAP, PAD, RADIUS, TYPE } from '../config/ui';
 import { getSave } from '../core/context';
 import { trackZoom } from '../core/viewport';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
-import { COMPANION_IDS, COMPANIONS, type CompanionId, hasPassive } from '../data/companions';
+import { COMPANION_IDS, COMPANIONS, type CompanionId } from '../data/companions';
 import { DECK_IDS } from '../data/decks';
 import { FEATS } from '../data/feats';
 import { MANHA_BY_ID, MANHAS } from '../data/manhas';
@@ -393,17 +393,6 @@ export class AlmanacScene extends Phaser.Scene {
 					w,
 					this.detail,
 				);
-				if (hasPassive(id as CompanionId))
-					this.put(
-						x0,
-						y + 44,
-						t(`partner.${id}.passive` as I18nKey),
-						8,
-						PALETTE.textDim,
-						[0, 0],
-						w,
-						this.detail,
-					);
 			}
 		}
 		const bar = this.add.graphics();
