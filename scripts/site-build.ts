@@ -91,6 +91,13 @@ for (const lang of ['en', 'pt-BR'])
 			.toFile(`${IMG}/trailer-poster-${lang}${w === 960 ? '' : `-${w}`}.webp`);
 console.log('art ok');
 
+// Painted page background (art-src/gta/background-2.png): one size per breakpoint, see globals.css.
+for (const w of [640, 1280, 1920])
+	await sharp('art-src/gta/background-2.png')
+		.resize(w, Math.round((w * 9) / 16), { fit: 'cover' })
+		.webp({ quality: 72 })
+		.toFile(`${IMG}/bg-${w}.webp`);
+
 // 2. Social preview 1200×630 (docs/media/site-og.*, from scripts/store-art.ts).
 const ogSrc = ['docs/media/site-og.jpg', 'docs/media/site-og.png'].find((f) => existsSync(f));
 if (!ogSrc) throw new Error('docs/media/site-og.{jpg,png} missing: run bun scripts/store-art.ts');

@@ -49,6 +49,24 @@
 	}
 	body {
 		@apply bg-bg font-sans text-body text-text leading-normal;
+		/* Painted sunset (scripts/site-build.ts) under a dark veil so the text keeps its contrast. */
+		background-image:
+			linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)), url("/img/bg-1280.webp");
+		background-size: cover;
+		background-position: center;
+	}
+	@media (max-width: 640px) {
+		body {
+			background-image:
+				linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)), url("/img/bg-640.webp");
+		}
+	}
+	@media (min-width: 1281px) {
+		body {
+			background-image:
+				linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)), url("/img/bg-1920.webp");
+			background-attachment: fixed;
+		}
 	}
 	h1,
 	h2,
