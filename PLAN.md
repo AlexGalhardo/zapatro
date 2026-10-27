@@ -1,8 +1,8 @@
 # PLAN — Zapatro
 >
-> **Roadmap principal e fonte da verdade.** Roguelite de cartas em pixel art sobre o **Truco Paulista 2×2**, com estrutura inspirada no Balatro: você e um parceiro IA contra uma dupla IA, cada mão vira pontos (Fichas × Mult), e a run é montada com Manhas, cartas modificadas, consumíveis e um parceiro que evolui.
+> **Roadmap principal e fonte da verdade.** Roguelite de cartas em arte pintada "verão, pôr do sol" com UI vetorial (Art Bible v3) sobre o **Truco Paulista 2×2**, com estrutura inspirada no Balatro: você e um parceiro IA contra uma dupla IA, cada mão vira pontos (Fichas × Mult), e a run é montada com Manhas, cartas modificadas, consumíveis e um parceiro que evolui.
 > Design completo: **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (GDD; citações antigas "design §N" resolvem pela tabela "Mapa de seções antigas" no topo) (este plano não repete o design; ele o transforma em trabalho verificável).
-> Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.2**, arte **PixelLab**, áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Next.js 16 SSG + Tailwind v4**) na **Vercel**, trailer em **Remotion**.
+> Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.4**, arte pintada (`art-src/gta/`) e vetor por código (PixelLab só nos retratos legados), áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Next.js 16 SSG + Tailwind v4**) na **Vercel**, trailer em **Remotion**.
 > Legenda: `[ ]` pendente · `[x]` feito · `[~]` incompleto/bloqueado (motivo em uma linha) · `(D-xx)` decisão · `(Q-xx)` pergunta aberta · **Pronto quando:** critério objetivo de conclusão.
 > **Estado atual:** PA2 concluído (`0.0.3`): regras + IA (Monte Carlo com perfis, sinais, Fame) em lógica pura. Worktree `assets` gerando arte e áudio. Próximo: PA3 (mesa jogável em placeholder).
 
@@ -388,7 +388,7 @@ Fichas por carta, Lances, metas, dinheiro, preços, raridades, Manhas e modifica
 
 ## 6. Style Bible
 
-A Art Bible v2 (híbrido: retratos e ícones em pixel art, o resto vetor por código) está em [docs/visual.md](docs/visual.md). Resumo do que continua valendo: palco lógico 640×360 com zoom inteiro pela altura, cartas 48×64, selos de atalho, modo 4 cores, paisagem fixa, `pixelArt: false` com antialias. Nunca copiar arte, fonte, logo, layout ou paleta de terceiros (Balatro, Malandro); extrair só princípios.
+A Art Bible v3 (2026-10-27: personagens, fundos, versos e especiais pintados; cartas comuns e UI vetoriais por código; ícones de UI em pixel) está em [docs/visual.md](docs/visual.md) §0, sobre a base v2. Resumo do que continua valendo: palco lógico 640×360 com zoom inteiro pela altura, cartas 48×64, selos de atalho opcionais (desligados por padrão), modo 4 cores, paisagem fixa, `pixelArt: false` com antialias. Nunca copiar arte, fonte, logo, layout ou paleta de terceiros (Balatro, Malandro); extrair só princípios.
 
 ## 7. Assets: pipeline e nomenclatura
 
