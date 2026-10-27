@@ -658,8 +658,8 @@ await group(
 		await t.open('?skipMenu=1&seed=3');
 		if (!(await t.until('your turn', humanTurn))) return;
 		t.check(
-			'the controls show the pad buttons',
-			await t.until('pad hint', '(g, t) => t.btn.truco.hintText === "△"', 3000),
+			'key hints stay hidden by default (Settings > Show key hints)',
+			await t.until('no pad hint', '(g, t) => t.btn.truco.hintText === ""', 3000),
 		);
 		await t.eval(pad(15));
 		await t.eval(pad(0));

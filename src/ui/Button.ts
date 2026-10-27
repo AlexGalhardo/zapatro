@@ -47,6 +47,7 @@ export class Button extends Phaser.GameObjects.Container {
 	private hintFn: (() => string) | undefined;
 	private focusHint = true;
 	private shownMode: HintMode | null = null;
+	private shownHints = comfort.keyHints;
 	private focused = false;
 	private below = false;
 
@@ -125,7 +126,8 @@ export class Button extends Phaser.GameObjects.Container {
 		this.hintFn = opts.hint;
 		this.focusHint = opts.focusHint ?? true;
 		const check = () => {
-			if (this.shownMode !== hintMode()) this.refreshHint();
+			if (this.shownMode !== hintMode() || this.shownHints !== comfort.keyHints)
+				this.refreshHint();
 		};
 		scene.events.on('update', check);
 		this.once('destroy', () => {
@@ -156,6 +158,7 @@ export class Button extends Phaser.GameObjects.Container {
 	/** Re-reads the hint (after a rebind, or when the device changes). */
 	refreshHint(): this {
 		this.shownMode = hintMode();
+		this.shownHints = comfort.keyHints;
 		// Its own shortcut; else, while focused, the key that confirms (Enter / ✕).
 		const own = this.hintFn?.() ?? '';
 		this.badge

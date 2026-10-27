@@ -6,7 +6,7 @@ import { trackZoom } from '../core/viewport';
 import { getLang, type I18nKey, t } from '../i18n';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
-import { backHint } from '../ui/key-hint';
+import { backHint, showHintLine } from '../ui/key-hint';
 import { onKey, onSceneEvent } from '../ui/keys';
 import { drawPanel } from '../ui/panel';
 import { text } from '../ui/screen';
@@ -120,7 +120,10 @@ export class PauseScene extends Phaser.Scene {
 		const draw = () => {
 			for (const [i, b] of buttons.entries()) b.setFocus(i === this.focus);
 		};
-		this.add.text(320, 250, t(byMode('pause.hint')), text(6, PALETTE.textDim)).setOrigin(0.5);
+		this.add
+			.text(320, 250, t(byMode('pause.hint')), text(6, PALETTE.textDim))
+			.setOrigin(0.5)
+			.setVisible(showHintLine());
 
 		const kb = this.input.keyboard;
 		const on = (keys: string[], fn: () => void) => {

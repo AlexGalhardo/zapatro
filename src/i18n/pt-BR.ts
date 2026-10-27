@@ -47,6 +47,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'settings.row.shake': 'Tremor de tela',
 	'settings.row.gameSpeed': 'Velocidade',
 	'settings.row.fourColor': 'Baralho 4 cores',
+	'settings.row.keyHints': 'Mostrar teclas de atalho',
 	'settings.toggle.on': 'SIM',
 	'settings.toggle.off': 'NÃO',
 	'settings.on': 'ligado',

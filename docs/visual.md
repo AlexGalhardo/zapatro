@@ -151,7 +151,7 @@ Estados do `Button`: normal (sombra de 2 px), hover (sobe 1 px sobre 3 px de som
 
 ## 9. Mantidos da versão anterior
 
-Palco lógico 640×360 com zoom inteiro pela altura; cartas 48×64; selos de atalho em todo botão com tecla; modo toque (`src/ui/touch.ts`); modo 4 cores; paisagem fixa; tempos de animação em `TABLE_TIMING`; `pixelArt: false` com antialias.
+Palco lógico 640×360 com zoom inteiro pela altura; cartas 48×64; selos de atalho em todo botão com tecla, opcionais e desligados por padrão (Configurações > "Mostrar teclas de atalho"); modo toque (`src/ui/touch.ts`); modo 4 cores; paisagem fixa; tempos de animação em `TABLE_TIMING`; `pixelArt: false` com antialias.
 
 ## 10. Checklist de revisão de asset
 

@@ -44,6 +44,7 @@ export const en = {
 	'settings.row.shake': 'Screen shake',
 	'settings.row.gameSpeed': 'Animation speed',
 	'settings.row.fourColor': 'Four-color deck',
+	'settings.row.keyHints': 'Show key hints',
 	'settings.toggle.on': 'ON',
 	'settings.toggle.off': 'OFF',
 	'settings.on': 'on',

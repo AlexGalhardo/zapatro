@@ -14,7 +14,7 @@ import { type I18nKey, LANGS, setLang, t } from '../i18n';
 import { UI_SCALES } from '../logic/save';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
-import { backHint } from '../ui/key-hint';
+import { backHint, showHintLine } from '../ui/key-hint';
 import { onKey } from '../ui/keys';
 import { drawPanel } from '../ui/panel';
 import { text } from '../ui/screen';
@@ -234,6 +234,19 @@ export class SettingsScene extends Phaser.Scene {
 				},
 			},
 			{
+				col: 1,
+				y: R(5),
+				kind: 'toggle',
+				label: 'settings.row.keyHints',
+				value: () => s.keyHints,
+				onAdjust: () => {
+					s.keyHints = !s.keyHints;
+					applyComfort(s);
+					this.hintLine?.setVisible(showHintLine());
+					persist(this);
+				},
+			},
+			{
 				col: 2,
 				y: R(0),
 				kind: 'action',
@@ -281,20 +294,22 @@ export class SettingsScene extends Phaser.Scene {
 		this.rows = rows;
 		this.place(rows);
 		this.build(rows);
-		this.add
+		this.hintLine = this.add
 			.text(
 				320,
 				360 - SAFE.stage,
 				t(byMode('settings.hint')),
 				text(TYPE.small, PALETTE.textDim),
 			)
-			.setOrigin(0.5, 1);
+			.setOrigin(0.5, 1)
+			.setVisible(showHintLine());
 		this.bindKeys(back);
 		this.redraw();
 		trackZoom(this, cam, (view) => fitCamera(cam, view));
 	}
 
 	private rows: Row[] = [];
+	private hintLine?: Phaser.GameObjects.Text;
 	private redrawers: (() => void)[] = [];
 
 	private label(x: number, y: number, str: string, size = 8, color: number = PALETTE.textLight) {

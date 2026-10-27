@@ -33,6 +33,8 @@ export interface Settings {
 	reduceFlashes: boolean;
 	/** Four-colour deck: ♦ orange, ♣ green (D-57). */
 	fourColor: boolean;
+	/** Keycaps with the shortcut on buttons (Esc, Enter, pad glyphs); off by default. */
+	keyHints: boolean;
 	keys: KeyBindings;
 	padVibration: boolean;
 	padDeadzone: PadDeadzone;
@@ -121,6 +123,7 @@ export function defaultSave(lang: Lang): SaveData {
 			screenShake: true,
 			reduceFlashes: false,
 			fourColor: false,
+			keyHints: false,
 			keys: defaultKeys(),
 			padVibration: true,
 			padDeadzone: 'normal',
@@ -218,6 +221,7 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
 			screenShake: bool(s.screenShake, true),
 			reduceFlashes: bool(s.reduceFlashes, false),
 			fourColor: bool(s.fourColor, false),
+			keyHints: bool(s.keyHints, false),
 			keys: parseKeys(s.keys),
 			padVibration: bool(s.padVibration, true),
 			padDeadzone: oneOf(s.padDeadzone, PAD_DEADZONES, 'normal'),
