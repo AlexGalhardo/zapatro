@@ -42,7 +42,14 @@ import { honestSign } from '../logic/ai/decide';
 import { actionFor } from '../logic/keybinds';
 import { recordHand, recordRunEnd, recordRunState, recordTable } from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
-import { championshipId, finishTable, parseRun, type RunState, tableSize } from '../logic/run/run';
+import {
+	championshipId,
+	finishTable,
+	parseRun,
+	projectedReward,
+	type RunState,
+	tableSize,
+} from '../logic/run/run';
 import { formatPoints } from '../logic/score/format';
 import { type ScoreStep, tableGoal, totals } from '../logic/score/score';
 import { TOUCH_TEXT_MIN } from '../logic/touch';
@@ -221,6 +228,9 @@ const SIDE = {
 /** The Championship card ("Campeonato 1 / Mesa 1"): top right of the felt, the felt's padding in. */
 const CHAMP = { x: 634 - PAD.panel - 118, y: 6 + PAD.panel, w: 118, h: 47 };
 
+/** The two mini-cards on its second line (table, prize): height and the gap between them. */
+const CHAMP_MINI = { y: 24, h: 26, gap: 4 };
+
 /** Inner width of a sidebar card: its width minus the same padding on both sides (`SIDEBAR.pad`). */
 const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
 
@@ -341,6 +351,12 @@ export class TableScene extends Phaser.Scene {
 	private viraLabel!: Phaser.GameObjects.Text;
 	private manilhaBox!: Phaser.GameObjects.Image;
 	private manilhaText!: Phaser.GameObjects.Text;
+	/** The prize mini-card's value (null outside a run) and the value it shows now. */
+	private prizeText: Phaser.GameObjects.Text | null = null;
+	private prizeShown: number | null = null;
+	private prizeCoin: Phaser.GameObjects.Graphics | null = null;
+	private prizeMid = { x: 0, y: 0 };
+	private readonly prizeCounter = { v: 0 };
 	/** What changes the current hand (boss rule, mão de 11/ferro, joker and special effects). */
 	private effectBox!: Phaser.GameObjects.Container;
 	/** Joker/special effects of this hand already revealed by their roulette (the box hides the rest). */
@@ -1151,11 +1167,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		// The Championship card sits on the felt; its texts start at its own padding.
 		const cx = CHAMP.x + SIDEBAR.pad;
 		const cInner = CHAMP.w - 2 * SIDEBAR.pad;
+		const quick = this.match.goal === undefined && !this.match.boss;
+		const champH = quick ? CHAMP.h : CHAMP_MINI.y + CHAMP_MINI.h + SIDEBAR.pad;
 		this.add
 			.image(
 				CHAMP.x,
 				CHAMP.y,
-				panelTex(this, CHAMP.w, CHAMP.h, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
+				panelTex(this, CHAMP.w, champH, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
 			)
 			.setOrigin(0);
 		// Smallest text the sidebar may shrink to: never under the touch minimum on touch screens.
@@ -1180,13 +1198,54 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const small = this.text(7, PALETTE.textDim);
 		// The card names the Championship and the table (Mesa 1 → Mesa 2 → Chefão); the boss's
 		// rule is in the "in play" box. A quick match keeps its own title.
-		if (this.match.goal === undefined && !this.match.boss) {
-			atChamp(CHAMP.y + SIDE_LABEL, t('menu.quick'), this.bold(10));
+		this.prizeText = null;
+		this.prizeCoin = null;
+		if (quick) {
+			atChamp(CHAMP.y + SIDE_LABEL, t('menu.quick'), this.bold(10))
+				.setOrigin(0.5, 0)
+				.setX(CHAMP.x + CHAMP.w / 2);
 			fit(atChamp(CHAMP.y + 25, t('table.side.quickSub'), small));
 		} else {
 			const table = this.match.boss ? 'boss' : size;
-			atChamp(CHAMP.y + SIDE_LABEL, t('run.champ', { n: champ }), this.bold(10));
-			fit(atChamp(CHAMP.y + 25, t(`table.side.table.${table}` as I18nKey), small));
+			atChamp(CHAMP.y + SIDE_LABEL, t('run.champ', { n: champ }), this.bold(10))
+				.setOrigin(0.5, 0)
+				.setX(CHAMP.x + CHAMP.w / 2);
+			// Second line: the table, and what winning it pays now (a run only).
+			const my = CHAMP.y + CHAMP_MINI.y;
+			const mw = (cInner - CHAMP_MINI.gap) / 2;
+			const mini = (x: number): void => {
+				this.add
+					.image(x, my, panelTex(this, mw, CHAMP_MINI.h, PALETTE.panel, RADIUS.button))
+					.setOrigin(0);
+			};
+			mini(cx);
+			const name = this.add
+				.text(
+					cx + mw / 2,
+					my + CHAMP_MINI.h / 2,
+					t(`table.side.table.${table}` as I18nKey),
+					{
+						...this.bold(8),
+					},
+				)
+				.setOrigin(0.5);
+			for (let px = uiPx(8); name.width > mw - 6 && px > minPx; ) name.setFontSize(--px);
+			if (this.runState) {
+				const rx = cx + mw + CHAMP_MINI.gap;
+				mini(rx);
+				// A coin (gold disc, darker rim) and the value, centred together in the mini-card.
+				this.prizeCoin = this.add
+					.graphics()
+					.fillStyle(PALETTE.manilha, 1)
+					.fillCircle(0, 0, 3.5)
+					.lineStyle(1, shade(PALETTE.manilha, -0.4), 1)
+					.strokeCircle(0, 0, 3.5);
+				this.prizeMid = { x: rx + mw / 2, y: my + CHAMP_MINI.h / 2 };
+				this.prizeText = this.add
+					.text(0, this.prizeMid.y, '', this.bold(9, PALETTE.manilha))
+					.setOrigin(0, 0.5);
+				this.prizeShown = null;
+			}
 		}
 		// Without a goal (quick match) the card counts the tentos to 12 instead.
 		at(
@@ -1365,6 +1424,46 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		return h;
 	}
 
+	/**
+	 * The prize mini-card: what winning the table pays right now (`projectedReward`, the same math
+	 * as the payout); a change counts up (green) or down (red) for a moment. Sheila adds "×2?".
+	 */
+	private refreshPrize(): void {
+		const text = this.prizeText;
+		if (!text || !this.runState) return;
+		const p = projectedReward(this.runState, this.match.money, this.match.state.score.them);
+		const show = (n: number): void => {
+			text.setText(`${t('table.money', { n: Math.round(n) })}${p.mayDouble ? ' ×2?' : ''}`);
+			const { x, y } = this.prizeMid;
+			const left = x - (7 + 3 + text.width) / 2;
+			this.prizeCoin?.setPosition(left + 3.5, y);
+			text.setX(left + 10);
+		};
+		const from = this.prizeShown;
+		// Unchanged: a count already running keeps going.
+		if (from === p.gain) return;
+		this.prizeShown = p.gain;
+		this.tweens.killTweensOf(this.prizeCounter);
+		if (from === null || comfort.reduceFlashes) {
+			text.setColor(toCss(PALETTE.manilha));
+			show(p.gain);
+			return;
+		}
+		text.setColor(toCss(p.gain > from ? PALETTE.good : PALETTE.bad));
+		this.prizeCounter.v = from;
+		this.tweens.add({
+			targets: this.prizeCounter,
+			v: p.gain,
+			duration: 450,
+			ease: 'Quad.easeOut',
+			onUpdate: () => show(this.prizeCounter.v),
+			onComplete: () => {
+				show(p.gain);
+				text.setColor(toCss(PALETTE.manilha));
+			},
+		});
+	}
+
 	private refreshHud(): void {
 		const s = this.match.state;
 		const m = this.match;
@@ -1381,6 +1480,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				: `${formatPoints(this.hudPoints, lang)} / ${formatPoints(m.goal, lang)}`,
 		);
 		this.moneyText.setText(t('table.money', { n: this.hudMoney }));
+		this.refreshPrize();
 		const fame = m.fame;
 		this.fameText.setText(t('table.fame'));
 		this.quedasText.setText(

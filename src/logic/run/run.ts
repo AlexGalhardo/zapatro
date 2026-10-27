@@ -282,6 +282,55 @@ function advance(run: RunState): void {
 	} else run.table = (run.table + 1) as 0 | 1 | 2;
 }
 
+/**
+ * What winning the current table pays, before Sheila's draw: the reward lines and the run's money
+ * after them. `tableMoney` is what the table itself earned or cost so far (Manhas, traits, bosses);
+ * `rivalTentos` the rivals' tentos (the speed bonus). Both the end of a table and the table's
+ * "prize" card use it, so the shown value is the paid one.
+ */
+export function tableReward(
+	run: RunState,
+	tableMoney: number,
+	rivalTentos: number,
+): { reward: Reward; money: number } {
+	const before = Math.max(0, run.money + tableMoney);
+	const reward: Reward = {
+		table: tableMoney,
+		prize:
+			run.table === 0 && !stakeRules(run.stake).smallPrize
+				? 0
+				: ECONOMY.prize[tableSize(run)],
+		speed: Math.min(ECONOMY.speedCap, Math.max(0, 12 - rivalTentos)),
+		interest: interest(before, stakeRules(run.stake).interestCap),
+		partner: 0,
+		doubled: false,
+	};
+	if (run.partner === 'zeMalandro') {
+		const t = PARTNER_TRAITS.zeMalandro;
+		reward.partner = Math.min(
+			t.interestCap,
+			Math.floor(before / t.interestStep) * t.interestPer,
+		);
+	}
+	const money = before + reward.prize + reward.speed + reward.interest + reward.partner;
+	return { reward, money };
+}
+
+/**
+ * The money a win right now would add to the run (may be negative after fines), and whether
+ * Sheila may double it (one table in four: shown as "×2?", never drawn here).
+ */
+export function projectedReward(
+	run: RunState,
+	tableMoney: number,
+	rivalTentos: number,
+): { gain: number; mayDouble: boolean } {
+	return {
+		gain: tableReward(run, tableMoney, rivalTentos).money - run.money,
+		mayDouble: run.partner === 'neide',
+	};
+}
+
 /** Ends the current table: rewards and the next phase (shop, run won or run lost). */
 export function finishTable(run: RunState, r: TableResult): Reward | null {
 	run.tableSave = null;
@@ -299,26 +348,8 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 		return null;
 	}
 	run.stats.tables++;
-	const before = Math.max(0, run.money + r.money);
-	const reward: Reward = {
-		table: r.money,
-		prize:
-			run.table === 0 && !stakeRules(run.stake).smallPrize
-				? 0
-				: ECONOMY.prize[tableSize(run)],
-		speed: Math.min(ECONOMY.speedCap, Math.max(0, 12 - r.rivalTentos)),
-		interest: interest(before, stakeRules(run.stake).interestCap),
-		partner: 0,
-		doubled: false,
-	};
-	if (run.partner === 'zeMalandro') {
-		const t = PARTNER_TRAITS.zeMalandro;
-		reward.partner = Math.min(
-			t.interestCap,
-			Math.floor(before / t.interestStep) * t.interestPer,
-		);
-	}
-	run.money = before + reward.prize + reward.speed + reward.interest + reward.partner;
+	const { reward, money } = tableReward(run, r.money, r.rivalTentos);
+	run.money = money;
 	// Sheila: one table win in four pays double.
 	if (
 		run.partner === 'neide' &&
