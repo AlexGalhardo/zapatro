@@ -861,7 +861,7 @@ export function registerPortraits(scene: Phaser.Scene): void {
 	// loading, or before the late pictures landed) was cached with the drawn fallback; redraw it
 	// in place now that the bitmaps exist.
 	for (const key of scene.textures.getTextureKeys()) {
-		if (!/^(portrait|boss|icon|charcard|card)\./.test(key)) continue;
+		if (!/^(portrait|boss|icon|charcard|charcover|card)\./.test(key)) continue;
 		const source = scene.textures.get(key).source[0];
 		const canvas = source?.image;
 		if (!source || !(canvas instanceof HTMLCanvasElement)) continue;
@@ -889,10 +889,13 @@ const charCardBitmaps = new Map<string, CanvasImageSource>();
 /** Logical size of a character card (`charcard.<id>`): 3:4, like the painted art. */
 export const CHAR_W = 48;
 export const CHAR_H = 64;
+/** `charcover.<id>`: the same card as a tall column (the partner choice), sides cropped, never stretched. */
+export const COVER_W = 86;
+export const COVER_H = 198;
 const backBitmaps = new Map<string, CanvasImageSource>();
 
 /** A character as a portrait card (3:4): the painted art, or the pixel portrait on its colour. */
-function drawCharCard(ctx: Ctx, id: string, w: number, h: number): void {
+function drawCharCard(ctx: Ctx, id: string, w: number, h: number, cover = false): void {
 	const look = LOOKS[id] ?? FALLBACK;
 	const rad = w * 0.1;
 	ctx.save();
@@ -904,7 +907,9 @@ function drawCharCard(ctx: Ctx, id: string, w: number, h: number): void {
 	if (painted) {
 		ctx.imageSmoothingEnabled = true;
 		ctx.imageSmoothingQuality = 'high';
-		ctx.drawImage(painted, 0, 0, w, h);
+		// Cover: the 3:4 art at the box's height, centred, the sides cropped by the clip.
+		const dw = cover ? (h * 3) / 4 : w;
+		ctx.drawImage(painted, (w - dw) / 2, 0, dw, h);
 	} else if (pixel) {
 		// No painted card yet: the pixel portrait, whole and unstretched, on its colour.
 		box(ctx, 0, 0, w, h, 0, look.bg);
@@ -1246,6 +1251,7 @@ function sizeOf(key: string): [number, number] {
 	if (key.startsWith('card.') || key.startsWith('pack.')) return [CARD_W, CARD_H];
 	if (key.startsWith('portrait.')) return [PORTRAIT, PORTRAIT];
 	if (key.startsWith('charcard.')) return [CHAR_W, CHAR_H];
+	if (key.startsWith('charcover.')) return [COVER_W, COVER_H];
 	if (key.startsWith('boss.')) return [96, 96];
 	if (key.startsWith('bg.')) return [160, 90];
 	if (key === 'ui.slot.manha') return [52, 52];
@@ -1280,6 +1286,7 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 		} else drawVectorIcon(ctx, a, w);
 	} else if (kind === 'portrait') drawAvatar(ctx, a, b || 'neutral', w, false);
 	else if (kind === 'charcard') drawCharCard(ctx, a, w, h);
+	else if (kind === 'charcover') drawCharCard(ctx, a, w, h, true);
 	else if (kind === 'boss') drawAvatar(ctx, a, 'neutral', w, true);
 	else if (kind === 'pack') drawPack(ctx, a);
 	else if (kind === 'bg') drawRoom(ctx, a, w, h);
@@ -1307,7 +1314,10 @@ export function drawKey(ctx: Ctx, key: string): void {
 export function tex(scene: Phaser.Scene, key: string): string {
 	const [w, h] = sizeOf(key);
 	// Portraits are shown at 2× on the table: they get twice the raster.
-	const extra = key.startsWith('portrait.') || key.startsWith('charcard.') ? 2 : 1;
+	const extra =
+		key.startsWith('portrait.') || key.startsWith('charcard.') || key.startsWith('charcover.')
+			? 3
+			: 1;
 	return canvasTex(scene, key, w, h, (ctx) => draw(ctx, key, w, h), extra);
 }
 

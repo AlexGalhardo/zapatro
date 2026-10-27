@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CARD_W, cardArt, tex } from '../art/flat';
+import { CARD_W, COVER_H, COVER_W, cardArt, tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
 import { IS_DEMO, TABLE_SELECT } from '../config/features';
 import { inkOn, PALETTE, shade, toCss } from '../config/palette';
@@ -370,24 +370,26 @@ export class RunScene extends Phaser.Scene {
 		const { cx } = this;
 		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
-		// Three panels side by side across the stage: card (3:4) on the left, then in a column the
-		// name, style, perk, flaw and the pick button under the text, the same height in all three.
-		const [panelW, panelH, gap, top] = [196, 150, GAP.card, 70];
+		// Three panels side by side across the stage, each a grid of two columns: the character
+		// card over the panel's whole height on the left (3:4 art, the sides cropped to the column),
+		// and on the right the name, style, perk and flaw with the pick button on the base.
+		const pad = 5;
+		const [panelW, panelH, gap, top] = [196, COVER_H + 2 * pad, GAP.card, 60];
 		const x0 = cx - (3 * panelW + 2 * gap) / 2;
-		const [cw, ch] = [60, 80];
-		const btnY = top + panelH - 22;
+		const [cw, ch] = [COVER_W, COVER_H];
+		const btnH = 24;
 		offer.forEach((id, i) => {
 			const px = x0 + i * (panelW + gap);
 			this.box(px, top, panelW, panelH);
 			this.body.add(
 				this.add
-					.image(px + 5 + cw / 2, top + 5 + ch / 2, tex(this, `charcard.${id}`))
+					.image(px + pad + cw / 2, top + pad + ch / 2, tex(this, `charcover.${id}`))
 					.setDisplaySize(cw, ch),
 			);
-			const tx = px + 5 + cw + 6;
-			const tw = panelW - (tx - px) - 5;
+			const tx = px + pad + cw + pad;
+			const tw = panelW - (tx - px) - pad;
 			// One text size for all: long texts wrap, they never shrink.
-			let ty = top + 6;
+			let ty = top + pad;
 			ty =
 				this.put(
 					tx,
@@ -411,20 +413,19 @@ export class RunScene extends Phaser.Scene {
 			];
 			for (const [text, color] of lines)
 				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 3;
-			// The card sits left of the text; the lines under it use the whole panel width when the text is longer.
 			this.button(
 				tx + tw / 2,
-				btnY,
+				top + panelH - pad - btnH / 2,
 				t('run.pick', { name: t(`char.${id}` as I18nKey) }),
 				() => this.choosePartner(id),
 				tw,
 				PALETTE.good,
-				{ h: 24, size: 8 },
+				{ h: btnH, size: 7 },
 			);
 		});
 		this.button(
 			cx,
-			top + panelH + 22,
+			top + panelH + 24,
 			t('menu.back'),
 			() => fadeTo(this, 'Menu'),
 			100,
