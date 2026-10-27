@@ -15,7 +15,7 @@ Pessoas e ícones pequenos são **pixel art**; todo o resto é **vetor chapado d
 - **Render suave:** `pixelArt: false`, `antialias`, sem `roundPixels`. Fonte única Rubik (trocar por Roboto exige `@fontsource/roboto`, aguardando aprovação).
 - **Atalhos sempre visíveis:** todo botão com atalho mostra a tecla (ou o botão do controle) num selo à direita (`hint`, `src/ui/key-hint.ts`); o botão em foco mostra o que confirma (Enter / ✕) e `buttonNav` já começa com um botão em foco no teclado e no controle. No modo toque não há selos. Nada de linha de dica "Sua vez · …" na mesa.
 - **Arte nova:** prompts em [prompts-new-concept-art-using-pixel-art.md](prompts-new-concept-art-using-pixel-art.md) (ChatGPT → `references/concept-art/zapatro/`).
-- **UI:** `Button` (bloco arredondado com sombra; `color` é o preenchimento), `drawPanel`/`addPanel` (`src/ui/panel.ts`), telas encaixadas no palco 640×360 com `src/view/stage.ts` (`addBackdrop`, `fitCamera`).
+- **UI:** `Button` (bloco arredondado com sombra; `color` é o preenchimento), `drawPanel`/`addPanel` (`src/ui/panel.ts`), telas encaixadas no palco 640×360 com `src/view/stage.ts` (`fitCamera`); o fundo pintado de toda tela é a `BackdropScene` (`setBackdrop`).
 - **Elenco:** 10 companheiros (`src/data/companions.ts`), 3 sorteados por run como parceiro; os traços (vantagem e defeito) valem para a dupla em que o companheiro senta (GDD §8).
 
 ## Comece aqui (toda sessão)

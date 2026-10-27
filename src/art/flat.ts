@@ -348,7 +348,7 @@ const BACK_COLOR: Record<string, number> = {
 function drawBack(ctx: Ctx, deck: string): void {
 	const painted = backBitmaps.get(deck);
 	if (painted) {
-		box(ctx, 0, 0, CARD_W, CARD_H, 5, 0x2a1220);
+		box(ctx, 0, 0, CARD_W, CARD_H, 5, PALETTE.inkPlum);
 		ctx.save();
 		ctx.beginPath();
 		ctx.roundRect(1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card);

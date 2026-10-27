@@ -22,6 +22,7 @@ import { drawPanel } from '../ui/panel';
 import { fadeTo } from '../ui/screen';
 import { touchUi, uiPx } from '../ui/touch';
 import { fitCamera } from '../view/stage';
+import { setBackdrop } from './BackdropScene';
 
 const TABS = ['manhas', 'bosses', 'partners', 'decks', 'feats', 'stats'] as const;
 type Tab = (typeof TABS)[number];
@@ -81,6 +82,8 @@ export class AlmanacScene extends Phaser.Scene {
 		// The 640×360 stage scaled to fit, like Settings: a phone held upright (or any narrow
 		// window) shows the whole Almanac instead of cutting its sides off.
 		this.scene.bringToTop();
+		// Opened from the shop it would keep the counter painting (Run picks it per phase).
+		setBackdrop(this, 'main');
 		const cam = this.cameras.main;
 		cam.fadeIn(160, 5, 5, 8);
 		// Under the body container, which was created first.

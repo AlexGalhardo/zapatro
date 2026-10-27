@@ -110,6 +110,11 @@ export class RulesScene extends Phaser.Scene {
 		onKey(this.input.keyboard, 'keydown-RIGHT', () => this.turn(1));
 		onKey(this.input.keyboard, 'keydown-ENTER', () => this.turn(1));
 		onKey(this.input.keyboard, 'keydown-ESC', back);
+		// F1 opens the manual from the table; again closes it (and keeps the browser's help away).
+		onKey(this.input.keyboard, 'keydown-F1', (e) => {
+			e.preventDefault();
+			back();
+		});
 		const heading = setupScreen(this, t('rules.title'), (view) => {
 			// The book is the 640×360 stage scaled to fit and centred, like the other screens.
 			fitCamera(this.cameras.main, view);

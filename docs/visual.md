@@ -35,7 +35,7 @@ Proibido: gradiente, sombra suave, textura, brilho, cena de fundo, pixel art esc
 
 | Elemento | Técnica | Tamanho lógico | Fonte |
 |---|---|---|---|
-| Retrato de companheiro e chefe | pixel art, 1 px de contorno, até 32 cores, sem AA | 128×128 (bitmap em `public/assets/gfx/portrait/<id>.png`; a mesa o desenha em círculo de 64 px, `AVATAR`, e a escolha de companheiro, maior) | `char-*.png` → `bun scripts/portraits.ts`; O Mudo: `art-src/portrait/mudo.png` (PixelLab) |
+| Retrato de chefe e do Zé | pixel art, 1 px de contorno, até 32 cores, sem AA (os companheiros pintados: `portrait/<id>.webp` 256×256, desenhados suaves) | 128×128 (bitmap em `public/assets/gfx/portrait/<id>.png`; a mesa o desenha em círculo de 64 px, `AVATAR`, e a escolha de companheiro, maior) | `char-*.png` → `bun scripts/portraits.ts`; O Mudo: `art-src/portrait/mudo.png` (PixelLab) |
 | Ícones de UI | pixel art | 24×24 lógicos (bitmaps de 32 px em `public/assets/gfx/icon`) | `ui-icons.png` → `bun scripts/icons.ts`; os que a folha não tem, vetor em `src/art/icons.ts` |
 | Ícone do app | pixel art + fundo vetor | 1024 | `app-icon.png`, `art-src/app-icon.svg` → `bun run app-icons` |
 | Fundo, mesa, painéis, botões, balões, barras | vetor por código (`src/art/flat.ts`): retângulos arredondados, círculos, linhas; raio igual em toda a tela; sombra = uma forma escura deslocada 3 px | palco 640×360 | `screen-*.png` |

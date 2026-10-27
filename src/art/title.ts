@@ -30,12 +30,12 @@ export function titleTex(scene: Phaser.Scene, text: string, maxW: number): strin
 		const [x, y] = [PAD, (h - DROP[1]) / 2];
 		ctx.strokeStyle = toCss(PALETTE.shadow);
 		ctx.strokeText(text, x + DROP[0], y + DROP[1]);
-		ctx.strokeStyle = '#2a1220';
+		ctx.strokeStyle = toCss(PALETTE.inkPlum);
 		ctx.strokeText(text, x, y);
 		const g = ctx.createLinearGradient(0, y - size * 0.5, 0, y + size * 0.5);
-		g.addColorStop(0, '#ffe45c');
-		g.addColorStop(0.5, '#ff9a2e');
-		g.addColorStop(1, '#ff4f87');
+		g.addColorStop(0, toCss(PALETTE.sunsetTop));
+		g.addColorStop(0.5, toCss(PALETTE.sunsetMid));
+		g.addColorStop(1, toCss(PALETTE.sunsetLow));
 		ctx.fillStyle = g;
 		ctx.fillText(text, x, y);
 	});

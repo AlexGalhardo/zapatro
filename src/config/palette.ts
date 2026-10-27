@@ -39,6 +39,12 @@ export const PALETTE = {
 	cardEdge: 0xdacdb2,
 	cardBack: 0xb9412f,
 	cardBackTrim: 0xf3d89c,
+	/** Frame of the painted card backs and outline of the menu title. */
+	inkPlum: 0x2a1220,
+	// Menu title's sunset gradient, top to bottom (src/art/title.ts).
+	sunsetTop: 0xffe45c,
+	sunsetMid: 0xff9a2e,
+	sunsetLow: 0xff4f87,
 	suitRed: 0xd3392d,
 	suitBlack: 0x26222b,
 	suitOrange: 0xe27a1f,

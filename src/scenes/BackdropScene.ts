@@ -12,13 +12,13 @@ export function setBackdrop(scene: Phaser.Scene, key: BackdropKey): void {
 	scene.game.registry.set(REGISTRY_KEY, key);
 }
 
+/** Full-screen scenes: the backdrop sits right under the topmost one of them that is running. */
+const OPAQUE = new Set(['Menu', 'Run', 'Settings', 'Keybinds', 'Almanac', 'Rules', 'Lan']);
+
 /**
  * Always-on bottom layer: the painted background covers the whole view, so no screen paints its
  * own grey. Without the image (failed load) it keeps the neutral colour.
  */
-/** Full-screen scenes: the backdrop sits right under the topmost one of them that is running. */
-const OPAQUE = new Set(['Menu', 'Run', 'Settings', 'Keybinds', 'Almanac', 'Rules', 'Lan']);
-
 export class BackdropScene extends Phaser.Scene {
 	private below: string | null = null;
 
@@ -35,8 +35,13 @@ export class BackdropScene extends Phaser.Scene {
 			?.scene.key;
 		if (top === this.below) return;
 		this.below = top ?? null;
-		if (top) this.scene.moveBelow(top, 'Backdrop');
-		else this.scene.sendToBack();
+		if (!top) {
+			this.scene.sendToBack();
+			return;
+		}
+		// moveBelow only moves a scene that is above the other: from the bottom, climb first.
+		this.scene.bringToTop();
+		this.scene.moveBelow(top, 'Backdrop');
 	}
 
 	create(): void {
