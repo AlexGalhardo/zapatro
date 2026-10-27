@@ -46,7 +46,7 @@
 | M-14 | P1 | mesa do chefe | O Mudo sem retrato (não havia `char-mudo.png`) | [x] gerado no PixelLab, `art-src/portrait/mudo.png` |
 | M-13 | P1 | mesa | Mapas dos Campeonatos 3 a 8 (Quermesse, Clube, Festa do Peão, Regional, Estadual, Rei do Truco) | obsoleto pela art bible v2 (3 feltros) |
 | M-11 | P2 | run | Telas restantes sem concept: escolha de parceiro, abertura de pacote, fim de run, Almanaque, tutorial, painel de Lances | [ ] |
-| M-15 | P1 | personagens, loja | Marcas reais nas pinturas: camiseta Nirvana na Ayla (`tiao`), camisa estilo seleção no Nino (`juninho`), Brahma e "51" no fundo da loja (`shop2`) | [ ] |
+| M-15 | P1 | personagens, loja | Marcas reais nas pinturas: ~~camiseta Nirvana na Ayla (`tiao`)~~ resolvido (repintada com "Rock baby", 213de4d; Chico e Zé repintados no mesmo commit); seguem a camisa estilo seleção no Nino (`juninho`) e Brahma e "51" no fundo da loja (`shop2`) | [~] |
 | M-16 | P1 | mesa do chefe, Almanaque | 8 chefes ainda em pixel art 128×128 (`valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `irmaos`, `mudo`) ao lado do elenco pintado | [ ] |
 | M-17 | P2 | loja | Vendedor da loja sem asset pintado (a loja v3 não tem personagem) | [ ] |
 | M-18 | P3 | mesa | Face do coringa pintada traz "JOKER" em inglês dentro da imagem (sem tradução) | [ ] |
