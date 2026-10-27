@@ -605,7 +605,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'companion.neide.flaw': 'Meta de pontos da mesa +10%',
 	'table.reward.doubled': 'A Sheila dobrou tudo!',
 	'companion.asRival': 'Como rival, joga contra você.',
-	'partner.style.aggressive': 'Ataca: pede truco muito',
+	'partner.style.aggressive': 'Ataque: pede muito truco',
 	'partner.style.cautious': 'Joga com cautela: só pede com mão forte e nunca blefa',
 	'partner.style.bluffer': 'Blefa: pede truco com muita mão fraca',
 	'partner.style.fearless': 'Sem medo: pede truco com mão razoável',

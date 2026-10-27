@@ -601,7 +601,7 @@ export const en = {
 	'companion.neide.flaw': 'Table goals +10%',
 	'table.reward.doubled': 'Sheila doubled it!',
 	'companion.asRival': 'As a rival it works against you.',
-	'partner.style.aggressive': 'Aggressive: calls truco a lot',
+	'partner.style.aggressive': 'Attack: calls truco a lot',
 	'partner.style.cautious': 'Cautious: calls only with strong hands, never bluffs',
 	'partner.style.bluffer': 'Bluffer: calls truco with many weak hands',
 	'partner.style.fearless': 'Fearless: calls truco with fair hands',
