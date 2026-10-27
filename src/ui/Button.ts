@@ -31,6 +31,8 @@ export class Button extends Phaser.GameObjects.Container {
 	private readonly hit: Phaser.GameObjects.Zone;
 	private enabled = true;
 	private lit = false;
+	/** The mouse is over it: only the mouse lifts a button, keyboard focus just lights it. */
+	private pointed = false;
 	private pressed = false;
 	/** Drawn lift over the shadow (px), eased towards target(). */
 	private lift = 0;
@@ -143,13 +145,15 @@ export class Button extends Phaser.GameObjects.Container {
 		this.redraw();
 		this.hit.on('pointerover', () => {
 			if (!this.enabled) return;
+			this.pointed = true;
 			this.hover(true);
 			opts.onHover?.();
 		});
 		this.hit.on('pointerdown', () => this.press(this.enabled));
 		this.hit.on('pointerout', () => {
 			this.pressed = false;
-			this.hover(false);
+			this.pointed = false;
+			this.hover(this.focused && this.enabled);
 		});
 		this.hit.on('pointerup', () => {
 			this.press(false);
@@ -263,7 +267,7 @@ export class Button extends Phaser.GameObjects.Container {
 	private settle(): void {
 		const to = this.pressed
 			? SHADOW.pressed - this.shadowDepth
-			: this.lit && this.enabled
+			: this.pointed && this.enabled
 				? SHADOW.hoverLift
 				: 0;
 		this.liftTween?.stop();

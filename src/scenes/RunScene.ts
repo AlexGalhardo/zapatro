@@ -364,13 +364,22 @@ export class RunScene extends Phaser.Scene {
 	 */
 	private drawPartners(): void {
 		const { cx } = this;
-		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
 		// Three panels side by side across the stage, each a grid of two columns: the character
 		// card over the panel's whole height on the left (3:4 art, the sides cropped to the column),
 		// and on the right the name, style, perk and flaw with the pick button on the base.
 		const pad = 5;
-		const [panelW, panelH, gap, top] = [196, COVER_H + 2 * pad, GAP.card, 60];
+		// Title, panels and Back are one block centred on the stage both ways; the title, the
+		// panels and Back are one `BLOCK_GAP` apart. The panels leave about 5% of the stage free on
+		// each side.
+		const BLOCK_GAP = 14;
+		const titleH = TYPE.screenTitle;
+		const backH = BUTTON_H.primary;
+		const [panelW, panelH, gap] = [184, COVER_H + 2 * pad, GAP.card];
+		const blockH = titleH + BLOCK_GAP + panelH + BLOCK_GAP + backH;
+		const blockTop = (this.h - blockH) / 2;
+		const top = blockTop + titleH + BLOCK_GAP;
+		this.title(cx, blockTop + titleH / 2, t('run.choosePartner'), TYPE.screenTitle);
 		const x0 = cx - (3 * panelW + 2 * gap) / 2;
 		const [cw, ch] = [COVER_W, COVER_H];
 		const btnH = 24;
@@ -488,7 +497,7 @@ export class RunScene extends Phaser.Scene {
 		});
 		this.button(
 			cx,
-			top + panelH + 24,
+			top + panelH + BLOCK_GAP + backH / 2,
 			t('menu.back'),
 			() => fadeTo(this, 'Menu'),
 			100,
