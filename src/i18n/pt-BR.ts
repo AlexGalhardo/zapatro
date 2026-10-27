@@ -306,7 +306,6 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.quedas': 'Quedas {us}/2 × {them}/2',
 	'table.manilhasSeen': 'Manilhas saídas: {n}/4',
 	'table.viraHidden': 'Manilha: ?',
-	// biome-ignore lint/suspicious/noTemplateCurlyInString: '{n}' is an i18n placeholder
 	'table.rivalQueda': 'Eles fecharam uma queda! Os tentos deles voltam a 0',
 	'consumable.lanceUp': 'Carta de Lance',
 	'consumable.lanceUp.desc': '+1 nível neste Lance (+Fichas, +Mult)',

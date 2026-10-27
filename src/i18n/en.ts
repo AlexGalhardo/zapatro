@@ -302,7 +302,6 @@ export const en = {
 	'table.quedas': 'Quedas {us}/2 × {them}/2',
 	'table.manilhasSeen': 'Manilhas out: {n}/4',
 	'table.viraHidden': 'Manilha: ?',
-	// biome-ignore lint/suspicious/noTemplateCurlyInString: '{n}' is an i18n placeholder
 	'table.rivalQueda': 'They closed a queda! Their tentos go back to 0',
 	'consumable.lanceUp': 'Lance card',
 	'consumable.lanceUp.desc': '+1 level to this Lance (+Chips, +Mult)',
