@@ -167,7 +167,7 @@ export function buttonHover(fill: number): number {
  * at full brightness): a multiply tint, so the sunset keeps its hue while panels, cards and HUD
  * stand out on it.
  */
-export const BACKDROP_BRIGHTNESS = 0.4;
+export const BACKDROP_BRIGHTNESS = 0.3;
 /** The shop's chalkboard holds the UI: its painting stays brighter than the other backdrops. */
 export const SHOP_BACKDROP_BRIGHTNESS = 0.75;
 

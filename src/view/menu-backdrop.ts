@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import { comfort } from './comfort';
 
-const KEYS = ['img.bg.menu-1', 'img.bg.menu-2', 'img.bg.menu-3'] as const;
+const KEYS = ['img.bg.menu-1', 'img.bg.menu-2', 'img.bg.menu-3', 'img.bg.menu-4'] as const;
 /** Time each painting stays and the crossfade between two. */
 const HOLD_MS = 7000;
 const FADE_MS = 500;
@@ -27,6 +27,8 @@ export const BAKED_UI: readonly BakedUi[] = [
 	{ x: 57, top: 290, bottom: 782 },
 	{ x: 63, top: 326, bottom: 800 },
 	{ x: 58, top: 312, bottom: 779 },
+	// menu-4 (1671 px wide, scaled to 1600): it bakes 8 buttons; `bottom` is its 7th, like the others.
+	{ x: 50, top: 244, bottom: 668 },
 ];
 
 /** The game's button column, in the source px of the first painting (the fixed reference). */

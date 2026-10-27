@@ -20,7 +20,7 @@ import { UI_FONT } from '../ui/font';
  * music.ts) and a picture keeps its drawn fallback, redrawn in place when it lands.
  */
 const LATER =
-	/^assets\/(audio\/(sfx|music)\/(amb\.(?!botecoBairro)|music\.king|vo\.(valentao|cartomante|juiz|agiota|delegado|reiDoTruco)\.)|gfx\/(card\/|bg\/(shop|partner|street|bg[4-6]|menu-[23])\.|back\/(?!default\.)))/;
+	/^assets\/(audio\/(sfx|music)\/(amb\.(?!botecoBairro)|music\.king|vo\.(valentao|cartomante|juiz|agiota|delegado|reiDoTruco)\.)|gfx\/(card\/|bg\/(shop|partner|street|bg[4-6]|menu-[2-4])\.|back\/(?!default\.)))/;
 
 /**
  * Loads the sounds; the art is drawn by code (src/art/flat.ts). Stays running after the first
