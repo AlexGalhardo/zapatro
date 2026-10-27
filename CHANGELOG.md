@@ -14,6 +14,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Added
 
+- **ui:** an "in play" box under Manilha/ZAP on the table lists what changes the current hand: the boss's rule, mão de 11 or mão de ferro, and each joker or special-card effect once its roulette has revealed it (icon, name and one line); it hides on a plain hand and clears every new hand (`src/view/hand-effects.ts`).
 - **art:** Art Bible v3 ("summer, sunset, Hawaii"): painted character cards and busts from `art-src/gta/` (`bun scripts/portraits.ts`: cards 480x640 and busts 256x256 WebP, backgrounds 1920x1080, card backs), replacing the pixel portraits of the ten renamed cast members (the old PNGs are kept in `art-src/backup-pixel/portrait/`). `ze` and the bosses keep the pixel art until new art arrives.
 - **ui:** `BackdropScene`, a bottom layer with a painted background under every screen (no more flat grey); the shop, the partner choice and the table have their own paintings and the main menu rotates `menu-1..3` every 7 s with a crossfade and a slow zoom (left/right keys or the dots change it by hand), over a dark panel that hides the logo and buttons painted into the art.
 - **ui:** a manual button (`?`, key F1) on the table opens the Rules book over the match and returns to it with no state lost.

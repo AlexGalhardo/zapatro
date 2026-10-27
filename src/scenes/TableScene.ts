@@ -70,6 +70,7 @@ import { fadeTo } from '../ui/screen';
 import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { comfort } from '../view/comfort';
+import { handEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
 
@@ -310,6 +311,10 @@ export class TableScene extends Phaser.Scene {
 	private viraLabel!: Phaser.GameObjects.Text;
 	private manilhaBox!: Phaser.GameObjects.Image;
 	private manilhaText!: Phaser.GameObjects.Text;
+	/** What changes the current hand (boss rule, mão de 11/ferro, joker and special effects). */
+	private effectBox!: Phaser.GameObjects.Container;
+	/** Joker/special effects of this hand already revealed by their roulette (the box hides the rest). */
+	private fxRevealed = Number.POSITIVE_INFINITY;
 	private betText!: Phaser.GameObjects.Text;
 	private fameText!: Phaser.GameObjects.Text;
 	private status!: Phaser.GameObjects.Text;
@@ -787,6 +792,7 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 				lineSpacing: 2,
 			})
 			.setOrigin(0, 1);
+		this.effectBox = this.add.container(MANILHA.x, MANILHA.bottom).setVisible(false);
 		this.sidebar = this.collect(() => this.buildSidebar());
 		// The count panel (screen-score.png): the hand's name, Chips × Mult = points.
 		this.scoreBox = this.add.container(0, 0).setDepth(DEPTH.score).setVisible(false);
@@ -1266,6 +1272,70 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		}
 	}
 
+	/**
+	 * The "in play" box at the felt's base: one row per rule that changes this hand (icon, name and
+	 * a line of text). Hidden on a plain hand; returns its height (0 when hidden).
+	 */
+	private drawEffects(): number {
+		const s = this.match.state;
+		// A new hand (fewer effects than were shown) starts the count again.
+		if (jokerEffects(s).length < this.fxRevealed) this.fxRevealed = 0;
+		const list = handEffects(s, this.match.boss, this.fxRevealed);
+		const box = this.effectBox.removeAll(true).setVisible(list.length > 0);
+		if (!list.length) return 0;
+		const w = 150;
+		const icon = 9;
+		const textX = PAD.card + icon + 4;
+		const wrap = { width: w - textX - PAD.card };
+		const rows: Phaser.GameObjects.GameObject[] = [];
+		let y = PAD.card;
+		for (const e of list) {
+			rows.push(
+				this.add
+					.image(PAD.card + icon / 2, y + icon / 2, tex(this, `icon.${e.icon}`))
+					.setDisplaySize(icon, icon),
+			);
+			const name = this.add.text(textX, y, e.name, {
+				...this.bold(TYPE.label, PALETTE.manilha),
+				align: 'left',
+				wordWrap: wrap,
+			});
+			rows.push(name);
+			y += name.height;
+			if (e.desc) {
+				const desc = this.add.text(textX, y, e.desc, {
+					...this.text(7, PALETTE.textLight),
+					align: 'left',
+					wordWrap: wrap,
+				});
+				rows.push(desc);
+				y += desc.height;
+			}
+			y += 3;
+		}
+		const h = Math.ceil(y - 3 + PAD.card);
+		// As wide as the longest line (up to `w`): a short rule leaves the hand's cards clear.
+		const texts = rows.filter(
+			(r): r is Phaser.GameObjects.Text => r instanceof Phaser.GameObjects.Text,
+		);
+		const bw = Math.min(
+			w,
+			Math.ceil(Math.max(...texts.map((r) => r.width)) + textX + PAD.card),
+		);
+		box.setPosition(MANILHA.x, MANILHA.bottom - h);
+		box.add([
+			this.add
+				.image(
+					0,
+					h + SHADOW.panel,
+					panelTex(this, bw, h, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
+				)
+				.setOrigin(0, 1),
+			...rows,
+		]);
+		return h;
+	}
+
 	private refreshHud(): void {
 		const s = this.match.state;
 		const m = this.match;
@@ -1310,6 +1380,11 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.manilhaBox.setTexture(
 			panelTex(this, mw, mh, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
 		);
+		// The "in play" box sits at the felt's base; Manilha/ZAP stacks right above it.
+		const eh = this.drawEffects();
+		const mb = MANILHA.bottom - (eh ? eh + SHADOW.panel + GAP.panel : 0);
+		this.manilhaBox.setY(mb + SHADOW.panel);
+		this.manilhaText.setY(mb - PAD.card);
 		for (const [seat, v] of this.seats) {
 			v.backs.removeAll(true);
 			const hand = s.hands[seat];
@@ -1928,6 +2003,8 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				break;
 			case 'joker': {
 				await this.jokerRoulette(e.effect);
+				this.fxRevealed++;
+				this.refreshHud();
 				break;
 			}
 			case 'vira': {
