@@ -10,7 +10,7 @@ O jogo web (Vite, `dist/`) roda dentro do Electron, empacotado com **electron-bu
 |---|---|---|
 | Processo principal | `desktop/main.js` | Janela 1280×720 (mín. 960×540), sem menu, fundo `#0a0b10`; serve o build pelo esquema `app://truco-roguelite/` |
 | Empacotamento | `desktop/electron-builder.yml` | `--dir` para Windows/macOS/Linux; `../dist` vira `resources/web` |
-| Build | `scripts/build-electron.ts` | `vite build` → `electron-builder --dir` com a versão do `package.json` raiz |
+| Build | `scripts/build-electron.ts` | `vite build`, o servidor LAN (`lan/server.ts` → `desktop/build/lan-server.mjs`) e `electron-builder --dir` com a versão do `package.json` raiz |
 | Ícone | `desktop/build/icon.png` | 512 px, gerado por `bun run app-icons` (placeholder a partir do favicon) |
 | SteamPipe | `desktop/steam/app_build.vdf` | Template do build com os 3 depots |
 
@@ -19,7 +19,7 @@ Decisões:
 - **Esquema `app://` em vez de `file://`:** o save fica no `localStorage`, que é por origem; `app://truco-roguelite` é uma origem estável e segura, e os módulos ES + `fetch` dos assets funcionam como na web. O handler bloqueia caminhos fora da pasta do build.
 - **Instância única:** duas janelas disputariam o mesmo `localStorage`; a segunda abertura só foca a primeira.
 - **Save:** fica no perfil do Electron (`%APPDATA%\Zapaco` no Windows, `~/Library/Application Support/Zapaco` no macOS, `~/.config/Zapaco` no Linux). Exportar/importar save (Configurações) funciona como no navegador.
-- **Segurança:** `contextIsolation` e `sandbox` padrão, sem `nodeIntegration`; o preload (`desktop/preload.cjs`) só expõe `trucoSteam.unlock` e `trucoShell.relaunch`; links `https://` abrem no navegador do sistema.
+- **Segurança:** `contextIsolation` e `sandbox` padrão, sem `nodeIntegration`; o preload (`desktop/preload.cjs`) só expõe `trucoSteam.unlock`, `trucoShell.relaunch` e `trucoShell.hostLan` (a mesa LAN, [multiplayer.md](multiplayer.md)); links `https://` abrem no navegador do sistema.
 - **Tela cheia:** F11 do próprio jogo (Fullscreen API) também funciona no Electron.
 - **WebGL por software:** o Chromium deprecou (Chrome 130+, remoção prevista para o 137) o fallback automático para o SwiftShader quando a GPU está bloqueada ([swiftshader.md](https://chromium.googlesource.com/chromium/src/+/main/docs/gpu/swiftshader.md)); `desktop/main.js` liga `enable-unsafe-swiftshader` no macOS, no Linux e no `--smoke`. Medido no Electron 44 (2026-10-25): com GPU boa o jogo continua na GPU (ANGLE D3D11, RTX 4060); com `--disable-gpu` vira SwiftShader. No Windows o switch fica desligado porque o ANGLE já cai no WARP (Microsoft Basic Render Driver). O "unsafe" é o JIT do SwiftShader no processo da GPU; o jogo só carrega conteúdo próprio de `app://`.
 - **Contexto WebGL perdido (B-14):** se o contexto não volta em 5 s (o Chromium desliga a GPU depois de crashes repetidos do processo dela), o jogo mostra "A placa de vídeo parou de responder" com Recarregar (`watchContextLoss` em `src/core/errors.ts`). Perdas curtas, que o Phaser restaura sozinho, não mostram nada. Depois que o Chromium desliga a GPU nem o SwiftShader nem recarregar a página trazem o WebGL de volta; por isso, no Electron, o Recarregar desse overlay reinicia o app (`restartApp` em `src/core/platform.ts` → `window.trucoShell.relaunch()` → IPC `app:relaunch` → `app.relaunch(); app.exit(0)`), e no navegador e no Android recarrega a página.

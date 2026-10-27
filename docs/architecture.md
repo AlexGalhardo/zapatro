@@ -33,6 +33,10 @@ src/config/   constants (LOGICAL_H, velocidades), ui (tokens de interface: RADIU
 src/debug/    params.ts (URL de debug)
 ```
 
+## Multiplayer LAN
+
+`src/net/` (protocolo, visão girada e mascarada, cliente Colyseus), `lan/` (servidor e sala) e `RemoteMatch`; a `TableScene` em modo rede só mostra o que o servidor manda. Mapa e decisões em [multiplayer.md](multiplayer.md).
+
 ## Boot
 
 `main.ts` lê os parâmetros de debug, carrega o save (`core/storage.ts`: principal → `.bak` → novo), aplica idioma, conforto, modo toque e resolução, espera as fontes e cria o `Phaser.Game`. `BootScene` carrega os sons que existem em `public/assets/audio/{sfx,music}/*.mp3` (lista `__ASSET_FILES__` gerada pelo Vite) e o `index.json` da arte; depois pré-desenha os placeholders de UI e abre o `Menu` (ou a mesa com `?skipMenu=1`). O `Boot` abre a primeira tela com `launch` e continua ativo, sem nada na tela, baixando em segundo plano os sons que a primeira mesa não usa (`LATER`: ambiências dos Campeonatos 2–8, `music.king`, vozes dos chefes), para o download inicial web ficar abaixo de 8 MB; tocar um som ainda não carregado é um no-op silencioso.

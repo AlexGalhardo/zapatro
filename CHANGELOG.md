@@ -12,6 +12,17 @@ Since 2026-10-24 the project has 11 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Added
+
+- **net:** LAN multiplayer for up to 4 people in the Quick Match (plain Truco to 12), built on Colyseus: an authoritative server (`lan/`, `bun run lan-server`, also embedded in the desktop app) plays the real `Match`, validates every action and sends each player a masked view turned so that player sits at the bottom (`src/net/view.ts`); empty seats are bots and a dropped player has 30 s to come back before a bot takes the seat. See `docs/multiplayer.md`.
+- **ui:** "LAN multiplayer" in the menu opens a form (name, host address; "Host a table" in the desktop app) and a lobby where each person picks a seat, with partners across the table, and a portrait from the cast. Hidden on `https://` web pages, which cannot open `ws://` to another computer.
+- **desktop:** `trucoShell.hostLan` starts the LAN table from the Electron app (`lan/server.ts` bundled by `scripts/build-electron.ts`); **mobile:** the Android app allows cleartext `ws://` to join one.
+- **test:** `tests/lan.test.ts` plays full matches through a real server (lobby, one person and three bots, four people, a player who leaves) and `tests/net-view.test.ts` covers the turned and masked views.
+
+### Changed
+
+- **docs:** multiplayer leaves the "out of scope" list for the LAN case only (PLAN §1.5, GDD, `docs/decisions.md`).
+
 ## [0.11.0] - 2026-10-25
 
 ### Added

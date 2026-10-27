@@ -63,6 +63,10 @@ Criar a chave, os secrets `ANDROID_KEYSTORE_*` e o build assinado: [launch-game.
 
 Passo a passo completo (conta, questionários, página da loja, testes interno e fechado, produção, atualizações): **[launch-game.md](launch-game.md)**.
 
+## Multiplayer na rede local
+
+O Android entra numa mesa LAN (nunca cria): `capacitor.config.json` liga `allowMixedContent` e o manifesto `usesCleartextTraffic`, porque o WebView é `https://localhost` e a mesa fala `ws://192.168.x.x`. Detalhes em [multiplayer.md](multiplayer.md); não verificado em aparelho.
+
 ## Plugins nativos (sem importar Capacitor no jogo)
 
 O jogo não importa `@capacitor/*`: os plugins são instalados só na casca (`mobile/package.json`) e o bridge nativo os expõe em `window.Capacitor.Plugins` (confirmado no emulador). `src/core/platform.ts` → `capacitor()` devolve o bridge só no app nativo.

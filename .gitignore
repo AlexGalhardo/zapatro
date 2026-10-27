@@ -32,6 +32,7 @@ shots/
 # Native shells (desktop/ Electron, mobile/ Capacitor) and their outputs
 desktop/node_modules/
 desktop/release/
+desktop/build/lan-server.mjs
 desktop/steam/output/
 mobile/node_modules/
 *.jks

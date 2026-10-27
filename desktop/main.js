@@ -31,6 +31,8 @@ if (!SMOKE && !app.requestSingleInstanceLock()) app.quit();
 
 /** @type {BrowserWindow | null} */
 let win = null;
+/** The LAN table, once the player hosts one. @type {Promise<{ port: number, addresses: string[], stop: () => Promise<void> }> | null} */
+let lan = null;
 
 // The product used to be called Zapaco: keep its user-data folder so saves (localStorage) survive the rename.
 app.setPath('userData', join(app.getPath('appData'), 'Zapaco'));
@@ -45,7 +47,13 @@ function createWindow() {
 		title: 'Zapatro',
 		icon: join(here, 'build', 'icon.png'),
 		show: !SMOKE,
-		webPreferences: { backgroundThrottling: false, preload: join(here, 'preload.cjs') },
+		webPreferences: {
+			backgroundThrottling: false,
+			preload: join(here, 'preload.cjs'),
+			// LAN multiplayer: the game is served from a secure origin and talks plain ws:// to
+			// the host's computer, which Chromium blocks as mixed content otherwise.
+			allowRunningInsecureContent: true,
+		},
 	});
 	win.webContents.setWindowOpenHandler(({ url }) => {
 		if (url.startsWith('https://')) shell.openExternal(url);
@@ -97,6 +105,17 @@ app.whenReady().then(() => {
 		app.relaunch();
 		app.exit(0);
 	});
+	// LAN multiplayer: this computer serves the table (the bundle of lan/server.ts, scripts/build-electron.ts).
+	ipcMain.handle('lan:host', () => {
+		lan ??= import('./build/lan-server.mjs').then(async (m) => {
+			const server = await m.startLanServer();
+			return { port: server.port, addresses: m.lanAddresses(), stop: server.stop };
+		});
+		lan.catch(() => {
+			lan = null;
+		});
+		return lan.then(({ port, addresses }) => ({ port, addresses }));
+	});
 	protocol.handle('app', (req) => {
 		const path = normalize(join(WEB, decodeURIComponent(new URL(req.url).pathname)));
 		if (!path.startsWith(WEB + sep)) return new Response('Forbidden', { status: 403 });
@@ -106,3 +125,4 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => app.quit());
+app.on('before-quit', () => void lan?.then((l) => l.stop()));

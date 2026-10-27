@@ -62,6 +62,7 @@ bun scripts/store-art.ts · bun scripts/store-shots.ts      # artes e capturas d
 bun run graph                                              # atualiza o grafo (antes de todo push)
 bun run release                                            # GitHub Release das tags novas (notas do CHANGELOG; builds e .exe no HEAD)
 bun run exe                                                # Zapatro-<versão>-win-x64.exe na raiz (gitignored) para testar
+bun run lan-server                                         # mesa LAN (Colyseus, porta 2567); docs/multiplayer.md
 bun run electron:dev | electron:build | electron:smoke     # Steam (desktop/)
 bun run android:run | android:debug | android:bundle       # Google Play (mobile/); JDK 21 + ANDROID_HOME
 bun run site:build · bun run site:deploy                   # site (site/) → site/out → Vercel (truco.lekzera.xyz)
@@ -86,6 +87,7 @@ Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pod
 | Decisões | [docs/decisions.md](docs/decisions.md) e PLAN §2 |
 | Commits, versões, push, release | [docs/git-and-versioning.md](docs/git-and-versioning.md) + skill `release-section` |
 | Build Steam / Android | [docs/desktop.md](docs/desktop.md), [docs/mobile.md](docs/mobile.md) + skill `platform-builds` |
+| Multiplayer na rede local (Colyseus) | [docs/multiplayer.md](docs/multiplayer.md) |
 | Lançamento nas lojas (Steam, Play, itch.io, Poki) | [docs/launch-game.md](docs/launch-game.md) |
 | Site | [docs/site.md](docs/site.md) |
 | Skills e ferramentas | [docs/tooling.md](docs/tooling.md) |

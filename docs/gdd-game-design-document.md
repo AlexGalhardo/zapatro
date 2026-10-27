@@ -48,7 +48,7 @@ Código e PLAN citam "design §N" (o antigo `game-design-principles.md`). Equiva
 | Sessão | Mão ≈ segundos; mesa ≈ 4,1 mãos ⚖; run = até 24 mesas. Duração em minutos: **a confirmar** (medir no playtest) | balancing.md |
 | Modelo | Premium nas lojas, sem anúncios nem microtransação; demo web grátis | D-24 |
 | Idiomas | EN + PT-BR desde o dia 1; "Truco" e nomes de Manhas em português nas duas, com tooltip | D-29 |
-| Jogadores | 1 humano + 3 IAs (parceiro e dupla rival), o que gera variedade quase ilimitada de situações; sem multiplayer | PLAN §1.5 |
+| Jogadores | 1 humano + 3 IAs (parceiro e dupla rival), o que gera variedade quase ilimitada de situações; a run é solo. Partida Rápida também em **LAN com até 4 pessoas** (os vazios são bots) | PLAN §1.5, [multiplayer.md](multiplayer.md) |
 
 ### 1.2 Experiência essencial
 
@@ -696,7 +696,7 @@ Regras do Truco do PLAN §5 · Fichas × Mult com `steps` · parceiro + sinais +
 
 ### 18.3 Fora do escopo
 
-iOS · espanhol e outros idiomas · multiplayer · backend/contas/telemetria · newsletter · mapa de rotas e eventos de mapa · relíquias (cobertas pelas Melhorias) · dívida, investimento e agiota como sistema · superstições · confiança do parceiro, tilt, temperamento e pressão global · medidores psicológicos além da Fama (Respeito, Pressão) · desafios diários, contratos e modos alternativos · cartas com memória e carta de estimação (PLAN §1.5). Cortados no brainstorm para manter o jogo legível e viável para um dev solo; ficam como ideias futuras.
+iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a LAN da Partida Rápida existe: multiplayer.md) · backend/contas/telemetria · newsletter · mapa de rotas e eventos de mapa · relíquias (cobertas pelas Melhorias) · dívida, investimento e agiota como sistema · superstições · confiança do parceiro, tilt, temperamento e pressão global · medidores psicológicos além da Fama (Respeito, Pressão) · desafios diários, contratos e modos alternativos · cartas com memória e carta de estimação (PLAN §1.5). Cortados no brainstorm para manter o jogo legível e viável para um dev solo; ficam como ideias futuras.
 
 ### 18.4 Fases e histórico
 

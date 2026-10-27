@@ -66,9 +66,20 @@ Menu → Nova run (baralho inicial + parceiro + Estaca)
 - [x] Trailer de 1 minuto feito com [Remotion](https://www.remotion.dev/) para divulgação e anúncios — `trailer/out/` (60 s e teaser de 15 s, EN e PT-BR), no site; Steam quando a página da loja existir.
 - [~] Revisão final do diretor (`game-director-feedback.md`, 2026-10-25) executada na branch `release/1.0-game-director`; status por achado, pendências humanas e checklist de lançamento em [docs/game-director-implementation.md](docs/game-director-implementation.md).
 
+### 1.4.1 Multiplayer na rede local (pedido do usuário, 2026-10-27)
+
+Até 4 pessoas na Partida Rápida, em dupla ou não, com Colyseus; detalhes em [docs/multiplayer.md](docs/multiplayer.md).
+
+- [x] Servidor Colyseus autoritativo (`lan/`), `bun run lan-server`, lobby de 4 assentos com bots nos vazios, 30 s de reconexão.
+- [x] Visão girada e mascarada por jogador (`src/net/view.ts`) e `TableScene` em modo rede (`RemoteMatch`).
+- [x] Menu "Multiplayer na rede local": formulário, lobby com assento, apelido e retrato.
+- [x] Testes: partidas completas por um servidor real (`tests/lan.test.ts`) e a visão (`tests/net-view.test.ts`).
+- [x] Electron cria a mesa (`trucoShell.hostLan`); verificado o anfitrião entrando no próprio lobby.
+- [ ] Verificar entre dois computadores reais (Electron empacotado e Android): `ws://` de LAN sem bloqueio de conteúdo misto, firewall.
+
 ### 1.5 Fora do escopo até a 1.0
 
-iOS · espanhol e outros idiomas · multiplayer · backend, contas, telemetria · newsletter · mapa estilo Slay the Spire · relíquias, dívida, superstições, confiança do parceiro, tilt, pressão global, desafios diários, contratos (lista completa em GDD §18.3) · executável Bun de arquivo único.
+iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a **LAN com até 4 pessoas na Partida Rápida** entrou em 2026-10-27, [docs/multiplayer.md](docs/multiplayer.md)) · backend, contas, telemetria · newsletter · mapa estilo Slay the Spire · relíquias, dívida, superstições, confiança do parceiro, tilt, pressão global, desafios diários, contratos (lista completa em GDD §18.3) · executável Bun de arquivo único.
 
 ---
 
@@ -184,10 +195,12 @@ src/logic/     Lógica pura (sem Phaser), por turnos e com seed:
   rng.ts       mulberry32 (herdado)
                   ↓ estado + eventos
 src/game/      Orquestração: Table (uma mesa), Run (uma run), fila de eventos de domínio,
-               sim headless + bots (bom, aleatório) para balanceamento
+               sim headless + bots (bom, aleatório) para balanceamento; RemoteMatch (LAN)
+src/net/       Multiplayer LAN: protocolo, visão girada e mascarada, cliente Colyseus
+lan/           Servidor Colyseus da mesa LAN (sala, CLI); empacotado no Electron
                   ↓ eventos (Dealt, ViraRevealed, CardPlayed, TrickWon, TrucoCalled, …)
 src/scenes/    Boot, Preload, Menu, NewRun, Table, Shop, Pack, RunEnd, Almanac, Rules,
-               Tutorial, Settings, Controls, Pause
+               Tutorial, Settings, Controls, Pause, Lan (formulário e lobby)
 src/view/      CardView, HandView, SeatView (retrato + balão + sinal), ScoreCounter,
                ManhaStrip, BetMeter, FameMeter, TableFx
 src/ui/        Botões, painéis 9-slice, tooltip, MenuList, keys, touch (herdados)

@@ -26,6 +26,8 @@ const run = (cmd: string, argv: string[], cwd = '.') =>
 if (!args.includes('--skip-web')) {
 	run('bunx', ['--bun', 'vite', 'build']);
 }
+// The LAN table the desktop app can host: lan/server.ts bundled for Electron's Node.
+run('bun', ['build', 'lan/server.ts', '--target=node', '--outfile=desktop/build/lan-server.mjs']);
 if (!existsSync('desktop/node_modules')) run('bun', ['install'], 'desktop');
 // --exe builds the portable executable below (it leaves desktop/release/win-unpacked too).
 if (!args.includes('--exe'))
