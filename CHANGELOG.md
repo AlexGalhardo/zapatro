@@ -8,60 +8,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The engine, tooling and CI come from the previous game, Gridbound
 (`AlexGalhardo/tibia-roguelite-game`, branch `dev`, commit `f4fb29a`), whose history lives there.
 
-Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.12.0 (the next ones are 0.12.1 for a small fix and 0.13.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
+Since 2026-10-24 the project has 13 releases, numbered in order from 0.1.0 to 0.13.0 (the next ones are 0.13.1 for a small fix and 0.14.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, and 0.13.0 the painted look. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-27
+
 ### Added
 
-- **ui:** the Championship card on the felt has two mini-cards under the centred title: the table (Mesa 1, Mesa 2, Chefão) and what winning it pays right now (coin + "$N", "×2?" with Sheila), counting up in green or down in red when it changes; a quick match shows no prize. The value is `projectedReward` (`src/logic/run/run.ts`), built on the same `tableReward` the end of the table pays with, and a test compares both for every partner, stake and table.
-- **ui:** an "in play" box under Manilha/ZAP on the table lists what changes the current hand: the boss's rule, mão de 11 or mão de ferro, and each joker or special-card effect once its roulette has revealed it (icon, name and one line); it hides on a plain hand and clears every new hand (`src/view/hand-effects.ts`).
-- **art:** Art Bible v3 ("summer, sunset, Hawaii"): painted character cards and busts from `art-src/gta/` (`bun scripts/portraits.ts`: cards 480x640 and busts 256x256 WebP, backgrounds 1920x1080, card backs), replacing the pixel portraits of the ten renamed cast members (the old PNGs are kept in `art-src/backup-pixel/portrait/`). `ze` and the bosses keep the pixel art until new art arrives.
-- **ui:** `BackdropScene`, a bottom layer with a painted background under every screen (no more flat grey); the shop, the partner choice and the table have their own paintings and the main menu rotates `menu-1..3` every 7 s with a crossfade and a slow zoom (left/right keys or the dots change it by hand), over a dark panel that hides the logo and buttons painted into the art.
-- **ui:** a manual button (`?`, key F1) on the table opens the Rules book over the match and returns to it with no state lost.
-- **site:** painted sunset page background with a dark veil, in three WebP sizes by breakpoint.
-- **ui:** "Show key hints" in Settings (off by default, also for saves without the field): the keycaps on buttons, the focus Enter/✕ badge, the card keys and the key lines of Settings and Pause appear only when it is on; the shortcuts always work.
-- **ui:** one vector icon per secret signal (`icon.signal.<sign>`, `SIGNAL_ICON` in `src/art/icons.ts`): a plain face with only its gesture and a badge with the card it means (♣ zap, ♥, ♠, ♦, 3, ∅), the same in the Rules page and the signal picker.
-- **tools:** `scripts/gta-shots.ts` takes before/after captures of the menu, partner choice, shop and table (`docs/media/gta-before`, `gta-after`).
+- **art:** a new look, "summer, sunset, Hawaii": painted character cards for the whole cast and for the Rei do Truco, Sortuda, Agiota and Professor bosses; painted card backs, joker and special-card faces; a painted table felt and shop counter; six gameplay paintings drawn at random per table, and a main menu that rotates seven paintings.
+- **ui:** a manual button (`?`, F1) on the table opens the Rules over the match.
+- **ui:** an "in play" box on the table lists the hand's boss rule, mão de 11 or de ferro, and each joker or special-card effect once revealed.
+- **ui:** the Championship card on the felt shows the table (Mesa 1, Mesa 2, Chefão) and what winning it pays right now, counting up or down as the hand changes it.
+- **ui:** a vector icon for each secret signal, with the card it means; your partner now shows the exact gesture.
+- **ui:** "Show key hints" in Settings (off by default).
+- **tools:** `scripts/lan-smoke.ts` plays a full LAN session with two clients.
 
 ### Changed
 
-- **balance:** championship goals ×0.6 (130 · 170 · 220 · 270 · 350 · 440 · 550 · 700) so the good bot is back in the 20–35% band with the simple shop; `docs/balancing.md`.
-- **ui:** text and panels with depth, set in one place each: every text gets a shadow in a dark tone of its own colour by size (≥10: offset + blur + thin outline; 7–9: offset + light blur; ≤6: a faint blur; dark text on light buttons a faint light edge; big light numbers ≥12 a soft vertical gradient; `TEXT_LOOK` in `src/ui/text-depth.ts`, applied by the text factory hook); panels (`drawPanel`, `panelTex`) get the buttons' look: gradient from their colour, a top highlight, a thin dark border and a solid plus a soft shadow (`PANEL_LOOK` in `src/config/ui.ts`). Table FPS with the bot unchanged (17.1 → 17.2 text, 16.7 with panels, headless software rendering).
-- **ui:** the Rules book: the page list fills its column (one padding, one gap, equal heights); pages are text only, one sentence per line (`sentenceLines`, split at render, i18n unchanged), except Signals, which lists the six gestures as "icon Gesture = meaning"; every font is 25% larger; a page longer than its room scrolls (wheel, ↑/↓, drag) with a thin bar.
-- **ui:** the won table's panel shows the reward as cards: a green title in the screen-title look, one mini-card per payout line (Prize, Speed, Interest, Jhony when he is the partner, Table, Sheila ×2 when she doubles; $0 greyed, losses in red) and a gold-framed Total, coming in one by one with their numbers counting (at once with "reduce flashes"); the Total now includes Sheila's double; the payout itself is unchanged. The lost-table and quick-match panels share the new title.
-- **ui:** screen titles (Settings, Controls, Rules, LAN, partner choice, shop, pack, Pause, Almanac) look like the buttons: a vertical gradient from their gold, a thick dark outline, a solid extrusion a few px down and a soft shadow, drawn sharp at the screen's zoom by one helper (`addTitle`/`screenTitle` in `src/ui/title.ts`, texture `titleTex` in `src/art/title.ts`).
-- **ui:** a signal shown on a seat's card (partner, or a rival's caught one) is the bare signal icon, without the round cream backing; its dark outline keeps it readable on the felt and on the portrait. The picker and the manual already showed it bare.
-- **ui:** the table's sidebar opens with the HUD card (Manha slots spread over its width and shrinking to one row with Mais Manha, Fame, our tentos, their quedas); the Championship card moves to the felt's top right as "Campeonato N / Mesa 1 · Mesa 2 · Chefão" (EN "Table 1 · Table 2 · Boss"; the quick match keeps "Partida rápida"); the boss's rule lives in the "in play" box. The Manilha/ZAP box and the money card are hidden by flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL` in `src/config/features.ts`); the code stays.
-- **ui:** Settings in one style: vector icons only (`gear` and `sound` now drawn by code everywhere, the pixel ones are skipped; new `arrowLeft`, `arrowRight`, `chevron`), volumes as ◀ 80% ▶ rows in 10% steps like Language and Speed, one inner padding (`INSET`) for cards, rows, headers and Back, every row the same height and long labels shrink clear of their control.
-- **rules:** only the player answers the rivals' truco (accept, run or raise); the AI partner never does, but still calls truco on his turn by his style. The "Partner may run from a truco" option is gone (old saves ignore the field). LAN tables with a human partner keep answering per human.
-- **companions:** every old trait, level passive and signal bonus is gone. Each companion now has an exclusive roguelite Perk and Flaw that work only as the player's partner (`PARTNER_TRAITS`): Bruto +3 Mult per trick he wins / his cards worth half the Chips; Cida +$1 per hand won / shop items +$1; Jhony interest +$1 per $5 saved (max +$5) / the speed reward is halved; Nino +1 base Mult per table won / starts at -1; Zé cheapest offer of each Championship's first shop free / 1 Manha slot fewer; Mia manilhas +15 Chips / common cards -2; Chico +20 Chips per trick won with a club / hearts and diamonds -5; Beti the first Manha bought in each shop costs $1 less / Manhas +$1; Ayla ×1.5 Mult on the first two tricks / a lost hand costs $1; Sheila 1 in 4 table wins pays double / table goals +10%. No Manha, Simpatia, Lance or joker gave a signal-catching bonus, so none changed.
-- **ui:** the partner choice is three panels with the card over the full height (name in capitals on its footer) and Style, Perk and Flaw sub-cards; the table-choice screen is skipped (`TABLE_SELECT = false`); the shop sits on the painted chalkboard.
-- **net:** a `start` message that reaches an open LAN table rebuilds the table (portraits and names) instead of being queued as a deal.
-
-- **ui:** every character is now a rectangular 3:4 card (`charcard.<id>`): table seats, partner choice, run rivals and boss, end of run, Almanac and Rules; characters without painted art show the whole pixel portrait on their colour. The NPC hands use the whole 2:3 card-back painting (32×48), unstretched, and the big back and the joker face (`card-joker.png`) use the same 2:3 treatment.
-- **ui:** the main menu is the full painting like the concept art, with the game's buttons laid over the painted ones; speech bubbles clear of cards and portraits; the manual button replaces the Manha list.
-- **art:** the card back is painted (`card-1`; `card-2` and `card-3` for the Interior and Blefe decks) with the frame and corners still drawn by code; the table felt is painted (`board-game-1`) and tinted blue and red in the later Championships.
-- **ui:** the partner cards show the painted card art; the shop title sits on a plate over the painted counter.
-- **docs:** display names of the cast in the docs (Bruto, Cida, Jhony, Nino, Chico, Beti, Mia, Sheila, Ayla); ids in code unchanged. `docs/balancing.md` has the 1.0 balance review (no number changed).
-- **balance:** Jhony (`zeMalandro`): `bluffChips` [20, 40, 70] → [10, 20, 35] and `falseSignals` rate 0.5 → 0.7 (good bot 35% → 30% at 1000 runs); `tests/content-beta.test.ts` follows the new level-2 value. Details in `docs/balancing.md`.
-
-- **ui:** every painted backdrop except the main menu is darkened by one multiply tint (`BACKDROP_BRIGHTNESS` = 0.4 in `palette.ts`), so panels, cards and HUD stand out.
-- **ui:** buttons look like real keys: a deeper solid shadow (13 % of the height, 2 to 4 px), a vertical gradient from the button's own colour with a 1 px highlight and a thin dark edge; pressing sinks the whole depth with the gradient turned over (`SHADOW` in `src/config/ui.ts`).
-- **perf:** the painted character cards, the shop, partner and extra menu paintings and the painted backs and faces other than the standard deck load after the first screen (`LATER` in `BootScene`); the first web download goes from 9.39 MB to 7.55 MB (GD-017) and the drawn fallbacks are redrawn in place when the pictures land.
+- **rules:** only you answer the rivals' truco; your AI partner never accepts or runs, but still calls on his turn.
+- **companions:** the cast is renamed (Bruto, Cida, Jhony, Nino, Zé, Mia, Chico, Beti, Ayla, Sheila) and every companion has an exclusive roguelite Perk and Flaw that work only as your partner (money, Chips, Mult, shop prices, table goals); the old signal and truco traits are gone.
+- **cards:** the special cards are now Alpha, Betha and Zetha; J, Q and K show one big suit like the other cards.
+- **shop:** four offers on the chalkboard, each a card with its rarity (Normal, Rare, Special, Legendary), plus Next table; the table-choice screen is skipped and every run uses the normal deck at Stake 1.
+- **ui:** the partner choice shows three tall cards with Style, Perk and Flaw; the table sidebar starts with Manhas, Fame and quedas; the won-table panel shows each payout as a card with a gold Total.
+- **ui:** buttons, panels, titles and text have depth (gradient, outline, solid shadow); backgrounds behind the game are darkened; Settings uses vector icons and ◀ ▶ volumes; the Rules are larger, one sentence per line; the tutorial card is twice as large.
+- **balance:** championship goals are lower so a good player wins about a quarter of runs with the new shop.
+- **perf:** pictures not needed on the first screen load later; the first web download stays under 8 MB.
 
 ### Removed
 
-- **companions:** `Trait`, `src/game/traits.ts`, partner levels (except Nino's), `companion.trait.*` and `partner.*.passive` texts, the deck and Stake pickers of the partner screen (always the normal deck, Stake 1).
-
-- **data:** `SIGN_FACE` removed from `src/data/characters.ts` (no usage left).
-- **ui:** the hamburger button of the table (the Manha list tip) in favour of the manual button; the menu's drawn fan of cards.
+- The table's hamburger button, the deck and Stake pickers, and the "partner may run from a truco" option.
 
 ### Fixed
 
-- **art:** when the late pictures landed after the table was open, the hand's tilted cards were redrawn from their own `<key>@<deg>` key, so a special card showed "o@-8" as its rank and a tilted ♦ came out as ♣; tilted copies are now redrawn from their card key (`drawTilted`, shared with the table).
-- **net:** a player still on the end panel when the host started the next LAN match was left out and the match waited for them forever; back in the lobby the client now asks for the running table (`resync`). The LAN server checks the shape of every client message and drops garbage instead of failing on it.
-- **ui:** the painted backdrop now climbs above the table under Rules, Settings and Keybinds (Phaser's `moveBelow` never moved it up from the bottom); F1 also closes the manual; the Almanac opened from the shop shows the main painting.
+- LAN: a player still on the end panel when the next match starts now joins it, and the server ignores malformed messages instead of failing.
+- Rules, Settings and Keybinds no longer show the table through them.
+- Tilted cards in your hand no longer show a wrong rank or suit when late pictures arrive.
+- The shop no longer repeats an offer or draws the Next table button over the cards.
+- Scrolled Rules pages are no longer cut in half.
 
 ## [0.12.0] - 2026-10-27
 
@@ -600,7 +584,8 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/AlexGalhardo/zeta-c/releases/tag/v0.11.0
 [0.10.0]: https://github.com/AlexGalhardo/truco.lekzera.xyz/compare/v0.9.0...v0.10.0
