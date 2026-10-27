@@ -374,6 +374,43 @@ export class RunScene extends Phaser.Scene {
 		const x0 = cx - (3 * panelW + 2 * gap) / 2;
 		const [cw, ch] = [COVER_W, COVER_H];
 		const btnH = 24;
+		const sub = 4;
+		const tx = (i: number): number => x0 + i * (panelW + gap) + pad + cw + pad;
+		const tw = panelW - pad - cw - 2 * pad;
+		const cards = (id: CompanionId): { title: string; body: string; color: number }[] => [
+			{
+				title: t('partner.card.style'),
+				body: t(`partner.style.${COMPANIONS[id].style}` as I18nKey),
+				color: PALETTE.manilha,
+			},
+			{
+				title: t('partner.card.perk'),
+				body: t(`companion.${id}.perk` as I18nKey),
+				color: PALETTE.good,
+			},
+			{
+				title: t('partner.card.flaw'),
+				body: t(`companion.${id}.flaw` as I18nKey),
+				color: PALETTE.bad,
+			},
+		];
+		const SUB_PAD = 4;
+		// Each sub-card's height is that of the tallest of the three panels' in its row, so the
+		// rows line up across the panels.
+		const probe = (text: string, px: number): number => {
+			const o = this.put(0, 0, text, px, PALETTE.textLight, [0, 0], tw - 2 * SUB_PAD);
+			const h = o.height;
+			o.destroy();
+			return h;
+		};
+		const heights = [0, 1, 2].map((row) =>
+			Math.max(
+				...offer.map((id) => {
+					const c = cards(id)[row];
+					return SUB_PAD * 2 + probe(c?.title ?? '', 7) + 1 + probe(c?.body ?? '', 6.5);
+				}),
+			),
+		);
 		offer.forEach((id, i) => {
 			const px = x0 + i * (panelW + gap);
 			this.box(px, top, panelW, panelH);
@@ -382,29 +419,54 @@ export class RunScene extends Phaser.Scene {
 					.image(px + pad + cw / 2, top + pad + ch / 2, tex(this, `charcover.${id}`))
 					.setDisplaySize(cw, ch),
 			);
-			const tx = px + pad + cw + pad;
-			const tw = panelW - (tx - px) - pad;
-			// One text size for all: long texts wrap, they never shrink.
+			// The name on a dark strip at the foot of the card, as on the table seats.
+			const strip = this.add.graphics();
+			strip
+				.fillStyle(PALETTE.panelDark, 0.96)
+				.fillRoundedRect(px + pad, top + pad + ch - 17, cw, 17, {
+					tl: 0,
+					tr: 0,
+					bl: 5,
+					br: 5,
+				});
+			this.body.add(strip);
+			const name = this.put(
+				px + pad + cw / 2,
+				top + pad + ch - 8.5,
+				t(`char.${id}` as I18nKey),
+				8,
+				PALETTE.textLight,
+			);
+			while (name.width > cw - 6 && Number.parseInt(String(name.style.fontSize), 10) > 5)
+				name.setFontSize(Number.parseInt(String(name.style.fontSize), 10) - 1);
 			let ty = top + pad;
-			ty =
+			for (const [row, c] of cards(id).entries()) {
+				const h = heights[row] ?? 0;
+				const g = this.add.graphics();
+				g.fillStyle(PALETTE.panelLight, 1).fillRoundedRect(tx(i), ty, tw, h, RADIUS.button);
+				this.body.add(g);
+				const head = this.put(
+					tx(i) + SUB_PAD,
+					ty + SUB_PAD,
+					c.title,
+					7,
+					c.color,
+					[0, 0],
+					tw - 2 * SUB_PAD,
+				);
 				this.put(
-					tx,
-					ty,
-					t(`char.${id}` as I18nKey),
-					10,
+					tx(i) + SUB_PAD,
+					head.getBounds().bottom + 1,
+					c.body,
+					6.5,
 					PALETTE.textLight,
 					[0, 0],
-					tw,
-				).getBounds().bottom + 1;
-			const lines: [string, number][] = [
-				[t(`partner.style.${COMPANIONS[id].style}` as I18nKey), PALETTE.manilha],
-				[perkText(id), PALETTE.good],
-				[flawText(id), PALETTE.bad],
-			];
-			for (const [text, color] of lines)
-				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 3;
+					tw - 2 * SUB_PAD,
+				);
+				ty += h + sub;
+			}
 			this.button(
-				tx + tw / 2,
+				tx(i) + tw / 2,
 				top + panelH - pad - btnH / 2,
 				t('run.pick', { name: t(`char.${id}` as I18nKey) }),
 				() => this.choosePartner(id),
