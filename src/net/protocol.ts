@@ -33,6 +33,8 @@ export type ClientMessage =
 	| { type: 'profile'; name: string; char: string }
 	| { type: 'sit'; seat: Seat }
 	| { type: 'start' }
+	/** Back in the lobby while my match runs (I missed its `start`): send me the table again. */
+	| { type: 'resync' }
 	| { type: 'action'; action: Action };
 
 /** What a client needs to draw the table (seats as it sees them, seat 0 = itself). */

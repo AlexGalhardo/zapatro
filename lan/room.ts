@@ -24,6 +24,34 @@ const HAND_GAP_MS = 700;
 const SEATS = [0, 1, 2, 3] as const;
 type Seats = LobbyState['seats'];
 
+const str = (v: unknown): v is string => typeof v === 'string';
+
+/** The shape of a client message (`ClientMessage`); the match itself validates actions. */
+export function isMessage(m: unknown): m is ClientMessage {
+	if (typeof m !== 'object' || m === null) return false;
+	const o = m as Record<string, unknown>;
+	switch (o.type) {
+		case 'profile':
+			return str(o.name) && str(o.char);
+		case 'sit':
+			return SEATS.some((s) => s === o.seat);
+		case 'start':
+		case 'resync':
+			return true;
+		case 'action': {
+			const a = o.action as Record<string, unknown> | null;
+			return (
+				typeof a === 'object' &&
+				a !== null &&
+				str(a.kind) &&
+				SEATS.some((s) => s === a.seat)
+			);
+		}
+		default:
+			return false;
+	}
+}
+
 /** JSON drops `undefined` keys: msgpack would turn them into `null` and break `!== undefined`. */
 const wire = (m: ServerMessage): ServerMessage => JSON.parse(JSON.stringify(m));
 
@@ -52,7 +80,16 @@ export class TrucoRoom extends Room {
 	override onCreate(options: { botMs?: number; gapMs?: number } = {}): void {
 		this.botMs = options.botMs ?? BOT_MS;
 		this.gapMs = options.gapMs ?? HAND_GAP_MS;
-		this.onMessage('m', (client, msg: ClientMessage) => this.onClientMessage(client, msg));
+		this.onMessage('m', (client, msg: unknown) => {
+			// Anything on the network may be garbage: a bad message is dropped, never a crash.
+			if (!isMessage(msg)) return;
+			try {
+				this.onClientMessage(client, msg);
+			} catch (e) {
+				console.warn('[lan] message failed', e);
+				client.send('m', { type: 'rejected' });
+			}
+		});
 	}
 
 	override onJoin(client: Client, options: { name?: string; char?: string } = {}): void {
@@ -152,6 +189,9 @@ export class TrucoRoom extends Room {
 			}
 			case 'start':
 				if (!this.match && client.sessionId === this.host) this.startMatch();
+				break;
+			case 'resync':
+				this.sendStart(client.sessionId);
 				break;
 			case 'action':
 				this.onAction(client, seat as Seat, msg.action);

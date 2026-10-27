@@ -1,9 +1,11 @@
 import { afterAll, describe, expect, test } from 'bun:test';
+import { Client } from '@colyseus/sdk';
+import { isMessage } from '../lan/room';
 import { startLanServer } from '../lan/server';
 import { RemoteMatch } from '../src/game/remote-match';
 import { teamOf } from '../src/logic/truco/table';
 import { NetClient } from '../src/net/client';
-import type { LobbyState, ServerMessage } from '../src/net/protocol';
+import { type LobbyState, ROOM_NAME, type ServerMessage } from '../src/net/protocol';
 
 const servers: { stop: () => Promise<void> }[] = [];
 afterAll(async () => {
@@ -112,5 +114,61 @@ describe('LAN table', () => {
 		await until(() => pa.seat() >= 0 && pb.seat() >= 0);
 		b.leave();
 		await until(() => pa.match.winner !== null, 30000);
+	});
+
+	test('a player back in the lobby mid-match gets the table again (resync)', async () => {
+		const url = await serve();
+		const a = await NetClient.connect(url, 'Ana', 'bia');
+		const b = await NetClient.connect(url, 'Beto', 'joca');
+		const pa = player(a);
+		const seen: ServerMessage[] = [];
+		b.listen((m) => seen.push(m));
+		await until(() => a.lobby?.seats[1] != null);
+		a.send({ type: 'start' });
+		await until(() => seen.some((m) => m.type === 'start'));
+		seen.length = 0;
+		b.send({ type: 'resync' });
+		await until(() => seen.some((m) => m.type === 'start'));
+		expect(pa.seat()).toBe(0);
+		a.leave();
+		b.leave();
+	});
+
+	test('garbage messages are dropped and the server keeps serving', async () => {
+		const url = await serve();
+		const raw = await new Client(`ws://${url}`).join(ROOM_NAME, { name: 'X' });
+		for (const junk of [
+			null,
+			42,
+			'start',
+			{},
+			{ type: 'nope' },
+			{ type: 'profile', name: 7 },
+			{ type: 'sit', seat: 9 },
+			{ type: 'action' },
+			{ type: 'action', action: { kind: 'play', seat: 0, cardId: {} } },
+		])
+			raw.send('m', junk);
+		await Bun.sleep(100);
+		const net = await NetClient.connect(url, 'Late', 'tonhao');
+		await until(() => net.lobby !== null);
+		expect(net.lobby?.seats.filter(Boolean).length).toBe(2);
+		void raw.leave();
+		net.leave();
+	});
+
+	test('isMessage accepts only well-formed client messages', () => {
+		expect(isMessage({ type: 'start' })).toBe(true);
+		expect(isMessage({ type: 'action', action: { kind: 'fold', seat: 0 } })).toBe(true);
+		expect(isMessage({ type: 'profile', name: 'a', char: 'bia' })).toBe(true);
+		for (const m of [
+			null,
+			1,
+			'start',
+			{},
+			{ type: 'sit', seat: '1' },
+			{ type: 'action', action: null },
+		])
+			expect(isMessage(m)).toBe(false);
 	});
 });

@@ -86,11 +86,24 @@ export class LanScene extends Phaser.Scene {
 		this.client = client;
 		client.listen((m) => this.onMessage(m));
 		this.draw();
+		this.rejoin();
+	}
+
+	/**
+	 * Back in the lobby while a match I sit in runs (the host started the next one while I was
+	 * still on the last end panel): ask for the table, or the match would wait for me forever.
+	 */
+	private rejoin(): void {
+		const c = this.client;
+		if (!this.leaving && c?.lobby?.playing && c.lobby.seats.some((s) => s?.id === c.id))
+			c.send({ type: 'resync' });
 	}
 
 	private onMessage(m: ServerMessage): void {
-		if (m.type === 'lobby') this.draw();
-		else if (m.type === 'start' && this.client) {
+		if (m.type === 'lobby') {
+			this.draw();
+			this.rejoin();
+		} else if (m.type === 'start' && this.client) {
 			// From here the table's messages wait in the client until the table listens.
 			const client = this.client;
 			client.listen(null);

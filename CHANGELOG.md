@@ -42,6 +42,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Fixed
 
+- **net:** a player still on the end panel when the host started the next LAN match was left out and the match waited for them forever; back in the lobby the client now asks for the running table (`resync`). The LAN server checks the shape of every client message and drops garbage instead of failing on it.
 - **ui:** the painted backdrop now climbs above the table under Rules, Settings and Keybinds (Phaser's `moveBelow` never moved it up from the bottom); F1 also closes the manual; the Almanac opened from the shop shows the main painting.
 
 ## [0.12.0] - 2026-10-27

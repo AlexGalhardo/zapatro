@@ -1,7 +1,8 @@
 /**
  * LAN end-to-end smoke: a real server and two real browser pages play whole matches through the
- * game's own scenes (form, lobby, table, end panel, lobby), including a dropped connection, a
- * player who leaves mid-match and a fresh lobby afterwards. Exits non-zero on any failure or
+ * game's own scenes (form, lobby, table, end panel, lobby), including a player who comes back
+ * late to the next match, a dropped connection, a player who leaves mid-match and a fresh lobby
+ * afterwards. Exits non-zero on any failure or
  * console error. Not wired into CI yet.
  *   bun run build && bun scripts/lan-smoke.ts [--url http://localhost:5191] [--cli] [--shots docs/media/gta-after]
  * `--cli` runs the real `bun lan/cli.ts` (slow bots: a match takes minutes) instead of an
@@ -129,6 +130,7 @@ try {
 	await start(a, b);
 	await Bun.sleep(600);
 	if (shots) await a.screenshot({ path: `${shots}/05-table-lan-pt.png` });
+	if (shots) await b.screenshot({ path: `${shots}/05-table-lan-b-pt.png` });
 	await a.keyboard.press('F1');
 	await until(a, `window.__GAME__.scene.keys.Rules?.sys.isActive()`);
 	await Bun.sleep(2000);
@@ -138,12 +140,17 @@ try {
 	await until(a, ended, 240000);
 	await until(b, ended, 240000);
 	step('match 1 ended on both clients');
-	await toLobby(a);
-	await toLobby(b);
-	step('both back in the lobby after the match');
 
-	// Match 2: B's socket drops mid-match and the SDK reconnects.
-	await start(a, b);
+	// Match 2: A starts it while B still looks at the last end panel; B's way back is the lobby,
+	// which asks for the running table (resync). Then B's socket drops and the SDK reconnects.
+	await toLobby(a);
+	await a.evaluate(`${LAN}.client.send({ type: 'start' })`);
+	await until(a, onTable);
+	await Bun.sleep(800);
+	await b.evaluate(`${TABLE}.endPanel.list[2].click()`);
+	await until(b, `${onTable} && !${TABLE}.endPanel.visible`);
+	for (const p of [a, b]) await startBot(p);
+	step('B, still on the end panel when A started match 2, rejoined it from the lobby');
 	await Bun.sleep(1500);
 	await b.evaluate(`${TABLE}.net.client.room.connection.transport.ws.close(4010)`);
 	for (let i = 0; i < 100 && !reconnected.has('B'); i++) await Bun.sleep(100);

@@ -29,9 +29,9 @@ lan/server.ts         startLanServer(porta) e lanAddresses(); lan/cli.ts é o `b
 src/scenes/LanScene.ts  formulário (DOM) e lobby; src/scenes/TableScene.ts em modo rede
 ```
 
-- **Mensagens:** uma só chave Colyseus (`m`) com um objeto tipado (`ClientMessage` e `ServerMessage`), em JSON para que `undefined` não vire `null`. Sem Schema: um estado sincronizado vazaria as mãos.
+- **Mensagens:** uma só chave Colyseus (`m`) com um objeto tipado (`ClientMessage` e `ServerMessage`), em JSON para que `undefined` não vire `null`. Sem Schema: um estado sincronizado vazaria as mãos. O servidor confere o formato de cada mensagem (`isMessage` em `lan/room.ts`) e descarta o que não for `ClientMessage`; um erro ao tratar uma mensagem devolve `rejected` e nunca derruba a sala.
 - **Visão girada:** a cena sempre desenha "você" embaixo, então o servidor manda `viewState` e `viewEvent` girados. `legalActions` sobre a visão dá as mesmas ações do servidor com o assento girado, e `realAction` desfaz a rotação. Cartas viradas dos outros, sinais não flagrados e as mãos dos outros nunca saem do servidor (a mão do parceiro só na mão de 11 da dupla; todas, após o `showdown` do coringa).
-- **Mesa:** `TableScene` ganha `net`. `pump` não decide pelas IAs (o servidor joga os bots, com 800 ms de pausa) nem dá a mão seguinte; cada `step` ou `deal` entra numa fila e anima com as mesmas animações da partida local. O botão do fim volta ao lobby.
+- **Mesa:** `TableScene` ganha `net`. `pump` não decide pelas IAs (o servidor joga os bots, com 800 ms de pausa) nem dá a mão seguinte; cada `step` ou `deal` entra numa fila e anima com as mesmas animações da partida local. O botão do fim volta ao lobby. Se o anfitrião já começou a partida seguinte enquanto alguém olhava o painel do fim, esse jogador volta ao lobby e a `LanScene` pede a mesa de novo (`resync`): o servidor reenvia o `start` e ele entra na partida em andamento.
 - **Queda:** `onDrop` segura o assento por `RECONNECT_S`; sem volta, `onLeave` coloca um bot. Se sobra ninguém, a partida acaba e o lobby reabre.
 
 ## Testar
@@ -42,7 +42,7 @@ bun run dev                        # cada jogador abre o jogo e escolhe "Multipl
 bun test tests/lan.test.ts tests/net-view.test.ts
 ```
 
-`scripts/lan-smoke.ts` é o teste de ponta a ponta no navegador (fora do CI por enquanto): depois de `bun run build`, `bun scripts/lan-smoke.ts [--shots pasta] [--cli]` serve o `dist/` (`--url` usa outro servidor, mas um servidor de dev recarrega as páginas quando alguém edita um arquivo) e sobe o servidor (ou, com `--cli`, o `lan/cli.ts` de verdade, com bots lentos), abre dois clientes Playwright e joga três partidas inteiras pelas cenas do jogo: formulário, lobby, mesa com bots jogando ações aleatórias (truco, aceitar, correr, sinal), manual (F1) aberto sobre a mesa, fim, volta ao lobby; uma queda de socket com reconexão (código 4010); uma saída no meio (um bot assume); e um lobby novo depois que todos saíram. Falha com erros de console de qualquer cliente ou do servidor.
+`scripts/lan-smoke.ts` é o teste de ponta a ponta no navegador (fora do CI por enquanto): depois de `bun run build`, `bun scripts/lan-smoke.ts [--shots pasta] [--cli]` serve o `dist/` (`--url` usa outro servidor, mas um servidor de dev recarrega as páginas quando alguém edita um arquivo) e sobe o servidor (ou, com `--cli`, o `lan/cli.ts` de verdade, com bots lentos), abre dois clientes Playwright e joga três partidas inteiras pelas cenas do jogo: formulário, lobby, mesa com bots jogando ações aleatórias (truco, aceitar, correr, sinal), manual (F1) aberto sobre a mesa, fim, volta ao lobby; a partida seguinte começada enquanto o outro cliente ainda está no painel do fim (ele volta pelo lobby com `resync`); uma queda de socket com reconexão (código 4010); uma saída no meio (um bot assume); e um lobby novo depois que todos saíram. Falha com erros de console de qualquer cliente ou do servidor.
 
 `tests/lan.test.ts` sobe um servidor real e joga partidas completas com clientes do SDK (lobby, 1 pessoa + 3 bots, 4 pessoas, saída no meio). `tests/net-view.test.ts` cobre a rotação e o que fica escondido.
 
