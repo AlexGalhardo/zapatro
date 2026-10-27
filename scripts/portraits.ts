@@ -161,7 +161,9 @@ async function scenery(): Promise<void> {
 	await table();
 	for (const [name, file] of Object.entries(BACKGROUNDS))
 		await sharp(`${SRC_GTA}/${file}`)
-			.resize(1920, 1080, { fit: 'cover' })
+			// The menu paintings keep their own aspect (menu-2 is 1600×941): the UI painted into
+			// them is laid over in their pixels (src/view/menu-backdrop.ts).
+			.resize(1920, name.startsWith('menu-') ? undefined : 1080, { fit: 'cover' })
 			.webp({ quality: 78 })
 			.toFile(`${G}/bg/${name}.webp`);
 	for (const [name, file] of Object.entries(BACKS))

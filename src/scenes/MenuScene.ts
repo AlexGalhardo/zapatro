@@ -1,7 +1,5 @@
 import Phaser from 'phaser';
-import { titleTex } from '../art/title';
 import { PALETTE, toCss } from '../config/palette';
-import { BUTTON_H, GAP } from '../config/ui';
 import { sfx } from '../core/audio';
 import { getSave } from '../core/context';
 import { playAmbience, playMusic } from '../core/music';
@@ -15,13 +13,10 @@ import { onKey, onSceneEvent } from '../ui/keys';
 import { fadeTo, text } from '../ui/screen';
 import { uiPx } from '../ui/touch';
 import { buildLabel } from '../ui/version-footer';
-import { MenuBackdrop } from '../view/menu-backdrop';
+import { MenuBackdrop, type MenuFrame } from '../view/menu-backdrop';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
 
-/** The button column (references/concept-art/flat/screen-menu.png): centre x, first row, step, size. */
-/** The button column: primary height, list gap (8 rows with Quit still clear the stage's base). */
-const COLUMN = { x: 157, y: 124, step: BUTTON_H.primary + GAP.list, w: 168, h: BUTTON_H.primary };
 /** Brown of the secondary rows (screen-menu.png). */
 const BROWN = 0x4a3b30;
 
@@ -99,53 +94,55 @@ export class MenuScene extends Phaser.Scene {
 		// A saved run: Enter resumes it.
 		this.focus = saved ? 1 : 0;
 
-		const backdrop = new MenuBackdrop(this, { x: 320, y: 326 });
+		// Logo and buttons are drawn over the ones painted into the backdrop, in the same place.
+		let layer: Phaser.GameObjects.GameObject[] = [];
+		let buttons: Button[] = [];
+		const build = (f: MenuFrame): void => {
+			for (const o of layer) o.destroy();
+			const { col } = f.geo;
+			const h = col.h * f.k;
+			buttons = rows.map((row, i) =>
+				new Button(
+					this,
+					t(row.label),
+					() => {
+						this.focus = i;
+						row.onSelect();
+					},
+					{
+						w: col.w * f.k,
+						h,
+						size: Math.max(7, Math.round(h * 0.48)),
+						color: row.color ?? BROWN,
+						left: Math.max(6, Math.round(h * 0.4)),
+						onHover: () => this.move(rows, i - this.focus, true),
+					},
+				)
+					.setPosition(
+						f.x + (col.x + col.w / 2) * f.k,
+						f.y + (col.y0 + i * col.step) * f.k + h / 2,
+					)
+					.setEnabled(!row.disabled),
+			);
+			layer = [...buttons];
+			version.setPosition(f.view.x + f.view.width - 6, f.view.y + f.view.height - 4);
+			this.redraw();
+		};
+		const backdrop = new MenuBackdrop(this, build);
 		onKey(this.input.keyboard, 'keydown-LEFT', () => backdrop.step(-1));
 		onKey(this.input.keyboard, 'keydown-RIGHT', () => backdrop.step(1));
-		// Title: sunset-gradient lettering that fits the dark panel (its edge is MENU_PANEL_MIN).
-		this.add
-			.image(
-				COLUMN.x - COLUMN.w / 2 - 6,
-				67,
-				titleTex(this, t('game.title').toUpperCase(), 196),
-			)
-			.setOrigin(0, 0.5);
-		// Nine rows (desktop with LAN and Quit) squeeze together to stay above the stage's base.
-		const tight = rows.length > 8;
-		const step = tight ? COLUMN.step - 2 : COLUMN.step;
-		const top = tight ? COLUMN.y - 6 : COLUMN.y;
-		const buttons = rows.map((row, i) =>
-			new Button(
-				this,
-				t(row.label),
-				() => {
-					this.focus = i;
-					row.onSelect();
-				},
-				{
-					w: COLUMN.w,
-					h: COLUMN.h,
-					size: 12,
-					color: row.color ?? BROWN,
-					left: true,
-					onHover: () => this.move(rows, i - this.focus, true),
-				},
-			)
-				.setPosition(COLUMN.x, top + i * step)
-				.setEnabled(!row.disabled),
-		);
 		this.redraw = () => {
 			for (const [i, b] of buttons.entries()) b.setFocus(i === this.focus);
 		};
-		this.add
-			.text(320, 345, buildLabel(__APP_VERSION__, import.meta.env.DEV, __BUILD_NAME__), {
+		const version = this.add
+			.text(0, 0, buildLabel(__APP_VERSION__, import.meta.env.DEV, __BUILD_NAME__), {
 				fontFamily: UI_FONT,
 				fontSize: `${uiPx(8)}px`,
 				fontStyle: '700',
 				color: toCss(PALETTE.textLight),
 				shadow: TEXT_SHADOW,
 			})
-			.setOrigin(0.5, 1);
+			.setOrigin(1, 1);
 		this.add
 			.text(
 				470,
