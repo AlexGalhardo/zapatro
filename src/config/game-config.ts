@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { AlmanacScene } from '../scenes/AlmanacScene';
+import { BackdropScene } from '../scenes/BackdropScene';
 import { BootScene } from '../scenes/BootScene';
 import { KeybindsScene } from '../scenes/KeybindsScene';
 import { LanScene } from '../scenes/LanScene';
@@ -28,6 +29,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
 	disableContextMenu: true,
 	scene: [
 		BootScene,
+		BackdropScene,
 		MenuScene,
 		RunScene,
 		TableScene,

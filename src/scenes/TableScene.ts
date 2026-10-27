@@ -71,7 +71,8 @@ import { fadeTo } from '../ui/screen';
 import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { comfort } from '../view/comfort';
-import { addBackdrop, artToView, fitCamera } from '../view/stage';
+import { artToView, fitCamera } from '../view/stage';
+import { setBackdrop } from './BackdropScene';
 
 const CALL_KEY: Record<number, I18nKey> = {
 	3: 'table.call.3',
@@ -648,15 +649,21 @@ export class TableScene extends Phaser.Scene {
 		return tex(this, key);
 	}
 
-	/** The room's wall colour around a felt table with a wooden rim; the deck on the felt. */
+	/** The painted felt (public/assets/gfx/bg/table.webp) with a soft shadow; flat felt if it is missing. */
 	private drawTable(): void {
-		const bg = addBackdrop(this, 'felt');
-		bg.fillStyle(PALETTE.bgNeutral, 1).fillRect(-2000, -2000, 4640, 4360);
+		setBackdrop(this, 'main');
 		const { x, y, w, h } = FELT;
 		const g = this.add.graphics();
 		g.fillStyle(PALETTE.shadow, 0.55).fillRoundedRect(x, y + 3, w, h, 12);
-		g.fillStyle(this.feltColor(), 1).fillRoundedRect(x, y, w, h, 12);
-		g.lineStyle(2, shade(this.feltColor(), -0.3), 1).strokeRoundedRect(x, y, w, h, 12);
+		if (!this.textures.exists('img.bg.table')) {
+			g.fillStyle(this.feltColor(), 1).fillRoundedRect(x, y, w, h, 12);
+			g.lineStyle(2, shade(this.feltColor(), -0.3), 1).strokeRoundedRect(x, y, w, h, 12);
+			return;
+		}
+		const board = this.add.image(x + w / 2, y + h / 2, 'img.bg.table').setDisplaySize(w, h);
+		// The painting is green: later Championships tint it blue and red (docs/visual.md §3).
+		const champ = this.runState?.champ ?? getParams(this).champ ?? 1;
+		if (champ > 3) board.setTint(champ <= 6 ? 0x6f9bff : 0xff7a6a);
 	}
 
 	/** Felt by Championship: green 1–3, blue 4–6, red 7–8 (docs/visual.md §3). */

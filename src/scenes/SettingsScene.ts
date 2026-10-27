@@ -21,7 +21,7 @@ import { text } from '../ui/screen';
 import { screenTitle } from '../ui/title';
 import { applyTouch, byMode, touchUi, uiPx } from '../ui/touch';
 import { applyComfort } from '../view/comfort';
-import { addBackdrop, fitCamera } from '../view/stage';
+import { fitCamera } from '../view/stage';
 
 const cycle = <T>(list: readonly T[], cur: T, dir: -1 | 1): T =>
 	list[(list.indexOf(cur) + dir + list.length) % list.length] as T;
@@ -89,9 +89,7 @@ export class SettingsScene extends Phaser.Scene {
 	create(): void {
 		this.scene.bringToTop();
 		const cam = this.cameras.main;
-		cam.setBackgroundColor(PALETTE.bgNeutral);
 		cam.fadeIn(160, 5, 5, 8);
-		addBackdrop(this);
 		const s = getSave(this).settings;
 		const vol = (key: 'master' | 'music' | 'sfx' | 'ui', dir: -1 | 1) => {
 			s.volume[key] =

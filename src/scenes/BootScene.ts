@@ -68,6 +68,7 @@ export class BootScene extends Phaser.Scene {
 		registerPortraits(this);
 		createArt(this);
 		pokiLoaded();
+		this.scene.launch('Backdrop');
 		const params = getParams(this);
 		if (params.run) this.scene.launch('Run', { fresh: true });
 		else this.scene.launch(params.skipMenu ? 'Table' : 'Menu');

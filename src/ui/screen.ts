@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { PALETTE, toCss } from '../config/palette';
 import { trackZoom } from '../core/viewport';
 import type { ViewSize } from '../logic/viewport';
+import { setBackdrop } from '../scenes/BackdropScene';
 import { menuPx, TEXT_SHADOW, TITLE_FONT, UI_FONT, UI_WEIGHT } from './font';
 import { uiPx } from './touch';
 import { addVersionFooter } from './version-footer';
@@ -31,8 +32,8 @@ export function setupScreen(
 	// from a screen registered after them (GameOver) they were drawn *under* its opaque
 	// background and the game looked frozen. The screen being opened always goes on top.
 	scene.scene.bringToTop();
+	setBackdrop(scene, 'main');
 	const cam = scene.cameras.main;
-	cam.setBackgroundColor(PALETTE.bgNeutral);
 	cam.fadeIn(160, 5, 5, 8);
 	const heading = scene.add
 		.text(0, 0, noLigatures(title), {

@@ -15,7 +15,8 @@ import { onKey, onSceneEvent } from '../ui/keys';
 import { fadeTo, text } from '../ui/screen';
 import { uiPx } from '../ui/touch';
 import { buildLabel } from '../ui/version-footer';
-import { addBackdrop, fitCamera } from '../view/stage';
+import { fitCamera } from '../view/stage';
+import { setBackdrop } from './BackdropScene';
 
 /** The button column (references/concept-art/flat/screen-menu.png): centre x, first row, step, size. */
 /** The button column: primary height, list gap (8 rows with Quit still clear the stage's base). */
@@ -46,13 +47,13 @@ export class MenuScene extends Phaser.Scene {
 		playMusic(this, 'music.menu');
 		playAmbience(this, null);
 		this.scene.bringToTop();
+		setBackdrop(this, 'main');
 		const cam = this.cameras.main;
 		// Settings may switch the language while the menu waits paused under it: rebuild on return.
 		const lang = getLang();
 		onSceneEvent(this, 'resume', () => {
 			if (getLang() !== lang) this.scene.restart();
 		});
-		cam.setBackgroundColor(PALETTE.bgNeutral);
 		cam.fadeIn(160, 5, 5, 8);
 		const status = this.game.registry.get('saveStatus') as
 			| { recovered: boolean; unavailable: boolean }
@@ -97,7 +98,6 @@ export class MenuScene extends Phaser.Scene {
 		// A saved run: Enter resumes it.
 		this.focus = saved ? 1 : 0;
 
-		addBackdrop(this);
 		this.add.image(439, 207, canvasTex(this, 'menu.fan', MENU_FAN.w, MENU_FAN.h, drawMenuFan));
 		// Title: gold letters, a dark outline and a solid drop under them.
 		this.add

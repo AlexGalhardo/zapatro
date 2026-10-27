@@ -132,7 +132,6 @@ const BACKGROUNDS: Record<string, string> = {
 	'menu-3': 'menu-3.jpeg',
 	shop: 'shop2.jpeg',
 	partner: 'background-1.png',
-	table: 'board-game-1.jpeg',
 	main: 'background-3.png',
 };
 /** Card backs: 2:3 art cropped to the middle 3:4 (the card is 48×64). */
@@ -142,7 +141,24 @@ const BACKS: Record<string, string> = {
 	blefe: 'card-3.png',
 };
 
+/** The felt of the table scene (487×348 stage px at 2×): the board without its own rim, rounded. */
+async function table(): Promise<void> {
+	const [w, h] = [974, 696];
+	const inner = await sharp(`${SRC_GTA}/board-game-1.jpeg`)
+		.extract({ left: 20, top: 20, width: 1560, height: 850 })
+		.resize(w, h, { fit: 'cover' })
+		.toBuffer();
+	const mask = Buffer.from(
+		`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="24" fill="#fff"/></svg>`,
+	);
+	await sharp(inner)
+		.composite([{ input: mask, blend: 'dest-in' }])
+		.webp({ quality: 82 })
+		.toFile(`${G}/bg/table.webp`);
+}
+
 async function scenery(): Promise<void> {
+	await table();
 	for (const [name, file] of Object.entries(BACKGROUNDS))
 		await sharp(`${SRC_GTA}/${file}`)
 			.resize(1920, 1080, { fit: 'cover' })

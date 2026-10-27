@@ -17,7 +17,7 @@ import { onKey } from '../ui/keys';
 import { drawPanel } from '../ui/panel';
 import { screenTitle } from '../ui/title';
 import { applyTouch, byMode, uiPx } from '../ui/touch';
-import { addBackdrop, fitCamera } from '../view/stage';
+import { fitCamera } from '../view/stage';
 
 /**
  * Settings → Controls (BUGS.md M-02):
@@ -96,14 +96,12 @@ export class KeybindsScene extends Phaser.Scene {
 	create(): void {
 		this.scene.bringToTop();
 		const cam = this.cameras.main;
-		cam.setBackgroundColor(PALETTE.bgNeutral);
 		const s = getSave(this).settings;
 		const keys = s.keys;
 		const slot = Object.fromEntries(ACTIONS.map((a) => [a, 0])) as Record<Action, 0 | 1>;
 		let waiting: Action | null = null;
 		let focus = 0;
 
-		addBackdrop(this);
 		screenTitle(this, 320, t('keys.title'), 'gamepad');
 		for (const panel of [LEFT, RIGHT]) {
 			const g = this.add.graphics();

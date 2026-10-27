@@ -67,6 +67,7 @@ import { screenTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { uiPx } from '../ui/touch';
 import { fitCamera } from '../view/stage';
+import { setBackdrop } from './BackdropScene';
 
 /** Width of the Deck and Stake pickers on the partner screen. */
 const PICKER_W = 148;
@@ -205,6 +206,7 @@ export class RunScene extends Phaser.Scene {
 		this.body.removeAll(true);
 		this.tipText?.setVisible(false);
 		const run = this.run;
+		setBackdrop(this, !run ? 'partner' : run.phase === 'shop' ? 'shop' : 'main');
 		this.msg.setPosition(this.cx, this.h - 6);
 		if (!run) {
 			this.drawPartners();

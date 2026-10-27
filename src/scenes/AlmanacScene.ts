@@ -21,7 +21,7 @@ import { buttonNav } from '../ui/nav';
 import { drawPanel } from '../ui/panel';
 import { fadeTo } from '../ui/screen';
 import { touchUi, uiPx } from '../ui/touch';
-import { addBackdrop, fitCamera } from '../view/stage';
+import { fitCamera } from '../view/stage';
 
 const TABS = ['manhas', 'bosses', 'partners', 'decks', 'feats', 'stats'] as const;
 type Tab = (typeof TABS)[number];
@@ -82,10 +82,8 @@ export class AlmanacScene extends Phaser.Scene {
 		// window) shows the whole Almanac instead of cutting its sides off.
 		this.scene.bringToTop();
 		const cam = this.cameras.main;
-		cam.setBackgroundColor(PALETTE.bgNeutral);
 		cam.fadeIn(160, 5, 5, 8);
 		// Under the body container, which was created first.
-		addBackdrop(this).setDepth(-1);
 		trackZoom(this, cam, (view) => {
 			fitCamera(cam, view);
 			this.draw();
