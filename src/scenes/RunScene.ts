@@ -363,7 +363,7 @@ export class RunScene extends Phaser.Scene {
 		const { cx } = this;
 		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
-		const [rowW, rowH, gap, top] = [616, 90, 3, 43];
+		const [rowW, rowH, gap, top] = [384, 90, 3, 43];
 		const x0 = cx - rowW / 2;
 		offer.forEach((id, i) => {
 			const y = top + i * (rowH + gap);
@@ -389,30 +389,20 @@ export class RunScene extends Phaser.Scene {
 						][])
 					: []),
 			];
-			// About twice the old text size (6.5 px, name 11): the biggest size whose lines fit the
-			// row once wrapped to the text block; smaller only when a long (English) text needs it.
-			for (const px of [13, 12, 11, 10, 9, 8, 7, 6.5]) {
-				const made: Phaser.GameObjects.Text[] = [];
-				let ty = y + 5;
-				const name = this.put(
-					tx,
-					ty,
-					t(`char.${id}` as I18nKey),
-					Math.min(18, px * 1.5),
-					PALETTE.textLight,
-					[0, 0],
-					tw,
-				);
-				made.push(name);
-				ty = name.getBounds().bottom + 1;
-				for (const [text, color] of lines) {
-					const line = this.put(tx, ty, text, px, color, [0, 0], tw);
-					made.push(line);
-					ty = line.getBounds().bottom + 1;
-				}
-				if (ty <= y + rowH - 3 || px === 6.5) break;
-				for (const m of made) m.destroy();
-			}
+			// One size for every card: long texts wrap, they never shrink.
+			let ty = y + 6;
+			const name = this.put(
+				tx,
+				ty,
+				t(`char.${id}` as I18nKey),
+				10,
+				PALETTE.textLight,
+				[0, 0],
+				tw,
+			);
+			ty = name.getBounds().bottom + 1;
+			for (const [text, color] of lines)
+				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 2;
 			this.button(
 				x0 + rowW - btnW / 2 - 6,
 				y + rowH / 2,
@@ -425,7 +415,7 @@ export class RunScene extends Phaser.Scene {
 		});
 		// Back and the partner-folds toggle: one row centred under the partners.
 		const backW = 100;
-		const foldW = rowW - backW - GAP.card;
+		const foldW = 250;
 		const row = cx - (backW + GAP.card + foldW) / 2;
 		const by = top + 3 * (rowH + gap) + 14;
 		this.button(

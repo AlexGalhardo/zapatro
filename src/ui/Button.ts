@@ -46,6 +46,7 @@ export class Button extends Phaser.GameObjects.Container {
 	private readonly iconImg: Phaser.GameObjects.Image | null = null;
 	private hintFn: (() => string) | undefined;
 	private focusHint = true;
+	private hintInside = false;
 	private shownMode: HintMode | null = null;
 	private shownHints = comfort.keyHints;
 	private focused = false;
@@ -71,6 +72,8 @@ export class Button extends Phaser.GameObjects.Container {
 			iconScale?: number;
 			/** Tapped or clicked while disabled (a price you cannot pay): explain why. */
 			onBlocked?: () => void;
+			/** true: the keycap stays inside however narrow the button is (icon-only buttons). */
+			hintInside?: boolean;
 			/** false: no "Enter" keycap while focused (tab bars, where it would squeeze the label). */
 			focusHint?: boolean;
 		} = {},
@@ -125,6 +128,7 @@ export class Button extends Phaser.GameObjects.Container {
 		this.add(this.hit);
 		this.hintFn = opts.hint;
 		this.focusHint = opts.focusHint ?? true;
+		this.hintInside = opts.hintInside ?? false;
 		const check = () => {
 			if (this.shownMode !== hintMode() || this.shownHints !== comfort.keyHints)
 				this.refreshHint();
@@ -208,7 +212,7 @@ export class Button extends Phaser.GameObjects.Container {
 	private fit(): void {
 		const shown = this.badge.visible && this.badge.text !== '';
 		// Small buttons (◀ ▶) keep their label: the keycap goes under them instead.
-		const below = shown && this.bw < this.badge.width + 24;
+		const below = shown && !this.hintInside && this.bw < this.badge.width + 24;
 		const badge = shown && !below ? this.badge.width + 3 : 0;
 		let size = this.size;
 		this.label.setFontSize(size);

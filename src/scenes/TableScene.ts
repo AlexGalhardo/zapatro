@@ -200,6 +200,9 @@ const SIDE = {
 	bar: [324, 30],
 } as const satisfies Record<string, number | readonly [number, number]>;
 
+/** Inner width of a sidebar card: its width minus the same padding on both sides (`SIDEBAR.pad`). */
+const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
+
 /** Top of each sidebar card's label. */
 const SIDE_LABEL = 7;
 
@@ -927,18 +930,21 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			new Button(this, label, fn, {
 				w,
 				h: 30,
-				size: 12,
+				size: 10,
+				hintInside: true,
 				...(key ? { hint: key } : {}),
 			})
 				.setPosition(SIDE.x + x + w / 2, SIDE.bar[0] + SIDE.bar[1] / 2)
 				.setDepth(DEPTH.controls);
-		bar('⚙', () => this.openPause('Settings'), 0, 30);
-		bar('II', () => this.openPause(), 33, 52, hint('pause'));
+		// Three equal buttons spanning the sidebar's width, 3 px apart.
+		const barW = (SIDE.w - 2 * 3) / 3;
+		bar('⚙', () => this.openPause('Settings'), 0, barW);
+		bar('II', () => this.openPause(), barW + 3, barW, hint('pause'));
 		bar(
 			'?',
 			() => this.openPause('Rules'),
-			88,
-			44,
+			2 * (barW + 3),
+			barW,
 			() => keyHint('F1'),
 		);
 		this.signPicker = this.add.container(0, 0).setDepth(DEPTH.pickers).setVisible(false);
@@ -1220,10 +1226,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const called = m.state.bet > 1 || m.state.pending !== null;
 		if (called) g.fillStyle(PALETTE.truco, 1).fillRoundedRect(lx, SIDE.bet[0] + 18, 25, 20, 5);
 		for (let i = 0; i < 12; i++) {
-			const x = lx + 5 + (i % 6) * 20.5;
-			const y = SIDE.theirs[0] + 29 + Math.floor(i / 6) * 14;
-			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, 5);
-			else g.lineStyle(1.5, PALETTE.panelLight, 1).strokeCircle(x, y, 5);
+			// Six dots spread over the inner width (the panel's padding on both sides), two rows
+			// whose bottom padding matches.
+			const r = 4.5;
+			const x = lx + r + (i % 6) * ((SIDE_INNER_W - 2 * r) / 5);
+			const y = SIDE.theirs[0] + 24.5 + Math.floor(i / 6) * 13;
+			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, r);
+			else g.lineStyle(1.5, PALETTE.panelLight, 1).strokeCircle(x, y, r);
 		}
 		const fy = HUD.y + 38;
 		const fw = HUD.w - HUD_PAD - 38;
