@@ -8,10 +8,12 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 
 /**
  * Poki build (B5.4): the first download must stay under 8 MB, so the ambiences of the later
- * Championships, the final music and the voice barks stay out (the speech bubbles remain).
+ * Championships, the final music and the voice barks stay out (the speech bubbles remain), and so
+ * do the extra paintings: the menu keeps menu-1 and the table the always-loaded backdrops.
  */
 const POKI = ['1', 'true'].includes(process.env.VITE_POKI ?? '');
-const POKI_SKIP = /audio\/(sfx|music)\/(amb\.(?!boteco)[^/]+|music\.king[^/]*|vo\.[^/]+)$/;
+const POKI_SKIP =
+	/(audio\/(sfx|music)\/(amb\.(?!boteco)[^/]+|music\.king[^/]*|vo\.[^/]+)|gfx\/bg\/(menu-[2-9]|bg\d|street)\.webp)$/;
 
 /** Files under public/assets (relative, e.g. "assets/ui/x.png"): Boot loads only what exists. */
 function assetFiles(dir = 'public/assets'): string[] {
@@ -48,11 +50,11 @@ export default defineConfig({
 			apply: 'build',
 			closeBundle() {
 				if (!POKI) return;
-				for (const kind of ['sfx', 'music']) {
-					const dir = `dist/assets/audio/${kind}`;
+				for (const kind of ['audio/sfx', 'audio/music', 'gfx/bg']) {
+					const dir = `dist/assets/${kind}`;
 					if (!existsSync(dir)) continue;
 					for (const f of readdirSync(dir))
-						if (POKI_SKIP.test(`audio/${kind}/${f}`)) rmSync(`${dir}/${f}`);
+						if (POKI_SKIP.test(`${kind}/${f}`)) rmSync(`${dir}/${f}`);
 				}
 			},
 		},
