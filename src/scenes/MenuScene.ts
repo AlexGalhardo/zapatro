@@ -22,6 +22,8 @@ const BROWN = 0x4a3b30;
 
 interface Row {
 	label: I18nKey;
+	/** Icon (`icon.<name>`) at the left of the label. */
+	icon: string;
 	onSelect: () => void;
 	disabled?: boolean;
 	/** Accent colour (the main actions); the rest are neutral. */
@@ -58,11 +60,13 @@ export class MenuScene extends Phaser.Scene {
 		const rows: Row[] = [
 			{
 				label: 'menu.newRun',
+				icon: 'next',
 				color: PALETTE.manilha,
 				onSelect: () => fadeTo(this, 'Run', { fresh: true }),
 			},
 			{
 				label: 'menu.continue',
+				icon: 'refresh',
 				color: PALETTE.good,
 				disabled: !saved,
 				onSelect: () =>
@@ -70,21 +74,33 @@ export class MenuScene extends Phaser.Scene {
 			},
 			{
 				label: 'menu.quick',
+				icon: 'cards',
 				color: PALETTE.calm,
 				onSelect: () => fadeTo(this, 'Table', { run: false }),
 			},
 			...(lanAvailable()
-				? [{ label: 'menu.lan' as const, onSelect: () => fadeTo(this, 'Lan') }]
+				? [
+						{
+							label: 'menu.lan' as const,
+							icon: 'people',
+							onSelect: () => fadeTo(this, 'Lan'),
+						},
+					]
 				: []),
-			{ label: 'menu.tutorial', onSelect: () => fadeTo(this, 'Table', { tutorial: true }) },
-			{ label: 'menu.almanac', onSelect: () => fadeTo(this, 'Almanac') },
-			{ label: 'menu.rules', onSelect: () => fadeTo(this, 'Rules') },
-			{ label: 'menu.settings', onSelect: () => this.openOverlay('Settings') },
+			{
+				label: 'menu.tutorial',
+				icon: 'hand',
+				onSelect: () => fadeTo(this, 'Table', { tutorial: true }),
+			},
+			{ label: 'menu.almanac', icon: 'book', onSelect: () => fadeTo(this, 'Almanac') },
+			{ label: 'menu.rules', icon: 'list', onSelect: () => fadeTo(this, 'Rules') },
+			{ label: 'menu.settings', icon: 'gear', onSelect: () => this.openOverlay('Settings') },
 			// Desktop app only (Steam): a browser tab cannot close itself.
 			...(isElectron()
 				? [
 						{
 							label: 'menu.quit' as const,
+							icon: 'door',
 							color: PALETTE.truco,
 							onSelect: () => window.close(),
 						},
@@ -120,7 +136,10 @@ export class MenuScene extends Phaser.Scene {
 						h,
 						size: Math.max(7, Math.round(h * 0.48)),
 						color: row.color ?? BROWN,
-						left: Math.max(6, Math.round(h * 0.4)),
+						// Room for the icon (about 65% of the button's height) and the same gap everywhere.
+						left: Math.round(h * 1.05),
+						icon: row.icon,
+						iconScale: (h * 0.65) / 24,
 						onHover: () => this.move(rows, i - this.focus, true),
 					},
 				)
