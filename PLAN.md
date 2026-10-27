@@ -99,6 +99,8 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-71 em [docs/d
 - [x] Seleção de mesas desligada (`TABLE_SELECT = false` em `src/config/features.ts`); baralho e estaca fora da UI da escolha de parceiro (D-69).
 - [~] Sinal do parceiro mostra o gesto exato (o servidor LAN já manda o sinal exato ao parceiro; a mesa está em implementação) (D-70).
 - [~] Só o jogador responde ao truco da dupla e traços roguelite novos dos companheiros (em implementação) (D-71).
+- [x] Fundos de jogo sorteados entre 6 pinturas (`VARIANTS`) a cada mesa e run nova; overlays mantêm a da mesa (D-64).
+- [x] Mesa reorganizada: HUD (Manhas, Fama, Quedas) no topo da sidebar, card "Campeonato N / Mesa 1 · Mesa 2 · Chefão" no canto superior direito do feltro, caixa "em jogo" na base do feltro; Manilha/ZAP e dinheiro escondidos por flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL`), código mantido. Conferido em 1920×1080, 2560×1440 e toque 2400×1080.
 - [x] Resoluções-alvo registradas: 1920×1080 e 2560×1440 no desktop, Android em paisagem 6,5"+ (AGENTS.md).
 - [ ] Pendências de arte e sistemas inalcançáveis listadas em [BUGS.md](BUGS.md) (marcas reais, chefes em pixel, vendedor da loja, peso de `art-src/gta`, material de loja ainda em pixel).
 
