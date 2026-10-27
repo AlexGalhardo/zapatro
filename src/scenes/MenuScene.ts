@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { titleTex } from '../art/title';
 import { PALETTE, toCss } from '../config/palette';
 import { BUTTON_H, GAP } from '../config/ui';
 import { sfx } from '../core/audio';
@@ -101,21 +102,13 @@ export class MenuScene extends Phaser.Scene {
 		const backdrop = new MenuBackdrop(this, { x: 320, y: 326 });
 		onKey(this.input.keyboard, 'keydown-LEFT', () => backdrop.step(-1));
 		onKey(this.input.keyboard, 'keydown-RIGHT', () => backdrop.step(1));
-		// Title: gold letters, a dark outline and a solid drop under them.
+		// Title: sunset-gradient lettering that fits the dark panel (its edge is MENU_PANEL_MIN).
 		this.add
-			// Left edge on the button column below it.
-			.text(COLUMN.x - COLUMN.w / 2, 67, t('game.title').toUpperCase(), {
-				fontFamily: UI_FONT,
-				fontSize: '74px',
-				fontStyle: '700',
-				color: toCss(PALETTE.manilha),
-				shadow: {
-					offsetX: -3,
-					offsetY: 4,
-					color: toCss(PALETTE.shadow),
-					fill: true,
-				},
-			})
+			.image(
+				COLUMN.x - COLUMN.w / 2 - 6,
+				67,
+				titleTex(this, t('game.title').toUpperCase(), 196),
+			)
 			.setOrigin(0, 0.5);
 		// Nine rows (desktop with LAN and Quit) squeeze together to stay above the stage's base.
 		const tight = rows.length > 8;

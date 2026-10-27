@@ -152,14 +152,20 @@ const SEAT_UI: Record<
 		step: [number, number];
 		bubble: [number, number];
 		tail: 'left' | 'bottom';
+		/** Bubble anchor and wrap width when the default (centred above the avatar) would cover cards. */
+		anchor?: [number, number];
+		wrap?: number;
 	}
 > = {
 	1: {
 		avatar: [554, 130],
 		backs: [513, 112],
 		step: [0, 38.5],
-		bubble: [600, 126],
+		// Above the portrait and right of the card-back column, inside the felt.
+		bubble: [626, 127],
 		tail: 'bottom',
+		anchor: [1, 1],
+		wrap: 62,
 	},
 	// The partner's group ends 16 px (2 × GAP.panel) left of the HUD block.
 	2: { avatar: [313, 14], backs: [382, 45], step: [39, 0], bubble: [382, 25], tail: 'left' },
@@ -167,8 +173,10 @@ const SEAT_UI: Record<
 		avatar: [163, 130],
 		backs: [236, 112],
 		step: [0, 38.5],
-		bubble: [248, 122],
+		bubble: [156, 127],
 		tail: 'bottom',
+		anchor: [0, 1],
+		wrap: 66,
 	},
 };
 
@@ -707,10 +715,12 @@ export class TableScene extends Phaser.Scene {
 					padding: { x: 7, y: 4 },
 					// Long lines wrap: the partner's bubble stays left of the HUD block.
 					wordWrap: {
-						width: seat === 2 ? HUD.x - SAFE.panel - bx - 14 : seat === 1 ? 110 : 150,
+						width: ui.wrap ?? HUD.x - SAFE.panel - bx - 14,
 					},
 				})
-				.setOrigin(ui.tail === 'left' ? 0 : 0.5, ui.tail === 'left' ? 0.5 : 1)
+				.setOrigin(
+					...(ui.anchor ?? [ui.tail === 'left' ? 0 : 0.5, ui.tail === 'left' ? 0.5 : 1]),
+				)
 				.setVisible(false)
 				.setDepth(DEPTH.speech);
 			const tail = this.add

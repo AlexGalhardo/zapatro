@@ -9,6 +9,8 @@ const FADE_MS = 900;
 const ZOOM = 0.06;
 /** The paintings carry the logo and PT buttons in their left third: this share of the width is hidden. */
 const BAKED_UI = 0.31;
+/** The panel is at least as wide as the button column and the title (stage px). */
+export const MENU_PANEL_MIN = 272;
 const IMG_W = 1600;
 const IMG_H = 900;
 
@@ -63,7 +65,7 @@ export class MenuBackdrop {
 		for (const img of this.images) img.setPosition(cx, cy);
 		const left = cx - (IMG_W * this.cover) / 2;
 		// The buttons live at fixed stage positions, so the panel is at least as wide as their column.
-		const edge = Math.max(left + IMG_W * this.cover * BAKED_UI + 24, 262);
+		const edge = Math.max(left + IMG_W * this.cover * BAKED_UI + 24, MENU_PANEL_MIN);
 		const g = this.panel.clear();
 		g.fillStyle(PALETTE.night, 1).fillRect(
 			view.x - 40,

@@ -61,7 +61,7 @@ const en = {
 	'shot.shop':
 		"The shop between tables, Seu Zé's Counter: two Manhas, a Lance card and a deck pack for sale",
 	'shot.partner':
-		'Choosing a partner: Tonhão, Neide and Lurdes, each with a playing style, a perk and a flaw',
+		'Choosing a partner: Bruto, Sheila and Beti, each with a playing style, a perk and a flaw',
 	'shot.boss':
 		'A boss table against The Professor, whose rule makes your Fame count double against you',
 	'shot.almanac': 'The Almanac, with tabs for Manhas, bosses, companions, decks, feats and stats',
@@ -148,7 +148,7 @@ const ptBR: Record<Key, string> = {
 	'shot.shop':
 		'A loja entre as mesas, o Balcão do Seu Zé: duas Manhas, uma carta de Lance e um pacote de baralho à venda',
 	'shot.partner':
-		'Escolha do parceiro: Tonhão, Neide e Lurdes, cada um com estilo de jogo, vantagem e defeito',
+		'Escolha do parceiro: Bruto, Sheila e Beti, cada um com estilo de jogo, vantagem e defeito',
 	'shot.boss':
 		'Mesa de chefe contra O Professor, cuja regra faz a sua Fama contar em dobro contra você',
 	'shot.almanac':
