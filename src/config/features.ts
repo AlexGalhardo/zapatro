@@ -15,3 +15,9 @@ export const IS_POKI: boolean = flag(import.meta.env.VITE_POKI);
  * (Small, Big, Boss), with no skipping. The screen and its rules are kept, only not shown.
  */
 export const TABLE_SELECT = false;
+
+/** The table's "Manilha / ZAP" box (bottom left of the felt): hidden to clear the table (dev test). */
+export const SHOW_MANILHA_BOX = false;
+
+/** The sidebar's money card on the table ($): hidden; the money still exists (shop, end of table). */
+export const SHOW_MONEY_PANEL = false;

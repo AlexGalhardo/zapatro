@@ -12,6 +12,7 @@ import {
 	tiltedSize,
 } from '../art/flat';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
+import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL } from '../config/features';
 import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx, voice } from '../core/audio';
@@ -179,7 +180,7 @@ const SEAT_UI: Record<
 		anchor: [1, 1],
 		wrap: 62,
 	},
-	// The partner's group ends 16 px (2 × GAP.panel) left of the HUD block.
+	// The partner's group ends 16 px (2 × GAP.panel) left of the Championship card.
 	2: { avatar: [313, 14], backs: [382, 45], step: [38, 0], bubble: [382, 25], tail: 'left' },
 	3: {
 		avatar: [163, 130],
@@ -199,17 +200,26 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
  * Sidebar of cards on the left (the shared SIDEBAR column): top and height of each card, 4 px
  * apart from the felt's top (6) to its bottom (354), where the bottom bar ends.
  */
+/**
+ * Sidebar cards top to bottom, 4 px apart: the HUD block (Manhas, Fame, our tentos, their quedas),
+ * the goal, Chips × Mult, the bet and their tentos; the button bar keeps the base. The money card
+ * is hidden (SHOW_MONEY_PANEL).
+ * shortcut: with SHOW_MONEY_PANEL on, its card overlaps the bar; shorten a card when it comes back.
+ */
 const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
-	champ: [6, 47],
-	goal: [57, 70],
-	chipsMult: [131, 55],
-	bet: [190, 42],
-	theirs: [236, 50],
-	money: [290, 30],
+	hud: [6, 80],
+	goal: [90, 70],
+	chipsMult: [164, 55],
+	bet: [223, 42],
+	theirs: [269, 50],
+	money: [323, 30],
 	bar: [324, 30],
 } as const satisfies Record<string, number | readonly [number, number]>;
+
+/** The Championship card ("Campeonato 1 / Mesa 1"): top right of the felt, the felt's padding in. */
+const CHAMP = { x: 634 - PAD.panel - 118, y: 6 + PAD.panel, w: 118, h: 47 };
 
 /** Inner width of a sidebar card: its width minus the same padding on both sides (`SIDEBAR.pad`). */
 const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
@@ -217,11 +227,20 @@ const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
 /** Top of each sidebar card's label. */
 const SIDE_LABEL = 7;
 
-/** Top-right HUD block inside the felt: Manhas, Fame, our tentos and their quedas. */
-const HUD = { x: 510, y: 10, w: 118, h: 80 };
+/** The HUD block (Manhas, Fame, our tentos and their quedas): the sidebar's top card. */
+const HUD = { x: SIDE.x, y: SIDE.hud[0], w: SIDE.w, h: SIDE.hud[1] };
 
-/** Inner margin of the HUD block (slots, labels, bars). */
-const HUD_PAD = 5;
+/** Inner margin of the HUD block: the sidebar's padding. */
+const HUD_PAD = SIDEBAR.pad;
+
+/**
+ * The Manha slots fill one row of the HUD card's inner width: 20 px wide and spread out, or
+ * smaller when more slots (Mais Manha) would not fit, 2 px apart.
+ */
+const SLOT_ROW = SIDEBAR.w - 2 * HUD_PAD;
+const slotSize = (slots: number): number => Math.min(20, (SLOT_ROW - 2 * (slots - 1)) / slots);
+const slotStep = (slots: number): number =>
+	slots > 1 ? (SLOT_ROW - slotSize(slots)) / (slots - 1) : 0;
 
 /** Played cards stack by height on the table (the cross of screen-table.png). */
 const PLAYED_DEPTH = {
@@ -358,6 +377,10 @@ export class TableScene extends Phaser.Scene {
 	private hudGfx!: Phaser.GameObjects.Graphics;
 	private betNote!: Phaser.GameObjects.Text;
 	private manhaRow!: Phaser.GameObjects.Container;
+	/** Manha slots of the run (5 in a quick match). */
+	private get slots(): number {
+		return this.runState?.manhaSlots ?? 5;
+	}
 	private manhaTip!: Phaser.GameObjects.Text;
 	/** Strength of the hovered card in this hand (A6.2). */
 	private cardTip!: Phaser.GameObjects.Text;
@@ -604,7 +627,9 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 			case 'answer':
 				return union([this.btn.raise, this.btn.accept, this.btn.fold]);
 			case 'points':
-				return union([this.pointsText, this.moneyText]);
+				return union(
+					SHOW_MONEY_PANEL ? [this.pointsText, this.moneyText] : [this.pointsText],
+				);
 			case 'manhas':
 				return this.match.manhas.length ? union([this.manhaRow]) : null;
 		}
@@ -747,9 +772,9 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 					shadow: undefined,
 					backgroundColor: toCss(PALETTE.cardFace),
 					padding: { x: 7, y: 4 },
-					// Long lines wrap: the partner's bubble stays left of the HUD block.
+					// Long lines wrap: the partner's bubble stays left of the Championship card.
 					wordWrap: {
-						width: ui.wrap ?? HUD.x - SAFE.panel - bx - 14,
+						width: ui.wrap ?? CHAMP.x - SAFE.panel - bx - 14,
 					},
 				})
 				.setOrigin(
@@ -795,14 +820,16 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 		// Origin at the bottom of its drop shadow, so the panel itself ends at MANILHA.bottom.
 		this.manilhaBox = this.add
 			.image(MANILHA.x, MANILHA.bottom + SHADOW.panel, '__DEFAULT')
-			.setOrigin(0, 1);
+			.setOrigin(0, 1)
+			.setVisible(SHOW_MANILHA_BOX);
 		this.manilhaText = this.add
 			.text(MANILHA.x + PAD.card, MANILHA.bottom - PAD.card, '', {
 				...this.bold(TYPE.label, PALETTE.textLight),
 				align: 'left',
 				lineSpacing: 2,
 			})
-			.setOrigin(0, 1);
+			.setOrigin(0, 1)
+			.setVisible(SHOW_MANILHA_BOX);
 		this.effectBox = this.add.container(MANILHA.x, MANILHA.bottom).setVisible(false);
 		this.sidebar = this.collect(() => this.buildSidebar());
 		// The count panel (screen-score.png): the hand's name, Chips × Mult = points.
@@ -872,18 +899,17 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 		this.manhaRow = this.add.container(0, 0).setDepth(DEPTH.manhas);
 		this.match.manhas.forEach((id, i) => {
 			const icon = this.add
-				.image(i * 22, 0, tex(this, `manha.${id}`))
-				.setScale(0.4)
+				.image(i * slotStep(this.slots), 0, tex(this, `manha.${id}`))
+				.setScale((0.4 * slotSize(this.slots)) / 20)
 				.setData('id', id)
 				.setInteractive({ useHandCursor: true });
 			this.tipOn(icon, this.manhaTip, () =>
 				this.manhaTip
 					.setText(`${t(`manha.${id}.name` as I18nKey)}
 ${t(`manha.${id}.desc` as I18nKey)}`)
-					// Under the HUD block, flush with its right edge: clear of the partner on top
-					// (the ☰ list moves the same box, so the origin is set each time).
-					.setOrigin(1, 0)
-					.setPosition(HUD.x + HUD.w, HUD.y + HUD.h + GAP.list),
+					// Right of the HUD card in the sidebar, level with its top.
+					.setOrigin(0, 0)
+					.setPosition(HUD.x + HUD.w + GAP.list, HUD.y),
 			);
 			this.manhaRow.add(icon);
 		});
@@ -1037,7 +1063,8 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.view = view;
 		fitCamera(this.cameras.main, view);
 		const { cx, cy } = this;
-		this.manhaRow.setPosition(HUD.x + HUD_PAD + 10, HUD.y + HUD_PAD + 10);
+		const half = slotSize(this.slots) / 2;
+		this.manhaRow.setPosition(HUD.x + HUD_PAD + half, HUD.y + HUD_PAD + 10);
 		this.popup.setPosition(cx, cy - 72);
 		this.scoreBox.setPosition(cx, cy - 20);
 		this.banner.setPosition(cx, cy - 40);
@@ -1104,7 +1131,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const run = this.runState;
 		const champ = run?.champ ?? getParams(this).champ ?? 1;
 		const size = run ? tableSize(run) : 'small';
-		const rects = [SIDE.champ, SIDE.goal, SIDE.chipsMult, SIDE.bet, SIDE.theirs, SIDE.money];
+		const rects = [
+			SIDE.goal,
+			SIDE.chipsMult,
+			SIDE.bet,
+			SIDE.theirs,
+			...(SHOW_MONEY_PANEL ? [SIDE.money] : []),
+		];
 		// Images, not a Graphics: WebGL re-triangulates a Graphics every frame (~1.5 ms here).
 		for (const [y, h] of rects)
 			this.add
@@ -1115,67 +1148,45 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				)
 				.setOrigin(0);
 		const lx = SIDE.x + SIDEBAR.pad;
-		const inner = SIDE.w - 2 * SIDEBAR.pad;
+		// The Championship card sits on the felt; its texts start at its own padding.
+		const cx = CHAMP.x + SIDEBAR.pad;
+		const cInner = CHAMP.w - 2 * SIDEBAR.pad;
+		this.add
+			.image(
+				CHAMP.x,
+				CHAMP.y,
+				panelTex(this, CHAMP.w, CHAMP.h, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
+			)
+			.setOrigin(0);
 		// Smallest text the sidebar may shrink to: never under the touch minimum on touch screens.
 		const minPx = touchUi.on ? TOUCH_TEXT_MIN : 6;
 		// Long subtitles (touch text, EN) shrink to one line; at the floor they wrap to two, raised.
 		const fit = (o: Phaser.GameObjects.Text): Phaser.GameObjects.Text => {
 			for (
 				let px = Number.parseInt(String(o.style.fontSize), 10);
-				o.width > inner && px > minPx;
+				o.width > cInner && px > minPx;
 			)
 				o.setFontSize(--px);
-			if (o.width > inner)
-				o.setWordWrapWidth(inner)
+			if (o.width > cInner)
+				o.setWordWrapWidth(cInner)
 					.setAlign('left')
-					.setY(SIDE.champ[0] + 22);
+					.setY(CHAMP.y + 22);
 			return o;
 		};
 		const at = (y: number, str: string, style: Phaser.Types.GameObjects.Text.TextStyle) =>
 			this.add.text(lx, y, str, style).setOrigin(0, 0);
+		const atChamp = (y: number, str: string, style: Phaser.Types.GameObjects.Text.TextStyle) =>
+			this.add.text(cx, y, str, style).setOrigin(0, 0);
 		const small = this.text(7, PALETTE.textDim);
-		const boss = this.match.boss;
-		if (boss) {
-			// A boss table names itself and states the boss's rule here (GD-003); long rules shrink
-			// down to the floor, then end in "…" and the card shows the whole rule when touched.
-			at(SIDE.champ[0] + 4, t('run.table.boss'), this.bold(10, PALETTE.bad));
-			const full = t(`boss.${boss}.rule` as I18nKey);
-			const rule = at(SIDE.champ[0] + 18, full, {
-				...this.bold(7),
-				align: 'left',
-				wordWrap: { width: SIDE.w - 16 },
-			});
-			const room = SIDE.champ[1] - 20;
-			for (let px = uiPx(7); rule.height > room && px > minPx; ) rule.setFontSize(--px);
-			const words = full.split(' ');
-			while (rule.height > room && words.length > 1) {
-				words.pop();
-				rule.setText(`${words.join(' ')}…`);
-			}
-			if (rule.text !== full) {
-				// Its own tip box (the Manha tips keep theirs); a new touch restarts the timer.
-				const box = this.add
-					.text(SIDE.x + SIDE.w + 6, SIDE.champ[0], full, {
-						...this.text(7),
-						align: 'left',
-						backgroundColor: toCss(PALETTE.panelDark),
-						padding: { x: 4, y: 3 },
-						wordWrap: { width: 200 },
-					})
-					.setDepth(DEPTH.tips)
-					.setVisible(false);
-				const zone = this.add
-					.zone(SIDE.x, SIDE.champ[0], SIDE.w, SIDE.champ[1])
-					.setOrigin(0)
-					.setInteractive();
-				this.tipOn(zone, box, () => box);
-			}
-		} else if (this.match.goal === undefined) {
-			at(SIDE.champ[0] + SIDE_LABEL, t('menu.quick'), this.bold(10));
-			fit(at(SIDE.champ[0] + 25, t('table.side.quickSub'), small));
+		// The card names the Championship and the table (Mesa 1 → Mesa 2 → Chefão); the boss's
+		// rule is in the "in play" box. A quick match keeps its own title.
+		if (this.match.goal === undefined && !this.match.boss) {
+			atChamp(CHAMP.y + SIDE_LABEL, t('menu.quick'), this.bold(10));
+			fit(atChamp(CHAMP.y + 25, t('table.side.quickSub'), small));
 		} else {
-			at(SIDE.champ[0] + SIDE_LABEL, t('run.champ', { n: champ }), this.bold(10));
-			fit(at(SIDE.champ[0] + 25, t(`run.table.${size}` as I18nKey), small));
+			const table = this.match.boss ? 'boss' : size;
+			atChamp(CHAMP.y + SIDE_LABEL, t('run.champ', { n: champ }), this.bold(10));
+			fit(atChamp(CHAMP.y + 25, t(`table.side.table.${table}` as I18nKey), small));
 		}
 		// Without a goal (quick match) the card counts the tentos to 12 instead.
 		at(
@@ -1221,8 +1232,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.moneyText = this.add
 			.text(lx, SIDE.money[0] + SIDE.money[1] / 2, '', this.bold(14, PALETTE.money))
 			.setOrigin(0, 0.5)
-			.setAlpha(off);
-		// The Manha slots, fame, our tentos and their quedas, inside the felt (top right).
+			.setAlpha(off)
+			.setVisible(SHOW_MONEY_PANEL);
+		// The Manha slots, fame, our tentos and their quedas: the sidebar's top card.
 		this.add
 			.image(
 				HUD.x,
@@ -1230,10 +1242,16 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				panelTex(this, HUD.w, HUD.h, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
 			)
 			.setOrigin(0);
-		const slots = this.runState?.manhaSlots ?? 5;
+		const slots = this.slots;
 		const g = this.add.graphics().lineStyle(1.5, PALETTE.panelLight, 1);
 		for (let i = 0; i < slots; i++)
-			g.strokeRoundedRect(HUD.x + HUD_PAD + i * 22, HUD.y + HUD_PAD, 20, 20, RADIUS.button);
+			g.strokeRoundedRect(
+				HUD.x + HUD_PAD + i * slotStep(slots),
+				HUD.y + HUD_PAD + 10 - slotSize(slots) / 2,
+				slotSize(slots),
+				slotSize(slots),
+				RADIUS.button,
+			);
 		this.fameText = this.add.text(HUD.x + HUD_PAD, HUD.y + 38, '', small).setOrigin(0, 0.5);
 		this.quedasText = this.add.text(HUD.x + HUD_PAD, HUD.y + 68, '', small).setOrigin(0, 0.5);
 		this.hudGfx = this.add.graphics().setDepth(DEPTH.hudShapes);
@@ -1391,7 +1409,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.manilhaBox.setTexture(
 			panelTex(this, mw, mh, PALETTE.panelDark, RADIUS.panel, SHADOW.panel),
 		);
-		// The "in play" box sits at the felt's base; Manilha/ZAP stacks right above it.
+		// The "in play" box sits at the felt's base; Manilha/ZAP (when shown) stacks above it.
 		const eh = this.drawEffects();
 		const mb = MANILHA.bottom - (eh ? eh + SHADOW.panel + GAP.panel : 0);
 		this.manilhaBox.setY(mb + SHADOW.panel);
