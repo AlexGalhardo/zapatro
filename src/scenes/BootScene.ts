@@ -13,12 +13,14 @@ import { t } from '../i18n';
 import { UI_FONT } from '../ui/font';
 
 /**
- * Sounds the first table never needs (later Championships' ambiences, the final music, the
- * bosses' voices): loaded after the menu opens, so the first web download stays under 8 MB
- * (GD-017). Until a file arrives, playing it is a silent no-op (src/core/audio.ts, music.ts).
+ * Files the first screen never needs, loaded after it opens so the first web download stays under
+ * 8 MB (GD-017): later Championships' ambiences, the final music, the bosses' voices, the painted
+ * character cards, the shop/partner/extra menu paintings and the painted backs and faces other
+ * than the standard deck's. Until a file arrives, a sound is a silent no-op (src/core/audio.ts,
+ * music.ts) and a picture keeps its drawn fallback, redrawn in place when it lands.
  */
 const LATER =
-	/^assets\/audio\/(sfx|music)\/(amb\.(?!botecoBairro)|music\.king|vo\.(valentao|cartomante|juiz|agiota|delegado|reiDoTruco)\.)/;
+	/^assets\/(audio\/(sfx|music)\/(amb\.(?!botecoBairro)|music\.king|vo\.(valentao|cartomante|juiz|agiota|delegado|reiDoTruco)\.)|gfx\/(card\/|bg\/(shop|partner|menu-[23])\.|back\/(?!default\.)))/;
 
 /**
  * Loads the sounds; the art is drawn by code (src/art/flat.ts). Stays running after the first
@@ -43,25 +45,27 @@ export class BootScene extends Phaser.Scene {
 		this.load.on('progress', (p: number) =>
 			label.setText(`${t('boot.loading')} ${Math.round(p * 100)}%`),
 		);
-		for (const file of __ASSET_FILES__) {
-			if (LATER.test(file)) continue;
-			const m = /^assets\/audio\/(sfx|music)\/(.+)\.mp3$/.exec(file);
-			if (m?.[2]) this.load.audio(m[2], file);
-			const p = /^assets\/gfx\/portrait\/(.+)\.(?:png|webp)$/.exec(file);
-			if (p?.[1]) this.load.image(`${PORTRAIT_PREFIX}${p[1]}`, file);
-			const g = /^assets\/gfx\/(card|bg|back)\/(.+)\.webp$/.exec(file);
-			if (g?.[1] && g[2])
-				this.load.image(
-					g[1] === 'back' ? `${BACK_PREFIX}${g[2]}` : `img.${g[1]}.${g[2]}`,
-					file,
-				);
-			const i = /^assets\/gfx\/icon\/(.+)\.png$/.exec(file);
-			if (i?.[1]) this.load.image(`${ICON_PREFIX}${i[1]}`, file);
-		}
+		for (const file of __ASSET_FILES__) if (!LATER.test(file)) this.queue(file);
 		// A missing or broken sound must never block the game.
 		this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: Phaser.Loader.File) =>
 			console.warn(`[assets] failed to load ${file.key}`),
 		);
+	}
+
+	/** Queues one public/ file under the key the game reads it by. */
+	private queue(file: string): void {
+		const m = /^assets\/audio\/(sfx|music)\/(.+)\.mp3$/.exec(file);
+		if (m?.[2]) this.load.audio(m[2], file);
+		const p = /^assets\/gfx\/portrait\/(.+)\.(?:png|webp)$/.exec(file);
+		if (p?.[1]) this.load.image(`${PORTRAIT_PREFIX}${p[1]}`, file);
+		const g = /^assets\/gfx\/(card|bg|back)\/(.+)\.webp$/.exec(file);
+		if (g?.[1] && g[2])
+			this.load.image(
+				g[1] === 'back' ? `${BACK_PREFIX}${g[2]}` : `img.${g[1]}.${g[2]}`,
+				file,
+			);
+		const i = /^assets\/gfx\/icon\/(.+)\.png$/.exec(file);
+		if (i?.[1]) this.load.image(`${ICON_PREFIX}${i[1]}`, file);
 	}
 
 	create(): void {
@@ -74,12 +78,9 @@ export class BootScene extends Phaser.Scene {
 		else this.scene.launch(params.skipMenu ? 'Table' : 'Menu');
 		this.label?.destroy();
 		this.load.off('progress');
-		for (const file of __ASSET_FILES__) {
-			const m = LATER.test(file)
-				? /^assets\/audio\/(sfx|music)\/(.+)\.mp3$/.exec(file)
-				: null;
-			if (m?.[2]) this.load.audio(m[2], file);
-		}
+		for (const file of __ASSET_FILES__) if (LATER.test(file)) this.queue(file);
+		// The late pictures replace the fallbacks already drawn (cards, backs, special faces).
+		this.load.once(Phaser.Loader.Events.COMPLETE, () => registerPortraits(this));
 		this.load.start();
 	}
 }

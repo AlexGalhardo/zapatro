@@ -18,6 +18,8 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 - **ui:** `BackdropScene`, a bottom layer with a painted background under every screen (no more flat grey); the shop, the partner choice and the table have their own paintings and the main menu rotates `menu-1..3` every 7 s with a crossfade and a slow zoom (left/right keys or the dots change it by hand), over a dark panel that hides the logo and buttons painted into the art.
 - **ui:** a manual button (`?`, key F1) on the table opens the Rules book over the match and returns to it with no state lost.
 - **site:** painted sunset page background with a dark veil, in three WebP sizes by breakpoint.
+- **ui:** "Show key hints" in Settings (off by default, also for saves without the field): the keycaps on buttons, the focus Enter/✕ badge, the card keys and the key lines of Settings and Pause appear only when it is on; the shortcuts always work.
+- **ui:** one vector icon per secret signal (`icon.signal.<sign>`, `SIGNAL_ICON` in `src/art/icons.ts`): a plain face with only its gesture and a badge with the card it means (♣ zap, ♥, ♠, ♦, 3, ∅), the same in the Rules page and the signal picker.
 - **tools:** `scripts/gta-shots.ts` takes before/after captures of the menu, partner choice, shop and table (`docs/media/gta-before`, `gta-after`).
 
 ### Changed
@@ -29,9 +31,16 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 - **docs:** display names of the cast in the docs (Bruto, Cida, Jhony, Nino, Chico, Beti, Mia, Sheila, Ayla); ids in code unchanged. `docs/balancing.md` has the 1.0 balance review (no number changed).
 - **balance:** Jhony (`zeMalandro`): `bluffChips` [20, 40, 70] → [10, 20, 35] and `falseSignals` rate 0.5 → 0.7 (good bot 35% → 30% at 1000 runs); `tests/content-beta.test.ts` follows the new level-2 value. Details in `docs/balancing.md`.
 
+- **ui:** every painted backdrop except the main menu is darkened by one multiply tint (`BACKDROP_BRIGHTNESS` = 0.4 in `palette.ts`), so panels, cards and HUD stand out.
+- **perf:** the painted character cards, the shop, partner and extra menu paintings and the painted backs and faces other than the standard deck load after the first screen (`LATER` in `BootScene`); the first web download goes from 9.39 MB to 7.55 MB (GD-017) and the drawn fallbacks are redrawn in place when the pictures land.
+
 ### Removed
 
 - **ui:** the hamburger button of the table (the Manha list tip) in favour of the manual button; the menu's drawn fan of cards.
+
+### Fixed
+
+- **ui:** the painted backdrop now climbs above the table under Rules, Settings and Keybinds (Phaser's `moveBelow` never moved it up from the bottom); F1 also closes the manual; the Almanac opened from the shop shows the main painting.
 
 ## [0.12.0] - 2026-10-27
 

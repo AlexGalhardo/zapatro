@@ -69,6 +69,11 @@ export class BackdropScene extends Phaser.Scene {
 		});
 		const events = this.game.registry.events;
 		events.on(`changedata-${REGISTRY_KEY}`, show);
-		this.events.once('shutdown', () => events.off(`changedata-${REGISTRY_KEY}`, show));
+		// The shop and partner paintings load after the first screen (BootScene LATER).
+		this.textures.on(Phaser.Textures.Events.ADD, show);
+		this.events.once('shutdown', () => {
+			events.off(`changedata-${REGISTRY_KEY}`, show);
+			this.textures.off(Phaser.Textures.Events.ADD, show);
+		});
 	}
 }

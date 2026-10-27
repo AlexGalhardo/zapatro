@@ -857,10 +857,11 @@ export function registerPortraits(scene: Phaser.Scene): void {
 		else if (key.startsWith(CHAR_CARD_PREFIX))
 			charCardBitmaps.set(key.slice(CHAR_CARD_PREFIX.length), source());
 	}
-	// A portrait or icon asked for before this ran (a scene started while Boot was still
-	// loading) was cached with the drawn fallback; redraw it in place now that the PNGs exist.
+	// A portrait, icon or card asked for before this ran (a scene started while Boot was still
+	// loading, or before the late pictures landed) was cached with the drawn fallback; redraw it
+	// in place now that the bitmaps exist.
 	for (const key of scene.textures.getTextureKeys()) {
-		if (!/^(portrait|boss|icon)\./.test(key)) continue;
+		if (!/^(portrait|boss|icon|charcard|card)\./.test(key)) continue;
 		const source = scene.textures.get(key).source[0];
 		const canvas = source?.image;
 		if (!source || !(canvas instanceof HTMLCanvasElement)) continue;
