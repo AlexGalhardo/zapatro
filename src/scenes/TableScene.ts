@@ -12,7 +12,7 @@ import { trackZoom } from '../core/viewport';
 import { AI_PROFILE_IDS, AI_PROFILES, type AiProfileId } from '../data/ai-profiles';
 import { BOSS_POOL, type BossId, FINAL_BOSS } from '../data/bosses';
 import { CHAMPIONSHIPS, type ChampionshipId } from '../data/championships';
-import { type Expression, SIGN_CATEGORY, SIGN_MARK, TABLE_TIMING } from '../data/characters';
+import { type Expression, SIGN_CATEGORY, TABLE_TIMING } from '../data/characters';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import { JOKER_EFFECTS } from '../data/jokers';
 import type { Action as KeyAction } from '../data/keybinds';
@@ -754,6 +754,7 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 					this.add
 						.text(0, 0, '', { ...this.bold(13, PALETTE.textDark), shadow: undefined })
 						.setOrigin(0.5),
+					this.add.image(0, 0, tex(this, 'icon.signal.zap')).setVisible(false),
 				])
 				.setVisible(false)
 				.setDepth(DEPTH.signal);
@@ -968,7 +969,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				size: 7,
 			});
 			btn.setPosition(48, i * SIGN_ROW());
-			const face = this.add.image(-30, i * SIGN_ROW(), tex(this, `ui.sign.${sign}`));
+			const face = this.add
+				.image(-30, i * SIGN_ROW(), tex(this, `icon.signal.${sign}`))
+				.setScale((SIGN_ROW() - 1) / 24);
 			this.signPicker.add([btn, face]);
 			return btn;
 		});
@@ -1059,7 +1062,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					? ''
 					: mode === 'pad'
 						? i === this.focusCard
-							? '✕'
+							? keyHint('Enter')
 							: ''
 						: actionHint(keys, `card${i + 1}` as KeyAction);
 			label.setText(text).setVisible(text !== '');
@@ -1642,8 +1645,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	}
 
 	/**
-	 * Your partner's signal: the bubble beside them shows only the kind of card (strong, a 3 or
-	 * nothing), never which one, and the status line says it in words.
+	 * Your partner's signal: the exact gesture they made (its icon with the card's badge) beside
+	 * their card, and the status line says in words what it claims. It may be a lie, but it is the
+	 * gesture they made.
 	 */
 	private partnerSignal(sign: Sign): void {
 		this.signMark(2, sign);
@@ -1651,14 +1655,20 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.status.setText(t('table.partnerSign', { cat: t(`sign.cat.${cat}` as I18nKey) }));
 	}
 
-	/** The mark of a signal (★, 3, ✗) in the bubble over a portrait: the partner's, or a caught rival's. */
+	/** The gesture of a signal in the round bubble over a portrait: the partner's, or a caught rival's. */
 	private signMark(seat: Seat, sign: Sign): void {
 		const v = this.seats.get(seat);
 		if (!v) return;
-		const cat = SIGN_CATEGORY[sign];
-		(v.expression.last as Phaser.GameObjects.Text)
-			.setText(SIGN_MARK[cat])
-			.setColor(toCss(cat === 'strong' ? PALETTE.cta : PALETTE.textDark));
+		const [disc, mark, icon] = v.expression.list as [
+			Phaser.GameObjects.Arc,
+			Phaser.GameObjects.Text,
+			Phaser.GameObjects.Image,
+		];
+		mark.setText('');
+		disc.setRadius(14);
+		icon.setTexture(tex(this, `icon.signal.${sign}`))
+			.setDisplaySize(26, 26)
+			.setVisible(true);
 		v.expression.setVisible(true);
 		this.time.delayedCall(this.dur(TABLE_TIMING.signalFace), () =>
 			v.expression.setVisible(false),
@@ -2375,6 +2385,11 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			const keys = getSave(this).settings.keys;
 			const a = actionFor(keys, e.code);
 			if (!a) return;
+			if (a === 'pause' && this.signPicker.visible) {
+				// Esc closes the signal choice first; the pause menu comes with the next press.
+				this.signPicker.setVisible(false);
+				return;
+			}
 			if (a === 'pause') this.openPause();
 			else if (a === 'speed') {
 				e.preventDefault();

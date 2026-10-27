@@ -456,7 +456,7 @@ Limiares (`src/logic/ai/decide.ts`, PA2; `p` = chance de vencer a mão):
 |---|---|
 | Sinais | Tabela fixa ensinada no tutorial (PLAN §5.8): piscada = ZAP · sobrancelha = copas (ou paus) · boca torta = espadilha · língua = pica-fumo · morder o lábio = um 3 · olhar para o alto = nada. 1 por mão antes da 1ª carta (baralho do Blefe e "Cara de conversa" dão +1); flagra base 20%, ajustada pelo perfil; sinal flagrado vira informação real na crença da IA rival |
 | Sinal falso | Permitido de propósito, para ser flagrado: blefe em outra camada. O parceiro também acredita (exceto Cida) |
-| Sinal do parceiro | Balão só com a categoria (★ forte = ZAP ou manilha · 3 · ✗ nada), nunca qual carta |
+| Sinal do parceiro | Balão com o gesto exato que ele fez (ícone do sinal com o selo da carta que o gesto afirma); pode ser mentira (sinal falso), mas é sempre o gesto feito; a linha de status diz a categoria em palavras |
 | Fama | **Único medidor psicológico**: Honesto ↔ Blefador [−1, 1], vale a run inteira e fica visível. Muda só quando um truco seu chega às cartas mostradas: +0,25 blefe (sem manilha nem 3), −0,15 mão forte; Corrida não muda (o rival não viu as cartas), salvo Manha que diga o contrário |
 | Efeito da Fama | Blefador → rivais aceitam mais (mão forte rende); Honesto → rivais correm mais (blefe funciona). O loop é alternar o estilo para confundir a mesa |
 
