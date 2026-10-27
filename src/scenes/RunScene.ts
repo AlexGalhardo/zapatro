@@ -363,12 +363,13 @@ export class RunScene extends Phaser.Scene {
 		const { cx } = this;
 		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
-		const [rowW, rowH, gap, top] = [384, 88, 4, 42];
+		const [rowW, rowH, gap, top] = [616, 90, 3, 43];
 		const x0 = cx - rowW / 2;
 		offer.forEach((id, i) => {
 			const y = top + i * (rowH + gap);
 			this.box(x0, y, rowW, rowH);
-			const [cw, ch] = [63, 84];
+			const ch = rowH - 6;
+			const cw = (ch * 3) / 4;
 			this.body.add(
 				this.add
 					.image(x0 + 4 + cw / 2, y + rowH / 2, tex(this, `charcard.${id}`))
@@ -376,19 +377,7 @@ export class RunScene extends Phaser.Scene {
 			);
 			const btnW = 96;
 			const tx = x0 + 4 + cw + 10;
-			const tw = rowW - (tx - x0) - btnW - 20;
-			// Each block starts under the one before, whatever its wrap: the rows keep one rhythm.
-			let ty = y + 6;
-			ty =
-				this.put(
-					tx,
-					ty,
-					t(`char.${id}` as I18nKey),
-					11,
-					PALETTE.textLight,
-					[0, 0],
-					tw,
-				).getBounds().bottom + 1;
+			const tw = rowW - (tx - x0) - btnW - 16;
 			const lines: [string, number][] = [
 				[t(`partner.style.${COMPANIONS[id].style}` as I18nKey), PALETTE.manilha],
 				[perkText(id), PALETTE.good],
@@ -400,8 +389,30 @@ export class RunScene extends Phaser.Scene {
 						][])
 					: []),
 			];
-			for (const [text, color] of lines)
-				ty = this.put(tx, ty, text, 6.5, color, [0, 0], tw).getBounds().bottom + 2;
+			// About twice the old text size (6.5 px, name 11): the biggest size whose lines fit the
+			// row once wrapped to the text block; smaller only when a long (English) text needs it.
+			for (const px of [13, 12, 11, 10, 9, 8, 7, 6.5]) {
+				const made: Phaser.GameObjects.Text[] = [];
+				let ty = y + 5;
+				const name = this.put(
+					tx,
+					ty,
+					t(`char.${id}` as I18nKey),
+					Math.min(18, px * 1.5),
+					PALETTE.textLight,
+					[0, 0],
+					tw,
+				);
+				made.push(name);
+				ty = name.getBounds().bottom + 1;
+				for (const [text, color] of lines) {
+					const line = this.put(tx, ty, text, px, color, [0, 0], tw);
+					made.push(line);
+					ty = line.getBounds().bottom + 1;
+				}
+				if (ty <= y + rowH - 3 || px === 6.5) break;
+				for (const m of made) m.destroy();
+			}
 			this.button(
 				x0 + rowW - btnW / 2 - 6,
 				y + rowH / 2,
