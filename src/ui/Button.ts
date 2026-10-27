@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { tex } from '../art/flat';
 import { VECTOR_ICONS } from '../art/icons';
-import { buttonFill, buttonHover, PALETTE, toCss } from '../config/palette';
+import { buttonFill, buttonHover, PALETTE, shade, toCss } from '../config/palette';
 import { MOTION, RADIUS, SHADOW } from '../config/ui';
 import { sfx } from '../core/audio';
 import { comfort } from '../view/comfort';
@@ -258,7 +258,7 @@ export class Button extends Phaser.GameObjects.Container {
 	/** Eases the block to its height for the current state (ease-out, no bounce). */
 	private settle(): void {
 		const to = this.pressed
-			? SHADOW.pressed - SHADOW.button
+			? SHADOW.pressed - this.shadowDepth
 			: this.lit && this.enabled
 				? SHADOW.hoverLift
 				: 0;
@@ -281,6 +281,28 @@ export class Button extends Phaser.GameObjects.Container {
 		});
 	}
 
+	/** Height of the solid shadow: deeper on taller buttons. */
+	private get shadowDepth(): number {
+		return Phaser.Math.Clamp(Math.round(this.bh * SHADOW.buttonDepth), 2, SHADOW.button);
+	}
+
+	/** A rounded block filled top to bottom from `from` to `to`, in rows of half a stage pixel. */
+	private gradient(y: number, w: number, h: number, r: number, from: number, to: number): void {
+		const a = Phaser.Display.Color.IntegerToColor(from);
+		const b = Phaser.Display.Color.IntegerToColor(to);
+		const step = 0.5;
+		for (let i = 0; i < h; i += step) {
+			const mid = i + step / 2;
+			// Inset of the rounded corners at this row.
+			const d = mid < r ? r - mid : mid > h - r ? mid - (h - r) : 0;
+			const inset = d ? r - Math.sqrt(Math.max(0, r * r - d * d)) : 0;
+			const c = Phaser.Display.Color.Interpolate.ColorWithColor(a, b, h, mid);
+			this.g
+				.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b), 1)
+				.fillRect(-w / 2 + inset, y + i, w - 2 * inset, step);
+		}
+	}
+
 	private redraw(): void {
 		const { bw: w, bh: h } = this;
 		const r = Math.min(RADIUS.button, h / 2);
@@ -291,19 +313,24 @@ export class Button extends Phaser.GameObjects.Container {
 			: this.lit && !this.pressed
 				? buttonHover(this.fill)
 				: this.fill;
+		const top = -h / 2 - lift;
 		this.g.clear();
 		this.g
 			.fillStyle(PALETTE.shadow, SHADOW.buttonAlpha)
-			.fillRoundedRect(-w / 2, -h / 2 + SHADOW.button, w, h, r);
-		this.g.fillStyle(body, 1).fillRoundedRect(-w / 2, -h / 2 - lift, w, h, r);
-		if (this.lit || this.border !== undefined)
-			this.g
-				.lineStyle(
-					this.lit ? 2 : 1.5,
-					this.lit ? PALETTE.panelBorder : (this.border ?? 0),
-					1,
-				)
-				.strokeRoundedRect(-w / 2, -h / 2 - lift, w, h, r);
+			.fillRoundedRect(-w / 2, -h / 2 + this.shadowDepth, w, h, r);
+		// Lit from above: lighter top, darker base; pressed turns it over. Disabled stays flat-ish.
+		const k = SHADOW.buttonGradient * (this.enabled ? 1 : 0.35);
+		const sunk = this.pressed && this.enabled;
+		this.gradient(top, w, h, r, shade(body, sunk ? -k : k), shade(body, sunk ? k * 0.2 : -k));
+		if (this.enabled && !sunk)
+			this.g.fillStyle(shade(body, 0.45), 0.7).fillRect(-w / 2 + r, top + 1, w - 2 * r, 1);
+		this.g
+			.lineStyle(
+				this.lit ? 2 : this.border !== undefined ? 1.5 : 1,
+				this.lit ? PALETTE.panelBorder : (this.border ?? shade(body, -0.45)),
+				this.lit || this.border !== undefined ? 1 : 0.8,
+			)
+			.strokeRoundedRect(-w / 2, top, w, h, r);
 		this.label.setY(-1 - lift);
 		this.iconImg?.setY(-1 - lift);
 		if (!this.below) this.badge.setY(-1 - lift);

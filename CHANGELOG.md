@@ -32,6 +32,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 - **balance:** Jhony (`zeMalandro`): `bluffChips` [20, 40, 70] → [10, 20, 35] and `falseSignals` rate 0.5 → 0.7 (good bot 35% → 30% at 1000 runs); `tests/content-beta.test.ts` follows the new level-2 value. Details in `docs/balancing.md`.
 
 - **ui:** every painted backdrop except the main menu is darkened by one multiply tint (`BACKDROP_BRIGHTNESS` = 0.4 in `palette.ts`), so panels, cards and HUD stand out.
+- **ui:** buttons look like real keys: a deeper solid shadow (13 % of the height, 2 to 4 px), a vertical gradient from the button's own colour with a 1 px highlight and a thin dark edge; pressing sinks the whole depth with the gradient turned over (`SHADOW` in `src/config/ui.ts`).
 - **perf:** the painted character cards, the shop, partner and extra menu paintings and the painted backs and faces other than the standard deck load after the first screen (`LATER` in `BootScene`); the first web download goes from 9.39 MB to 7.55 MB (GD-017) and the drawn fallbacks are redrawn in place when the pictures land.
 
 ### Removed

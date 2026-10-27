@@ -34,11 +34,16 @@ export const SIDEBAR = { x: 8, w: 132, top: 6, gap: 4, pad: 9 } as const;
 /** Solid drop shadows (a vertical offset, never a blur). */
 export const SHADOW = {
 	panel: 3,
-	button: 2,
-	/** Hover and focus lift the button this much over its shadow (3 px of shadow show). */
+	/** Deepest button shadow (a tall button); short ones get less (`buttonDepth`). */
+	button: 4,
+	/** Share of the button's height its solid shadow takes, clamped to 2..`button`. */
+	buttonDepth: 0.13,
+	/** Hover and focus lift the button this much over its shadow. */
 	hoverLift: 1,
-	/** Shadow left under a pressed button: it sinks until the shadow almost vanishes. */
-	pressed: 0.5,
+	/** Shadow left under a pressed button: it sinks the whole depth. */
+	pressed: 0,
+	/** Vertical gradient of the fill: the top this much lighter, the base this much darker. */
+	buttonGradient: 0.12,
 	panelAlpha: 0.55,
 	buttonAlpha: 0.6,
 } as const;
