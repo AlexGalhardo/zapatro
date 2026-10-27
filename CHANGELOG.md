@@ -26,6 +26,7 @@ Since 2026-10-24 the project has 12 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **ui:** the Rules book: the page list fills its column (one padding, one gap, equal heights); pages are text only, one sentence per line (`sentenceLines`, split at render, i18n unchanged), except Signals, which lists the six gestures as "icon Gesture = meaning"; every font is 25% larger; a page longer than its room scrolls (wheel, ↑/↓, drag) with a thin bar.
 - **ui:** the won table's panel shows the reward as cards: a green title in the screen-title look, one mini-card per payout line (Prize, Speed, Interest, Jhony when he is the partner, Table, Sheila ×2 when she doubles; $0 greyed, losses in red) and a gold-framed Total, coming in one by one with their numbers counting (at once with "reduce flashes"); the Total now includes Sheila's double; the payout itself is unchanged. The lost-table and quick-match panels share the new title.
 - **ui:** screen titles (Settings, Controls, Rules, LAN, partner choice, shop, pack, Pause, Almanac) look like the buttons: a vertical gradient from their gold, a thick dark outline, a solid extrusion a few px down and a soft shadow, drawn sharp at the screen's zoom by one helper (`addTitle`/`screenTitle` in `src/ui/title.ts`, texture `titleTex` in `src/art/title.ts`).
 - **ui:** a signal shown on a seat's card (partner, or a rival's caught one) is the bare signal icon, without the round cream backing; its dark outline keeps it readable on the felt and on the portrait. The picker and the manual already showed it bare.
