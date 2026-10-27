@@ -13,7 +13,7 @@
 
 ## Resumo
 
-> Linha principal (`main`, visual híbrido da Art Bible v2, `docs/visual.md`): os itens de arte pixel/concept da linha antiga estão marcados "n/a" ou "obsoleto pela art bible v2".
+> Linha principal (`main`, Art Bible v3 pintada desde 2026-10-27, `docs/visual.md` §0): os itens de arte pixel/concept das linhas antigas estão marcados "n/a" ou "obsoleto pela art bible v2"; as pendências da v3 são M-15 a M-20 e B-16 a B-18.
 
 | Id | Sev. | Tela | Problema | Status |
 | --- | --- | --- | --- | --- |
@@ -46,6 +46,15 @@
 | M-14 | P1 | mesa do chefe | O Mudo sem retrato (não havia `char-mudo.png`) | [x] gerado no PixelLab, `art-src/portrait/mudo.png` |
 | M-13 | P1 | mesa | Mapas dos Campeonatos 3 a 8 (Quermesse, Clube, Festa do Peão, Regional, Estadual, Rei do Truco) | obsoleto pela art bible v2 (3 feltros) |
 | M-11 | P2 | run | Telas restantes sem concept: escolha de parceiro, abertura de pacote, fim de run, Almanaque, tutorial, painel de Lances | [ ] |
+| M-15 | P1 | personagens, loja | Marcas reais nas pinturas: camiseta Nirvana na Ayla (`tiao`), camisa estilo seleção no Nino (`juninho`), Brahma e "51" no fundo da loja (`shop2`) | [ ] |
+| M-16 | P1 | mesa do chefe, Almanaque | 8 chefes ainda em pixel art 128×128 (`valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `irmaos`, `mudo`) ao lado do elenco pintado | [ ] |
+| M-17 | P2 | loja | Vendedor da loja sem asset pintado (a loja v3 não tem personagem) | [ ] |
+| M-18 | P3 | mesa | Face do coringa pintada traz "JOKER" em inglês dentro da imagem (sem tradução) | [ ] |
+| M-19 | P2 | repositório | `art-src/gta/` tem ~31 MB de originais no git (avaliar Git LFS ou guardar fora) | [ ] |
+| M-20 | P2 | loja, site, trailer | Material de loja ainda em pixel/flat: `docs/media` das lojas (`bun scripts/store-shots.ts`), pôster do trailer (`trailer/`), presskit e capsules (`art-src/capsules/`) | [ ] |
+| B-16 | P2 | run | Sistemas inalcançáveis com a UI atual: pular mesa e Promessas (`TABLE_SELECT = false`), baralhos destraváveis e os versos pintados `card-2`/`card-3` (`interior`, `blefe`), Estacas e os feitos que dependem deles (D-69) | [ ] |
+| B-17 | P2 | mesa LAN | `TableScene.ts:1734` (`onNet`): um `start` que chega com a mesa aberta (painel do fim) é tratado como `deal` e ignora retratos e nomes novos; contornado pelo `resync` do lobby (D-68). Correção: `this.scene.restart({ net: { client, start: m.start, snap: m.snap } })` | [ ] |
+| B-18 | P2 | mesa LAN | Sem relógio de jogada: um humano conectado que nunca joga trava a mesa para os outros (fora da versão em `docs/multiplayer.md`) | [ ] |
 
 ## 1. Bugs
 
