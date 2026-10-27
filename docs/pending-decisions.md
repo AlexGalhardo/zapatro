@@ -110,6 +110,8 @@ As duas medições divergem em mais de 5 p.p. em alguns degraus, por causa do er
 
 ## 6. BUGS.md: fechar os 9 itens obsoletos
 
+**Encerrada em 2026-10-27:** o dev removeu o BUGS.md; as pendências que importam estão no PLAN §1.4.4.
+
 **Contexto.** O mapa de itens abertos do BUGS.md classificou 9 como obsoletos: B-03, B-05, B-06, B-11, B-13, M-06, M-09, M-12, M-13. O motivo é a mudança de direção visual (Art Bible v2): não há mais concept de mesa, polegares nem fundos por Campeonato, e os retratos vêm de `public/assets/gfx/portrait/`.
 
 **Opções.**

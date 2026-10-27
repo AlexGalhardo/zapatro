@@ -36,7 +36,6 @@
 		// Raw dumps kept as history (brainstorm keeps its own style; see docs/README.md).
 		"docs/brainstorm.md",
 		"docs/claude-code.md",
-		"docs/improve-game-development-research.md",
-		"PROMPT-CREATE-PLAN.md"
+		"docs/improve-game-development-research.md"
 	]
 }

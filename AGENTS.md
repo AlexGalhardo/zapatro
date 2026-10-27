@@ -25,7 +25,7 @@ Personagens, fundos, versos e cartas especiais são **pinturas** (WebP); cartas 
 ## Comece aqui (toda sessão)
 
 1. **Carregue as skills `karpathy-guidelines` e `ponytail`** e siga-as até o fim da sessão. A skill `svg-concept-art` só vale na branch `pixel-art` (o pipeline de concept saiu daqui). A skill `caveman` (`.claude/skills/caveman`, nível `full`) economiza tokens no chat; código, commits e docs seguem em prosa normal.
-2. **[BUGS.md](BUGS.md)** é o foco até a 1.0.0 comercial: bugs, telas e mockups que faltam, com prompts para o ChatGPT e patch notes.
+2. **[PLAN.md §1.4.4](PLAN.md#144-pendências-para-a-10)** é o foco até a 1.0.0 comercial: as pendências abertas (arte, sistemas escondidos, LAN, build). O antigo BUGS.md foi removido em 2026-10-27.
 3. **Grafo primeiro:** `uvx --from graphifyy==0.9.71 graphify query "<pergunta>"` (skill `graphify`); sem `graphify-out/`, gere com `bun run graph`.
 4. **[PLAN.md](PLAN.md)** é a fonte da verdade (decisões, regras exatas do Truco §5, arquitetura §4, fases e checklists).
 5. **[docs/agent-workflow.md](docs/agent-workflow.md)** (como trabalhar), **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (design), **[docs/README.md](docs/README.md)** (índice), **[docs/architecture.md](docs/architecture.md)** (mapa do código).

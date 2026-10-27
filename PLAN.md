@@ -88,7 +88,7 @@ Detalhes em §5.12.1.
 
 ### 1.4.3 Art Bible v3 e rodada de revisão (pedido do usuário, 2026-10-27)
 
-Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-71 em [docs/decisions.md](docs/decisions.md).
+Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/decisions.md](docs/decisions.md).
 
 - [x] Art Bible v3 "verão, pôr do sol": cards 3:4 (`card/<id>.webp`, 480×640) e bustos (`portrait/<id>.webp`, 256×256) pintados do elenco, do Zé, da Sortuda e do Rei do Truco; fontes em `art-src/gta/`, pixel antigos em `art-src/backup-pixel/` (D-63).
 - [x] Fundos pintados sob toda tela (`BackdropScene`/`setBackdrop`), escurecidos por `BACKDROP_BRIGHTNESS` exceto o menu; menu com 3 pinturas em crossfade e `BAKED_UI` por imagem (D-64).
@@ -97,12 +97,26 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-71 em [docs/d
 - [x] Ícones vetoriais dos sinais (`icon.signal.*`) no manual e na escolha; selos de atalho opcionais e desligados por padrão; botões com gradiente e profundidade (D-66, D-67).
 - [x] LAN estável: `resync` para quem volta ao lobby com a partida já começada, validação das mensagens no servidor, `scripts/lan-smoke.ts` cobrindo a sessão inteira (D-68).
 - [x] Seleção de mesas desligada (`TABLE_SELECT = false` em `src/config/features.ts`); baralho e estaca fora da UI da escolha de parceiro (D-69).
-- [~] Sinal do parceiro mostra o gesto exato (o servidor LAN já manda o sinal exato ao parceiro; a mesa está em implementação) (D-70).
-- [~] Só o jogador responde ao truco da dupla e traços roguelite novos dos companheiros (em implementação) (D-71).
+- [x] Sinal do parceiro mostra o gesto exato (`icon.signal.*` ao lado do card, sem disco de fundo; o servidor LAN manda o sinal exato ao parceiro) (D-70).
+- [x] Só o jogador responde ao truco da dupla (a opção `partnerFolds` saiu) e traços roguelite novos dos companheiros; os números seguem em calibragem (D-71).
 - [x] Fundos de jogo sorteados entre 6 pinturas (`VARIANTS`) a cada mesa e run nova; overlays mantêm a da mesa (D-64).
 - [x] Mesa reorganizada: HUD (Manhas, Fama, Quedas) no topo da sidebar, card "Campeonato N / Mesa 1 · Mesa 2 · Chefão" no canto superior direito do feltro, caixa "em jogo" na base do feltro; Manilha/ZAP e dinheiro escondidos por flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL`), código mantido. Conferido em 1920×1080, 2560×1440 e toque 2400×1080.
 - [x] Resoluções-alvo registradas: 1920×1080 e 2560×1440 no desktop, Android em paisagem 6,5"+ (AGENTS.md).
-- [ ] Pendências de arte e sistemas inalcançáveis listadas em [BUGS.md](BUGS.md) (marcas reais, chefes em pixel, vendedor da loja, peso de `art-src/gta`, material de loja ainda em pixel).
+- [x] Loja reduzida (`SHOP_SIMPLE`): 4 ofertas por visita em cards de raridade com profundidade, sem pacotes, renovação nem Melhoria (D-72).
+- [x] Painel de fim de mesa em cards (uma linha do pagamento por mini-card, Total em destaque) e card de prêmio projetado no feltro (`projectedReward`, a mesma conta do pagamento) (D-73).
+- [x] Profundidade em textos (`TEXT_LOOK`), painéis (`PANEL_LOOK`), títulos (`addTitle`) e botões; Configurações e Regras refeitas (padding único, ícones vetoriais, uma frase por linha) (D-74).
+- [x] Mesa limpa: caixa Manilha/ZAP e card de dinheiro escondidos por flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL`), HUD no topo da sidebar, caixa "em jogo" com os efeitos da mão (D-75).
+- [x] Pendências abertas movidas para §1.4.4 (o BUGS.md foi removido).
+
+### 1.4.4 Pendências para a 1.0
+
+- [ ] Marcas reais nas pinturas: camisa estilo seleção do Nino (`char-nino`, `menu-4`), letreiro "Las Vegas" e torre do Paris Las Vegas no `background-6` (`bg/bg6`), Brahma e "51" no fundo da loja (`shop2`).
+- [ ] 8 chefes ainda em pixel 128×128 (`valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `irmaos`, `mudo`) e o vendedor da loja sem arte.
+- [ ] "JOKER" em inglês dentro da face pintada do coringa.
+- [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
+- [ ] Sistemas inalcançáveis pelas flags: pular mesa e Promessas (`TABLE_SELECT = false`), pacotes, renovação, Melhorias e baralhos/versos destraváveis (`SHOP_SIMPLE = true`, baralho e estaca fora da UI), Estacas e os feitos que dependem deles.
+- [ ] LAN sem relógio de jogada: um humano conectado que nunca joga trava a mesa ([docs/multiplayer.md](docs/multiplayer.md)).
+- [ ] Build Poki (`VITE_POKI=1`) apaga as vozes de `dist/` mesmo com outro `outDir`: rodar o build normal depois dele, ou separado.
 
 ### 1.5 Fora do escopo até a 1.0
 

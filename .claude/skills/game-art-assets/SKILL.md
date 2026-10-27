@@ -36,4 +36,4 @@ Fonte da verdade: **[docs/visual.md](../../../docs/visual.md) §0 (Art Bible v3,
 2. `bun scripts/portraits.ts` (pinturas) ou `bun scripts/icons.ts` (folha de ícones).
 3. Reinicie o Vite se a lista de arquivos de `public/` mudou; confira em 1920×1080 e 2560×1440 (`bun scripts/gta-shots.ts` tira antes/depois).
 4. `bun run build` e meça o primeiro download; `bun run check`, `bun run typecheck`, `bun test`.
-5. Atualize `docs/visual.md` §0 (tabela), CHANGELOG `[Unreleased]` e, se for pendência resolvida, BUGS.md.
+5. Atualize `docs/visual.md` §0 (tabela), CHANGELOG `[Unreleased]` e, se for pendência resolvida, o checklist do PLAN §1.4.4.
