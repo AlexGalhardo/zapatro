@@ -379,3 +379,37 @@ Decisões do dev (mudança de tipo de traço, fora do escopo de números):
 5. **Mia (`bia`), 8,7%:** o perk `caughtMult` não sobe a taxa por número; o defeito `neverFolds` não tem número. Trocar o defeito ou o perk.
 
 Pendentes (não testados nesta rodada): Nino (`juninho`, 17,3%): a alavanca natural é o defeito `error` x2 (testar x1,5, o que o tornaria mais forte e subiria a taxa). Ayla (`tiao`, 12,7%): o perk `error` x0,25 (testar x0,15). Ambos precisam de 1000 runs e `bun run balance`.
+
+## Perks e Defeitos roguelite dos parceiros (2026-10-27)
+
+Substituem todos os traços antigos (`Trait`). Valem só com o companheiro como parceiro do jogador; números em `PARTNER_TRAITS` (`src/data/companions.ts`). O parceiro IA nunca responde ao truco dos rivais, e nada mexe em flagrar sinais.
+
+| Parceiro | Vantagem | Defeito | Números |
+|---|---|---|---|
+| Bruto (`tonhao`) | +3 Mult por vaza que ele vence | as cartas dele valem metade das Fichas (↓) | `trickMult` 3, `chipsDivisor` 2 |
+| Cida (`donaCida`) | +$1 por mão vencida | itens da loja +$1 | `moneyPerWin` 1, `priceUp` 1 |
+| Jhony (`zeMalandro`) | juros +$1 por $5 no fim da mesa (máx +$5) | Renovar +$1 | `interestStep` 5, `interestPer` 1, `interestCap` 5, `rerollUp` 1 |
+| Nino (`juninho`) | +1 Mult base por mesa vencida | começa com −1 Mult base (mín 1) | `multPerLevel` 1, `startMult` −1 |
+| Zé (`ze`) | item mais barato da 1ª loja do Campeonato grátis | −1 espaço de Manha | `freeOffers` 1, `manhaSlotsDown` 1 |
+| Mia (`bia`) | manilhas +15 Fichas | cartas comuns −2 Fichas (mín 0) | `manilhaChips` 15, `commonChips` −2 |
+| Chico (`joca`) | +20 Fichas por vaza vencida com ♣ | ♥ e ♦ −5 Fichas (mín 0) | `clubTrickChips` 20, `redChips` −5 |
+| Beti (`lurdes`) | 1 Renovar grátis por loja | Manhas +$1 | `freeRerolls` 1, `manhaPriceUp` 1 |
+| Ayla (`tiao`) | ×1,5 Mult se a dupla vence as 2 primeiras vazas | mão perdida −$1 | `firstTwoTricksX` 1,5, `lostHandCost` 1 |
+| Sheila (`neide`) | 1 em 4 de dobrar o dinheiro da mesa vencida | metas +10% | `doubleMoneyChance` 0,25, `goalMult` 1,1 |
+
+Medição (`bun scripts/balance-partners.ts --runs 1000`, bot bom, Estaca 1, seeds 700000+, só a escolha do parceiro muda; o bot ainda pula mesas na simulação e usa a loja completa):
+
+| Parceiro | Vitórias | Campeonato médio | Dinheiro final |
+|---|---|---|---|
+| Bruto | 20,5% | 5,06 | 33,8 |
+| Cida | 29,6% | 5,68 | 60,6 |
+| Jhony | 17,4% | 4,85 | 60,2 |
+| Nino | **55,5%** | 6,29 | 43,9 |
+| Zé | 29,5% | 5,65 | 47,3 |
+| Mia | 19,3% | 4,99 | 32,6 |
+| Chico | 29,7% | 5,68 | 43,4 |
+| Beti | 16,7% | 4,81 | 27,3 |
+| Ayla | 27,1% | 5,67 | 16,5 |
+| Sheila | 26,5% | 5,45 | 85,0 |
+
+`bun run balance` (3 seeds × 500): bot bom 22,6% / 26,0% / 26,2%, aleatório 0%, 7,0 mãos por mesa: passa. Para calibrar: Nino fica muito acima (o +1 Mult por mesa não tem teto; testar teto de +5 ou +1 a cada 2 mesas), Beti e Jhony abaixo de 20% (Renovar, que o bot usa) e Bruto/Mia/Jhony perto do piso.
