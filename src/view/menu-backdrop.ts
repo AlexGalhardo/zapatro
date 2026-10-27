@@ -1,5 +1,4 @@
 import type Phaser from 'phaser';
-import { PALETTE } from '../config/palette';
 import { comfort } from './comfort';
 
 const KEYS = ['img.bg.menu-1', 'img.bg.menu-2', 'img.bg.menu-3'] as const;
@@ -8,15 +7,16 @@ const HOLD_MS = 7000;
 const FADE_MS = 500;
 /** The paintings are measured on this width (their source files are 1600 px wide). */
 const SRC_W = 1600;
-/** The painted logo ends at this source x in every painting: the view keeps at least this much. */
-const LOGO_RIGHT = 620;
-/** Most the painting may be enlarged (cropping its bottom) to fill the view's width. */
-const MAX_FILL = 1.06;
+/** Share of the painting's height kept free under the button column. */
+const BOTTOM_MARGIN = 0.07;
+/** Black vignette over a painting's edges that meet the black bars: its share of the size. */
+const VIGNETTE = { min: 0.02, max: 0.08 };
 
 /**
  * Where the logo and the button column are painted into each painting (source px), measured on
- * references/concept-art-gta/menu-1..3.jpeg. The game's own logo and buttons are laid over them,
- * same place and size, so no painted text shows under them (whatever the language).
+ * references/concept-art-gta/menu-1..3.jpeg. The game's own buttons are laid over the painted
+ * ones, same place and size, so no painted text shows under them (whatever the language); the
+ * logo has no words to translate and stays as painted.
  */
 export interface MenuGeo {
 	logo: { x: number; y: number; w: number; h: number };
@@ -28,6 +28,13 @@ export const MENU_GEO: readonly MenuGeo[] = [
 	{ logo: { x: 48, y: 82, w: 546, h: 198 }, col: { x: 58, w: 403, h: 60, y0: 312, step: 68 } },
 ];
 
+interface Rect {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
 /** What the scene needs to place its UI: the painting's top-left in stage px and its scale. */
 export interface MenuFrame {
 	geo: MenuGeo;
@@ -35,24 +42,27 @@ export interface MenuFrame {
 	k: number;
 	x: number;
 	y: number;
-	/** The visible stage rectangle. */
-	view: { x: number; y: number; width: number; height: number };
+	/** Where the painting is on the stage (the dots and the version stay inside it). */
+	art: Rect;
+	/** Stage y the button column must end above: a clear margin over the painting's bottom edge. */
+	bottom: number;
 }
 
 /**
- * Rotating painted backdrop of the main menu (like the concept art: full-screen painting, logo
- * and buttons over it). The painting fits the view's height and sits at the top left, so the
- * painted UI is always on screen; wider views show the dimmed main backdrop to its right. It
- * changes every HOLD_MS with a crossfade, or by hand with left/right and the dots. `onFrame` fires
- * when the layout or the slide changes, so the scene can rebuild its logo and buttons on the new
- * geometry. Missing images (failed load) leave the scene as is.
+ * Rotating painted backdrop of the main menu (like the concept art: full-screen painting, buttons
+ * over it). The painting is fitted whole (never stretched, mirrored or repeated) and centred; what
+ * is left of the view is black, with a black vignette over the painting's edges that meet it, so
+ * there is no hard line. It changes every HOLD_MS with a crossfade, or by hand with left/right and
+ * the dots. `onFrame` fires when the layout or the slide changes, so the scene can rebuild its
+ * buttons on the new geometry. Missing images (failed load) leave the scene as is.
  */
 export class MenuBackdrop {
 	private readonly images: Phaser.GameObjects.Image[];
-	private readonly edge: Phaser.GameObjects.Graphics;
+	private readonly bars: Phaser.GameObjects.Graphics;
+	private readonly vignette: Phaser.GameObjects.Graphics;
 	private readonly dots: Phaser.GameObjects.Arc[] = [];
 	private current = 0;
-	private view = { x: 0, y: 0, width: 640, height: 360 };
+	private view: Rect = { x: 0, y: 0, width: 640, height: 360 };
 	private timer: Phaser.Time.TimerEvent | null = null;
 
 	constructor(
@@ -63,12 +73,13 @@ export class MenuBackdrop {
 		this.images = keys.map((k) =>
 			scene.add.image(0, 0, k).setOrigin(0, 0).setDepth(-20).setAlpha(0),
 		);
-		this.edge = scene.add.graphics().setDepth(-19);
+		this.bars = scene.add.graphics().setDepth(-21);
+		this.vignette = scene.add.graphics().setDepth(-19);
 		this.images[0]?.setAlpha(1);
 		this.images.forEach((_, i) => {
 			const dot = scene.add
-				.circle(0, 0, 3.5, PALETTE.textLight)
-				.setStrokeStyle(1, PALETTE.night, 0.8)
+				.circle(0, 0, 3.5, 0xffffff)
+				.setStrokeStyle(1, 0x000000, 0.8)
 				.setDepth(5)
 				.setInteractive({ useHandCursor: true });
 			dot.on('pointerdown', () => this.go(i));
@@ -79,48 +90,72 @@ export class MenuBackdrop {
 		scene.events.once('shutdown', () => this.timer?.remove());
 	}
 
-	/** Fits the painting to the visible stage rectangle and tells the scene where its UI goes. */
-	layout(view: { x: number; y: number; width: number; height: number }): void {
+	/** Fits the painting into the visible stage rectangle and tells the scene where its UI goes. */
+	layout(view: Rect): void {
 		this.view = view;
-		const img = this.images[this.current];
-		if (!img) return;
-		const aspect = img.width / img.height;
-		// Fit the height, but never let the painted logo run off the right side.
-		const fitted = Math.min(view.height, view.width / ((LOGO_RIGHT / SRC_W) * aspect));
-		// Slightly narrower than the view (menu-2 is 1.70, the screen 1.78): fill the width and
-		// let the bottom crop a little instead of leaving a strip; the buttons end well above it.
-		const width = Math.min(Math.max(fitted * aspect, view.width), fitted * aspect * MAX_FILL);
-		const height = width / aspect;
-		const [x, y] = [view.x, view.y];
-		for (const i of this.images) i.setPosition(x, y).setDisplaySize(width, height);
-		// A view wider than the painting: its right edge fades into the main backdrop behind.
-		const g = this.edge.clear();
-		if (width < view.width - 1) {
-			const fade = Math.min(48, width * 0.08);
-			g.fillGradientStyle(
-				PALETTE.night,
-				PALETTE.night,
-				PALETTE.night,
-				PALETTE.night,
-				0,
-				0.7,
-				0,
-				0.7,
-			).fillRect(x + width - fade, y, fade, height);
+		const cur = this.images[this.current];
+		if (!cur) return;
+		// Fit the height; a view narrower than the painting fits the width instead. Each painting
+		// has its own proportion (menu-2 is a little narrower), so each is fitted on its own.
+		const fit = (img: Phaser.GameObjects.Image): Rect => {
+			const aspect = img.width / img.height;
+			const height = Math.min(view.height, view.width / aspect);
+			const width = height * aspect;
+			return {
+				x: view.x + (view.width - width) / 2,
+				y: view.y + (view.height - height) / 2,
+				width,
+				height,
+			};
+		};
+		for (const img of this.images) {
+			const r = fit(img);
+			img.setPosition(r.x, r.y).setDisplaySize(r.width, r.height);
 		}
-		const bottom = y + height;
-		const mid = x + width / 2;
-		for (const [i, d] of this.dots.entries())
-			d.setPosition(
-				mid + (i - (this.dots.length - 1) / 2) * 12,
-				Math.min(bottom, view.y + view.height) - 8,
+		const { x, y, width, height } = fit(cur);
+
+		this.bars
+			.clear()
+			.fillStyle(0x000000, 1)
+			.fillRect(view.x - 2, view.y - 2, view.width + 4, view.height + 4);
+		const g = this.vignette.clear();
+		const black = 0x000000;
+		const side = (view.width - width) / 2;
+		if (side > 0.5) {
+			const ramp = Math.min(Math.max(side * 2, width * VIGNETTE.min), width * VIGNETTE.max);
+			g.fillGradientStyle(black, black, black, black, 1, 0, 1, 0).fillRect(
+				x,
+				y,
+				ramp,
+				height,
 			);
+			g.fillGradientStyle(black, black, black, black, 0, 1, 0, 1).fillRect(
+				x + width - ramp,
+				y,
+				ramp,
+				height,
+			);
+		}
+		const band = (view.height - height) / 2;
+		if (band > 0.5) {
+			const ramp = Math.min(Math.max(band * 2, height * VIGNETTE.min), height * VIGNETTE.max);
+			g.fillGradientStyle(black, black, black, black, 1, 1, 0, 0).fillRect(x, y, width, ramp);
+			g.fillGradientStyle(black, black, black, black, 0, 0, 1, 1).fillRect(
+				x,
+				y + height - ramp,
+				width,
+				ramp,
+			);
+		}
+		for (const [i, d] of this.dots.entries())
+			d.setPosition(x + width / 2 + (i - (this.dots.length - 1) / 2) * 12, y + height - 8);
 		this.onFrame({
 			geo: MENU_GEO[this.current] ?? (MENU_GEO[0] as MenuGeo),
 			k: width / SRC_W,
 			x,
 			y,
-			view,
+			art: { x, y, width, height },
+			bottom: y + height * (1 - BOTTOM_MARGIN),
 		});
 	}
 

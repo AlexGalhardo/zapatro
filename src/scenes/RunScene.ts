@@ -363,7 +363,7 @@ export class RunScene extends Phaser.Scene {
 		const { cx } = this;
 		this.title(cx, 24, t('run.choosePartner'), TYPE.screenTitle);
 		const offer = this.ensureCandidates();
-		const [rowW, rowH, gap, top] = [604, 88, 4, 42];
+		const [rowW, rowH, gap, top] = [384, 88, 4, 42];
 		const x0 = cx - rowW / 2;
 		offer.forEach((id, i) => {
 			const y = top + i * (rowH + gap);
@@ -374,7 +374,7 @@ export class RunScene extends Phaser.Scene {
 					.image(x0 + 4 + cw / 2, y + rowH / 2, tex(this, `charcard.${id}`))
 					.setDisplaySize(cw, ch),
 			);
-			const btnW = 128;
+			const btnW = 96;
 			const tx = x0 + 4 + cw + 10;
 			const tw = rowW - (tx - x0) - btnW - 20;
 			// Each block starts under the one before, whatever its wrap: the rows keep one rhythm.
@@ -414,7 +414,7 @@ export class RunScene extends Phaser.Scene {
 		});
 		// Back and the partner-folds toggle: one row centred under the partners.
 		const backW = 100;
-		const foldW = 250;
+		const foldW = rowW - backW - GAP.card;
 		const row = cx - (backW + GAP.card + foldW) / 2;
 		const by = top + 3 * (rowH + gap) + 14;
 		this.button(

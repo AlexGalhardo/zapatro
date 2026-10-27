@@ -101,6 +101,12 @@ export class MenuScene extends Phaser.Scene {
 			for (const o of layer) o.destroy();
 			const { col } = f.geo;
 			const h = col.h * f.k;
+			// The column keeps the painted step, tightening only if the last row would end under the margin.
+			const first = f.y + col.y0 * f.k;
+			const step = Math.min(
+				col.step * f.k,
+				rows.length > 1 ? (f.bottom - first - h) / (rows.length - 1) : Infinity,
+			);
 			buttons = rows.map((row, i) =>
 				new Button(
 					this,
@@ -118,14 +124,11 @@ export class MenuScene extends Phaser.Scene {
 						onHover: () => this.move(rows, i - this.focus, true),
 					},
 				)
-					.setPosition(
-						f.x + (col.x + col.w / 2) * f.k,
-						f.y + (col.y0 + i * col.step) * f.k + h / 2,
-					)
+					.setPosition(f.x + (col.x + col.w / 2) * f.k, first + i * step + h / 2)
 					.setEnabled(!row.disabled),
 			);
 			layer = [...buttons];
-			version.setPosition(f.view.x + f.view.width - 6, f.view.y + f.view.height - 4);
+			version.setPosition(f.art.x + f.art.width - 6, f.art.y + f.art.height - 4);
 			this.redraw();
 		};
 		const backdrop = new MenuBackdrop(this, build);
