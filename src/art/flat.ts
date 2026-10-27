@@ -222,7 +222,7 @@ function manilhaPlate(ctx: Ctx, zap: boolean): void {
 }
 
 /**
- * Flat face: rank and suit in two corners, a big suit (aces, pips) or the court's letter.
+ * Flat face: rank and suit in two corners and one big suit in the middle (courts included).
  * `mark`: the manilhas of this hand get a 2 px gold frame and the gold plate at the foot.
  */
 function drawCard(ctx: Ctx, rank: string, name: string, fourColor: boolean, mark = ''): void {
@@ -244,11 +244,7 @@ function drawCard(ctx: Ctx, rank: string, name: string, fourColor: boolean, mark
 	label(ctx, rank, 9, 9, 12, c);
 	suit(ctx, name, 9, 20, 7, c);
 	ctx.restore();
-	if (rank === 'Q' || rank === 'J' || rank === 'K') {
-		box(ctx, 14, 18, 20, 28, 4, shade(c, 0.82));
-		label(ctx, rank, 24, 29, 17, c);
-		suit(ctx, name, 24, 40, 7, c);
-	} else suit(ctx, name, CARD_W / 2, CARD_H / 2, rank === 'A' ? 26 : 20, c);
+	suit(ctx, name, CARD_W / 2, CARD_H / 2, rank === 'A' ? 26 : 20, c);
 }
 
 /** Texture key of a card face (the joker and each special card have one face for the whole deck). */
