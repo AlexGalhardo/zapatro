@@ -61,7 +61,7 @@ Modificadores: gold (Dourada) +$1 · heavy (Pesada) +20 Fichas · hot (Quente) +
 - Metas (Pequena; Grande ×1,5; Chefe ×2): 220 · 280 · 360 · 450 · 580 · 730 · 920 · 1.170 (dobradas em 2026-10-25; antes 110 → 585); infinito ×1,4 por Campeonato.
 - Mesa em melhor de três quedas (D-59). Corrida 15 Fichas × 2 Mult. Delegado: Corrida ×0,5.
 - Dinheiro: início $4; prêmio $3/$4/$5; rapidez +$1 por tento que faltava ao rival (teto $5); juros +$1 a cada $5 (teto $5); reroll $5 +$1; venda pela metade; Simpatia/Lance $3; pacotes $4 ($6 Manha).
-- Rivais por Campeonato: C1 covarde/novato … C8 profissional/valentão/blefador (`RIVAL_POOLS`). Parceiros: Tonhão (valentão, coragem 0,2, agressividade 0,6), Dona Cida (calculista, coragem 0,2); erro ×1/×0,7/×0,4 por nível.
+- Rivais por Campeonato: C1 covarde/novato … C8 profissional/valentão/blefador (`RIVAL_POOLS`). Parceiros: Bruto (valentão, coragem 0,2, agressividade 0,6), Cida (calculista, coragem 0,2); erro ×1/×0,7/×0,4 por nível.
 - Bot bom (`GOOD_BOT`): perfil profissional com coragem 0,2, agressividade 0,2, blefe 0,02; compra por raridade + tags em comum; guarda $10 para juros a partir de 3 Manhas. Hábitos do B0.2 em `HABITS` (`src/game/run-sim.ts`): Manhas de ×Mult à direita; com os espaços cheios vende a mais fraca quando a nova vale ao menos 2 a mais (raridade + tags); Espelho copia carta modificada, Benzedeira nunca tira carta modificada, Figa só com Mão Leve; **não pula mesa** (ver abaixo).
 
 **`bun scripts/balance.ts --seeds 3 --runs 300` (2026-09-30):** bot bom 49,0% · 45,0% · 49,0%; aleatório 0,3% · 0,3% · 0,7%; 4,28 · 4,27 · 4,16 mãos por mesa; sem NaN. **PASS.**
@@ -253,28 +253,54 @@ Cada parceiro tem um jeito próprio de jogar as apostas (`PARTNER_STYLES` em `sr
 
 | Parceiro | Estilo | Coragem | Agressividade | Blefe |
 |---|---|---|---|---|
-| Tonhão | agressivo: pede e aumenta truco com mão razoável, aceita quase tudo | 0,4 | 0,95 | 0,25 |
-| Dona Cida | conservadora: só pede com mão muito forte, nunca blefa, corre de pedido duvidoso | 0,05 | 0,05 | 0 |
-| Zé Malandro | blefador: pede truco com metade das mãos fracas em que o blefe é possível | 0,25 | 0,55 | 0,5 |
-| Juninho | destemido: aceita quase todo pedido | 0,6 | 0,5 | 0,1 |
+| Bruto | agressivo: pede e aumenta truco com mão razoável, aceita quase tudo | 0,4 | 0,95 | 0,25 |
+| Cida | conservadora: só pede com mão muito forte, nunca blefa, corre de pedido duvidoso | 0,05 | 0,05 | 0 |
+| Jhony | blefador: pede truco com metade das mãos fracas em que o blefe é possível | 0,25 | 0,55 | 0,5 |
+| Nino | destemido: aceita quase todo pedido | 0,6 | 0,5 | 0,1 |
 
-Antes todos tinham coragem 0,2 (Tonhão agressividade 0,6). Teste de comportamento: `tests/companion-styles.test.ts` (200 mesas por parceiro: Tonhão pede mais truco e Dona Cida menos; Zé pede com mão fraca bem mais que os outros, Dona Cida quase nunca; Juninho corre menos que Dona Cida).
+Antes todos tinham coragem 0,2 (Bruto agressividade 0,6). Teste de comportamento: `tests/companion-styles.test.ts` (200 mesas por parceiro: Bruto pede mais truco e Cida menos; Zé pede com mão fraca bem mais que os outros, Cida quase nunca; Nino corre menos que Cida).
 
 **`bun scripts/sim.ts --runs 300 --partner <id>`, seeds 1 e 2 (bot bom, Estaca 1), antes → depois:**
 
 | Parceiro | Antes | Depois |
 |---|---|---|
-| Tonhão | 53,3% · 57,7% | 49,0% · 48,7% |
-| Dona Cida | 46,7% · 51,3% | 56,0% · 57,7% |
-| Zé Malandro | 50,0% · 49,3% | 44,0% · 49,3% |
-| Juninho | 36,3% · 35,3% | 34,3% · 29,0% |
+| Bruto | 53,3% · 57,7% | 49,0% · 48,7% |
+| Cida | 46,7% · 51,3% | 56,0% · 57,7% |
+| Jhony | 50,0% · 49,3% | 44,0% · 49,3% |
+| Nino | 36,3% · 35,3% | 34,3% · 29,0% |
 
-Juninho com coragem 0,8 caía para ~31%; com 0,6 fica perto de antes (ele compensa subindo de nível a cada mesa). Dona Cida conservadora virou a escolha mais segura e Tonhão a mais arriscada, o que combina com os estilos.
+Nino com coragem 0,8 caía para ~31%; com 0,6 fica perto de antes (ele compensa subindo de nível a cada mesa). Cida conservadora virou a escolha mais segura e Bruto a mais arriscada, o que combina com os estilos.
 
-**`bun run balance` (`--seeds 3`, 500 runs, parceiro sorteado entre Tonhão e Dona Cida):** bot bom 50,2% · 54,0% · 55,0%; aleatório 0,8% · 0,4% · 0,8%; 4,10 · 4,19 · 4,12 mãos por mesa. **PASS.**
+**`bun run balance` (`--seeds 3`, 500 runs, parceiro sorteado entre Bruto e Cida):** bot bom 50,2% · 54,0% · 55,0%; aleatório 0,8% · 0,4% · 0,8%; 4,10 · 4,19 · 4,12 mãos por mesa. **PASS.**
 
-A partida rápida continua com os arquétipos de `src/data/characters.ts` (Tonhão valentão, Dona Cida calculista): os testes de QA usam seeds fixas nela.
+A partida rápida continua com os arquétipos de `src/data/characters.ts` (Bruto valentão, Cida calculista): os testes de QA usam seeds fixas nela.
 
 ## Cartas especiais e dois coringas (2026-10-27)
 
 O baralho passa de 41 para 45 cartas (2 coringas e Trevo, Olho e Raio, PLAN §5.12.1). Os efeitos não mexem em Fichas × Mult e a IA joga as cartas novas como um 3. `bun run balance`: **PASS** nas seeds 1 e 2 (bot bom 26,0 e 21,6%; aleatório 0,4 e 0,2%; 6,04 e 5,98 mãos por mesa). A seed 3 não terminou: o comando foi encerrado pelo tempo limite de 550 s, então o gate está confirmado em 2 de 3 seeds. O bot bom ficou perto do piso da faixa D-39 (20–35%); rodar as 3 seeds de novo antes do próximo release.
+
+## Revisão para a 1.0 (2026-10-27)
+
+Comandos: `bun scripts/sim.ts` (500 runs, seed 1), `bun scripts/sim.ts --partner <id> --runs 300` (uma dupla por vez, seed 1) e `bun run balance` (3 seeds × 500 runs).
+
+Gate `bun run balance`, sem mudança de número: bot bom **26,0 · 21,6 · 27,0%** (faixa 20–35%); aleatório **0,4 · 0,2 · 0,2%** (< 5%); **6,04 · 5,98 · 6,05** mãos por mesa (4–12). PASS nas 3 seeds.
+
+Sim geral (500 runs, seed 1): bot bom 26,0%, Campeonato médio 5,35, mãos por mesa 6,04, dinheiro médio $39,1. Runs que terminam em C1…C8: 55 · 42 · 39 · 55 · 52 · 40 · 39 · 178.
+
+Por parceiro (300 runs, seed 1, bot bom):
+
+| Parceiro (id) | Vitória | Campeonato médio | Mãos por mesa |
+|---|---|---|---|
+| Bruto (`tonhao`) | 21,3% | 4,89 | 3,76 |
+| Cida (`donaCida`) | 12,7% | 4,83 | 7,11 |
+| Jhony (`zeMalandro`) | 35,3% | 5,82 | 4,49 |
+| Nino (`juninho`) | 17,3% | 4,63 | 5,72 |
+
+Outliers observados:
+
+- **Espalhamento entre parceiros:** Cida (12,7%) e Nino (17,3%) ficam abaixo da faixa 20–35%; Jhony (35,3%) encosta no teto. A média fica dentro da faixa, mas a diferença de ~22 p.p. entre o melhor e o pior parceiro é a maior do elenco.
+- **Cida:** o defeito `foldsRaises` (corre de seis, nove e doze) e o `catchBonus` de 0/0,1/0,2 não compensam; a escolha de qual lado mexer é de design (perk ou defeito), então não foi alterada.
+- **Nino:** a taxa de vitória é baixa; `levelsPerTable` e `error ×2` pesam mais que o perk `catch +0,15`.
+- **Manhas mais frequentes:** `asNaManga` (155 de 500 runs na mix geral) e `seuZe` (136) lideram. Frequência não é poder: não há dado de força por Manha nesta rodada, então não foi mexido.
+
+Decisão: **sem mudança em `src/data/`**. Nenhuma correção pequena ficou claramente justificada: o gate passa e os outliers são de desenho de parceiro (perk × defeito), que pedem decisão do dev, não um ajuste de número. Próximo passo sugerido: testar `catchBonus` da Cida e o `levelsPerTable` do Nino em 300 runs cada, uma por vez, com `bun run balance` depois de cada.
