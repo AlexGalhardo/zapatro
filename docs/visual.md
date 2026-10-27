@@ -1,8 +1,8 @@
 # Art Bible v3 — Zapatro (pintura + vetor; base v2 híbrida)
 
-Versão 2 de 2026-10-24 (revisão de direção). Substitui a Art Bible anterior (pixel art 640×360, cena de boteco, PixelLab e pipeline concept → SVG), que ficou na branch `pixel-art`. As imagens de referência estão em `references/concept-art/zapatro/` e os prompts em [prompts-new-concept-art-using-pixel-art.md](../prompts-new-concept-art-using-pixel-art.md).
+**Vale a §0 (v3, 2026-10-27).** O texto a partir da §1 é a base v2 de 2026-10-24 e fica como referência de layout, medidas e cores da UI. A v2 substituiu a Art Bible anterior (pixel art 640×360, cena de boteco, PixelLab e pipeline concept → SVG), que ficou na branch `pixel-art`. As imagens de referência estão em `references/concept-art/zapatro/` e os prompts em [prompts-new-concept-art-using-pixel-art.md](../prompts-new-concept-art-using-pixel-art.md) (histórico: a fonte atual das pinturas é `art-src/gta/`).
 
-Regra de ouro: **pessoas e ícones pequenos são pixel art; todo o resto é vetor chapado desenhado por código.** Os princípios de UI do Balatro (legibilidade, hierarquia, "juice") inspiram; nunca copie arte, logo, fonte, layout ou paleta de terceiros. A identidade é de boteco do interior paulista, nas pessoas, nas cores quentes e nos nomes.
+Regra de ouro (v3): **personagens, fundos, versos e cartas especiais são pinturas; cartas comuns, painéis, botões e ícones vetoriais são desenhados por código; os ícones de UI da folha seguem em pixel art.** Os princípios de UI do Balatro (legibilidade, hierarquia, "juice") inspiram; nunca copie arte, logo, fonte, layout ou paleta de terceiros. A identidade é de boteco do interior paulista, nas pessoas, nas cores quentes e nos nomes.
 
 ## 0. Art Bible v3 (2026-10-27): "verão tropical, pôr do sol"
 
@@ -12,9 +12,9 @@ A v3 troca a identidade de pixel/chapado por **arte pintada** (cores saturadas, 
 |---|---|---|
 | Cards dos personagens | pintados, 3:4, sem a faixa do nome nem a borda (o nome vem do i18n) | `art-src/gta/char-*.jpeg` → `public/assets/gfx/card/<id>.webp` (480×640); textura `img.card.<id>`; usado na escolha de parceiro |
 | Retrato quadrado (mesa, regras, Almanaque, LAN) | busto pintado, suave (nunca nearest) | mesmos JPEG → `public/assets/gfx/portrait/<id>.webp` (256×256); `registerPortraits` desenha com filtro suave quando o bitmap é maior que 128 px |
-| Cards dos personagens em todo o jogo | todo personagem aparece como **card retangular 3:4** (chave `charcard.<id>`, `src/art/flat.ts`): a arte pintada, ou, sem ela (`ze` e chefes), o retrato pixel inteiro e sem esticar, centrado sobre a cor `bg` do personagem. Usado nos assentos da mesa (54×72 + faixa do nome), escolha de parceiro, rivais e chefe da run, fim de run, Almanaque e Regras. Ficam quadrados só ícones: assentos do lobby LAN (32 px) e as caras das expressões da página de sinais das Regras | `src/art/flat.ts`, `scripts/portraits.ts` |
+| Cards dos personagens em todo o jogo | todo personagem aparece como **card retangular 3:4** (chave `charcard.<id>`, `src/art/flat.ts`): a arte pintada, ou, sem ela (os 8 chefes em pixel), o retrato pixel inteiro e sem esticar, centrado sobre a cor `bg` do personagem. Usado nos assentos da mesa (54×72 + faixa do nome), escolha de parceiro, rivais e chefe da run, fim de run, Almanaque e Regras. Ficam quadrados só ícones: assentos do lobby LAN (32 px) e as caras das expressões da página de sinais das Regras | `src/art/flat.ts`, `scripts/portraits.ts` |
 | Carta coringa | a face é `card-joker.png` (2:3, o texto JOKER vem na imagem), com o mesmo tamanho e tratamento do verso (`back/joker.webp`); sem a imagem, o desenho vetor de antes | `src/art/flat.ts`, `scripts/portraits.ts` |
-| Retratos ainda em pixel art | `ze`, chefes e O Mudo; seguem 128×128 PNG, nearest | `references/concept-art/zapatro/` e `art-src/portrait/` (pendência: arte nova) |
+| Retratos ainda em pixel art | os 8 chefes `valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `irmaos` e `mudo` (o Zé, a Sortuda e o Rei do Truco já são pintados); seguem 128×128 PNG, nearest | PNG já gerados em `public/assets/gfx/portrait/`; os pixel antigos do elenco em `art-src/backup-pixel/` (pendência: arte nova, BUGS.md) |
 | Fundos | pintados, 1920×1080 WebP, camada `BackdropScene` embaixo de todas as telas (nunca cinza), escurecidos por um tinte único (`BACKDROP_BRIGHTNESS` = 0,4 em `palette.ts`); o menu principal tem o próprio | `art-src/gta/*` → `public/assets/gfx/bg/{main,shop,partner,table,menu-1..3}.webp` |
 | Verso das cartas | pintado (palmeiras e mar), o `card-1` **inteiro** (2:3, com a moldura dele; só os cantos escuros saem por uma máscara arredondada), desenhado na altura da carta e centrado: o verso de 48×64 fica um pouco mais estreito que uma face (42,7 px), sem recorte nem distorção; o verso das mãos dos NPCs (`card.back.tile`) é 32×48, exatamente 2:3 | `public/assets/gfx/back/{default,interior,blefe}.webp` (`card-1`, `card-2`, `card-3`); os baralhos `dinheiro` e `viciado` seguem o verso vetor tingido |
 | Mesa | feltro pintado (`bg/table.webp`, cantos arredondados em alfa) no retângulo `FELT`; Campeonatos 4 a 8 tingem o feltro de azul e vermelho | `board-game-1.jpeg` |
@@ -33,7 +33,7 @@ Telas e peso (WebP): cards 10 × ~60 kB, retratos 10 × ~27 kB, fundos 8 × ~190
 2. As pessoas são pixel art (retratos 128 px com contorno de 1 px); todo o resto é forma vetorial chapada com uma sombra sólida.
 3. Fundo neutro cinza-grafite: nada de cena, textura, gradiente ou luz.
 
-Proibido: gradiente, sombra suave, textura, brilho, cena de fundo, pixel art escalada em fator não inteiro, vetor "pixelado", texto embutido em imagem, iconografia de cassino, cigarro aceso, marcas reais e personagem parecido com IP conhecida.
+Proibido na v2 (a v3 libera pintura nos fundos e personagens e o gradiente dos botões): gradiente, sombra suave, textura, brilho, cena de fundo, pixel art escalada em fator não inteiro, vetor "pixelado", texto embutido em imagem, iconografia de cassino, cigarro aceso, marcas reais e personagem parecido com IP conhecida.
 
 ## 2. Pixel art × vetor
 
@@ -53,7 +53,7 @@ Os retratos não têm expressões: só `neutral`. O sinal do rival e o humor vir
 
 | Papel | Hex | Token |
 |---|---|---|
-| Fundo da tela | `#2B2B2B` | `bgNeutral` |
+| Fundo da tela (só fallback na v3, sem a pintura) | `#2B2B2B` | `bgNeutral` |
 | Painel / painel escuro | `#30261F` / `#231C17` | `panel`, `panelDark` |
 | Dourado (títulos, foco, manilha) | `#F4C542` | `manilha`, `money` |
 | Feltro verde / azul / vermelho | `#24644D` / `#2F5C86` / `#8E2F2A` | `felt`, `feltBlue`, `feltRed` |
@@ -111,7 +111,7 @@ Estado da implementação (2026-10-24): todas as telas de referência foram refe
 
 ## 7. Personagens
 
-20 retratos 128×128, todos de `references/concept-art/zapatro/char-*.png` (convertidos por `bun scripts/portraits.ts`), exceto O Mudo (PixelLab). Pedrão (`char-pedrao.png`) não entra: nome do jogo Malandro e camisa com escudo.
+Histórico v2 (na v3 o elenco, o Zé, a Sortuda e o Rei do Truco são pintados; ver §0): 20 retratos 128×128, todos de `references/concept-art/zapatro/char-*.png` (convertidos por `bun scripts/portraits.ts`), exceto O Mudo (PixelLab). Pedrão (`char-pedrao.png`) não entra: nome do jogo Malandro e camisa com escudo.
 
 | Id | Papel | Observação |
 |---|---|---|
