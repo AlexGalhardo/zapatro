@@ -34,6 +34,7 @@ export const PAINTED: Record<string, string> = {
 	ze: 'ze',
 	'truco-king': 'reiDoTruco',
 	sortuda: 'sortuda',
+	agiota: 'agiota',
 };
 
 /** Source file → portrait id (pixel art). `char-pedrao.png` is left out on purpose (docs/visual.md). */
@@ -41,7 +42,6 @@ export const PORTRAITS: Record<string, string> = {
 	'char-valentao': 'valentao',
 	'char-cartomante': 'cartomante',
 	'char-juiz': 'juiz',
-	'char-agiota': 'agiota',
 	'char-delegado': 'delegado',
 	'char-professor': 'professor',
 	'char-irmaos': 'irmaos',
@@ -130,8 +130,9 @@ const BACKGROUNDS: Record<string, string> = {
 	'menu-1': 'menu-1.jpeg',
 	'menu-2': 'menu-2.jpeg',
 	'menu-3': 'menu-3.jpeg',
-	shop: 'shop2.jpeg',
+	shop: 'shop.jpeg',
 	partner: 'background-1.png',
+	street: 'background-2.png',
 	main: 'background-3.png',
 };
 /** Card backs: the whole 2:3 painting, frame included, never cropped (src/art/flat.ts draws it whole). */
