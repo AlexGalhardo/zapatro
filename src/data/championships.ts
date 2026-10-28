@@ -17,11 +17,11 @@ export const CHAMPIONSHIPS = [
 export type ChampionshipId = (typeof CHAMPIONSHIPS)[number];
 
 /**
- * ~×1.27 per Championship (A5, D-60). Doubled on 2026-10-25, later cut back while calibrating,
- * then tripled on 2026-10-28 (tables were too short). Every table goal, Stake and endless goal
- * derives from these; `tableGoal` still rounds base × size.
+ * ~×1.27 per Championship (A5, D-60). The 2026-10-28 pass is ×1.1 on the previous bases
+ * (105 · 135 · … · 560): the highest factor whose good-bot win rate stays inside 20–35%.
+ * Every table goal, Stake and endless goal derives from these; `tableGoal` still rounds.
  */
-export const CHAMPIONSHIP_GOALS = [315, 405, 525, 645, 840, 1050, 1320, 1680] as const;
+export const CHAMPIONSHIP_GOALS = [116, 149, 193, 237, 308, 385, 484, 616] as const;
 
 /** Endless mode (after Championship 8): each Championship multiplies the last goal by this. */
 export const ENDLESS_GOAL_GROWTH = 1.4;

@@ -434,8 +434,18 @@ A regra "rivais chegam a 12 uma vez" (`QUEDAS_TO_LOSE = 1`) foi testada e descar
 
 Gate `bun run balance` (500 runs por seed): bot bom **23,4 · 27,0 · 26,6%**; aleatório 0,0 · 0,2 · 0,2%; 6,35 · 6,14 · 6,19 mãos por mesa. PASS nas 3 seeds.
 
-## Metas ×3 (2026-10-28)
+## Metas ×1,1 (2026-10-28)
 
-Pedido: passar a mesa por pontos estava fácil demais. `CHAMPIONSHIP_GOALS` foi triplicada para **315 · 405 · 525 · 645 · 840 · 1.050 · 1.320 · 1.680**. Grande (×1,5, arredondado), Chefe (×2), Estacas, o defeito da Sheila e o infinito continuam multiplicando essa base. A partida rápida segue sem meta. A faixa da D-39 (bot bom 20–35%) não foi recalibrada.
+Pedido: passar a mesa por pontos estava fácil, mas o triplo saía da faixa. A base anterior era **105 · 135 · 175 · 215 · 280 · 350 · 440 · 560**. `bun scripts/balance.ts --seeds 3 --runs 300` (faixa do bot bom 20–35%, ritmo 4–12 mãos, aleatório < 5%; a faixa não mudou):
 
-`bun scripts/balance.ts --seeds 3 --runs 300`: bot bom **4,7 · 6,7 · 5,0%** (FAIL, abaixo de 20%); aleatório 0%; 9,00 · 8,47 · 8,72 mãos por mesa (ainda dentro de 4–12). Nada além da meta foi compensado.
+| Fator | Metas (Pequena) | Bot bom | Ritmo | Portão |
+|---|---|---|---|---|
+| ×1,1 | 116 · 149 · 193 · 237 · 308 · 385 · 484 · 616 | 20,0 · 23,3 · 20,3% | 6,60 · 6,34 · 6,41 | PASS |
+| ×1,15 | 121 · 155 · 201 · 247 · 322 · 402 · 506 · 644 | 18,3 · 23,0 · 19,3% | 6,69 · 6,41 · 6,54 | FAIL |
+| ×1,25 | 131 · 169 · 219 · 269 · 350 · 438 · 550 · 700 | 16,0 · 21,3 · 17,3% | 6,87 · 6,58 · 6,67 | FAIL |
+| ×1,5 | 158 · 203 · 263 · 323 · 420 · 525 · 660 · 840 | 11,7 · 21,0 · 14,0% | 7,21 · 6,92 · 7,06 | FAIL |
+| ×2 | 210 · 270 · 350 · 430 · 560 · 700 · 880 · 1.120 | 10,0 · 13,3 · 9,3% | 7,91 · 7,51 · 7,68 | FAIL |
+| ×2,5 | 263 · 338 · 438 · 538 · 700 · 875 · 1.100 · 1.400 | 6,0 · 9,7 · 7,7% | 8,47 · 7,99 · 8,22 | FAIL |
+| ×3 | 315 · 405 · 525 · 645 · 840 · 1.050 · 1.320 · 1.680 | 4,7 · 6,7 · 5,0% | 9,00 · 8,47 · 8,72 | FAIL |
+
+Ficou **×1,1**. Grande (×1,5, `Math.round`), Chefe (×2), Estacas, Sheila e o infinito multiplicam essa base. A partida rápida segue sem meta. O aleatório ficou em 0% em todos os fatores.
