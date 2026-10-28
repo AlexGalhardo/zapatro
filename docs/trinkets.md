@@ -86,7 +86,7 @@ Duas colunas dentro da lousa:
 - **Direita, em cima:** os 4 slots equipados (vazios permitidos), clique para desequipar.
 - **Direita, embaixo:** a coleção do jogador (todos os trinkets que ele tem, na maior raridade),
   clique para equipar num slot livre.
-- **Base:** "Próxima mesa" centralizado; o dinheiro na linha do título, à direita.
+- **Base da tela:** "Próxima mesa" no canto inferior direito, fora da lousa. O dinheiro fica na linha do título, à direita. Os slots equipados são menores que a coluna, com folga entre o rótulo, a fileira, o rótulo da coleção e os ícones.
 
 ## Mesa (sidebar)
 

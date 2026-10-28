@@ -57,6 +57,7 @@ import {
 import { equip, levelOf, mergeCollection, unequip } from '../logic/run/trinkets';
 import { formatPoints } from '../logic/score/format';
 import { type Card, isSpecial, RANKS, type Rank, SUITS } from '../logic/truco/cards';
+import { fitArt } from '../logic/viewport';
 import { Button, inkIcon } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { itemCard, RARITY_COLOR } from '../ui/item-card';
@@ -1358,7 +1359,8 @@ export class RunScene extends Phaser.Scene {
 	/**
 	 * The trinket shop (docs/trinkets.md), two columns on the chalkboard: the four offers on the
 	 * left; on the right the equipped slots (click to take one off) above the collection (click to
-	 * equip). "Next table" under both, the money on the title row.
+	 * equip). "Next table" sits at the bottom-right of the screen, off the board. Money is on the
+	 * title row.
 	 */
 	private drawTrinketShop(
 		run: RunState,
@@ -1366,24 +1368,24 @@ export class RunScene extends Phaser.Scene {
 		slate: { x: number; y: number; w: number; h: number },
 	): void {
 		// One inset from the chalkboard, one gap between cards, a wider gap before the loadout.
-		// Card size is whatever is left under the title and above "Next table", so the grid
-		// stays on the board on a short slate and on a touch screen.
+		// The grid uses the board's height under the title (Next table is outside the frame), and
+		// each card stays no wider than it is tall.
 		const PAD = 6;
 		const GAP = 6;
 		const COL_GAP = 16;
-		const NEXT_H = 22;
-		const mid = slate.x + slate.w / 2;
 		const left = slate.x + PAD;
 		const right = slate.x + slate.w - PAD;
 		const usableW = right - left;
-		const leftW = Math.floor(usableW * 0.58);
-		const rightW = usableW - leftW - COL_GAP;
-		const cardW = Math.floor((leftW - GAP) / 2);
+		const leftW = Math.floor(usableW * 0.62);
 		const titleY = slate.y + PAD + 13;
 		const bodyTop = titleY + 14 + GAP;
-		const nextY = slate.y + slate.h - PAD - NEXT_H / 2;
-		const bodyH = Math.floor(nextY - NEXT_H / 2 - GAP - bodyTop);
+		const bodyBottom = slate.y + slate.h - PAD;
+		const bodyH = Math.max(48, Math.floor(bodyBottom - bodyTop));
 		const cardH = Math.floor((bodyH - GAP) / 2);
+		const cardW = Math.min(Math.floor((leftW - GAP) / 2), cardH);
+		const gridW = cardW * 2 + GAP;
+		const loadX = left + gridW + COL_GAP;
+		const loadW = Math.max(80, right - loadX);
 		const items = shop.offers;
 		this.body.add(
 			addTitle(this, left, titleY, t('run.shop'), TYPE.screenTitle, PALETTE.manilha, 0),
@@ -1421,9 +1423,22 @@ export class RunScene extends Phaser.Scene {
 					.setData('offer', `offers:${k}`),
 			);
 		}
-		this.drawLoadout(run, left + leftW + COL_GAP, bodyTop, rightW, bodyH);
+		this.drawLoadout(run, loadX, bodyTop, loadW, bodyH);
+		// Bottom-right of the visible screen, under the chalkboard when the frame has room below it.
+		const NEXT_H = 28;
+		const NEXT_W = 140;
+		const view = getView(this);
+		const fit = fitArt(view);
+		const worldRight = 320 + view.width / fit / 2;
+		const worldBottom = 180 + view.height / fit / 2;
+		const edge = SAFE.stage;
+		let nextY = worldBottom - edge - NEXT_H / 2;
+		const below = slate.y + slate.h + edge + NEXT_H / 2;
+		if (nextY - NEXT_H / 2 < slate.y + slate.h && below + NEXT_H / 2 <= worldBottom - edge) {
+			nextY = below;
+		}
 		this.button(
-			mid,
+			worldRight - edge - NEXT_W / 2,
 			nextY,
 			t('run.next'),
 			() => {
@@ -1431,23 +1446,20 @@ export class RunScene extends Phaser.Scene {
 				this.save();
 				this.draw();
 			},
-			2 * cardW + GAP,
+			NEXT_W,
 			PALETTE.good,
-			{ h: NEXT_H, size: 11 },
+			{ h: NEXT_H, size: 12 },
 		);
 	}
 
 	/** Right column of the trinket shop: equipped slots, then the collection (clicks swap them). */
 	private drawLoadout(run: RunState, x: number, y: number, w: number, h: number): void {
 		const slots = 4;
-		const gap = 3;
-		// Leave the lower half of the column for the collection, so a wide row of slots
-		// cannot push the icons past "Next table".
-		const slot = Math.min(
-			Math.floor((w - gap * (slots - 1)) / slots),
-			Math.max(18, Math.floor((h - 28) * 0.46)),
-		);
-		const slotsY = y + 8 + slot / 2;
+		const gap = 6;
+		const blockGap = 10;
+		const labelH = 14;
+		// A fixed size: the row used to grow with the column and sit against both labels.
+		const slot = Math.min(28, Math.floor((w - gap * (slots - 1)) / slots));
 		const label = (lx: number, ly: number, s: string): void => {
 			this.body.add(
 				this.add.text(lx, ly, s, {
@@ -1459,7 +1471,8 @@ export class RunScene extends Phaser.Scene {
 				}),
 			);
 		};
-		label(x, y - 1, t('trinket.equipped'));
+		label(x, y, t('trinket.equipped'));
+		const slotsY = y + labelH + blockGap + slot / 2;
 		const hover = (target: Phaser.GameObjects.GameObject, id: string, level: number): void => {
 			const v = trinketTexts(id, level);
 			target.on('pointerover', () =>
@@ -1499,8 +1512,9 @@ export class RunScene extends Phaser.Scene {
 			hover(zone, id, level);
 			this.body.add([m, zone]);
 		}
-		const listTop = slotsY + slot / 2 + 8;
-		label(x, listTop - 8, t('trinket.collection'));
+		const listLabel = slotsY + slot / 2 + blockGap;
+		label(x, listLabel, t('trinket.collection'));
+		const listTop = listLabel + labelH + blockGap;
 		const owned = TRINKET_IDS.filter((id) => levelOf(run.collection, id) >= 1);
 		if (!owned.length) {
 			this.body.add(
@@ -1516,13 +1530,13 @@ export class RunScene extends Phaser.Scene {
 			);
 			return;
 		}
-		const d = 17;
-		const cols = Math.max(1, Math.floor((w + 2) / (d + 2)));
-		const rows = Math.max(1, Math.floor((y + h - listTop) / (d + 2)));
+		const d = 16;
+		const cols = Math.max(1, Math.floor((w + gap) / (d + gap)));
+		const rows = Math.max(1, Math.floor((y + h - listTop + gap) / (d + gap)));
 		for (const [i, id] of owned.slice(0, cols * rows).entries()) {
 			const level = levelOf(run.collection, id);
-			const cx = x + d / 2 + (i % cols) * (d + 2);
-			const cy = listTop + 4 + d / 2 + Math.floor(i / cols) * (d + 2);
+			const cx = x + d / 2 + (i % cols) * (d + gap);
+			const cy = listTop + d / 2 + Math.floor(i / cols) * (d + gap);
 			const m = trinketMedal(this, id, level, d).setPosition(cx, cy);
 			const on = run.trinkets.includes(id);
 			if (on) m.setAlpha(0.35);
