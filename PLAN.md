@@ -100,7 +100,7 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 - [x] Sinal do parceiro mostra o gesto exato (`icon.signal.*` ao lado do card, sem disco de fundo; o servidor LAN manda o sinal exato ao parceiro) (D-70).
 - [x] Só o jogador responde ao truco da dupla (a opção `partnerFolds` saiu) e traços roguelite novos dos companheiros; os números seguem em calibragem (D-71).
 - [x] Fundos de jogo sorteados entre 6 pinturas (`VARIANTS`) a cada mesa e run nova; overlays mantêm a da mesa (D-64).
-- [x] Mesa reorganizada: HUD (Manhas, Fama, Quedas) no topo da sidebar, card "Campeonato N / Mesa 1 · Mesa 2 · Chefão" no canto superior direito do feltro, caixa "em jogo" na base do feltro; Manilha/ZAP e dinheiro escondidos por flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL`), código mantido. Conferido em 1920×1080, 2560×1440 e toque 2400×1080.
+- [x] Mesa reorganizada (a Fama saiu depois, ver docs/trinkets.md): HUD (Manhas, Fama, Quedas) no topo da sidebar, card "Campeonato N / Mesa 1 · Mesa 2 · Chefão" no canto superior direito do feltro, caixa "em jogo" na base do feltro; Manilha/ZAP e dinheiro escondidos por flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL`), código mantido. Conferido em 1920×1080, 2560×1440 e toque 2400×1080.
 - [x] Resoluções-alvo registradas: 1920×1080 e 2560×1440 no desktop, Android em paisagem 6,5"+ (AGENTS.md).
 - [x] Loja reduzida (`SHOP_SIMPLE`): 4 ofertas por visita em cards de raridade com profundidade, sem pacotes, renovação nem Melhoria (D-72).
 - [x] Painel de fim de mesa em cards (uma linha do pagamento por mini-card, Total em destaque) e card de prêmio projetado no feltro (`projectedReward`, a mesma conta do pagamento) (D-73).
@@ -137,7 +137,7 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-05 | Run **linear tipo Balatro**: 8 Campeonatos × (Pequena, Grande, Chefe) + loja após cada mesa + pular mesa por Promessa + modo infinito |
 | D-06 | **Baralho compartilhado** pelos 4 jogadores, editável; efeitos de carta só ativam para a sua dupla; mínimo de 20 cartas |
 | D-07 | Parceiro IA com personalidade + **sinais**; escolhido no início da run, troca rara; nível 1–3 |
-| D-08 | Blefe = **crença da IA + Fama** (um medidor só, Honesto ↔ Blefador, muda só quando a mão é mostrada) |
+| D-08 | Blefe = **crença da IA + Fama** (um medidor só, Honesto ↔ Blefador, muda só quando a mão é mostrada). **Revista em 2026-10-27:** a Fama saiu do jogo (escondida e confusa); o blefe fica só na crença da IA. |
 | D-09 | Itens: **Manhas** (5 espaços, esquerda → direita), **Simpatias**, **Lances**, **Melhorias do Boteco**; modificadores de carta (1 por carta) |
 | D-10 | **Paisagem 16:9** em todas as plataformas |
 | D-11 | Meta-progressão **só de variedade** (baralhos, parceiros, Manhas no pool, Estacas); nunca poder permanente |
