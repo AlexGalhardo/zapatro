@@ -93,6 +93,7 @@ const SLOT = 22;
  */
 export class RunScene extends Phaser.Scene {
 	private run: RunState | null = null;
+	private debugTrinkets = false;
 	/** A table is being entered: draws and key repeats must not start it twice. */
 	private entering = false;
 	private deckChoice: DeckId = 'normal';
@@ -549,11 +550,15 @@ export class RunScene extends Phaser.Scene {
 			this.run.manhas = params.manhas.filter(isManhaId).slice(0, this.run.manhaSlots);
 		// The profile's trinkets come along (and `?trinkets=` adds some for tests); with any, the
 		// first thing is the equip screen, as in the shop between tables.
+		mergeCollection(this.run.collection, meta.trinkets);
+		// Debug trinkets live only in this run: the profile never learns about them.
+		this.debugTrinkets = !!params.trinkets?.length;
+		const debug: Record<string, number> = {};
 		for (const spec of params.trinkets ?? []) {
 			const [tid = '', lv = '1'] = spec.split(':');
-			if (isTrinketId(tid)) meta.trinkets[tid] = Math.min(4, Math.max(1, Number(lv) || 1));
+			if (isTrinketId(tid)) debug[tid] = Math.min(4, Math.max(1, Number(lv) || 1));
 		}
-		mergeCollection(this.run.collection, meta.trinkets);
+		mergeCollection(this.run.collection, debug);
 		for (const tid of Object.keys(this.run.collection)) {
 			equip(this.run.trinkets, this.run.collection, tid, this.run.trinketSlots);
 		}
@@ -1307,7 +1312,7 @@ export class RunScene extends Phaser.Scene {
 
 	/** Saves the run and keeps the profile's collection up to date (it survives between runs). */
 	private syncCollection(run: RunState): void {
-		mergeCollection(getSave(this).meta.trinkets, run.collection);
+		if (!this.debugTrinkets) mergeCollection(getSave(this).meta.trinkets, run.collection);
 		this.save();
 	}
 

@@ -17,7 +17,7 @@ import { LANCE_IDS } from '../../data/lances';
 import { MANHA_BY_ID, MANHAS, type ManhaId, type Rarity } from '../../data/manhas';
 import { PROMISE_MONEY, PROMISES, type PromiseId } from '../../data/promises';
 import { stakeRules } from '../../data/stakes';
-import type { EquippedTrinket } from '../../data/trinkets';
+import { type EquippedTrinket, TRINKET_SLOTS } from '../../data/trinkets';
 import { CHEAP_REROLL, DISCOUNT, UPGRADE_IDS, UPGRADES, type UpgradeId } from '../../data/upgrades';
 import { Rng } from '../rng';
 import { type LanceLevels, tableGoal } from '../score/score';
@@ -202,7 +202,7 @@ export function newRun(
 		money: (rules.startMoney ?? ECONOMY.startMoney) + (d.money ?? 0),
 		manhas: [],
 		trinkets: [],
-		trinketSlots: slotsFor(partner),
+		trinketSlots: Math.max(1, slotsFor(partner) + (d.manhaSlots ?? 0)),
 		collection: {},
 		manhaSlots: Math.max(
 			1,
@@ -647,7 +647,10 @@ export function buy(
 function applyUpgrade(run: RunState, id: UpgradeId): void {
 	run.upgrades.push(id);
 	run.upgradeChamp = run.champ;
-	if (id === 'maisManha') run.manhaSlots++;
+	if (id === 'maisManha') {
+		run.manhaSlots++;
+		run.trinketSlots = Math.min(TRINKET_SLOTS, run.trinketSlots + 1);
+	}
 	if (id === 'maisConsumivel') run.consumableSlots++;
 }
 

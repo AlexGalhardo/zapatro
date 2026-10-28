@@ -258,11 +258,11 @@ export class Match {
 		const { events } = applied;
 		let { state } = applied;
 		// Lenda do Boteco's Flaw: losing a hand costs the pair tentos.
-		if (this.loseTento && state.over?.winner === 'them' && !before.over)
-			state = {
-				...state,
-				score: { ...state.score, us: Math.max(0, state.score.us - this.loseTento) },
-			};
+		if (this.loseTento && state.over?.winner === 'them' && !before.over) {
+			const us = Math.max(0, state.score.us - this.loseTento);
+			state = { ...state, score: { ...state.score, us } };
+			for (const e of events) if (e.type === 'handOver') e.score = { ...state.score };
+		}
 		for (const e of events) {
 			if (e.type === 'truco') this.calls.push(e.seat);
 			if (e.type === 'folded' && teamOf(e.seat) === 'us' && this.has('caraDePau'))

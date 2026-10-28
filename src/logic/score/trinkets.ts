@@ -58,11 +58,12 @@ function holds(c: HandCond, f: TrinketFacts): boolean {
 			return !f.myHand.some((x) => isZap(x, s.manilha));
 		case 'zapWonTrick':
 			return wonPlays(s).some((p) => isZap(p.card, s.manilha));
+		// The mão de onze is worth 3 with no truco at all, so the bet alone says nothing.
 		case 'trucoAccepted':
-			return s.bet >= 3;
+			return s.lastRaiser !== null;
 		case 'noTruco':
 		case 'bet1':
-			return s.bet === 1;
+			return s.lastRaiser === null && s.over?.reason !== 'fold';
 		case 'bet6':
 			return s.bet >= 6;
 		case 'firstTwoWon':
@@ -86,11 +87,11 @@ function holds(c: HandCond, f: TrinketFacts): boolean {
 		case 'weakTrucoWin':
 			return (
 				s.over?.winner === 'us' &&
-				s.bet >= 3 &&
+				s.lastRaiser !== null &&
 				f.myHand.every((x) => x.rank !== s.manilha && !['3', '2', 'A'].includes(x.rank))
 			);
 		case 'weFolded':
-			return s.over?.reason === 'fold' && s.over.winner === 'them' && s.bet >= 3;
+			return s.over?.reason === 'fold' && s.over.winner === 'them';
 	}
 }
 

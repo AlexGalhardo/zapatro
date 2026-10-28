@@ -252,4 +252,13 @@ describe('scoring: only the equipped trinkets count', () => {
 		const a = score(won(), ['vazaLimpa', 1], ['copoAmericano', 1]).steps.map((x) => x.source);
 		expect(a.indexOf('trinket:vazaLimpa')).toBeLessThan(a.indexOf('trinket:copoAmericano'));
 	});
+
+	test('a bet of 3 without any truco (mão de onze) is not a truco', () => {
+		const s = won();
+		s.bet = 3;
+		s.lastRaiser = null;
+		expect(from(score(s, ['gritoDeTruco', 1]).steps, 'gritoDeTruco')[0]?.addMult).toBe(-2);
+		s.lastRaiser = 'us';
+		expect(from(score(s, ['gritoDeTruco', 1]).steps, 'gritoDeTruco')[0]?.addMult).toBe(4);
+	});
 });
