@@ -140,6 +140,38 @@ function sparkTexture(scene: Phaser.Scene): string {
 	});
 }
 
+/** The ZAP's comet: one light running around the card's edge, with a fading tail. */
+const COMET_MS = 1800;
+const COMET_TAIL = 16;
+const COMET_STEP = 1.6;
+
+/** Draws the comet at `at` (0–1 of the lap, clockwise from the top-left corner). */
+function drawComet(g: Phaser.GameObjects.Graphics, at: number): void {
+	const w = CARD_W + 6;
+	const h = CARD_H + 6;
+	const lap = 2 * (w + h);
+	const point = (s: number): [number, number] => {
+		let d = ((s % lap) + lap) % lap;
+		if (d < w) return [-w / 2 + d, -h / 2];
+		d -= w;
+		if (d < h) return [w / 2, -h / 2 + d];
+		d -= h;
+		if (d < w) return [w / 2 - d, h / 2];
+		d -= w;
+		return [-w / 2, h / 2 - d];
+	};
+	g.clear();
+	const head = at * lap;
+	for (let i = 0; i < COMET_TAIL; i++) {
+		const k = 1 - i / COMET_TAIL;
+		const [x0, y0] = point(head - i * COMET_STEP);
+		const [x1, y1] = point(head - (i + 1) * COMET_STEP);
+		g.lineStyle(0.6 + 1.6 * k, PALETTE.zapGoldLight, k).lineBetween(x0, y0, x1, y1);
+	}
+	const [hx, hy] = point(head);
+	g.fillStyle(0xffffff, 1).fillCircle(hx, hy, 1.2);
+}
+
 const CALL_VO: Record<number, VoLine> = { 3: 'truco', 6: 'seis', 9: 'nove', 12: 'doze' };
 
 /*
@@ -478,6 +510,14 @@ export class TableScene extends Phaser.Scene {
 	private chipsVal!: Phaser.GameObjects.Text;
 	private multVal!: Phaser.GameObjects.Text;
 	private scoreTotal!: Phaser.GameObjects.Text;
+	/** ZAP haloes, kept on the card's frame by `syncHalos` every update. */
+	private halos: {
+		img: Phaser.GameObjects.Image;
+		halo: Phaser.GameObjects.Container;
+		comet: Phaser.GameObjects.Graphics;
+		phase: number;
+	}[] = [];
+	private haloSync = false;
 	/** Points shown by the last count animation (QA compares it with `scoreHand`). */
 	private shownPoints = 0;
 	private bestHand = 0;
@@ -1050,7 +1090,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			this.manhaRow.add(icon);
 		});
 		this.match.trinketList.forEach((e, i) => {
-			const medal = trinketMedal(this, e.id, e.level, slotSize(this.slots))
+			const medal = trinketMedal(this, e.id, e.level, slotSize(this.slots), false)
 				.setPosition(i * slotStep(this.slots), 0)
 				.setData('id', e.id)
 				.setSize(slotSize(this.slots), slotSize(this.slots))
@@ -1768,6 +1808,71 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		const key = tex(this, markedArt(img.getData('key') ?? img.texture.key, zap ? 'z' : 'm'));
 		img.setTexture(key).setData('key', key);
 		if (zap) this.markZap(img);
+		else this.manilhaGlow(img);
+	}
+
+	/** A manilha (not the ZAP): the face darkened and an orange glow around the card. */
+	private manilhaGlow(img: Phaser.GameObjects.Image): void {
+		img.setTint(PALETTE.manilhaShade);
+		img.filters?.internal.clear().addGlow(PALETTE.manilhaGlow, 3.5);
+	}
+
+	/**
+	 * The ZAP's halo: a gold comet running around the card's edge and four stars blinking at its corners.
+	 * It sits under the card in the card's parent and follows it on every update.
+	 */
+	private zapHalo(img: Phaser.GameObjects.Image): void {
+		const comet = this.add.graphics();
+		const corners: [number, number][] = [
+			[-CARD_W / 2 + 3, -CARD_H / 2 + 4],
+			[CARD_W / 2 - 3, -CARD_H / 2 + 9],
+			[-CARD_W / 2 + 6, CARD_H / 2 - 5],
+			[CARD_W / 2 - 4, CARD_H / 2 - 3],
+		];
+		const stars = corners.map(([x, y], i) => {
+			const star = this.add
+				.image(x, y, sparkTexture(this))
+				.setTint(PALETTE.zapGoldLight)
+				.setScale(1.4);
+			this.tweens.add({
+				targets: star,
+				alpha: 0,
+				duration: 420,
+				yoyo: true,
+				repeat: -1,
+				delay: i * 210,
+				ease: 'Sine.easeInOut',
+			});
+			return star;
+		});
+		const halo = this.add.container(img.x, img.y, [comet, ...stars]);
+		const host = img.parentContainer;
+		if (host) host.addAt(halo, host.getIndex(img));
+		else halo.setDepth(img.depth - 0.1);
+		this.halos.push({ img, halo, comet, phase: 0 });
+		if (!this.haloSync) {
+			this.haloSync = true;
+			onSceneEvent(this, 'update', () => this.syncHalos());
+			this.events.once('shutdown', () => {
+				this.haloSync = false;
+				this.halos = [];
+			});
+		}
+	}
+
+	private syncHalos(): void {
+		const dt = this.game.loop.delta;
+		this.halos = this.halos.filter((e) => {
+			const { img, halo, comet } = e;
+			if (!img.active) {
+				halo.destroy();
+				return false;
+			}
+			halo.setPosition(img.x, img.y).setVisible(img.visible);
+			e.phase = (e.phase + dt / COMET_MS) % 1;
+			drawComet(comet, e.phase);
+			return true;
+		});
 	}
 
 	/**
@@ -1799,6 +1904,8 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			.setDepth(img.depth + 0.5)
 			.startFollow(img);
 		img.once(Phaser.GameObjects.Events.DESTROY, () => sparks.destroy());
+		img.filters?.internal.clear().addGlow(PALETTE.zapGoldLight, 3);
+		this.zapHalo(img);
 	}
 
 	private showStrength(img: Phaser.GameObjects.Image, card: Card): void {
@@ -2118,15 +2225,22 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		}
 		this.partnerAsk?.destroy();
 		const w = 216;
-		const h = 86;
+		const h = 170;
 		// Upper middle of the felt: below the partner, above the hand, left of the action buttons.
 		const x = 268;
 		const y = 112;
 		const box = this.add.container(0, 0).setDepth(DEPTH.eleven);
 		const g = this.add.graphics();
 		drawPanel(g, x, y, w, h);
+		const question = this.add
+			.text(x + w / 2, y + 8, t('table.partnerTrucoAsk'), {
+				...this.text(10.5, PALETTE.textLight),
+				align: 'center',
+				wordWrap: { width: w - 16 },
+			})
+			.setOrigin(0.5, 0);
 		const emoji = this.add
-			.text(x + w / 2, y + 20, this.partnerTrucoEmoji(), {
+			.text(x + w / 2, y + 64, this.partnerTrucoEmoji(), {
 				fontFamily: EMOJI_FONT,
 				fontSize: '28px',
 			})
@@ -2137,18 +2251,19 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			const action = ok ? truco : continueWithoutTruco(this.match.legal(2));
 			void this.run(action);
 		};
+		// Stacked and centred under the emoji: OK above Cancel, both inside the card.
 		const okBtn = new Button(this, t('table.partnerTrucoOk'), () => go(true), {
-			w: 96,
-			h: 32,
-			size: 13,
+			w: 160,
+			h: 34,
+			size: 20,
 			color: PALETTE.good,
-		}).setPosition(x + 8 + 48, y + h - 8 - 16);
+		}).setPosition(x + w / 2, y + 100);
 		const cancelBtn = new Button(this, t('table.partnerTrucoCancel'), () => go(false), {
-			w: 96,
-			h: 32,
-			size: 12,
-		}).setPosition(x + w - 8 - 48, y + h - 8 - 16);
-		box.add([g, emoji, okBtn, cancelBtn]);
+			w: 160,
+			h: 34,
+			size: 18,
+		}).setPosition(x + w / 2, y + 142);
+		box.add([g, question, emoji, okBtn, cancelBtn]);
 		this.partnerAsk = box;
 	}
 

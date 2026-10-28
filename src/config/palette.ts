@@ -47,6 +47,10 @@ export const PALETTE = {
 	suitOrange: 0xe27a1f,
 	suitGreen: 0x2f8f4e,
 	manilha: 0xf4c542,
+	manilhaGlow: 0xff7a1a,
+	manilhaShade: 0xc2a77e,
+	zapGoldLight: 0xfff0a8,
+	zapGoldDeep: 0xb0701a,
 	jokerPurple: 0x7a4bc2,
 	// Score and economy (Fichas blue, Mult vermilion).
 	chips: 0x3f7fc0,

@@ -51,31 +51,45 @@ function bands(h: number): { header: number; price: number } {
 	return { header, price };
 }
 
-/** The round medallion of a trinket: the rarity's ring and glow with its icon inside. */
+/**
+ * The round medallion of a trinket: the rarity's ring and glow with its icon inside. `ring: false`
+ * drops the ring and the dark edge under the disc (the table's sidebar).
+ */
 export function trinketMedal(
 	scene: Phaser.Scene,
 	id: string,
 	level: number,
 	d: number,
+	ring = true,
 ): Phaser.GameObjects.Container {
 	const c = levelColor(level);
-	const key = canvasTex(scene, `trinketmedal.${level}.${d}`, d + 4, d + 4, (ctx) => {
-		const r = d / 2;
-		const g = ctx.createRadialGradient(r + 1, r - 1, 1, r + 2, r + 2, r);
-		g.addColorStop(0, toCss(shade(c, -0.35)));
-		g.addColorStop(1, toCss(shade(c, -0.8)));
-		ctx.fillStyle = toCss(shade(c, -0.9));
-		ctx.beginPath();
-		ctx.arc(r + 2, r + 3, r, 0, Math.PI * 2);
-		ctx.fill();
-		ctx.fillStyle = g;
-		ctx.beginPath();
-		ctx.arc(r + 2, r + 2, r, 0, Math.PI * 2);
-		ctx.fill();
-		ctx.lineWidth = 1.5;
-		ctx.strokeStyle = toCss(c);
-		ctx.stroke();
-	});
+	const key = canvasTex(
+		scene,
+		`trinketmedal.${level}.${d}.${ring ? 'ring' : 'flat'}`,
+		d + 4,
+		d + 4,
+		(ctx) => {
+			const r = d / 2;
+			const g = ctx.createRadialGradient(r + 1, r - 1, 1, r + 2, r + 2, r);
+			g.addColorStop(0, toCss(shade(c, -0.35)));
+			g.addColorStop(1, toCss(shade(c, -0.8)));
+			if (ring) {
+				ctx.fillStyle = toCss(shade(c, -0.9));
+				ctx.beginPath();
+				ctx.arc(r + 2, r + 3, r, 0, Math.PI * 2);
+				ctx.fill();
+			}
+			ctx.fillStyle = g;
+			ctx.beginPath();
+			ctx.arc(r + 2, r + 2, r, 0, Math.PI * 2);
+			ctx.fill();
+			if (ring) {
+				ctx.lineWidth = 1.5;
+				ctx.strokeStyle = toCss(c);
+				ctx.stroke();
+			}
+		},
+	);
 	const icon = TRINKET_BY_ID.get(id)?.icon ?? 'star';
 	const img = scene.add.image(0, 0, tex(scene, `icon.${icon}`));
 	img.setScale(Math.min(1, (d - 6) / Math.max(img.width, img.height)));
