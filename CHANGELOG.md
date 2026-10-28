@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The engine, tooling and CI come from the previous game, Gridbound
 (`AlexGalhardo/tibia-roguelite-game`, branch `dev`, commit `f4fb29a`), whose history lives there.
 
-Since 2026-10-24 the project has 17 releases, numbered in order from 0.1.0 to 0.16.0 (the next ones are 0.16.1 for a small fix and 0.17.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, 0.13.0 the painted look, 0.14.0 the trinkets, 0.15.0 the phone layouts, and 0.16.0 the shop, the doubled table goals and the partner signals. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
+Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.17.0 (the next ones are 0.17.1 for a small fix and 0.18.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, 0.13.0 the painted look, 0.14.0 the trinkets, 0.15.0 the phone layouts, 0.16.0 the shop, the doubled table goals and the partner signals, and 0.17.0 the shared signal emoji and the shorter in-play box. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
 
 ## [Unreleased]
+
+## [0.17.0] - 2026-10-28
 
 ### Changed
 
@@ -638,7 +640,8 @@ Since 2026-10-24 the project has 17 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.1...v0.14.0
