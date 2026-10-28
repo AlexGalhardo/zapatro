@@ -115,7 +115,7 @@ export function trinketCardHeight(
 	w: number,
 	list: readonly { id: string; level: number }[],
 ): number {
-	const room = w - CARD.pad * 2 - CARD.medal - CARD.gap;
+	const room = w - CARD.pad * 2 - CARD.medal - CARD.gap - 3;
 	const probe = (s: string, px: number): number => {
 		const t = scene.add.text(0, 0, s, text(px, PALETTE.textLight, room));
 		const h = t.height;
@@ -175,8 +175,8 @@ export function trinketCard(scene: Phaser.Scene, o: TrinketCardOpts): Phaser.Gam
 		top + CARD.ribbon + CARD.pad + CARD.medal / 2,
 	);
 	c.add(medal);
-	const tx = left + CARD.pad + CARD.medal + CARD.gap + 1;
-	const room = w - CARD.pad * 2 - CARD.medal - CARD.gap;
+	const tx = left + CARD.pad + CARD.medal + CARD.gap + 4;
+	const room = w - CARD.pad * 2 - CARD.medal - CARD.gap - 3;
 	const { perk, flaw } = trinketTexts(o.id, o.level);
 	let y = top + CARD.ribbon + CARD.pad;
 	const name = scene.add.text(tx, y, trinketName(o.id), text(8, PALETTE.textLight, room));
@@ -187,7 +187,7 @@ export function trinketCard(scene: Phaser.Scene, o: TrinketCardOpts): Phaser.Gam
 	y += p.height + CARD.gap;
 	c.add(scene.add.text(tx, y, flaw, text(6, PALETTE.bad, room)));
 	const price = new Button(scene, o.price.label, o.price.onClick, {
-		w: CARD.medal + 6,
+		w: CARD.medal + 2,
 		h: CARD.price,
 		size: 8,
 		color: PALETTE.manilha,

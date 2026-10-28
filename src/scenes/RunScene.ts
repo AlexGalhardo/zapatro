@@ -1343,7 +1343,7 @@ export class RunScene extends Phaser.Scene {
 		);
 		const cardH = Math.max(...heights, 40);
 		const nextH = 22;
-		const titleRow = 24;
+		const titleRow = 30;
 		const bodyH = cardH * 2 + gap;
 		const blockH = titleRow + bodyH + gap + nextH;
 		const yOff = Math.max(margin, (slate.h - blockH) / 2);
