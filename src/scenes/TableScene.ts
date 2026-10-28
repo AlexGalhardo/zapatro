@@ -41,7 +41,7 @@ import { GOOD_BOT } from '../game/run-sim';
 import { rivalBrain, tableMatch } from '../game/run-table';
 import { getLang, type I18nKey, t } from '../i18n';
 import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
-import { honestSign } from '../logic/ai/decide';
+import { continueWithoutTruco, honestSign } from '../logic/ai/decide';
 import { actionFor } from '../logic/keybinds';
 import { recordHand, recordRunEnd, recordRunState, recordTable } from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
@@ -416,6 +416,8 @@ export class TableScene extends Phaser.Scene {
 	private seatNames: Partial<Record<Seat, string>> = {};
 	private speed: GameSpeed = 1;
 	private busy = false;
+	/** Partner-truco confirmation (OK / Cancel). Null when it is not on screen. */
+	private partnerAsk: Phaser.GameObjects.Container | null = null;
 	private auto = false;
 	private reveal = false;
 	/** Centre of the table (popups, banners, panels). */
@@ -1271,7 +1273,12 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 
 	/** A panel with buttons is open: the arrows move between its buttons instead of the cards. */
 	private overlayOpen(): boolean {
-		return this.eleven.visible || this.signPicker.visible || this.endPanel.visible;
+		return (
+			this.eleven.visible ||
+			this.signPicker.visible ||
+			this.endPanel.visible ||
+			this.partnerAsk !== null
+		);
 	}
 
 	private layoutPlayed(): void {
@@ -2094,6 +2101,69 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.status.setText(t('table.partnerSign', { cat: t(`sign.cat.${cat}` as I18nKey) }));
 	}
 
+	/** Emoji the partner flashes before calling truco, from the honest signal of their hand. */
+	private partnerTrucoEmoji(): string {
+		const hand = this.match.state.hands[2];
+		const sign = hand?.length ? honestSign(hand, this.match.state.manilha) : 'nothing';
+		const emoji: Record<Sign, string> = {
+			zap: '💪',
+			copas: '💪',
+			espadilha: '💪',
+			picafumo: '💪',
+			three: '3️⃣',
+			nothing: '😏',
+		};
+		return emoji[sign];
+	}
+
+	/**
+	 * Partner is about to call truco. The player sees only the emoji and answers OK (call) or
+	 * Cancel (play on without the call). Headless and `?auto=1` take OK without waiting.
+	 */
+	private askPartnerTruco(truco: Action): void {
+		const headless =
+			this.auto || (typeof navigator !== 'undefined' && navigator.webdriver === true);
+		if (headless) {
+			void this.run(truco);
+			return;
+		}
+		this.partnerAsk?.destroy();
+		const w = 216;
+		const h = 86;
+		// Upper middle of the felt: below the partner, above the hand, left of the action buttons.
+		const x = 268;
+		const y = 112;
+		const box = this.add.container(0, 0).setDepth(DEPTH.eleven);
+		const g = this.add.graphics();
+		drawPanel(g, x, y, w, h);
+		const emoji = this.add
+			.text(x + w / 2, y + 18, this.partnerTrucoEmoji(), {
+				fontFamily: UI_FONT,
+				fontSize: '22px',
+				color: toCss(PALETTE.textLight),
+			})
+			.setOrigin(0.5);
+		const go = (ok: boolean): void => {
+			box.destroy();
+			this.partnerAsk = null;
+			const action = ok ? truco : continueWithoutTruco(this.match.legal(2));
+			void this.run(action);
+		};
+		const okBtn = new Button(this, t('table.partnerTrucoOk'), () => go(true), {
+			w: 96,
+			h: 32,
+			size: 13,
+			color: PALETTE.good,
+		}).setPosition(x + 8 + 48, y + h - 8 - 16);
+		const cancelBtn = new Button(this, t('table.partnerTrucoCancel'), () => go(false), {
+			w: 96,
+			h: 32,
+			size: 12,
+		}).setPosition(x + w - 8 - 48, y + h - 8 - 16);
+		box.add([g, emoji, okBtn, cancelBtn]);
+		this.partnerAsk = box;
+	}
+
 	/** The gesture of a signal in the round bubble over a portrait: the partner's, or a caught rival's. */
 	private signMark(seat: Seat, sign: Sign): void {
 		const v = this.seats.get(seat);
@@ -2176,7 +2246,12 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.busy = true;
 		this.time.delayedCall(this.dur(TABLE_TIMING.think), () => {
 			if (!this.sys.isActive()) return;
-			void this.run(m.aiAction(actor));
+			const action = m.aiAction(actor);
+			if (action.kind === 'truco' && actor === 2) {
+				this.askPartnerTruco(action);
+				return;
+			}
+			void this.run(action);
 		});
 	}
 
@@ -2393,6 +2468,18 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			}
 			case 'signal': {
 				sfx(this, 'sfx.signal');
+				if (e.seat === 0) {
+					const cat = SIGN_CATEGORY[e.sign];
+					this.status.setText(
+						t('table.signalSent', { sign: t(`sign.${e.sign}` as I18nKey) }),
+					);
+					this.speak(
+						2,
+						t('table.signalAck', { cat: t(`sign.cat.${cat}` as I18nKey) }),
+						PALETTE.textDark,
+						1600,
+					);
+				}
 				if (e.seat === 2) this.partnerSignal(e.sign);
 				if (e.seat !== 0 && teamOf(e.seat) === 'them' && e.caughtBy.includes(0)) {
 					this.signMark(e.seat, e.sign);

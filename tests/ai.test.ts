@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { AI_PROFILES } from '../src/data/ai-profiles';
 import { type SeatBrain, simulateMatch } from '../src/game/match';
-import { decide, honestSign, winChance } from '../src/logic/ai/decide';
+import { continueWithoutTruco, decide, honestSign, winChance } from '../src/logic/ai/decide';
 import { Rng } from '../src/logic/rng';
 import { type Card, parseCard, standardDeck } from '../src/logic/truco/cards';
 import { observe } from '../src/logic/truco/observe';
@@ -164,4 +164,16 @@ describe('tournament (PA2.8)', () => {
 		},
 		workTimeout(1000, MS_PER_MATCH),
 	);
+});
+
+describe('partner truco signal', () => {
+	test('cancel does not call truco: a card is played, or an open call is accepted', () => {
+		const truco = { kind: 'truco' as const, seat: 2 as const };
+		const covered = { kind: 'play' as const, seat: 2 as const, cardId: '5h', faceDown: true };
+		const play = { kind: 'play' as const, seat: 2 as const, cardId: '4h', faceDown: false };
+		expect(continueWithoutTruco([truco, covered, play])).toEqual(play);
+		const fold = { kind: 'fold' as const, seat: 2 as const };
+		const accept = { kind: 'accept' as const, seat: 2 as const };
+		expect(continueWithoutTruco([truco, fold, accept])).toEqual(accept);
+	});
 });

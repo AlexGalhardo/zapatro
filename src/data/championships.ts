@@ -17,10 +17,11 @@ export const CHAMPIONSHIPS = [
 export type ChampionshipId = (typeof CHAMPIONSHIPS)[number];
 
 /**
- * ~×1.27 per Championship (A5, D-60), doubled on 2026-10-25 at the dev's request (harder, longer
- * tables; docs/balancing.md). Every table goal, Stake and endless goal derives from these.
+ * ~×1.27 per Championship (A5, D-60). Doubled on 2026-10-28 from 105 · 135 · … · 560:
+ * a human was clearing tables too easily, so the good bot is allowed to win less (band 5–20%).
+ * Every table goal, Stake and endless goal derives from these; `tableGoal` still rounds.
  */
-export const CHAMPIONSHIP_GOALS = [105, 135, 175, 215, 280, 350, 440, 560] as const;
+export const CHAMPIONSHIP_GOALS = [210, 270, 350, 430, 560, 700, 880, 1120] as const;
 
 /** Endless mode (after Championship 8): each Championship multiplies the last goal by this. */
 export const ENDLESS_GOAL_GROWTH = 1.4;

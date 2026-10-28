@@ -257,6 +257,23 @@ export function decide(
 	return plays.find((a) => a.kind === 'play' && a.cardId === card.id) ?? (plays[0] as Action);
 }
 
+/**
+ * The partner was about to call truco and the player cancelled that signal. Play goes on
+ * without the call: a face-up card, else accepting the call already on the table, else running.
+ */
+export function continueWithoutTruco(legal: readonly Action[]): Action {
+	const rest = legal.filter((a) => a.kind !== 'truco');
+	const play = rest.find((a) => a.kind === 'play' && !a.faceDown);
+	if (play) return play;
+	const accept = rest.find((a) => a.kind === 'accept');
+	if (accept) return accept;
+	const fold = rest.find((a) => a.kind === 'fold');
+	if (fold) return fold;
+	const any = rest[0] ?? legal[0];
+	if (!any) throw new Error('no legal action');
+	return any;
+}
+
 /** Random bot: any legal action except signals (reference for the balance goals, D-39). */
 export function randomAction(legal: readonly Action[], rng: Rng): Action {
 	const core = legal.filter((a) => a.kind !== 'signal');
