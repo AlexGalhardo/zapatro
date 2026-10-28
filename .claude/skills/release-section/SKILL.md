@@ -30,6 +30,9 @@ Armadilhas conhecidas:
 - Editar com Python no Windows grava **CRLF** (`lineEnding: lf` falha): `open(p, 'w', encoding='utf-8', newline='')`.
 - Para validar só o staged, não use `git stash --keep-index --include-untracked` (pop falha com arquivo apagado e recriado). Commite e rode os gates no commit.
 - Worktrees de agentes ficam em `.claude/worktrees/` (gitignored); nunca `git add -A` sem conferir o `git status`.
+- **Release só com a árvore limpa (v0.13.1, 2026-10-27):** os builds do `bun run release` saem da pasta de trabalho, não da tag. Com agentes editando a mesma árvore, o WIP deles entra nos zips, no `.exe` e no APK. Antes do release: congele os agentes (WIP em patch fora do repo), `git status --short` vazio (arquivos não rastreados em `scripts/` também entram no typecheck: tire-os) e `git describe --tags --exact-match HEAD` igual à versão. Se já saiu contaminado: `gh release delete v<versão> --yes` (a tag fica) e rode de novo.
+- **Poki < 8 MB conta a pasta `dist` inteira**, não só o primeiro download: imagens novas que carregam depois também somam. O plugin `poki-trim` do `vite.config.ts` remove do build Poki o que ela não precisa (`POKI_SKIP`).
+- **`EPERM` ao renomear `win-unpacked.tmp`/`linux-unpacked.tmp`** (Defender): descompacte o zip do Electron do cache (`%LOCALAPPDATA%\electron\Cache\…\electron-v<versão>-win32-x64.zip`) e rode `ELECTRON_DIST_WIN=<pasta> bun run release -- --web-only` (o Linux sai pelo `release.yml`; Windows `.exe` e APK continuam). Apague `desktop/release/` antes.
 
 ## 2. Documentação no mesmo lote
 
