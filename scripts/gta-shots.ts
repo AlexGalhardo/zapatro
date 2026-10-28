@@ -29,7 +29,7 @@ const shot = async (p: Page, name: string): Promise<void> => {
 await shot(await open('?qa=1'), '01-menu');
 await shot(await open('?run=1&seed=1&qa=1'), '02-partner');
 const shop = await open('?run=1&seed=7&qa=1');
-await shop.evaluate(`(() => { window.__GAME__.scene.keys.Run.choosePartner('donaCida'); })()`);
+await shop.evaluate(`(() => { window.__GAME__.scene.keys.Run.choosePartner('cida'); })()`);
 await shop.waitForTimeout(800);
 await shop.evaluate(`(() => { const g = window.__GAME__; const r = g.scene.keys.Run.run;
 	Object.assign(r, { phase: 'shop', money: 23, manhas: ['seuZe', 'peQuente', 'cangaceiro'] });

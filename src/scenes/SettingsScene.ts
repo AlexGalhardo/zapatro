@@ -12,6 +12,7 @@ import { relayout, trackZoom } from '../core/viewport';
 import { RESOLUTION_IDS, RESOLUTIONS } from '../data/display';
 import { type I18nKey, LANGS, setLang, t } from '../i18n';
 import { UI_SCALES } from '../logic/save';
+import { voLang } from '../logic/voice-lines';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { backHint, showHintLine } from '../ui/key-hint';
@@ -22,6 +23,7 @@ import { screenTitle } from '../ui/title';
 import { applyTouch, byMode, touchUi, uiPx } from '../ui/touch';
 import { applyComfort } from '../view/comfort';
 import { fitCamera } from '../view/stage';
+import { loadVoices } from './BootScene';
 
 const cycle = <T>(list: readonly T[], cur: T, dir: -1 | 1): T =>
 	list[(list.indexOf(cur) + dir + list.length) % list.length] as T;
@@ -186,6 +188,7 @@ export class SettingsScene extends Phaser.Scene {
 				onAdjust: (d) => {
 					s.lang = cycle(LANGS, s.lang, d);
 					setLang(s.lang);
+					loadVoices(this, voLang(s.lang));
 					persist(this);
 					this.scene.restart({ returnTo: this.returnTo });
 				},
@@ -284,6 +287,7 @@ export class SettingsScene extends Phaser.Scene {
 						applyTouch(r.save.settings.touchControls);
 						persist(this);
 						setLang(r.save.settings.lang);
+						loadVoices(this, voLang(r.save.settings.lang));
 						this.sound.mute = r.save.settings.muted;
 						refreshMusicVolume(this);
 						setResolution(r.save.settings.resolution);

@@ -155,7 +155,7 @@ export class Match {
 		this.peekPile = opts.peekPile ?? false;
 		this.doubleChipRanks = opts.doubleChipRanks;
 		this.trinkets =
-			opts.boss === 'professor' ? doubleFlaws(opts.trinkets ?? []) : (opts.trinkets ?? []);
+			opts.boss === 'stuart' ? doubleFlaws(opts.trinkets ?? []) : (opts.trinkets ?? []);
 		this.tablesWon = opts.tablesWon ?? 0;
 		this.loseTento = opts.loseTento ?? 0;
 		const catchOf = (b: SeatBrain): number =>
@@ -164,7 +164,7 @@ export class Match {
 				: (opts.humanCatch ?? AI_PROFILES.pro.catchChance * 0.66);
 		this.rules = {
 			// O Mudo: no signals with your partner.
-			signals: (this.boss === 'mudo'
+			signals: (this.boss === 'peter'
 				? [0, 1, 0, 1]
 				: [1 + (opts.extraSignals ?? 0), 1, 1, 1]) as TableRules['signals'],
 			catchChance: opts.brains.map((b, i) =>

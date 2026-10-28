@@ -1,7 +1,7 @@
 /**
  * Headless runs (PLAN §10.2): win rate, Championship reached, hands per table and favourite Manhas.
  *   bun scripts/sim.ts [--runs 500] [--bot good|random] [--seed 1] [--champ 8] [--stake 1]
- *     [--partner tonhao|donaCida|zeMalandro|juninho] [--skip none|small|both]
+ *     [--partner bruto|cida|jhony|nino] [--skip none|small|both]
  * `--skip`: tables the good bot skips for a Promise; only meaningful with `TABLE_SELECT` on (src/config/features.ts), else nobody can skip.
  * `--stake` has no effect until the Estacas exist (B2); the bot already carries it.
  */
@@ -38,7 +38,7 @@ console.log(
 		{
 			bot,
 			stake,
-			partner: partner ?? 'tonhao|donaCida',
+			partner: partner ?? 'bruto|cida',
 			skip,
 			runs,
 			seed,

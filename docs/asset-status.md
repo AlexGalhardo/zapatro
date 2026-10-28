@@ -2,10 +2,10 @@
 
 > **Linha pixel art (branch `pixel-art`, congelada):** este relatório é dela, com a arte gerada pelo PixelLab. Na `main` o visual é a Art Bible v3 pintada desde 2026-10-27 ([visual.md](visual.md) §0; antes, o híbrido da v2): a arte de UI é desenhada por código (`src/art/flat.ts`) e os scripts que geravam este relatório saíram. Vale só o áudio.
 >
-> Gerado por `bun scripts/assets-status.ts` a partir de `scripts/assets-keys.ts` e `scripts/el-catalog.ts`. Não edite à mão.
+> Gerado por `bun scripts/assets-status.ts` (script removido; as seções `music` e `vo` foram atualizadas à mão em 2026-10-28 com o lote final de áudio) a partir de `scripts/assets-keys.ts` e `scripts/el-catalog.ts`. Não edite à mão.
 > ✅ arte/áudio final · ⬜ placeholder de código (visual) ou silêncio (áudio).
 
-**Tier 1 (ALPHA): 239/239** · **Tier 2 (BETA): 237/237** · total 476/476
+**Tier 1 (ALPHA): 239/239** · **Tier 2 (BETA): 530/530** · total 769/769
 
 | Categoria | Tier 1 | Tier 2 |
 |---|---|---|
@@ -25,9 +25,9 @@
 | card.mod | 3/3 | 4/4 |
 | table | 1/1 | 0/0 |
 | sfx | 24/24 | 0/0 |
-| music | 5/5 | 1/1 |
+| music | 5/5 | 4/4 |
 | amb | 1/1 | 7/7 |
-| vo | 0/0 | 128/128 |
+| vo | 0/0 | 418/418 |
 
 ## Aguardando aprovação do usuário
 
@@ -37,26 +37,26 @@
 
 | Chave | Tier | Fonte | Status |
 |---|---|---|---|
-| `portrait.tonhao.neutral` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.happy` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.angry` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.sweat` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.wink` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.mouth` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.tongue` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.lip` | 1 | PixelLab | ✅ |
-| `portrait.tonhao.up` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.neutral` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.happy` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.angry` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.sweat` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.wink` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.mouth` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.tongue` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.lip` | 1 | PixelLab | ✅ |
-| `portrait.donaCida.up` | 1 | PixelLab | ✅ |
+| `portrait.bruto.neutral` | 1 | PixelLab | ✅ |
+| `portrait.bruto.happy` | 1 | PixelLab | ✅ |
+| `portrait.bruto.angry` | 1 | PixelLab | ✅ |
+| `portrait.bruto.sweat` | 1 | PixelLab | ✅ |
+| `portrait.bruto.wink` | 1 | PixelLab | ✅ |
+| `portrait.bruto.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.bruto.mouth` | 1 | PixelLab | ✅ |
+| `portrait.bruto.tongue` | 1 | PixelLab | ✅ |
+| `portrait.bruto.lip` | 1 | PixelLab | ✅ |
+| `portrait.bruto.up` | 1 | PixelLab | ✅ |
+| `portrait.cida.neutral` | 1 | PixelLab | ✅ |
+| `portrait.cida.happy` | 1 | PixelLab | ✅ |
+| `portrait.cida.angry` | 1 | PixelLab | ✅ |
+| `portrait.cida.sweat` | 1 | PixelLab | ✅ |
+| `portrait.cida.wink` | 1 | PixelLab | ✅ |
+| `portrait.cida.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.cida.mouth` | 1 | PixelLab | ✅ |
+| `portrait.cida.tongue` | 1 | PixelLab | ✅ |
+| `portrait.cida.lip` | 1 | PixelLab | ✅ |
+| `portrait.cida.up` | 1 | PixelLab | ✅ |
 | `portrait.ze.neutral` | 1 | PixelLab | ✅ |
 | `portrait.ze.happy` | 1 | PixelLab | ✅ |
 | `portrait.ze.angry` | 1 | PixelLab | ✅ |
@@ -67,76 +67,76 @@
 | `portrait.ze.tongue` | 1 | PixelLab | ✅ |
 | `portrait.ze.lip` | 1 | PixelLab | ✅ |
 | `portrait.ze.up` | 1 | PixelLab | ✅ |
-| `portrait.bia.neutral` | 1 | PixelLab | ✅ |
-| `portrait.bia.happy` | 1 | PixelLab | ✅ |
-| `portrait.bia.angry` | 1 | PixelLab | ✅ |
-| `portrait.bia.sweat` | 1 | PixelLab | ✅ |
-| `portrait.bia.wink` | 1 | PixelLab | ✅ |
-| `portrait.bia.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.bia.mouth` | 1 | PixelLab | ✅ |
-| `portrait.bia.tongue` | 1 | PixelLab | ✅ |
-| `portrait.bia.lip` | 1 | PixelLab | ✅ |
-| `portrait.bia.up` | 1 | PixelLab | ✅ |
-| `portrait.joca.neutral` | 1 | PixelLab | ✅ |
-| `portrait.joca.happy` | 1 | PixelLab | ✅ |
-| `portrait.joca.angry` | 1 | PixelLab | ✅ |
-| `portrait.joca.sweat` | 1 | PixelLab | ✅ |
-| `portrait.joca.wink` | 1 | PixelLab | ✅ |
-| `portrait.joca.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.joca.mouth` | 1 | PixelLab | ✅ |
-| `portrait.joca.tongue` | 1 | PixelLab | ✅ |
-| `portrait.joca.lip` | 1 | PixelLab | ✅ |
-| `portrait.joca.up` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.neutral` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.happy` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.angry` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.sweat` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.wink` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.mouth` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.tongue` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.lip` | 1 | PixelLab | ✅ |
-| `portrait.lurdes.up` | 1 | PixelLab | ✅ |
-| `portrait.tiao.neutral` | 1 | PixelLab | ✅ |
-| `portrait.tiao.happy` | 1 | PixelLab | ✅ |
-| `portrait.tiao.angry` | 1 | PixelLab | ✅ |
-| `portrait.tiao.sweat` | 1 | PixelLab | ✅ |
-| `portrait.tiao.wink` | 1 | PixelLab | ✅ |
-| `portrait.tiao.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.tiao.mouth` | 1 | PixelLab | ✅ |
-| `portrait.tiao.tongue` | 1 | PixelLab | ✅ |
-| `portrait.tiao.lip` | 1 | PixelLab | ✅ |
-| `portrait.tiao.up` | 1 | PixelLab | ✅ |
-| `portrait.neide.neutral` | 1 | PixelLab | ✅ |
-| `portrait.neide.happy` | 1 | PixelLab | ✅ |
-| `portrait.neide.angry` | 1 | PixelLab | ✅ |
-| `portrait.neide.sweat` | 1 | PixelLab | ✅ |
-| `portrait.neide.wink` | 1 | PixelLab | ✅ |
-| `portrait.neide.eyebrow` | 1 | PixelLab | ✅ |
-| `portrait.neide.mouth` | 1 | PixelLab | ✅ |
-| `portrait.neide.tongue` | 1 | PixelLab | ✅ |
-| `portrait.neide.lip` | 1 | PixelLab | ✅ |
-| `portrait.neide.up` | 1 | PixelLab | ✅ |
-| `portrait.zeMalandro.neutral` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.happy` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.angry` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.sweat` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.wink` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.eyebrow` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.mouth` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.tongue` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.lip` | 2 | PixelLab | ✅ |
-| `portrait.zeMalandro.up` | 2 | PixelLab | ✅ |
-| `portrait.juninho.neutral` | 2 | PixelLab | ✅ |
-| `portrait.juninho.happy` | 2 | PixelLab | ✅ |
-| `portrait.juninho.angry` | 2 | PixelLab | ✅ |
-| `portrait.juninho.sweat` | 2 | PixelLab | ✅ |
-| `portrait.juninho.wink` | 2 | PixelLab | ✅ |
-| `portrait.juninho.eyebrow` | 2 | PixelLab | ✅ |
-| `portrait.juninho.mouth` | 2 | PixelLab | ✅ |
-| `portrait.juninho.tongue` | 2 | PixelLab | ✅ |
-| `portrait.juninho.lip` | 2 | PixelLab | ✅ |
-| `portrait.juninho.up` | 2 | PixelLab | ✅ |
+| `portrait.mia.neutral` | 1 | PixelLab | ✅ |
+| `portrait.mia.happy` | 1 | PixelLab | ✅ |
+| `portrait.mia.angry` | 1 | PixelLab | ✅ |
+| `portrait.mia.sweat` | 1 | PixelLab | ✅ |
+| `portrait.mia.wink` | 1 | PixelLab | ✅ |
+| `portrait.mia.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.mia.mouth` | 1 | PixelLab | ✅ |
+| `portrait.mia.tongue` | 1 | PixelLab | ✅ |
+| `portrait.mia.lip` | 1 | PixelLab | ✅ |
+| `portrait.mia.up` | 1 | PixelLab | ✅ |
+| `portrait.chico.neutral` | 1 | PixelLab | ✅ |
+| `portrait.chico.happy` | 1 | PixelLab | ✅ |
+| `portrait.chico.angry` | 1 | PixelLab | ✅ |
+| `portrait.chico.sweat` | 1 | PixelLab | ✅ |
+| `portrait.chico.wink` | 1 | PixelLab | ✅ |
+| `portrait.chico.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.chico.mouth` | 1 | PixelLab | ✅ |
+| `portrait.chico.tongue` | 1 | PixelLab | ✅ |
+| `portrait.chico.lip` | 1 | PixelLab | ✅ |
+| `portrait.chico.up` | 1 | PixelLab | ✅ |
+| `portrait.beti.neutral` | 1 | PixelLab | ✅ |
+| `portrait.beti.happy` | 1 | PixelLab | ✅ |
+| `portrait.beti.angry` | 1 | PixelLab | ✅ |
+| `portrait.beti.sweat` | 1 | PixelLab | ✅ |
+| `portrait.beti.wink` | 1 | PixelLab | ✅ |
+| `portrait.beti.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.beti.mouth` | 1 | PixelLab | ✅ |
+| `portrait.beti.tongue` | 1 | PixelLab | ✅ |
+| `portrait.beti.lip` | 1 | PixelLab | ✅ |
+| `portrait.beti.up` | 1 | PixelLab | ✅ |
+| `portrait.ayla.neutral` | 1 | PixelLab | ✅ |
+| `portrait.ayla.happy` | 1 | PixelLab | ✅ |
+| `portrait.ayla.angry` | 1 | PixelLab | ✅ |
+| `portrait.ayla.sweat` | 1 | PixelLab | ✅ |
+| `portrait.ayla.wink` | 1 | PixelLab | ✅ |
+| `portrait.ayla.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.ayla.mouth` | 1 | PixelLab | ✅ |
+| `portrait.ayla.tongue` | 1 | PixelLab | ✅ |
+| `portrait.ayla.lip` | 1 | PixelLab | ✅ |
+| `portrait.ayla.up` | 1 | PixelLab | ✅ |
+| `portrait.sheila.neutral` | 1 | PixelLab | ✅ |
+| `portrait.sheila.happy` | 1 | PixelLab | ✅ |
+| `portrait.sheila.angry` | 1 | PixelLab | ✅ |
+| `portrait.sheila.sweat` | 1 | PixelLab | ✅ |
+| `portrait.sheila.wink` | 1 | PixelLab | ✅ |
+| `portrait.sheila.eyebrow` | 1 | PixelLab | ✅ |
+| `portrait.sheila.mouth` | 1 | PixelLab | ✅ |
+| `portrait.sheila.tongue` | 1 | PixelLab | ✅ |
+| `portrait.sheila.lip` | 1 | PixelLab | ✅ |
+| `portrait.sheila.up` | 1 | PixelLab | ✅ |
+| `portrait.jhony.neutral` | 2 | PixelLab | ✅ |
+| `portrait.jhony.happy` | 2 | PixelLab | ✅ |
+| `portrait.jhony.angry` | 2 | PixelLab | ✅ |
+| `portrait.jhony.sweat` | 2 | PixelLab | ✅ |
+| `portrait.jhony.wink` | 2 | PixelLab | ✅ |
+| `portrait.jhony.eyebrow` | 2 | PixelLab | ✅ |
+| `portrait.jhony.mouth` | 2 | PixelLab | ✅ |
+| `portrait.jhony.tongue` | 2 | PixelLab | ✅ |
+| `portrait.jhony.lip` | 2 | PixelLab | ✅ |
+| `portrait.jhony.up` | 2 | PixelLab | ✅ |
+| `portrait.nino.neutral` | 2 | PixelLab | ✅ |
+| `portrait.nino.happy` | 2 | PixelLab | ✅ |
+| `portrait.nino.angry` | 2 | PixelLab | ✅ |
+| `portrait.nino.sweat` | 2 | PixelLab | ✅ |
+| `portrait.nino.wink` | 2 | PixelLab | ✅ |
+| `portrait.nino.eyebrow` | 2 | PixelLab | ✅ |
+| `portrait.nino.mouth` | 2 | PixelLab | ✅ |
+| `portrait.nino.tongue` | 2 | PixelLab | ✅ |
+| `portrait.nino.lip` | 2 | PixelLab | ✅ |
+| `portrait.nino.up` | 2 | PixelLab | ✅ |
 
 ## boss
 
@@ -146,10 +146,10 @@
 | `boss.cartomante` | 1 | PixelLab | ✅ |
 | `boss.juiz` | 1 | PixelLab | ✅ |
 | `boss.agiota` | 1 | PixelLab | ✅ |
-| `boss.delegado` | 1 | PixelLab | ✅ |
+| `boss.tony` | 1 | PixelLab | ✅ |
 | `boss.reiDoTruco` | 1 | PixelLab | ✅ |
-| `boss.professor` | 2 | PixelLab | ✅ |
-| `boss.mudo` | 2 | PixelLab | ✅ |
+| `boss.stuart` | 2 | PixelLab | ✅ |
+| `boss.peter` | 2 | PixelLab | ✅ |
 | `boss.sortuda` | 2 | PixelLab | ✅ |
 
 ## manha
@@ -454,6 +454,9 @@
 | `music.table` | 1 | ElevenLabs | ✅ |
 | `music.boss` | 1 | ElevenLabs | ✅ |
 | `music.king` | 2 | ElevenLabs | ✅ |
+| `music.table2` | 2 | ElevenLabs | ✅ |
+| `music.table3` | 2 | ElevenLabs | ✅ |
+| `music.table4` | 2 | ElevenLabs | ✅ |
 | `music.win` | 1 | ElevenLabs | ✅ |
 | `music.lose` | 1 | ElevenLabs | ✅ |
 
@@ -472,133 +475,8 @@
 
 ## vo
 
-| Chave | Tier | Fonte | Status |
-|---|---|---|---|
-| `vo.tonhao.truco` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.seis` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.nove` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.doze` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.bora` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.corre` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.tonhao.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.truco` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.seis` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.nove` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.doze` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.bora` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.corre` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.donaCida.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.truco` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.seis` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.nove` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.doze` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.bora` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.corre` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.zeMalandro.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.truco` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.seis` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.nove` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.doze` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.bora` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.corre` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.juninho.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.ze.truco` | 2 | ElevenLabs | ✅ |
-| `vo.ze.seis` | 2 | ElevenLabs | ✅ |
-| `vo.ze.nove` | 2 | ElevenLabs | ✅ |
-| `vo.ze.doze` | 2 | ElevenLabs | ✅ |
-| `vo.ze.bora` | 2 | ElevenLabs | ✅ |
-| `vo.ze.corre` | 2 | ElevenLabs | ✅ |
-| `vo.ze.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.ze.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.bia.truco` | 2 | ElevenLabs | ✅ |
-| `vo.bia.seis` | 2 | ElevenLabs | ✅ |
-| `vo.bia.nove` | 2 | ElevenLabs | ✅ |
-| `vo.bia.doze` | 2 | ElevenLabs | ✅ |
-| `vo.bia.bora` | 2 | ElevenLabs | ✅ |
-| `vo.bia.corre` | 2 | ElevenLabs | ✅ |
-| `vo.bia.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.bia.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.joca.truco` | 2 | ElevenLabs | ✅ |
-| `vo.joca.seis` | 2 | ElevenLabs | ✅ |
-| `vo.joca.nove` | 2 | ElevenLabs | ✅ |
-| `vo.joca.doze` | 2 | ElevenLabs | ✅ |
-| `vo.joca.bora` | 2 | ElevenLabs | ✅ |
-| `vo.joca.corre` | 2 | ElevenLabs | ✅ |
-| `vo.joca.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.joca.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.truco` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.seis` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.nove` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.doze` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.bora` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.corre` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.lurdes.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.truco` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.seis` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.nove` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.doze` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.bora` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.corre` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.tiao.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.neide.truco` | 2 | ElevenLabs | ✅ |
-| `vo.neide.seis` | 2 | ElevenLabs | ✅ |
-| `vo.neide.nove` | 2 | ElevenLabs | ✅ |
-| `vo.neide.doze` | 2 | ElevenLabs | ✅ |
-| `vo.neide.bora` | 2 | ElevenLabs | ✅ |
-| `vo.neide.corre` | 2 | ElevenLabs | ✅ |
-| `vo.neide.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.neide.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.truco` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.seis` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.nove` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.doze` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.bora` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.corre` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.valentao.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.truco` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.seis` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.nove` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.doze` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.bora` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.corre` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.cartomante.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.truco` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.seis` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.nove` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.doze` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.bora` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.corre` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.juiz.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.truco` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.seis` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.nove` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.doze` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.bora` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.corre` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.agiota.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.truco` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.seis` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.nove` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.doze` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.bora` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.corre` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.delegado.oloco` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.truco` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.seis` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.nove` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.doze` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.bora` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.corre` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.caiu` | 2 | ElevenLabs | ✅ |
-| `vo.reiDoTruco.oloco` | 2 | ElevenLabs | ✅ |
+Lote final 1.0 (2026-10-28): chave `vo.<lang>.<char>.<linha>` (`<lang>` = `pt` | `en`), 2 takes cada, ElevenLabs, todos ✅ e aprovados por `bun scripts/audio-check.ts`. Detalhes em [audio.md](audio.md).
+
+| Personagens | Linhas | Takes |
+|---|---|---|
+| companheiros `bruto`, `cida`, `jhony`, `nino`, `ze`, `mia`, `chico`, `beti`, `ayla`, `sheila`; chefes `valentao`, `cartomante`, `juiz`, `agiota`, `tony`, `stuart`, `peter`, `sortuda`, `reiDoTruco` | `truco`, `seis`, `nove`, `doze`, `bora`, `ver`, `corre`, `sacanagem`, `piada1`, `piada2`, `piada3` | 19 × 11 × 2 idiomas = 418 chaves, 836 arquivos ✅ |

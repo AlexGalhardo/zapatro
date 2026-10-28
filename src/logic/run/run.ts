@@ -224,12 +224,12 @@ export function newRun(
 		cardSerial: d.extraSuit ? 10 : 0,
 		levels: {},
 		partner,
-		partnerLevel: partner === 'juninho' ? 0 : 1,
+		partnerLevel: partner === 'nino' ? 0 : 1,
 		upgrades: [],
 		upgradeChamp: 0,
 		promises: [],
 		extraLife: false,
-		rivals: { chars: ['ze', 'bia'], profiles: ['rookie', 'rookie'] },
+		rivals: { chars: ['ze', 'mia'], profiles: ['rookie', 'rookie'] },
 		phase: 'select',
 		endless: false,
 		shop: null,
@@ -260,7 +260,7 @@ export const goalOf = (run: RunState, size: TableSize): number =>
 	Math.round(
 		tableGoal(run.champ, size) *
 			stakeRules(run.stake).goalMult *
-			(run.partner === 'neide' ? PARTNER_TRAITS.neide.goalMult : 1) *
+			(run.partner === 'sheila' ? PARTNER_TRAITS.sheila.goalMult : 1) *
 			trinketGoalMult(run),
 	);
 
@@ -285,7 +285,7 @@ function rollRivals(run: RunState): void {
 		const [a, b] = rng.shuffle(COMPANION_IDS.filter((id) => id !== run.partner));
 		const boss = currentBoss(run);
 		return {
-			chars: [boss ?? a ?? 'ze', b ?? 'bia'],
+			chars: [boss ?? a ?? 'ze', b ?? 'mia'],
 			profiles: [rng.pick(pool), rng.pick(pool)],
 		};
 	});
@@ -333,7 +333,7 @@ export function tableReward(
 			0,
 			Math.floor(
 				(Math.min(ECONOMY.speedCap, Math.max(0, 12 - rivalTentos)) * totals.speedX) /
-					(run.partner === 'zeMalandro' ? PARTNER_TRAITS.zeMalandro.speedDivisor : 1),
+					(run.partner === 'jhony' ? PARTNER_TRAITS.jhony.speedDivisor : 1),
 			) + totals.speedFlat,
 		),
 		interest:
@@ -346,8 +346,8 @@ export function tableReward(
 		doubled: false,
 	};
 	// Jhony's perk: interest on the money he helps you keep.
-	if (run.partner === 'zeMalandro') {
-		const t = PARTNER_TRAITS.zeMalandro;
+	if (run.partner === 'jhony') {
+		const t = PARTNER_TRAITS.jhony;
 		reward.partner = Math.min(
 			t.interestCap,
 			Math.floor(before / t.interestStep) * t.interestPer,
@@ -368,7 +368,7 @@ export function projectedReward(
 ): { gain: number; mayDouble: boolean } {
 	return {
 		gain: tableReward(run, tableMoney, rivalTentos).money - run.money,
-		mayDouble: run.partner === 'neide',
+		mayDouble: run.partner === 'sheila',
 	};
 }
 
@@ -393,7 +393,7 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 	// Sheila: one table win in four pays double.
 	const chance = Math.min(
 		1,
-		(run.partner === 'neide' ? PARTNER_TRAITS.neide.doubleMoneyChance : 0) +
+		(run.partner === 'sheila' ? PARTNER_TRAITS.sheila.doubleMoneyChance : 0) +
 			trinketTotals(equippedOf(run)).doubleChance,
 	);
 	if (chance > 0 && roll(run, (rng) => rng.chance(chance))) {
@@ -402,7 +402,7 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 			Math.max(0, r.money) + reward.prize + reward.speed + reward.interest + reward.partner;
 	}
 	const wonChampionship = run.table === 2;
-	if (run.partner === 'juninho') run.partnerLevel++;
+	if (run.partner === 'nino') run.partnerLevel++;
 	const last = run.demo ? DEMO_LAST_CHAMP : CHAMPIONSHIPS.length;
 	if (wonChampionship && run.champ === last && !run.endless) {
 		run.phase = 'won';
@@ -441,9 +441,9 @@ export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'pack
 	const own = Math.round(run.upgrades.includes('desconto') ? p * DISCOUNT : p);
 	// Cida's flaw: everything costs more; Beti's: Manhas do.
 	const up =
-		(run.partner === 'donaCida' ? PARTNER_TRAITS.donaCida.priceUp : 0) +
-		(run.partner === 'lurdes' && (kind === 'manha' || kind === 'trinket')
-			? PARTNER_TRAITS.lurdes.manhaPriceUp
+		(run.partner === 'cida' ? PARTNER_TRAITS.cida.priceUp : 0) +
+		(run.partner === 'beti' && (kind === 'manha' || kind === 'trinket')
+			? PARTNER_TRAITS.beti.manhaPriceUp
 			: 0) +
 		trinketTotals(equippedOf(run)).shopPrice;
 	return Math.max(0, own + up);
@@ -611,10 +611,10 @@ const hasRoom = (run: RunState, o: Offer): boolean =>
 /** What `o` costs the player now: Beti's first Manha of each shop is $1 cheaper. */
 export function offerPrice(run: RunState, o: Offer): number {
 	const first =
-		run.partner === 'lurdes' &&
+		run.partner === 'beti' &&
 		(o.kind === 'manha' || o.kind === 'trinket') &&
 		!run.shop?.firstManhaBought;
-	return Math.max(0, o.price - (first ? PARTNER_TRAITS.lurdes.firstManhaOff : 0));
+	return Math.max(0, o.price - (first ? PARTNER_TRAITS.beti.firstManhaOff : 0));
 }
 
 export function buy(

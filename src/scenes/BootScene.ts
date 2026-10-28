@@ -9,22 +9,26 @@ import {
 import { PALETTE, toCss } from '../config/palette';
 import { getParams } from '../core/context';
 import { pokiLoaded } from '../core/poki';
-import { t } from '../i18n';
+import { loadPhase, voiceLang } from '../data/load-order';
+import { getLang, t } from '../i18n';
+import { type VoLang, voLang } from '../logic/voice-lines';
 import { UI_FONT } from '../ui/font';
 
 /**
- * Files the first screen never needs, loaded after it opens so the first web download stays under
- * 8 MB (GD-017): later Championships' ambiences, the final music, the bosses' voices, the painted
- * character cards, the shop/partner/extra menu paintings and the painted backs and faces other
- * than the standard deck's. Until a file arrives, a sound is a silent no-op (src/core/audio.ts,
- * music.ts) and a picture keeps its drawn fallback, redrawn in place when it lands.
+ * Streams the voice lines of `lang` (the language changed in Settings) through the Boot loader,
+ * which outlives the scene that asks; files already loaded are skipped by the loader.
  */
-const LATER =
-	/^assets\/(audio\/(sfx|music)\/(amb\.(?!botecoBairro)|music\.king|vo\.(valentao|cartomante|juiz|agiota|delegado|reiDoTruco)\.)|gfx\/(card\/|bg\/(shop|partner|street|bg[4-6]|menu-[2-7])\.|back\/(?!default\.)))/;
+export function loadVoices(scene: Phaser.Scene, lang: VoLang): void {
+	const boot = scene.scene.get('Boot') as BootScene;
+	for (const file of __ASSET_FILES__) if (voiceLang(file) === lang) boot.queue(file);
+	boot.load.start();
+}
 
 /**
  * Loads the sounds; the art is drawn by code (src/art/flat.ts). Stays running after the first
- * screen opens (with nothing on screen) to stream the LATER sounds.
+ * screen opens (with nothing on screen) to stream the later files (src/data/load-order.ts). Until
+ * a file arrives, a sound is a silent no-op (src/core/audio.ts, music.ts) and a picture keeps its
+ * drawn fallback, redrawn in place when it lands.
  */
 export class BootScene extends Phaser.Scene {
 	private label?: Phaser.GameObjects.Text;
@@ -45,7 +49,8 @@ export class BootScene extends Phaser.Scene {
 		this.load.on('progress', (p: number) =>
 			label.setText(`${t('boot.loading')} ${Math.round(p * 100)}%`),
 		);
-		for (const file of __ASSET_FILES__) if (!LATER.test(file)) this.queue(file);
+		const lang = voLang(getLang());
+		for (const file of __ASSET_FILES__) if (loadPhase(file, lang) === 'first') this.queue(file);
 		// A missing or broken sound must never block the game.
 		this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: Phaser.Loader.File) =>
 			console.warn(`[assets] failed to load ${file.key}`),
@@ -53,7 +58,7 @@ export class BootScene extends Phaser.Scene {
 	}
 
 	/** Queues one public/ file under the key the game reads it by. */
-	private queue(file: string): void {
+	queue(file: string): void {
 		const m = /^assets\/audio\/(sfx|music)\/(.+)\.mp3$/.exec(file);
 		if (m?.[2]) this.load.audio(m[2], file);
 		const p = /^assets\/gfx\/portrait\/(.+)\.(?:png|webp)$/.exec(file);
@@ -78,7 +83,8 @@ export class BootScene extends Phaser.Scene {
 		else this.scene.launch(params.skipMenu ? 'Table' : 'Menu');
 		this.label?.destroy();
 		this.load.off('progress');
-		for (const file of __ASSET_FILES__) if (LATER.test(file)) this.queue(file);
+		const lang = voLang(getLang());
+		for (const file of __ASSET_FILES__) if (loadPhase(file, lang) === 'later') this.queue(file);
 		// The late pictures replace the fallbacks already drawn (cards, backs, special faces).
 		this.load.once(Phaser.Loader.Events.COMPLETE, () => registerPortraits(this));
 		this.load.start();

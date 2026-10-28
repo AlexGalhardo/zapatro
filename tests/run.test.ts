@@ -44,7 +44,7 @@ function reach(run: RunState, champ: number, table: number): void {
 
 describe('run (A4)', () => {
 	test('the demo ends after the first boss (Championship 1, D-33)', () => {
-		const run = newRun(1, 'tonhao', 'normal', 1, false, true);
+		const run = newRun(1, 'bruto', 'normal', 1, false, true);
 		reach(run, 1, 2);
 		startTable(run);
 		finishTable(run, win());
@@ -53,7 +53,7 @@ describe('run (A4)', () => {
 	});
 
 	test('a new run: Championship 1 small table, first goal, partner level 1, full deck', () => {
-		const run = newRun(1, 'tonhao');
+		const run = newRun(1, 'bruto');
 		expect(run.champ).toBe(1);
 		expect(run.table).toBe(0);
 		expect(currentGoal(run)).toBe(CHAMPIONSHIP_GOALS[0]);
@@ -68,7 +68,7 @@ describe('run (A4)', () => {
 	});
 
 	test('winning pays prize + speed + interest and opens the shop (A4.2)', () => {
-		const run = newRun(1, 'tonhao');
+		const run = newRun(1, 'bruto');
 		run.money = 12;
 		startTable(run);
 		const r = finishTable(run, win({ rivalTentos: 9, money: 3 }));
@@ -88,7 +88,7 @@ describe('run (A4)', () => {
 	});
 
 	test('speed and interest are capped', () => {
-		const run = newRun(1, 'tonhao');
+		const run = newRun(1, 'bruto');
 		run.money = 100;
 		const r = finishTable(run, win({ rivalTentos: 0 }));
 		expect(r?.speed).toBe(ECONOMY.speedCap);
@@ -96,13 +96,13 @@ describe('run (A4)', () => {
 	});
 
 	test('losing a table ends the run', () => {
-		const run = newRun(1, 'tonhao');
+		const run = newRun(1, 'bruto');
 		expect(finishTable(run, win({ won: false }))).toBeNull();
 		expect(run.phase).toBe('lost');
 	});
 
 	test('the boss table; Championship 8 ends the run, endless goes on', () => {
-		const run = newRun(3, 'donaCida');
+		const run = newRun(3, 'cida');
 		reach(run, 1, 2);
 		expect(currentBoss(run)).toBe(run.bosses[0]);
 		expect(canSkip(run)).toBe(false);
@@ -119,7 +119,7 @@ describe('run (A4)', () => {
 	});
 
 	test.skipIf(TRINKETS)('skipping gives a Promise that is cashed at the next shop (A4.4)', () => {
-		const run = newRun(5, 'tonhao');
+		const run = newRun(5, 'bruto');
 		const p = skipTable(run);
 		expect(p).not.toBeNull();
 		expect(run.table).toBe(1);
@@ -136,8 +136,8 @@ describe('run (A4)', () => {
 	test.skipIf(TRINKETS)(
 		'a Promise is only cashed if the next table is won (P-08, GD-020)',
 		() => {
-			const lost = newRun(5, 'tonhao');
-			const won = newRun(5, 'tonhao');
+			const lost = newRun(5, 'bruto');
+			const won = newRun(5, 'bruto');
 			for (const run of [lost, won]) {
 				skipTable(run);
 				run.promises = ['dezReais'];
@@ -155,7 +155,7 @@ describe('run (A4)', () => {
 	);
 
 	test('skipping the next table too forfeits the Promise still waiting (P-08)', () => {
-		const run = newRun(5, 'tonhao');
+		const run = newRun(5, 'bruto');
 		skipTable(run);
 		const second = skipTable(run);
 		expect(run.table).toBe(2);
@@ -165,7 +165,7 @@ describe('run (A4)', () => {
 
 describe('shop (A4.3)', () => {
 	const shopRun = (): RunState => {
-		const run = newRun(11, 'tonhao');
+		const run = newRun(11, 'bruto');
 		finishTable(run, win());
 		run.money = 100;
 		return run;
@@ -240,7 +240,7 @@ describe('shop (A4.3)', () => {
 
 describe('consumables (A3.5)', () => {
 	const withItem = (item: RunState['consumables'][number]): RunState => {
-		const run = newRun(2, 'tonhao');
+		const run = newRun(2, 'bruto');
 		run.consumables = [item];
 		return run;
 	};
@@ -278,7 +278,7 @@ describe('consumables (A3.5)', () => {
 
 describe('run save (A4.8)', () => {
 	test('a run survives JSON and bad data is refused', () => {
-		const run = newRun(9, 'donaCida');
+		const run = newRun(9, 'cida');
 		finishTable(run, win());
 		const back = parseRun(JSON.parse(JSON.stringify(run)));
 		expect(back).toEqual(run);

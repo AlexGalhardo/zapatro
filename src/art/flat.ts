@@ -525,8 +525,8 @@ const BROWN = 0x2b1d14;
 
 /** Flat avatars of the table characters (src/data/characters.ts and partners.ts ids). */
 const LOOKS: Record<string, Look> = {
-	tonhao: { bg: 0xc4553f, skin: 0x8d5a3b, shirt: 0xb83a2e, hair: 'bald', beard: BROWN },
-	donaCida: {
+	bruto: { bg: 0xc4553f, skin: 0x8d5a3b, shirt: 0xb83a2e, hair: 'bald', beard: BROWN },
+	cida: {
 		bg: 0x8e74c4,
 		skin: 0xe6b98f,
 		shirt: 0x7fa7c9,
@@ -534,7 +534,7 @@ const LOOKS: Record<string, Look> = {
 		hairColor: 0xd9d9d9,
 		glasses: true,
 	},
-	zeMalandro: {
+	jhony: {
 		bg: 0xd98a3a,
 		skin: 0xc68a5e,
 		shirt: 0xf2efe6,
@@ -542,7 +542,7 @@ const LOOKS: Record<string, Look> = {
 		hatColor: 0xf0e2b6,
 		mustache: BROWN,
 	},
-	juninho: {
+	nino: {
 		bg: 0x3c9fc9,
 		skin: 0xd9a77a,
 		shirt: 0x2f6fb0,
@@ -559,8 +559,8 @@ const LOOKS: Record<string, Look> = {
 		hatColor: 0xe8cf7a,
 		mustache: BROWN,
 	},
-	bia: { bg: 0xe8b13a, skin: 0x7a4a2e, shirt: 0xf4d03f, hair: 'afro', hairColor: 0x1d1410 },
-	joca: {
+	mia: { bg: 0xe8b13a, skin: 0x7a4a2e, shirt: 0xf4d03f, hair: 'afro', hairColor: 0x1d1410 },
+	chico: {
 		bg: 0x3f9a62,
 		skin: 0xb9825a,
 		shirt: 0xf2efe6,
@@ -570,7 +570,7 @@ const LOOKS: Record<string, Look> = {
 		hatColor: 0x2f8f4e,
 		beard: BROWN,
 	},
-	lurdes: {
+	beti: {
 		bg: 0xd9708f,
 		skin: 0xc98f63,
 		shirt: 0xe46a8a,
@@ -578,7 +578,7 @@ const LOOKS: Record<string, Look> = {
 		hairColor: 0x5a2e1d,
 		extra: 'earrings',
 	},
-	tiao: {
+	ayla: {
 		bg: 0xa8743f,
 		skin: 0x8a5a3c,
 		shirt: 0xb06b3a,
@@ -586,7 +586,7 @@ const LOOKS: Record<string, Look> = {
 		hatColor: 0x6b4428,
 		beard: 0xeeeeee,
 	},
-	neide: {
+	sheila: {
 		bg: 0x3fa8a0,
 		skin: 0xe0b08a,
 		shirt: 0x2f8a83,
@@ -629,7 +629,7 @@ const LOOKS: Record<string, Look> = {
 		shades: true,
 		extra: 'chain',
 	},
-	delegado: {
+	tony: {
 		bg: 0x2f4f7f,
 		skin: 0xa86f4a,
 		shirt: 0x2f4f7f,
@@ -637,7 +637,7 @@ const LOOKS: Record<string, Look> = {
 		hatColor: 0x1f2f4f,
 		mustache: BROWN,
 	},
-	professor: {
+	stuart: {
 		bg: 0x8a6a3a,
 		skin: 0xe6b98f,
 		shirt: 0x7a5a3a,
@@ -647,7 +647,7 @@ const LOOKS: Record<string, Look> = {
 		hat: 'mortar',
 		hatColor: 0x222228,
 	},
-	mudo: {
+	peter: {
 		bg: 0x55555f,
 		skin: 0xd09a6e,
 		shirt: 0x55555f,

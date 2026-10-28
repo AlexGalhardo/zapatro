@@ -175,7 +175,7 @@ export class RunScene extends Phaser.Scene {
 		if (!this.sys.isActive()) return;
 		const run = this.run;
 		if (!run) {
-			this.choosePartner(this.ensureCandidates()[0] ?? 'tonhao');
+			this.choosePartner(this.ensureCandidates()[0] ?? 'bruto');
 			return;
 		}
 		if (run.phase === 'select') {
@@ -641,7 +641,7 @@ export class RunScene extends Phaser.Scene {
 		const partner = this.put(
 			mid,
 			0,
-			`${t(`char.${run.partner}` as I18nKey)}${run.partner === 'juninho' ? ` · ${t('table.lance.level', { n: run.partnerLevel })}` : ''}`,
+			`${t(`char.${run.partner}` as I18nKey)}${run.partner === 'nino' ? ` · ${t('table.lance.level', { n: run.partnerLevel })}` : ''}`,
 			6.5,
 			PALETTE.textDim,
 			[0.5, 1],

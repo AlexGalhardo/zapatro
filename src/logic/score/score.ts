@@ -1,4 +1,4 @@
-import { AGIOTA_FINE, type BossId, DELEGADO_CORRIDA_X } from '../../data/bosses';
+import { AGIOTA_FINE, type BossId, TONY_CORRIDA_X } from '../../data/bosses';
 import { MANILHA_CHIPS, RANK_CHIPS, ZAP_CHIPS } from '../../data/cards';
 import {
 	CHAMPIONSHIP_GOALS,
@@ -105,14 +105,14 @@ function partnerCardChips(
 	manilha: Rank,
 	chips: number,
 ): number {
-	if (partner === 'tonhao' && seat === 2)
-		return Math.floor(chips / PARTNER_TRAITS.tonhao.chipsDivisor);
-	if (partner === 'bia' && !isSpecial(card))
+	if (partner === 'bruto' && seat === 2)
+		return Math.floor(chips / PARTNER_TRAITS.bruto.chipsDivisor);
+	if (partner === 'mia' && !isSpecial(card))
 		return card.rank === manilha
-			? chips + PARTNER_TRAITS.bia.manilhaChips
-			: Math.max(0, chips + PARTNER_TRAITS.bia.commonChips);
-	if (partner === 'joca' && (card.suit === 'hearts' || card.suit === 'diamonds'))
-		return Math.max(0, chips + PARTNER_TRAITS.joca.redChips);
+			? chips + PARTNER_TRAITS.mia.manilhaChips
+			: Math.max(0, chips + PARTNER_TRAITS.mia.commonChips);
+	if (partner === 'chico' && (card.suit === 'hearts' || card.suit === 'diamonds'))
+		return Math.max(0, chips + PARTNER_TRAITS.chico.redChips);
 	return chips;
 }
 
@@ -179,10 +179,10 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 			for (const m of modSteps(p, s, index)) (m.xMult ? late : steps).push(m);
 		}
 		const win = trick.plays.find((p) => p.seat === trick.winner)?.card;
-		if (me === 'tonhao' && trick.winner === 2)
-			tricks.push({ source: 'partner:tonhao', addMult: PARTNER_TRAITS.tonhao.trickMult });
-		if (me === 'joca' && win?.suit === 'clubs')
-			tricks.push({ source: 'partner:joca', chips: PARTNER_TRAITS.joca.clubTrickChips });
+		if (me === 'bruto' && trick.winner === 2)
+			tricks.push({ source: 'partner:bruto', addMult: PARTNER_TRAITS.bruto.trickMult });
+		if (me === 'chico' && win?.suit === 'clubs')
+			tricks.push({ source: 'partner:chico', chips: PARTNER_TRAITS.chico.clubTrickChips });
 	});
 	if (lance) {
 		const lv = lanceValue(lance, ctx.levels?.[lance]);
@@ -192,21 +192,21 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 	}
 	if (lance) {
 		steps.push(...tricks);
-		if (me === 'juninho') {
+		if (me === 'nino') {
 			// A level per table won; the base Mult never drops below 1.
 			const base = s.bet + lanceValue(lance, ctx.levels?.[lance]).mult;
 			const adj =
-				(ctx.partner?.level ?? 0) * PARTNER_TRAITS.juninho.multPerLevel +
-				PARTNER_TRAITS.juninho.startMult;
-			if (adj) steps.push({ source: 'partner:juninho', addMult: Math.max(adj, 1 - base) });
+				(ctx.partner?.level ?? 0) * PARTNER_TRAITS.nino.multPerLevel +
+				PARTNER_TRAITS.nino.startMult;
+			if (adj) steps.push({ source: 'partner:nino', addMult: Math.max(adj, 1 - base) });
 		}
-		if (me === 'tiao' && s.tricks[0]?.result === 'us' && s.tricks[1]?.result === 'us')
-			late.push({ source: 'partner:tiao', xMult: PARTNER_TRAITS.tiao.firstTwoTricksX });
-		if (me === 'donaCida')
-			steps.push({ source: 'partner:donaCida', money: PARTNER_TRAITS.donaCida.moneyPerWin });
+		if (me === 'ayla' && s.tricks[0]?.result === 'us' && s.tricks[1]?.result === 'us')
+			late.push({ source: 'partner:ayla', xMult: PARTNER_TRAITS.ayla.firstTwoTricksX });
+		if (me === 'cida')
+			steps.push({ source: 'partner:cida', money: PARTNER_TRAITS.cida.moneyPerWin });
 	}
-	if (me === 'tiao' && s.over?.winner === 'them')
-		steps.push({ source: 'partner:tiao', money: -PARTNER_TRAITS.tiao.lostHandCost });
+	if (me === 'ayla' && s.over?.winner === 'them')
+		steps.push({ source: 'partner:ayla', money: -PARTNER_TRAITS.ayla.lostHandCost });
 	steps.push(...late);
 	const facts = handFacts(s, lance, ctx.calls ?? []);
 	if (ctx.trinkets?.length)
@@ -228,8 +228,8 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 		const def = MANHA_BY_ID.get(id);
 		if (def) steps.push(...manhaSteps(def, facts));
 	}
-	if (ctx.boss === 'delegado' && lance === 'corrida')
-		steps.push({ source: 'boss:delegado', xMult: DELEGADO_CORRIDA_X });
+	if (ctx.boss === 'tony' && lance === 'corrida')
+		steps.push({ source: 'boss:tony', xMult: TONY_CORRIDA_X });
 	// Joker effects on the hand's count come last: ×2, then zeroed.
 	const effects = jokerEffects(s);
 	if (effects.includes('double')) steps.push({ source: 'joker:double', xMult: JOKER_DOUBLE_X });

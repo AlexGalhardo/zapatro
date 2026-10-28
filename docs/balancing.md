@@ -291,10 +291,10 @@ Por parceiro (300 runs, seed 1, bot bom):
 
 | Parceiro (id) | Vitória | Campeonato médio | Mãos por mesa |
 |---|---|---|---|
-| Bruto (`tonhao`) | 21,3% | 4,89 | 3,76 |
-| Cida (`donaCida`) | 12,7% | 4,83 | 7,11 |
-| Jhony (`zeMalandro`) | 35,3% | 5,82 | 4,49 |
-| Nino (`juninho`) | 17,3% | 4,63 | 5,72 |
+| Bruto (`bruto`) | 21,3% | 4,89 | 3,76 |
+| Cida (`cida`) | 12,7% | 4,83 | 7,11 |
+| Jhony (`jhony`) | 35,3% | 5,82 | 4,49 |
+| Nino (`nino`) | 17,3% | 4,63 | 5,72 |
 
 Outliers observados:
 
@@ -313,24 +313,24 @@ Linha de base (300 runs, seed 1, bot bom):
 
 | Parceiro (id) | Antes | Depois | Situação |
 |---|---|---|---|
-| Bruto (`tonhao`) | 21,3% | 21,3% | dentro |
-| Cida (`donaCida`) | 12,7% | 12,7% | fora (decisão do dev, ver abaixo) |
-| Jhony (`zeMalandro`) | 35,3% | 30,4% (1000 runs) | ajustado |
-| Nino (`juninho`) | 17,3% | 17,3% | pendente |
+| Bruto (`bruto`) | 21,3% | 21,3% | dentro |
+| Cida (`cida`) | 12,7% | 12,7% | fora (decisão do dev, ver abaixo) |
+| Jhony (`jhony`) | 35,3% | 30,4% (1000 runs) | ajustado |
+| Nino (`nino`) | 17,3% | 17,3% | pendente |
 | Ze (`ze`) | 35,7% | 35,7% | pendente |
-| Mia (`bia`) | 8,7% | 8,7% | pendente |
-| Chico (`joca`) | 35,0% | 35,0% | pendente |
-| Beti (`lurdes`) | 25,3% | 25,3% | dentro |
-| Ayla (`tiao`) | 12,7% | 12,7% | pendente |
-| Sheila (`neide`) | 32,7% | 32,7% | pendente |
+| Mia (`mia`) | 8,7% | 8,7% | pendente |
+| Chico (`chico`) | 35,0% | 35,0% | pendente |
+| Beti (`beti`) | 25,3% | 25,3% | dentro |
+| Ayla (`ayla`) | 12,7% | 12,7% | pendente |
+| Sheila (`sheila`) | 32,7% | 32,7% | pendente |
 
 Mudança feita:
 
-- **Jhony (`zeMalandro`):** `bluffChips` [20, 40, 70] → [10, 20, 35] e defeito `falseSignals` `rate` 0,5 → 0,7 (mais mentiras, mais sinais que a mesa flagra). Medido com 1000 runs (seed 1): 35,0% → 30,4%. Com 300 runs, a combinação deu 28,7% e a taxa sozinha 35,0%: a diferença de 300 runs era ruído (erro padrão ~2,7 p.p.), por isso a medida de decisão é a de 1000 runs. Gate `bun run balance`: PASS nas 3 seeds (23,6 · 21,2 · 26,2%; antes 26,0 · 21,6 · 27,0%; aleatório < 0,5%; 5,96–6,07 mãos por mesa).
+- **Jhony (`jhony`):** `bluffChips` [20, 40, 70] → [10, 20, 35] e defeito `falseSignals` `rate` 0,5 → 0,7 (mais mentiras, mais sinais que a mesa flagra). Medido com 1000 runs (seed 1): 35,0% → 30,4%. Com 300 runs, a combinação deu 28,7% e a taxa sozinha 35,0%: a diferença de 300 runs era ruído (erro padrão ~2,7 p.p.), por isso a medida de decisão é a de 1000 runs. Gate `bun run balance`: PASS nas 3 seeds (23,6 · 21,2 · 26,2%; antes 26,0 · 21,6 · 27,0%; aleatório < 0,5%; 5,96–6,07 mãos por mesa).
 
 Testado e descartado:
 
-- **Cida (`donaCida`), `catchBonus`:** [0; 0,1; 0,2] → [0; 0,15; 0,3] deu 11,7%; [0; 0,3; 0,6] deu 16,3%. A alavanca não chega a 18% sem um valor grande no nível 3. Voltou ao original. Decisão do dev: o defeito `foldsRaises` (corre de seis, nove e doze) é o que pesa, e mexer nele muda o tipo do traço.
+- **Cida (`cida`), `catchBonus`:** [0; 0,1; 0,2] → [0; 0,15; 0,3] deu 11,7%; [0; 0,3; 0,6] deu 16,3%. A alavanca não chega a 18% sem um valor grande no nível 3. Voltou ao original. Decisão do dev: o defeito `foldsRaises` (corre de seis, nove e doze) é o que pesa, e mexer nele muda o tipo do traço.
 
 Pendências: Nino, Ze, Mia, Chico, Ayla e Sheila ainda fora da faixa. Próximas medidas: Mia (8,7%, o mais baixo) e Ayla (12,7%), depois Nino, Ze, Chico e Sheila, um por vez, cada um com sim de 1000 runs e `bun run balance`.
 
@@ -342,20 +342,20 @@ Meta do Game Director: cada parceiro entre ~18% e ~30% no bot bom, com `bun run 
 
 | Parceiro (id) | Antes | Depois | Situação |
 |---|---|---|---|
-| Bruto (`tonhao`) | 21,3% (300) | 21,3% (300) | dentro, sem mudança |
-| Cida (`donaCida`) | 12,7% (300) | 12,7% (300) | fora; decisão do dev |
-| Jhony (`zeMalandro`) | 35,3% (300) → 35,0% (1000) | **30,4% (1000)** | dentro (topo), ajustado |
-| Nino (`juninho`) | 17,3% (300) | 17,3% (300) | fora; não testado nesta rodada |
+| Bruto (`bruto`) | 21,3% (300) | 21,3% (300) | dentro, sem mudança |
+| Cida (`cida`) | 12,7% (300) | 12,7% (300) | fora; decisão do dev |
+| Jhony (`jhony`) | 35,3% (300) → 35,0% (1000) | **30,4% (1000)** | dentro (topo), ajustado |
+| Nino (`nino`) | 17,3% (300) | 17,3% (300) | fora; não testado nesta rodada |
 | Zé (`ze`) | 35,7% (1000) | 35,7% (1000) | fora; decisão do dev |
-| Mia (`bia`) | 8,7% (300) | 8,7% (300) | fora; decisão do dev |
-| Chico (`joca`) | 35,0% (300) | 35,0% (300) | fora; decisão do dev |
-| Beti (`lurdes`) | 25,3% (300) | 25,3% (300) | dentro, sem mudança |
-| Ayla (`tiao`) | 12,7% (300) | 12,7% (300) | fora; não testado nesta rodada |
-| Sheila (`neide`) | 32,7% (300) | 32,7% (300) | fora; decisão do dev |
+| Mia (`mia`) | 8,7% (300) | 8,7% (300) | fora; decisão do dev |
+| Chico (`chico`) | 35,0% (300) | 35,0% (300) | fora; decisão do dev |
+| Beti (`beti`) | 25,3% (300) | 25,3% (300) | dentro, sem mudança |
+| Ayla (`ayla`) | 12,7% (300) | 12,7% (300) | fora; não testado nesta rodada |
+| Sheila (`sheila`) | 32,7% (300) | 32,7% (300) | fora; decisão do dev |
 
 Mudança feita:
 
-- **Jhony (`zeMalandro`):** `bluffChips` [20, 40, 70] → [10, 20, 35] e defeito `falseSignals` rate 0,5 → 0,7 (um passo, dois números do mesmo traço de blefe). Com 1000 runs, 35,0% → 30,4%. Gate `bun run balance`: PASS (23,6 · 21,2 · 26,2%; antes 26,0 · 21,6 · 27,0%; aleatório < 0,5%; 5,96–6,07 mãos por mesa).
+- **Jhony (`jhony`):** `bluffChips` [20, 40, 70] → [10, 20, 35] e defeito `falseSignals` rate 0,5 → 0,7 (um passo, dois números do mesmo traço de blefe). Com 1000 runs, 35,0% → 30,4%. Gate `bun run balance`: PASS (23,6 · 21,2 · 26,2%; antes 26,0 · 21,6 · 27,0%; aleatório < 0,5%; 5,96–6,07 mãos por mesa).
 
 Testado e revertido (sem efeito ou efeito contrário):
 
@@ -366,7 +366,7 @@ Testado e revertido (sem efeito ou efeito contrário):
 
 Por que os números não chegam à faixa (achados do código):
 
-- **Chico (`joca`) e Sheila (`neide`), defeito `signals` delta −1:** o número de sinais do parceiro é `max(0, 1 + delta)`, então com delta −1 já são zero sinais. Baixar mais não faz nada (o limite inferior é 0). Não há alavanca numérica nesse traço.
+- **Chico (`chico`) e Sheila (`sheila`), defeito `signals` delta −1:** o número de sinais do parceiro é `max(0, 1 + delta)`, então com delta −1 já são zero sinais. Baixar mais não faz nada (o limite inferior é 0). Não há alavanca numérica nesse traço.
 - **Sheila, perk `honestSignals`:** não tem número.
 - **Zé, defeito `catch`:** o efeito não aparece no bot bom (ver acima).
 
@@ -374,11 +374,11 @@ Decisões do dev (mudança de tipo de traço, fora do escopo de números):
 
 1. **Cida:** o defeito `foldsRaises` (corre de seis, nove e doze) é o que pesa. Trocar por um defeito de tipo mais brando, ou dar a ela um perk de tipo com número (ex.: `catch`), levaria para a faixa.
 2. **Zé (`ze`), 35,7%:** trocar o perk ou o defeito por outro traço existente (ex.: um defeito de `signals` ou de `error`).
-3. **Chico (`joca`), 35,0%:** o defeito `signals −1` está saturado; trocar por outro defeito existente.
-4. **Sheila (`neide`), 32,7%:** o perk `honestSignals` e o defeito `signals −1` não têm número; trocar um dos dois por traço com número.
-5. **Mia (`bia`), 8,7%:** o perk `caughtMult` não sobe a taxa por número; o defeito `neverFolds` não tem número. Trocar o defeito ou o perk.
+3. **Chico (`chico`), 35,0%:** o defeito `signals −1` está saturado; trocar por outro defeito existente.
+4. **Sheila (`sheila`), 32,7%:** o perk `honestSignals` e o defeito `signals −1` não têm número; trocar um dos dois por traço com número.
+5. **Mia (`mia`), 8,7%:** o perk `caughtMult` não sobe a taxa por número; o defeito `neverFolds` não tem número. Trocar o defeito ou o perk.
 
-Pendentes (não testados nesta rodada): Nino (`juninho`, 17,3%): a alavanca natural é o defeito `error` x2 (testar x1,5, o que o tornaria mais forte e subiria a taxa). Ayla (`tiao`, 12,7%): o perk `error` x0,25 (testar x0,15). Ambos precisam de 1000 runs e `bun run balance`.
+Pendentes (não testados nesta rodada): Nino (`nino`, 17,3%): a alavanca natural é o defeito `error` x2 (testar x1,5, o que o tornaria mais forte e subiria a taxa). Ayla (`ayla`, 12,7%): o perk `error` x0,25 (testar x0,15). Ambos precisam de 1000 runs e `bun run balance`.
 
 ## Perks e Defeitos roguelite dos parceiros (2026-10-27)
 
@@ -386,16 +386,16 @@ Substituem todos os traços antigos (`Trait`). Valem só com o companheiro como 
 
 | Parceiro | Vantagem | Defeito | Números |
 |---|---|---|---|
-| Bruto (`tonhao`) | +3 Mult por vaza que ele vence | as cartas dele valem metade das Fichas (↓) | `trickMult` 3, `chipsDivisor` 2 |
-| Cida (`donaCida`) | +$1 por mão vencida | itens da loja +$1 | `moneyPerWin` 1, `priceUp` 1 |
-| Jhony (`zeMalandro`) | juros +$1 por $5 no fim da mesa (máx +$5) | Rapidez pela metade (↓) | `interestStep` 5, `interestPer` 1, `interestCap` 5, `speedDivisor` 2 |
-| Nino (`juninho`) | +1 Mult base por mesa vencida | começa com −1 Mult base (mín 1) | `multPerLevel` 1, `startMult` −1 |
+| Bruto (`bruto`) | +3 Mult por vaza que ele vence | as cartas dele valem metade das Fichas (↓) | `trickMult` 3, `chipsDivisor` 2 |
+| Cida (`cida`) | +$1 por mão vencida | itens da loja +$1 | `moneyPerWin` 1, `priceUp` 1 |
+| Jhony (`jhony`) | juros +$1 por $5 no fim da mesa (máx +$5) | Rapidez pela metade (↓) | `interestStep` 5, `interestPer` 1, `interestCap` 5, `speedDivisor` 2 |
+| Nino (`nino`) | +1 Mult base por mesa vencida | começa com −1 Mult base (mín 1) | `multPerLevel` 1, `startMult` −1 |
 | Zé (`ze`) | item mais barato da 1ª loja do Campeonato grátis | −1 espaço de Manha | `freeOffers` 1, `manhaSlotsDown` 1 |
-| Mia (`bia`) | manilhas +15 Fichas | cartas comuns −2 Fichas (mín 0) | `manilhaChips` 15, `commonChips` −2 |
-| Chico (`joca`) | +20 Fichas por vaza vencida com ♣ | ♥ e ♦ −5 Fichas (mín 0) | `clubTrickChips` 20, `redChips` −5 |
-| Beti (`lurdes`) | 1ª Manha comprada em cada loja −$1 | Manhas +$1 | `firstManhaOff` 1, `manhaPriceUp` 1 |
-| Ayla (`tiao`) | ×1,5 Mult se a dupla vence as 2 primeiras vazas | mão perdida −$1 | `firstTwoTricksX` 1,5, `lostHandCost` 1 |
-| Sheila (`neide`) | 1 em 4 de dobrar o dinheiro da mesa vencida | metas +10% | `doubleMoneyChance` 0,25, `goalMult` 1,1 |
+| Mia (`mia`) | manilhas +15 Fichas | cartas comuns −2 Fichas (mín 0) | `manilhaChips` 15, `commonChips` −2 |
+| Chico (`chico`) | +20 Fichas por vaza vencida com ♣ | ♥ e ♦ −5 Fichas (mín 0) | `clubTrickChips` 20, `redChips` −5 |
+| Beti (`beti`) | 1ª Manha comprada em cada loja −$1 | Manhas +$1 | `firstManhaOff` 1, `manhaPriceUp` 1 |
+| Ayla (`ayla`) | ×1,5 Mult se a dupla vence as 2 primeiras vazas | mão perdida −$1 | `firstTwoTricksX` 1,5, `lostHandCost` 1 |
+| Sheila (`sheila`) | 1 em 4 de dobrar o dinheiro da mesa vencida | metas +10% | `doubleMoneyChance` 0,25, `goalMult` 1,1 |
 
 Medição (`bun scripts/balance-partners.ts --runs 1000`, bot bom, Estaca 1, seeds 700000+, só a escolha do parceiro muda; o bot ainda pula mesas na simulação e usa a loja completa):
 

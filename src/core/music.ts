@@ -1,16 +1,27 @@
 import type Phaser from 'phaser';
+import { pickOther } from '../logic/voice-lines';
 import { getSave } from './context';
 
 export type MusicKey =
 	| 'music.menu'
 	| 'music.table'
+	| 'music.table2'
+	| 'music.table3'
+	| 'music.table4'
 	| 'music.boss'
 	| 'music.king'
 	| 'music.win'
 	| 'music.lose';
+/** The normal tables' loops, drawn at every table (never the previous one). */
+const TABLE_MUSIC: readonly MusicKey[] = [
+	'music.table',
+	'music.table2',
+	'music.table3',
+	'music.table4',
+];
 export const MUSIC_KEYS: readonly MusicKey[] = [
 	'music.menu',
-	'music.table',
+	...TABLE_MUSIC,
 	'music.boss',
 	'music.king',
 	'music.win',
@@ -52,6 +63,15 @@ export function playMusic(scene: Phaser.Scene, key: MusicKey): void {
 	sound.play();
 	scene.tweens.add({ targets: sound, volume: targetVolume(scene), duration: FADE_MS });
 	current = { key, sound };
+}
+
+let lastTable: MusicKey | undefined;
+
+/** A normal table's loop among the loaded ones (the later ones stream in after the first screen). */
+export function tableMusic(scene: Phaser.Scene): MusicKey {
+	const loaded = TABLE_MUSIC.filter((k) => scene.cache.audio.exists(k));
+	lastTable = pickOther(loaded.length ? loaded : TABLE_MUSIC, lastTable, Math.random());
+	return lastTable;
 }
 
 export function stopMusic(scene: Phaser.Scene): void {

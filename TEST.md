@@ -130,9 +130,9 @@ Valores no nível 1. Bônus em verde, contra em vermelho no jogo.
 | `cartomante` | A Cartomante | A vira fica oculta até o fim da 1ª vaza |
 | `juiz` | O Juiz | A Manha mais à esquerda fica desativada |
 | `agiota` | O Agiota | Cada mão perdida custa $1 |
-| `delegado` | O Delegado | O Lance Corrida vale metade |
-| `professor` | Stuart | Os contras dos seus trinkets equipados contam em dobro |
-| `mudo` | Peter | Sem sinais com o parceiro |
+| `tony` | O Delegado | O Lance Corrida vale metade |
+| `stuart` | Stuart | Os contras dos seus trinkets equipados contam em dobro |
+| `peter` | Peter | Sem sinais com o parceiro |
 | `sortuda` | A Sortuda | Os rivais recebem manilha com mais frequência |
 | `reiDoTruco` | O Rei do Truco | Toda mão começa valendo 3 |
 
@@ -140,16 +140,16 @@ Valores no nível 1. Bônus em verde, contra em vermelho no jogo.
 
 | id | Nome | Vantagem | Defeito |
 | --- | --- | --- | --- |
-| `tonhao` | Bruto | +3 Mult por vaza que ele vence | As cartas dele valem metade das Fichas |
-| `donaCida` | Cida | +$1 por mão vencida | Itens da loja custam +$1 |
-| `zeMalandro` | Jhony | Juros: +$1 a cada $5 guardados no fim de cada mesa (máx +$5) | A recompensa de Rapidez cai pela metade (arredonda para baixo) |
-| `juninho` | Nino | Sobe 1 nível a cada mesa vencida: +1 Mult base por nível | Começa a run com -1 Mult base |
+| `bruto` | Bruto | +3 Mult por vaza que ele vence | As cartas dele valem metade das Fichas |
+| `cida` | Cida | +$1 por mão vencida | Itens da loja custam +$1 |
+| `jhony` | Jhony | Juros: +$1 a cada $5 guardados no fim de cada mesa (máx +$5) | A recompensa de Rapidez cai pela metade (arredonda para baixo) |
+| `nino` | Nino | Sobe 1 nível a cada mesa vencida: +1 Mult base por nível | Começa a run com -1 Mult base |
 | `ze` | Zé | O item mais barato da primeira loja de cada Campeonato sai de graça | 1 espaço de trinket a menos |
-| `bia` | Mia | Manilhas valem +15 Fichas | Cartas comuns valem -2 Fichas |
-| `joca` | Chico | +20 Fichas por vaza vencida com carta de paus | Copas e ouros valem -5 Fichas |
-| `lurdes` | Beti | O primeiro trinket comprado em cada loja custa $1 a menos | Trinkets custam +$1 |
-| `tiao` | Ayla | ×1,5 Mult quando a dupla vence as duas primeiras vazas | Mão perdida custa $1 |
-| `neide` | Sheila | 1 chance em 4 de dobrar o dinheiro ganho na mesa | Meta de pontos da mesa +10% |
+| `mia` | Mia | Manilhas valem +15 Fichas | Cartas comuns valem -2 Fichas |
+| `chico` | Chico | +20 Fichas por vaza vencida com carta de paus | Copas e ouros valem -5 Fichas |
+| `beti` | Beti | O primeiro trinket comprado em cada loja custa $1 a menos | Trinkets custam +$1 |
+| `ayla` | Ayla | ×1,5 Mult quando a dupla vence as duas primeiras vazas | Mão perdida custa $1 |
+| `sheila` | Sheila | 1 chance em 4 de dobrar o dinheiro ganho na mesa | Meta de pontos da mesa +10% |
 
 ### Baralhos (5)
 
@@ -179,16 +179,16 @@ Valores no nível 1. Bônus em verde, contra em vermelho no jogo.
 | `mesaPerfeita` | Mesa limpa | Vença uma mesa com os rivais a 0 tentos |  |
 | `chefe` | Chefe no chão | Vença um chefe |  |
 | `valentao` | Sem medo | Vença O Valentão |  |
-| `professor` | Lição aprendida | Vença Stuart |  |
+| `stuart` | Lição aprendida | Vença Stuart |  |
 | `sortuda` | Acabou a sorte | Vença A Sortuda |  |
 | `campeonato2` | Pé na estrada | Chegue ao Campeonato 2 |  |
-| `campeonato4` | Sócio do clube | Chegue ao Campeonato 4 (destrava o Nino) | `partner:juninho` |
+| `campeonato4` | Sócio do clube | Chegue ao Campeonato 4 (destrava o Nino) | `partner:nino` |
 | `campeonato6` | Fama regional | Chegue ao Campeonato 6 |  |
 | `reiDoTruco` | Rei do Truco | Vença uma run |  |
-| `comTonhao` | Amigão | Vença uma run com o Bruto |  |
-| `comDonaCida` | A tia sabe | Vença uma run com a Cida |  |
+| `comBruto` | Amigão | Vença uma run com o Bruto |  |
+| `comCida` | A tia sabe | Vença uma run com a Cida |  |
 | `comZe` | Jogo de cintura | Vença uma run com o Jhony |  |
-| `comJuninho` | comJuninho |  |  |
+| `comNino` | comNino |  |  |
 | `doInterior` | Campeão do interior | Vença uma run com o Baralho do Interior |  |
 | `doDinheiro` | Dinheiro fala | Vença uma run com o Baralho do Dinheiro |  |
 | `estaca4` | Ficando sério | Vença uma run na Estaca 4 |  |
@@ -200,5 +200,5 @@ Valores no nível 1. Bônus em verde, contra em vermelho no jogo.
 | `baralhoGordo` | Baralho gordo | Jogue com 50 cartas ou mais |  |
 | `cemMaos` | Freguesia | Vença 100 mãos |  |
 | `trucador` | Trucador | Peça truco 100 vezes |  |
-| `mentiroso` | Mentiroso | Vença 5 blefes (destrava o Jhony) | `partner:zeMalandro` |
+| `mentiroso` | Mentiroso | Vença 5 blefes (destrava o Jhony) | `partner:jhony` |
 | `fregues` | De volta | Jogue 10 runs |  |

@@ -57,7 +57,7 @@ async function paintAll(flatUrl: string): Promise<Record<string, string>> {
 	const FAN = [ZAP, 'card.7.hearts', 'card.A.spades'];
 
 	const images = new Map<string, HTMLImageElement>();
-	for (const id of ['tonhao', 'donaCida', 'zeMalandro']) {
+	for (const id of ['bruto', 'cida', 'jhony']) {
 		const img = new Image();
 		// Painted portraits are WebP (scripts/portraits.ts).
 		img.src = `/assets/gfx/portrait/${id}.webp`;
@@ -191,8 +191,8 @@ async function paintAll(flatUrl: string): Promise<Record<string, string>> {
 		const u = h / 430;
 		const margin = Math.round(24 * u);
 		const step = Math.round(72 * u);
-		portrait(ctx, 'tonhao', margin, Math.round(h / 2 - 128 - 14 * u), 1);
-		portrait(ctx, 'donaCida', margin + step, Math.round(h / 2 + 14 * u), 1);
+		portrait(ctx, 'bruto', margin, Math.round(h / 2 - 128 - 14 * u), 1);
+		portrait(ctx, 'cida', margin + step, Math.round(h / 2 + 14 * u), 1);
 		const fanS = 1.8 * u;
 		const fanX = w - margin - fanHalf(fanS);
 		const left = margin + step + 128 + 4 + 12 * u;
@@ -209,8 +209,8 @@ async function paintAll(flatUrl: string): Promise<Record<string, string>> {
 		const p = 128 * pScale;
 		const top = logoH + (h - logoH - p) / 2;
 		const left = w * 0.05;
-		portrait(ctx, 'tonhao', Math.round(left), Math.round(top), pScale);
-		portrait(ctx, 'donaCida', Math.round(left + p + w * 0.03), Math.round(top), pScale);
+		portrait(ctx, 'bruto', Math.round(left), Math.round(top), pScale);
+		portrait(ctx, 'cida', Math.round(left + p + w * 0.03), Math.round(top), pScale);
 		fan(ctx, w - left - fanHalf(fanS), top + p / 2, fanS);
 		return [el, ctx] as const;
 	};
@@ -242,9 +242,9 @@ async function paintAll(flatUrl: string): Promise<Record<string, string>> {
 	{
 		const [el, ctx] = canvas(748, 896, C.bg);
 		wordmark(ctx, 374, 130, 660, 160);
-		portrait(ctx, 'zeMalandro', 40, 270, 2);
-		portrait(ctx, 'donaCida', 100, 430, 2);
-		portrait(ctx, 'tonhao', 160, 590, 2);
+		portrait(ctx, 'jhony', 40, 270, 2);
+		portrait(ctx, 'cida', 100, 430, 2);
+		portrait(ctx, 'bruto', 160, 590, 2);
 		card(ctx, ZAP, 560, 570, 4, 8);
 		save('store-steam-vertical', el);
 	}

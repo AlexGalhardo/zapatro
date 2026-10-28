@@ -92,7 +92,7 @@ describe('save v1 (PLAN §4.5)', () => {
 					championship: i,
 					bestHand: i * 10,
 					deck: 'normal',
-					partner: 'tonhao',
+					partner: 'bruto',
 					stake: 1,
 				},
 				60,

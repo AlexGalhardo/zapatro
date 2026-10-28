@@ -69,21 +69,31 @@ export const SFX = {
 
 export type SfxKey = keyof typeof SFX;
 /**
- * Voice barks (PLAN §8): `vo.<char>.<line>(.<n>).mp3` in the sfx folder, one voice per character
- * (docs/audio.md). Lines and their take counts; a character without files is simply silent.
+ * Voice barks (PLAN §8, docs/audio-final-game.md): `vo.<lang>.<char>.<line>(.2).mp3` in the sfx
+ * folder, one voice per character speaking Portuguese (`pt`) and English (`en`). Lines and their
+ * take counts; a character without files is simply silent.
  */
 export const VO_LINES = {
-	truco: 3,
+	truco: 2,
 	seis: 2,
 	nove: 2,
 	doze: 2,
 	bora: 2,
+	ver: 2,
 	corre: 2,
-	caiu: 2,
-	oloco: 2,
+	sacanagem: 2,
+	piada1: 2,
+	piada2: 2,
+	piada3: 2,
 } as const;
 export type VoLine = keyof typeof VO_LINES;
+export const VO_JOKES = ['piada1', 'piada2', 'piada3'] as const satisfies readonly VoLine[];
+export type VoJoke = (typeof VO_JOKES)[number];
 export const VO_DEF: SfxDef = { bus: 'sfx', volume: 0.9, voices: 1, pitch: 0, ms: 1200 };
+/** Folding a call worth this many points or more gets "Tá de sacanagem!" instead of "Tô fora!". */
+export const VO_SACANAGEM_BET = 6;
+/** Table jokes: at most one every `minHands` hand starts, with `chance`, `delayMs` after the deal. */
+export const VO_JOKE = { minHands: 3, chance: 0.5, delayMs: 1800 } as const;
 
 /** Minimum gap between two starts of the same sound (ms). */
 export const SFX_MIN_INTERVAL = 45;

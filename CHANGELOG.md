@@ -12,6 +12,28 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Added
+
+- **docs:** `docs/audio-final-game.md` plans the 1.0 final audio (a PT-BR and EN voice per character, 8 standard lines, 3 unique jokes each, 3 new table music loops) with the ElevenLabs prompts and a credit budget.
+- **audio:** Final 1.0 voices: 836 takes (`vo.<lang>.<char>.<line>`, 19 characters, Portuguese and English, 11 lines × 2 takes) and three new table loops (`music.table2`–`music.table4`), generated with ElevenLabs (~14,500 credits) and normalized.
+- **audio:** New voice triggers: accepting a call says "Bora!" or "Quero ver!" at random, folding a call of 6 or more says "Tá de sacanagem comigo!", and an NPC tells one of their 3 jokes at a calm hand start (at most one every 3 hands, never the same joke twice in a row, never over another line or speech bubble).
+- **tooling:** `scripts/audio-check.ts` checks every voice and music file of the catalog (exists, decodes, length, loudness, peak, clipping, mid-take silence, duplicates, loop seams, size per language and first download) and exits non-zero on failure.
+
+### Changed
+
+- **audio:** Voice lines follow the Settings language (Portuguese or English); only the active language's voices load, after the first screen, and changing the language streams in the other one.
+- **audio:** Normal tables draw their music among `music.table` and the three new loops, never repeating the previous one; the extra loops load after the first screen and stay out of the Poki build. First web download measured at 6.12 MB.
+- **content:** Characters are identified by their real names instead of nicknames in the code, assets, audio files and i18n keys (`tonhao`→`bruto`, `donaCida`→`cida`, `zeMalandro`→`jhony`, `juninho`→`nino`, `joca`→`chico`, `lurdes`→`beti`, `tiao`→`ayla`, `neide`→`sheila`, `bia`→`mia`, `professor`→`stuart`, `mudo`→`peter`, `delegado`→`tony`); the save schema goes to version 2 and migrates the old ids.
+- **trinkets:** Each trinket has its own painted icon (32 icons, one per trinket); before, 14 trinkets shared an icon with another.
+
+### Fixed
+
+- **poki:** The Poki build is back under the 8 MB limit (8.10 MB, was 8.20 MB): the partner screen painting and the unused `menu-1` painting stay out of it, and the main painting stands in for them.
+
+### Removed
+
+- **audio:** The `caiu` and `oloco` voice lines and the old Portuguese-only voice files without a language (`vo.<char>.*`, 271 files, and their raw takes).
+
 ## [0.18.0] - 2026-10-28
 
 ### Changed

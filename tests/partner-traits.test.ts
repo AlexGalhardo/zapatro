@@ -72,12 +72,12 @@ const win = (o: Partial<TableResult> = {}): TableResult => ({
 	...o,
 });
 
-describe('Bruto (tonhao)', () => {
+describe('Bruto (bruto)', () => {
 	test('+3 Mult for each trick he wins; his own cards are worth half the Chips (down)', () => {
 		const base = score(won());
-		const r = score(won(), 'tonhao');
-		expect(of(r.steps, 'tonhao')).toEqual([
-			{ source: 'partner:tonhao', addMult: PARTNER_TRAITS.tonhao.trickMult },
+		const r = score(won(), 'bruto');
+		expect(of(r.steps, 'bruto')).toEqual([
+			{ source: 'partner:bruto', addMult: PARTNER_TRAITS.bruto.trickMult },
 		]);
 		expect(r.mult).toBe(base.mult + 3);
 		expect(chipsOf(r.steps, '3h')).toBe(Math.floor(chipsOf(base.steps, '3h') / 2));
@@ -85,52 +85,52 @@ describe('Bruto (tonhao)', () => {
 	});
 });
 
-describe('Cida (donaCida)', () => {
+describe('Cida (cida)', () => {
 	test('+$1 per hand won, nothing on a lost hand; shop items cost +$1', () => {
-		expect(score(won(), 'donaCida').money).toBe(1);
-		expect(score(lost(), 'donaCida').money).toBe(0);
-		const a = newRun(1, 'donaCida');
-		const b = newRun(1, 'tonhao');
+		expect(score(won(), 'cida').money).toBe(1);
+		expect(score(lost(), 'cida').money).toBe(0);
+		const a = newRun(1, 'cida');
+		const b = newRun(1, 'bruto');
 		expect(priceOf(a, 5)).toBe(priceOf(b, 5) + 1);
 		expect(priceOf(a, 5, 'manha')).toBe(priceOf(b, 5, 'manha') + 1);
 	});
 });
 
-describe('Jhony (zeMalandro)', () => {
+describe('Jhony (jhony)', () => {
 	test('interest on saved money at the end of the table (+$1 per $5, max +$5)', () => {
-		const run = newRun(1, 'zeMalandro');
+		const run = newRun(1, 'jhony');
 		run.money = 12;
 		expect(finishTable(run, win({ money: 3 }))?.partner).toBe(3);
-		const rich = newRun(1, 'zeMalandro');
+		const rich = newRun(1, 'jhony');
 		rich.money = 200;
-		expect(finishTable(rich, win())?.partner).toBe(PARTNER_TRAITS.zeMalandro.interestCap);
-		const other = newRun(1, 'tonhao');
+		expect(finishTable(rich, win())?.partner).toBe(PARTNER_TRAITS.jhony.interestCap);
+		const other = newRun(1, 'bruto');
 		other.money = 12;
 		expect(finishTable(other, win({ money: 3 }))?.partner).toBe(0);
 	});
 
 	test('the speed reward is halved (rounded down)', () => {
 		for (const [partner, tentos] of [
-			['zeMalandro', 9],
-			['zeMalandro', 6],
-			['tonhao', 9],
+			['jhony', 9],
+			['jhony', 6],
+			['bruto', 9],
 		] as const) {
 			const run = newRun(1, partner);
 			const full = Math.min(ECONOMY.speedCap, Math.max(0, 12 - tentos));
 			const r = finishTable(run, win({ rivalTentos: tentos }));
-			expect(r?.speed).toBe(partner === 'zeMalandro' ? Math.floor(full / 2) : full);
+			expect(r?.speed).toBe(partner === 'jhony' ? Math.floor(full / 2) : full);
 		}
 	});
 });
 
-describe('Nino (juninho)', () => {
+describe('Nino (nino)', () => {
 	test('starts at -1 base Mult and gains one per table won', () => {
 		const base = score(won());
-		expect(newRun(1, 'juninho').partnerLevel).toBe(0);
-		expect(score(won(), 'juninho', 0).mult).toBe(base.mult - 1);
-		expect(of(score(won(), 'juninho', 1).steps, 'juninho')).toHaveLength(0);
-		expect(score(won(), 'juninho', 2).mult).toBe(base.mult + 1);
-		const run = newRun(1, 'juninho');
+		expect(newRun(1, 'nino').partnerLevel).toBe(0);
+		expect(score(won(), 'nino', 0).mult).toBe(base.mult - 1);
+		expect(of(score(won(), 'nino', 1).steps, 'nino')).toHaveLength(0);
+		expect(score(won(), 'nino', 2).mult).toBe(base.mult + 1);
+		const run = newRun(1, 'nino');
 		finishTable(run, win());
 		expect(run.partnerLevel).toBe(1);
 		finishTable(run, win());
@@ -138,14 +138,14 @@ describe('Nino (juninho)', () => {
 	});
 
 	test('the base Mult never drops below 1', () => {
-		const r = score(won(), 'juninho', 0);
+		const r = score(won(), 'nino', 0);
 		expect(r.mult).toBeGreaterThanOrEqual(1);
 	});
 });
 
 describe('Zé (ze)', () => {
 	test('one Manha slot fewer; the cheapest offer of the first shop of a Championship is free', () => {
-		expect(newRun(1, 'ze').manhaSlots).toBe(newRun(1, 'tonhao').manhaSlots - 1);
+		expect(newRun(1, 'ze').manhaSlots).toBe(newRun(1, 'bruto').manhaSlots - 1);
 		const run = newRun(4, 'ze');
 		finishTable(run, win());
 		const free = (run.shop?.offers ?? []).filter((o) => o.price === 0);
@@ -157,24 +157,24 @@ describe('Zé (ze)', () => {
 	});
 });
 
-describe('Mia (bia)', () => {
+describe('Mia (mia)', () => {
 	test('manilhas +15 Chips; common cards -2 (never below 0)', () => {
 		const s = won('3h', '5s');
 		const base = score(s);
-		const r = score(s, 'bia');
+		const r = score(s, 'mia');
 		expect(chipsOf(r.steps, '5s')).toBe(chipsOf(base.steps, '5s') + 15);
 		expect(chipsOf(r.steps, '4d')).toBe(Math.max(0, RANK_CHIPS['4'] - 2));
 		expect(chipsOf(r.steps, '3h')).toBe(chipsOf(base.steps, '3h') - 2);
 	});
 });
 
-describe('Chico (joca)', () => {
+describe('Chico (chico)', () => {
 	test('+20 Chips for a trick won with a club; hearts and diamonds -5', () => {
 		const s = won('3c');
 		const base = score(s);
-		const r = score(s, 'joca');
-		expect(of(r.steps, 'joca')).toEqual([
-			{ source: 'partner:joca', chips: PARTNER_TRAITS.joca.clubTrickChips },
+		const r = score(s, 'chico');
+		expect(of(r.steps, 'chico')).toEqual([
+			{ source: 'partner:chico', chips: PARTNER_TRAITS.chico.clubTrickChips },
 		]);
 		// The hearts and diamonds played in the two tricks lose up to 5 Chips each.
 		const reds = ['4d', '4h', 'Kh', 'Ah', '6d'];
@@ -183,9 +183,9 @@ describe('Chico (joca)', () => {
 	});
 });
 
-describe('Beti (lurdes)', () => {
+describe('Beti (beti)', () => {
 	test('the first trinket bought in each shop costs $1 less; trinkets cost +$1', () => {
-		const run = newRun(1, 'lurdes');
+		const run = newRun(1, 'beti');
 		run.money = 40;
 		finishTable(run, win());
 		const [first, second] = (run.shop?.offers ?? []).filter((o) => o.kind === 'trinket');
@@ -196,25 +196,25 @@ describe('Beti (lurdes)', () => {
 		expect(buy(run, 'offers', (run.shop?.offers ?? []).indexOf(first))).toBeNull();
 		expect(before - run.money).toBe(first.price - 1);
 		expect(offerPrice(run, second)).toBe(second.price);
-		const other = newRun(1, 'tonhao');
+		const other = newRun(1, 'bruto');
 		expect(priceOf(run, 5, 'trinket')).toBe(priceOf(other, 5, 'trinket') + 1);
 		expect(priceOf(run, 5, 'pack')).toBe(priceOf(other, 5, 'pack'));
 	});
 });
 
-describe('Ayla (tiao)', () => {
+describe('Ayla (ayla)', () => {
 	test('×1.5 Mult when the pair wins the first two tricks; a lost hand costs $1', () => {
 		const base = score(won());
-		expect(score(won(), 'tiao').mult).toBe(base.mult * PARTNER_TRAITS.tiao.firstTwoTricksX);
-		expect(score(lost(), 'tiao').money).toBe(-1);
-		expect(score(won(), 'tiao').money).toBe(0);
+		expect(score(won(), 'ayla').mult).toBe(base.mult * PARTNER_TRAITS.ayla.firstTwoTricksX);
+		expect(score(lost(), 'ayla').money).toBe(-1);
+		expect(score(won(), 'ayla').money).toBe(0);
 	});
 });
 
-describe('Sheila (neide)', () => {
+describe('Sheila (sheila)', () => {
 	test('table goals +10%', () => {
-		const a = newRun(1, 'neide');
-		const b = newRun(1, 'tonhao');
+		const a = newRun(1, 'sheila');
+		const b = newRun(1, 'bruto');
 		expect(goalOf(a, 'small')).toBe(Math.round(goalOf(b, 'small') * 1.1));
 	});
 
@@ -222,7 +222,7 @@ describe('Sheila (neide)', () => {
 		let doubled = 0;
 		const n = 400;
 		for (let seed = 1; seed <= n; seed++) {
-			const run = newRun(seed, 'neide');
+			const run = newRun(seed, 'sheila');
 			run.money = 0;
 			const r = finishTable(run, win());
 			if (r?.doubled) {
@@ -238,7 +238,7 @@ describe('Sheila (neide)', () => {
 describe('shop offers', () => {
 	test.skipIf(TRINKETS)('a visit never shows the same Manha or consumable twice', () => {
 		for (let seed = 1; seed <= 300; seed++) {
-			const run = newRun(seed, 'tonhao');
+			const run = newRun(seed, 'bruto');
 			finishTable(run, win());
 			const keys = (run.shop?.offers ?? []).map((o) =>
 				o.kind === 'manha'

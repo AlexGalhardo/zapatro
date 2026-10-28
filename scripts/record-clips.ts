@@ -76,7 +76,7 @@ const CLIPS: Record<string, Clip> = {
 	},
 	// A boss table: the boss's name and rule on the sidebar's top card (docs/visual.md §5).
 	boss: {
-		query: '?skipMenu=1&seed=4&boss=professor&goal=5000&auto=1&speed=1&qa=1',
+		query: '?skipMenu=1&seed=4&boss=stuart&goal=5000&auto=1&speed=1&qa=1',
 		ready: TABLE_READY,
 		act: (p) => p.waitForTimeout(16_000),
 	},
@@ -97,7 +97,7 @@ const CLIPS: Record<string, Clip> = {
 		query: '?run=1&seed=6&qa=1',
 		ready: 'window.__GAME__?.scene.keys.Run?.sys.isActive()',
 		act: async (p) => {
-			await p.evaluate(`window.__GAME__.scene.keys.Run.choosePartner('tonhao')`);
+			await p.evaluate(`window.__GAME__.scene.keys.Run.choosePartner('bruto')`);
 			await p.waitForTimeout(3_000);
 			await p.evaluate(BUILD);
 			await p.waitForTimeout(5_000);
@@ -108,7 +108,7 @@ const CLIPS: Record<string, Clip> = {
 		query: '?run=1&seed=7&qa=1',
 		ready: 'window.__GAME__?.scene.keys.Run?.sys.isActive()',
 		act: async (p) => {
-			await p.evaluate(`window.__GAME__.scene.keys.Run.choosePartner('donaCida')`);
+			await p.evaluate(`window.__GAME__.scene.keys.Run.choosePartner('cida')`);
 			await p.evaluate(BUILD);
 			await p.waitForTimeout(3_000);
 			await p.evaluate(

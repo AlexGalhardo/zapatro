@@ -116,7 +116,7 @@ describe('bosses (A4.5)', () => {
 		).state;
 		const full = scoreHand({ state: won, queda: false }).points;
 		expect(full).toBeGreaterThan(0);
-		expect(scoreHand({ state: won, queda: false, boss: 'delegado' }).points).toBe(full / 2);
+		expect(scoreHand({ state: won, queda: false, boss: 'tony' }).points).toBe(full / 2);
 		s = apply(
 			apply(s, { kind: 'truco', seat: 0 }, rng).state,
 			{ kind: 'truco', seat: 1 },

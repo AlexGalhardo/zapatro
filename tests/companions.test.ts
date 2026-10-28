@@ -57,11 +57,11 @@ describe('drawCandidates', () => {
 
 	test('the last partner sits out when there are 4 or more', () => {
 		for (let seed = 1; seed <= 100; seed++)
-			expect(drawCandidates(seed, all, 'tonhao')).not.toContain('tonhao');
+			expect(drawCandidates(seed, all, 'bruto')).not.toContain('bruto');
 	});
 
 	test('only unlocked ids are offered', () => {
-		const open: CompanionId[] = ['tonhao', 'donaCida', 'bia'];
+		const open: CompanionId[] = ['bruto', 'cida', 'mia'];
 		for (let seed = 1; seed <= 20; seed++)
 			expect([...drawCandidates(seed, open)].sort()).toEqual([...open].sort());
 	});

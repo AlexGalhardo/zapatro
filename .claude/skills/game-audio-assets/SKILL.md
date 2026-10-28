@@ -13,7 +13,7 @@ Fonte da verdade: **[docs/audio.md](../../../docs/audio.md)** (pipeline, chaves 
 - **Arquivos:** `public/assets/audio/sfx/<chave>.mp3` (+ `<chave>.<n>.mp3` por take) e `public/assets/audio/music/<chave>.mp3`. O `BootScene` carrega tudo o que existe; chave sem arquivo fica muda.
 - **Loudness:** `bun scripts/audio-normalize.ts` (efeitos e vozes −16, UI −20, música −18, ambiência −30 LUFS; limite −1 dBFS).
 - **Custo:** confira os créditos ElevenLabs antes de cada lote; lote acima de ~15% do saldo → pare e pergunte. Registre em `docs/audio.md`. `ELEVENLABS_API_KEY` só no `.env`; nunca imprimir.
-- **Vozes:** `vo.<char>.<linha>` com as linhas de `VO_LINES` (`truco` 3 takes, `seis`, `nove`, `doze`, `bora`, `corre`, `caiu`, `oloco` 2 takes). Regravar um personagem desenha outra voz: refaça todas as linhas dele juntas.
+- **Vozes:** `vo.<lang>.<char>.<linha>` (`<lang>` = `pt` | `en`) com as 11 linhas de `VO_LINES` (`truco`, `seis`, `nove`, `doze`, `bora`, `ver`, `corre`, `sacanagem`, `piada1`–`piada3`, 2 takes cada; textos em `scripts/el-catalog.ts`). Gerar com `bun --use-system-ca scripts/el-voices.ts <char>` (sem a flag o Bun falha com `SELF_SIGNED_CERT_IN_CHAIN`); conferir com `bun scripts/audio-check.ts vo.`. Regravar um personagem desenha outra voz: refaça todas as linhas dele juntas.
 
 ## Do lado do jogo (fio principal)
 

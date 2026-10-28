@@ -42,7 +42,7 @@ describe('quick match (GD-002): plain Truco to 12, no points goal', () => {
 		'a quick match against a boss also plays to 12',
 		() => {
 			for (let seed = 1; seed <= 5; seed++)
-				playToEnd(new Match({ rng: new Rng(seed), brains, boss: 'professor' }));
+				playToEnd(new Match({ rng: new Rng(seed), brains, boss: 'stuart' }));
 		},
 		workTimeout(5, MS_PER_MATCH),
 	);

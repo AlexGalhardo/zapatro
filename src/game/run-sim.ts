@@ -302,7 +302,7 @@ export function simulateRun(
 ): RunSummary {
 	const rng = new Rng(seed ^ 0x5bd1e995);
 	// The bot takes the first partner on offer to a fresh save.
-	const drawn = drawCandidates(seed, DEFAULT_COMPANIONS)[0] ?? 'tonhao';
+	const drawn = drawCandidates(seed, DEFAULT_COMPANIONS)[0] ?? 'bruto';
 	const run = newRun(seed, partner ?? drawn, 'normal', stake);
 	const seat0: SeatBrain =
 		bot === 'good' ? { kind: 'ai', profile: GOOD_BOT } : { kind: 'random' };

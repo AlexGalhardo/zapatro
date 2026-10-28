@@ -9,7 +9,7 @@ import { defaultKeys, parseKeys } from './keybinds';
  * Local save (PLAN §4.5): one JSON document with schema version and checksum.
  * Bump SAVE_VERSION and add a step to MIGRATIONS whenever the payload shape changes.
  */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SAVE_KEY = 'truco-roguelite.save';
 
 export const PAD_DEADZONES = ['low', 'normal', 'high'] as const;
@@ -270,7 +270,42 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
  * Chained migrations: MIGRATIONS[v] turns a payload of schema v into v + 1. They only reshape
  * data; validateSave fills whatever is still missing with defaults afterwards.
  */
-export const MIGRATIONS: Record<number, (payload: Obj) => Obj> = {};
+export const MIGRATIONS: Record<number, (payload: Obj) => Obj> = {
+	1: (payload) => renameIds(payload) as Obj,
+};
+
+/** v1 → v2: characters (and the feats named after them) go by their real names, not nicknames. */
+const ID_RENAMES: Record<string, string> = {
+	tonhao: 'bruto',
+	donaCida: 'cida',
+	zeMalandro: 'jhony',
+	juninho: 'nino',
+	joca: 'chico',
+	lurdes: 'beti',
+	tiao: 'ayla',
+	neide: 'sheila',
+	bia: 'mia',
+	professor: 'stuart',
+	mudo: 'peter',
+	delegado: 'tony',
+	comTonhao: 'comBruto',
+	comDonaCida: 'comCida',
+	comJuninho: 'comNino',
+};
+const OLD_ID = new RegExp(
+	`(?<![A-Za-z0-9])(${Object.keys(ID_RENAMES).join('|')})(?![A-Za-z0-9])`,
+	'g',
+);
+
+/** Renames every old id inside strings and object keys (ids appear as `partner:tonhao`, `boss.mudo`…). */
+function renameIds(v: unknown): unknown {
+	const fix = (s: string): string => s.replace(OLD_ID, (id) => ID_RENAMES[id] ?? id);
+	if (typeof v === 'string') return fix(v);
+	if (Array.isArray(v)) return v.map(renameIds);
+	if (isObj(v))
+		return Object.fromEntries(Object.entries(v).map(([k, x]) => [fix(k), renameIds(x)]));
+	return v;
+}
 
 export function migrate(payload: Obj, from: number): Obj {
 	let p = payload;

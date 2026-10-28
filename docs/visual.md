@@ -45,7 +45,7 @@ Proibido na v2 (a v3 libera pintura nos fundos e personagens e o gradiente dos b
 
 | Elemento | Técnica | Tamanho lógico | Fonte |
 |---|---|---|---|
-| Retrato de chefe e do Zé | pixel art, 1 px de contorno, até 32 cores, sem AA (os companheiros pintados: `portrait/<id>.webp` 256×256, desenhados suaves) | 128×128 (bitmap em `public/assets/gfx/portrait/<id>.png`; a mesa o desenha em círculo de 64 px, `AVATAR`, e a escolha de companheiro, maior) | `char-*.png` → `bun scripts/portraits.ts`; O Mudo: `art-src/portrait/mudo.png` (PixelLab) |
+| Retrato de chefe e do Zé | pixel art, 1 px de contorno, até 32 cores, sem AA (os companheiros pintados: `portrait/<id>.webp` 256×256, desenhados suaves) | 128×128 (bitmap em `public/assets/gfx/portrait/<id>.png`; a mesa o desenha em círculo de 64 px, `AVATAR`, e a escolha de companheiro, maior) | `char-*.png` → `bun scripts/portraits.ts`; O Mudo: `art-src/portrait/peter.png` (PixelLab) |
 | Sinais secretos | emoji do sistema (piscada, sobrancelha, boca torta, língua, morder o lábio, olhar para cima) | texto Phaser com a fonte de emoji do aparelho | `SIGNAL_EMOJI` em `src/data/characters.ts`; o mesmo emoji no manual, na escolha, na mesa e no aviso do parceiro antes do truco |
 | Ícones de UI | pintura (estilo GTA VI) | 24×24 lógicos (bitmaps de 32 px em `public/assets/gfx/icon`) | `references/concept-art-gta/icons.png` (folha 8×4) → `bun scripts/icons.ts`; os 8 que a folha não tem (lista, doc, refresh, monitor, upload, download, nota, pausa), vetor em `src/art/icons.ts` |
 | Ícone do app | pixel art + fundo vetor | 1024 | `app-icon.png`, `art-src/app-icon.svg` → `bun run app-icons` |
@@ -121,9 +121,9 @@ Histórico v2 (na v3 o elenco, o Zé, a Sortuda e o Rei do Truco são pintados; 
 
 | Id | Papel | Observação |
 |---|---|---|
-| `tonhao`, `donaCida`, `zeMalandro`, `juninho`, `ze`, `bia`, `joca`, `lurdes`, `tiao`, `neide` | companheiro | parceiro ou rival (GDD §8) |
-| `valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `sortuda`, `reiDoTruco` | chefe | |
-| `mudo` | chefe | gerado no PixelLab com o STYLE BLOCK e `juiz.png` como referência de estilo |
+| `bruto`, `cida`, `jhony`, `nino`, `ze`, `mia`, `chico`, `beti`, `ayla`, `sheila` | companheiro | parceiro ou rival (GDD §8) |
+| `valentao`, `cartomante`, `juiz`, `agiota`, `tony`, `stuart`, `sortuda`, `reiDoTruco` | chefe | |
+| `peter` | chefe | gerado no PixelLab com o STYLE BLOCK e `juiz.png` como referência de estilo |
 
 O fundo chapado de cada PNG é recortado nos cantos (alpha); o jogo pinta o fundo do retrato por baixo. **Regra: cada personagem tem a sua cor de fundo** (identidade, como a camisa), definida no campo `bg` de `LOOKS` em `src/art/flat.ts` (`FALLBACK` para ids sem entrada). O retrato da mesa (`drawAvatar`) é um quadrado arredondado nessa cor (chefes com moldura vinho), e as telas do `RunScene` que desenham o fundo à parte (escolha de companheiro, fim de run) leem a mesma cor por `portraitBg(id)`. Personagem novo ganha uma cor própria em `LOOKS`, distinta das vizinhas na mesa.
 

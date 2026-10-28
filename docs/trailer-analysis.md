@@ -69,9 +69,9 @@
 |---|---|---|---|
 | 0:00–0:04 | Mesa de fórmica vista de cima, 4 jogadores em cruz, vira sendo revelada | `table.formica` + `bg.botecoBairro`, `card.back.default` virando | `amb.botecoBairro` + `sfx.card.flip` |
 | 0:04–0:08 | Você joga um 3, vaza ganha | cartas 48×64 em close 4× | `sfx.card.play`, `sfx.trick.win` |
-| 0:08–0:10 | Corte seco, tela escura, só o retrato do Tonhão piscando | `portrait.tonhao.wink` | silêncio + `sfx.signal` |
-| 0:10–0:13 | **TRUCO!** batida, zoom punch, tremor | `ui.button.truco`, balão "TRUCO!" | `sfx.truco` + `vo.tonhao.truco` + início de `music.table` |
-| 0:13–0:18 | Rival pensa (`sweat`), aceita "SEIS!" | `portrait.ze.sweat`, `portrait.bia.angry` | `vo.bia.seis` |
+| 0:08–0:10 | Corte seco, tela escura, só o retrato do Tonhão piscando | `portrait.bruto.wink` | silêncio + `sfx.signal` |
+| 0:10–0:13 | **TRUCO!** batida, zoom punch, tremor | `ui.button.truco`, balão "TRUCO!" | `sfx.truco` + `vo.bruto.truco` + início de `music.table` |
+| 0:13–0:18 | Rival pensa (`sweat`), aceita "SEIS!" | `portrait.ze.sweat`, `portrait.mia.angry` | `vo.mia.seis` |
 | 0:18–0:24 | Contagem Fichas × Mult subindo, Manha ativando | `ui.chip`, `ui.mult`, `manha.malandro` | `sfx.score.chip` em pitch crescente, `sfx.manha.trigger` |
 | 0:24–0:27 | **Queda**: a mesa escurece, placar zera | vinheta, `sfx.table.lose` | quebra de energia |
 | 0:27–0:33 | Loja do boteco: pacotes abrindo, Manhas, Simpatias | `pack.*`, `simpatia.*`, `lance.*` | `sfx.pack.open`, `sfx.shop.buy` |

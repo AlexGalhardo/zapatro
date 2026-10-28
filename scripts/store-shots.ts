@@ -51,7 +51,7 @@ await p.close();
 // 03 shop
 p = await page('?run=1&seed=7&qa=1');
 await p.evaluate(
-	`(() => { const g = window.__GAME__; g.scene.keys.Run.choosePartner('donaCida'); })()`,
+	`(() => { const g = window.__GAME__; g.scene.keys.Run.choosePartner('cida'); })()`,
 );
 await p.waitForTimeout(800);
 await p.evaluate(`(() => { const g = window.__GAME__; const r = g.scene.keys.Run.run;
@@ -68,7 +68,7 @@ p = await page('?run=1&seed=1&qa=1');
 await p.screenshot({ path: out('04-partner') });
 await p.close();
 // 05 boss table with its rule
-p = await page('?skipMenu=1&seed=3&boss=professor&qa=1');
+p = await page('?skipMenu=1&seed=3&boss=stuart&qa=1');
 await p.screenshot({ path: out('05-boss') });
 await p.close();
 // 06 Almanac (Bosses tab)

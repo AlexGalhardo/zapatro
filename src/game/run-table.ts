@@ -39,7 +39,7 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		rivalBrain(p3, c3),
 	];
 	const boss = currentBoss(run);
-	const equipped = boss === 'professor' ? doubleFlaws(equippedOf(run)) : equippedOf(run);
+	const equipped = boss === 'stuart' ? doubleFlaws(equippedOf(run)) : equippedOf(run);
 	const totals = trinketTotals(equipped);
 	return new Match({
 		rng: new Rng(tableSeed(run)),

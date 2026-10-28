@@ -24,7 +24,7 @@ Fonte da verdade: **[docs/visual.md](../../../docs/visual.md) §0 (Art Bible v3,
 
 - **Pintura nova:** mesmo estilo e enquadramento de `art-src/gta/` (verão, pôr do sol), **sem texto, logo ou marca real** dentro da imagem (lista de pendências em BUGS M-15/M-18). Salve o original em `art-src/gta/` e rode `bun scripts/portraits.ts` (local, sem rede; gera os WebP e o `public/assets/gfx/index.json`).
 - **Nunca** gere personagem do elenco no PixelLab nem volte ao pixel: os pixel antigos ficam só em `art-src/backup-pixel/`.
-- **Peso:** imagem que a primeira tela não usa entra no `LATER` do `BootScene` (primeiro download web < 8 MB, GD-017). Meça com o build de produção antes de commitar.
+- **Peso:** imagem que a primeira tela não usa entra no `LATER` de `src/data/load-order.ts`, lido pelo `BootScene` (primeiro download web < 8 MB, GD-017). Meça com o build de produção antes de commitar.
 - **Fallback:** toda chave tem desenho de reserva em `flat.ts`; quando o bitmap chega, `registerPortraits` redesenha a textura no lugar. Não crie chave que só funcione com a imagem.
 - **Cores** novas só em `src/config/palette.ts`; nada de hex solto em `src/art`.
 - **Referência:** presskits de terceiros só para princípios (legibilidade, hierarquia, "juice"). Nunca copiar arte, logo, fonte, layout ou paleta.

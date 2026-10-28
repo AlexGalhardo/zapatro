@@ -25,8 +25,8 @@ const manhas = opt('manhas', '')
 
 for (let seed = from; seed <= to; seed++) {
 	const rng = new Rng(seed);
-	const partner = COMPANIONS.tonhao;
-	rng.shuffle(COMPANION_IDS.filter((id) => id !== 'tonhao'));
+	const partner = COMPANIONS.bruto;
+	rng.shuffle(COMPANION_IDS.filter((id) => id !== 'bruto'));
 	const profiles = [rng.pick(AI_PROFILE_IDS), rng.pick(AI_PROFILE_IDS)] as AiProfileId[];
 	const ai = (id: AiProfileId): SeatBrain => ({ kind: 'ai', profile: AI_PROFILES[id] });
 	const m = new Match({

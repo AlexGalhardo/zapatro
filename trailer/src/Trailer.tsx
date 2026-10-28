@@ -302,10 +302,10 @@ export function Trailer({ lang }: { lang: Lang }): ReactNode {
 		{ from: 40, src: music('music.boss'), dur: 14, volume: 0.8, fadeIn: 2, fadeOut: 2 },
 		{ from: 52, src: music('music.win'), dur: 8, volume: 0.85, fadeIn: 1, fadeOut: 2 },
 		{ from: 2.5, src: sfx('sfx.truco') },
-		{ from: 2.6, src: sfx('vo.tonhao.truco') },
+		{ from: 2.6, src: sfx('vo.bruto.truco') },
 		{ from: 5.4, src: sfx('sfx.card.deal') },
 		{ from: 12, src: sfx('sfx.truco.2'), volume: 0.8 },
-		{ from: 16, src: sfx('vo.bia.seis') },
+		{ from: 16, src: sfx('vo.mia.seis') },
 		{ from: 16, src: sfx('sfx.bet.accept'), volume: 0.7 },
 		...chips(18, 8, 0.35),
 		{ from: 21, src: sfx('sfx.score.xmult') },
@@ -314,7 +314,7 @@ export function Trailer({ lang }: { lang: Lang }): ReactNode {
 		{ from: 32.6, src: sfx('sfx.card.shuffle') },
 		{ from: 36.2, src: sfx('sfx.pack.open') },
 		{ from: 52, src: sfx('sfx.table.win') },
-		{ from: 53, src: sfx('vo.tonhao.oloco') },
+		{ from: 53, src: sfx('vo.bruto.oloco') },
 	];
 	return <Cut lang={lang} shots={shots} sounds={sounds} cues={TRAILER_CUES} />;
 }
@@ -332,7 +332,7 @@ export function Teaser({ lang }: { lang: Lang }): ReactNode {
 	const sounds: Sound[] = [
 		{ from: 0, src: music('music.table'), dur: 11.5, volume: 0.7, fadeOut: 1 },
 		{ from: 3, src: sfx('sfx.truco') },
-		{ from: 3.05, src: sfx('vo.tonhao.truco') },
+		{ from: 3.05, src: sfx('vo.bruto.truco') },
 		...chips(5.4, 5, 0.35),
 		{ from: 7.3, src: sfx('sfx.score.xmult') },
 		{ from: 8.5, src: music('music.boss'), dur: 3, volume: 0.8, fadeIn: 0.5 },

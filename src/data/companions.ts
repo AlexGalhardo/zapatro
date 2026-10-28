@@ -7,16 +7,16 @@ import { AI_PROFILES, type AiProfile } from './ai-profiles';
  * (`PARTNER_TRAITS`). Names in i18n (`char.<id>`); portrait `portrait.<id>.<expr>`.
  */
 export const COMPANION_IDS = [
-	'tonhao',
-	'donaCida',
-	'zeMalandro',
-	'juninho',
+	'bruto',
+	'cida',
+	'jhony',
+	'nino',
 	'ze',
-	'bia',
-	'joca',
-	'lurdes',
-	'tiao',
-	'neide',
+	'mia',
+	'chico',
+	'beti',
+	'ayla',
+	'sheila',
 ] as const;
 export type CompanionId = (typeof COMPANION_IDS)[number];
 
@@ -54,16 +54,16 @@ const base = (
 ): AiProfile => ({ ...AI_PROFILES[archetype], id, ...PARTNER_STYLES[style] });
 
 export const COMPANIONS: Record<CompanionId, CompanionDef> = {
-	tonhao: { style: 'aggressive', profile: base('tonhao', 'bully', 'aggressive') },
-	donaCida: { style: 'cautious', profile: base('donaCida', 'calculator', 'cautious') },
-	zeMalandro: { style: 'bluffer', profile: base('zeMalandro', 'bluffer', 'bluffer') },
-	juninho: { style: 'fearless', profile: base('juninho', 'rookie', 'fearless') },
+	bruto: { style: 'aggressive', profile: base('bruto', 'bully', 'aggressive') },
+	cida: { style: 'cautious', profile: base('cida', 'calculator', 'cautious') },
+	jhony: { style: 'bluffer', profile: base('jhony', 'bluffer', 'bluffer') },
+	nino: { style: 'fearless', profile: base('nino', 'rookie', 'fearless') },
 	ze: { style: 'cautious', profile: base('ze', 'calculator', 'cautious') },
-	bia: { style: 'aggressive', profile: base('bia', 'bully', 'aggressive') },
-	joca: { style: 'cautious', profile: base('joca', 'coward', 'cautious') },
-	lurdes: { style: 'bluffer', profile: base('lurdes', 'bluffer', 'bluffer') },
-	tiao: { style: 'cautious', profile: base('tiao', 'calculator', 'cautious') },
-	neide: { style: 'cautious', profile: base('neide', 'coward', 'cautious') },
+	mia: { style: 'aggressive', profile: base('mia', 'bully', 'aggressive') },
+	chico: { style: 'cautious', profile: base('chico', 'coward', 'cautious') },
+	beti: { style: 'bluffer', profile: base('beti', 'bluffer', 'bluffer') },
+	ayla: { style: 'cautious', profile: base('ayla', 'calculator', 'cautious') },
+	sheila: { style: 'cautious', profile: base('sheila', 'coward', 'cautious') },
 };
 
 /**
@@ -74,25 +74,25 @@ export const COMPANIONS: Record<CompanionId, CompanionDef> = {
  */
 export const PARTNER_TRAITS = {
 	/** Perk: +Mult per trick he wins. Flaw: his cards are worth half the Chips (rounded down). */
-	tonhao: { trickMult: 3, chipsDivisor: 2 },
+	bruto: { trickMult: 3, chipsDivisor: 2 },
 	/** Perk: money per hand won. Flaw: shop items cost more. */
-	donaCida: { moneyPerWin: 1, priceUp: 1 },
+	cida: { moneyPerWin: 1, priceUp: 1 },
 	/** Perk: interest on saved money at the end of each table. Flaw: the speed reward is divided (rounded down). */
-	zeMalandro: { interestStep: 5, interestPer: 1, interestCap: 5, speedDivisor: 2 },
+	jhony: { interestStep: 5, interestPer: 1, interestCap: 5, speedDivisor: 2 },
 	/** Perk: +base Mult per level (a level per table won). Flaw: starts at -1 base Mult. */
-	juninho: { multPerLevel: 1, startMult: -1 },
+	nino: { multPerLevel: 1, startMult: -1 },
 	/** Perk: the cheapest offer of the first shop of each Championship is free. Flaw: slots. */
 	ze: { freeOffers: 1, manhaSlotsDown: 1 },
 	/** Perk: manilhas worth more Chips. Flaw: common cards worth fewer. */
-	bia: { manilhaChips: 15, commonChips: -2 },
+	mia: { manilhaChips: 15, commonChips: -2 },
 	/** Perk: Chips per trick won with a club. Flaw: hearts and diamonds worth fewer Chips. */
-	joca: { clubTrickChips: 20, redChips: -5 },
+	chico: { clubTrickChips: 20, redChips: -5 },
 	/** Perk: the first Manha bought in each shop costs less. Flaw: Manhas cost more. */
-	lurdes: { firstManhaOff: 1, manhaPriceUp: 1 },
+	beti: { firstManhaOff: 1, manhaPriceUp: 1 },
 	/** Perk: ×Mult when the pair wins the first two tricks. Flaw: a lost hand costs money. */
-	tiao: { firstTwoTricksX: 1.5, lostHandCost: 1 },
+	ayla: { firstTwoTricksX: 1.5, lostHandCost: 1 },
 	/** Perk: chance to double the money earned winning a table. Flaw: bigger table goals. */
-	neide: { doubleMoneyChance: 0.25, goalMult: 1.1 },
+	sheila: { doubleMoneyChance: 0.25, goalMult: 1.1 },
 } as const satisfies Record<CompanionId, object>;
 
 /** Companions offered as partner each run. */

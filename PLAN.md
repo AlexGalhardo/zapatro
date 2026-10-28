@@ -112,9 +112,12 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 
 - [x] UI em tela curta (2026-10-28): no toque, a escolha de parceiro cabe no cartão (título mais alto, cartão mais alto); tentos em 4 fileiras de 3 com folga no meio; ofertas da loja dentro da lousa, raridade só pela cor.
 - [x] Loja (2026-10-28): "Próxima mesa" no canto inferior direito, fora da lousa; as 4 ofertas ocupam a altura da lousa; ícones equipados menores, com folga entre rótulos e fileiras.
+- [x] Áudio final 1.0 (2026-10-28, [docs/audio-final-game.md](docs/audio-final-game.md)): 836 takes de voz `vo.<lang>.<char>.<linha>` (19 personagens, PT e EN, 11 falas com `ver`, `sacanagem` e 3 piadas) e `music.table2`–`4` integrados; a voz segue o idioma das Configurações e só o idioma ativo baixa (tardio; trocar de idioma baixa o outro); a mesa normal sorteia a música sem repetir; `caiu`/`oloco` e as vozes sem idioma saíram; `bun scripts/audio-check.ts` aprova os 845 takes; primeiro download 6,12 MB.
+- [ ] Áudio final: escuta humana dos takes e conferência do conteúdo falado (sem transcrição local); piadas sem legenda/balão.
+- [x] Build Poki acima de 8 MB resolvido (2026-10-28): `POKI_SKIP` tira `bg/partner` e `bg/menu-1` (sem uso) e o build ficou com 8,10 MB no `dist/` (limite 8 MiB do `scripts/release.ts`); o fundo que falta cai para `img.bg.main`.
 
 - [ ] Marcas reais nas pinturas: camisa estilo seleção do Nino (`char-nino`; `menu-4` saiu do jogo em 2026-10-28), letreiro "Las Vegas" e torre do Paris Las Vegas no `background-6` (`bg/bg6`), Brahma e "51" no fundo da loja (`shop2`).
-- [ ] 1 chefe ainda em pixel 128×128 (`juiz`; `valentao`, `cartomante` e `delegado` ganharam pintura em 2026-10-28, `irmaos` saiu do jogo) e o vendedor da loja sem arte.
+- [ ] 1 chefe ainda em pixel 128×128 (`juiz`; `valentao`, `cartomante` e `tony` ganharam pintura em 2026-10-28, `irmaos` saiu do jogo) e o vendedor da loja sem arte.
 - [ ] "JOKER" em inglês dentro da face pintada do coringa.
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
 - [ ] Sistemas inalcançáveis pelas flags: pular mesa e Promessas (`TABLE_SELECT = false`), pacotes, renovação, Melhorias e baralhos/versos destraváveis (`SHOP_SIMPLE = true`, baralho e estaca fora da UI), Estacas e os feitos que dependem deles.
@@ -422,7 +425,7 @@ O jogo lê `public/assets/gfx/index.json`; **toda chave usada pela render tem pl
 | Carta (face) | `card.<rank>.<suit>` | `card.3.clubs` |
 | Verso | `card.back.<id>` | `card.back.default` |
 | Borda/efeito de carta | `card.frame.<mod>` | `card.frame.gold` |
-| Retrato | `portrait.<char>.<expr>` | `portrait.tonhao.wink` |
+| Retrato | `portrait.<char>.<expr>` | `portrait.bruto.wink` |
 | Manha | `manha.<id>` | `manha.malandro` |
 | Simpatia / Lance / Melhoria / Promessa | `simpatia.<id>` / `lance.<id>` / `upgrade.<id>` / `promise.<id>` | `simpatia.rezaDeVo` |
 | Pacote | `pack.<kind>` | `pack.manha` |
@@ -430,7 +433,7 @@ O jogo lê `public/assets/gfx/index.json`; **toda chave usada pela render tem pl
 | Tela de concept art | `concept.<tela>.<id>`, `concept.seat.<char>` | `concept.table.hud` |
 | UI | `ui.<id>` | `ui.button.truco` |
 | Chefe (retrato grande) | `boss.<id>` | `boss.reiDoTruco` |
-| Áudio | `music.<id>`, `sfx.<group>.<id>`, `vo.<char>.<line>.<n>` | `vo.tonhao.truco.2` |
+| Áudio | `music.<id>`, `sfx.<group>.<id>`, `vo.<lang>.<char>.<line>.<n>` | `vo.pt.bruto.truco.2` |
 
 ### 7.3 PixelLab (ponto de partida; o piloto A1 confirma custo)
 
@@ -783,7 +786,7 @@ Bot (sobre legalActions) ─→ sim ─→ balance (CI)
 
 - [x] B3.1 Músicas e ambientes (§8) via ElevenLabs, normalizados — `playAmbience` por Campeonato, `music.boss` e `music.king`
 - [x] B3.2 SFX de todas as categorias (§8)
-- [x] B3.3 Vozes PT-BR (D-30) por personagem, com limitador de vozes — truco/seis/nove/doze, bora, corre, caiu, oloco; chefes Professor, Irmãos, Mudo e Sortuda ainda sem voz
+- [x] B3.3 Vozes PT-BR (D-30) por personagem, com limitador de vozes — truco/seis/nove/doze, bora, corre, caiu, oloco; chefes Professor, Irmãos, Mudo e Sortuda ainda sem voz. Substituído em 2026-10-28 pelo áudio final 1.0 (§1.4.4): PT e EN para os 19 personagens, sem `caiu`/`oloco`
 - [ ] B3.4 Mixagem: escuta do usuário em cada cena — aguardando o usuário
 
 ### B4 — Controles e acessibilidade · `0.1.0-beta.4`
@@ -896,7 +899,7 @@ Pipeline em [docs/visual.md](docs/visual.md): concept → 640×360 → pixels2sv
 - [x] F0 Versionamento `0.0.x`/`0.1.x`/`1.0.x`, tags locais renumeradas (`scripts/renumber-tags.ts`).
 - [x] F1 `src/data/companions.ts` (10 ids, vantagem e defeito) e traços no `Match` (`src/game/traits.ts`).
 - [x] F2 Sorteio de 3 candidatos (`src/logic/run/draw.ts`), rivais sem o parceiro, estilo do companheiro nos rivais, tela de escolha com 3 cartões, `?partner=`; `bun run balance` PASS (docs/balancing.md).
-- [x] F3 Retratos 128×128 locais (`scripts/portraits.ts`, sem PixelLab nos `char-*.png`); O Mudo gerado no PixelLab (`art-src/portrait/mudo.png`).
+- [x] F3 Retratos 128×128 locais (`scripts/portraits.ts`, sem PixelLab nos `char-*.png`); O Mudo gerado no PixelLab (`art-src/portrait/peter.png`).
 - [x] F4 Art bible v2 (`docs/visual.md`), tokens da paleta, Fichas azul e Sinal teal.
 - [x] F5 Telas no estilo híbrido, com as medidas dos concepts: mesa (sidebar, retratos em cartão, versos em tiles, cruz de cartas, coluna de ações, balões, contagem), menu, escolha de 3 companheiros, seleção de mesas, balcão, pacote, almanaque, regras, configurações, controles, pausa e fim de run; ícones pixel de `ui-icons.png` (`scripts/icons.ts`).
 - [x] Releases no formato do vukem (`scripts/lib/release-notes.ts`, assets `zapatro_<versão>_<plataforma>`).

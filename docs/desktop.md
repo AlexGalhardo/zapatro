@@ -78,14 +78,14 @@ Passo a passo completo (conta, depots, página da loja, SteamPipe, lançamento):
 | `mesaPerfeita` | Clean table | Mesa limpa |
 | `chefe` | Boss down | Chefe no chão |
 | `valentao` | Not scared | Sem medo |
-| `professor` | Schooled | Lição aprendida |
+| `stuart` | Schooled | Lição aprendida |
 | `sortuda` | Luck runs out | Acabou a sorte |
 | `campeonato2` | On the road | Pé na estrada |
 | `campeonato4` | Club member | Sócio do clube |
 | `campeonato6` | Regional fame | Fama regional |
 | `reiDoTruco` | Rei do Truco | Rei do Truco |
-| `comTonhao` | Big friend | Amigão |
-| `comDonaCida` | Granny knows | A vó sabe |
+| `comBruto` | Big friend | Amigão |
+| `comCida` | Granny knows | A vó sabe |
 | `comZe` | Smooth operator | Malandragem |
 | `comNino` | The kid made it | O moleque chegou |
 | `doInterior` | Countryside champion | Campeão do interior |

@@ -94,7 +94,7 @@ describe('card modifiers (B1.2)', () => {
 	});
 
 	test('broken Vidro cards leave the run deck (never below the minimum)', () => {
-		const run = newRun(1, 'tonhao');
+		const run = newRun(1, 'bruto');
 		finishTable(run, win({ broken: ['3c'] }));
 		expect(run.deck.some((x) => x.id === '3c')).toBe(false);
 	});
@@ -134,7 +134,7 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 			['olhoGrego', 'mentirosa'],
 			['ferradura', 'vidro'],
 		] as const) {
-			const run = newRun(1, 'tonhao');
+			const run = newRun(1, 'bruto');
 			run.consumables = [{ kind: 'simpatia', id }];
 			expect(useConsumable(run, 0, '3c')).toBe(true);
 			expect(run.deck.find((x) => x.id === '3c')?.mod).toBe(mod);
@@ -144,7 +144,7 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 	test.skipIf(TRINKETS)('8 Promises, each cashed at the next shop', () => {
 		expect(PROMISES).toHaveLength(8);
 		const after = (p: (typeof PROMISES)[number]): RunState => {
-			const run = newRun(3, 'tonhao');
+			const run = newRun(3, 'bruto');
 			run.promises = [p];
 			finishTable(run, win());
 			return run;
@@ -183,11 +183,11 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 describe('bosses and partners (B1.3)', () => {
 	test('8 pool bosses + the Rei do Truco', () => {
 		expect(BOSS_POOL).toHaveLength(8);
-		expect(newRun(1, 'tonhao').bosses[7]).toBe('reiDoTruco');
+		expect(newRun(1, 'bruto').bosses[7]).toBe('reiDoTruco');
 	});
 
 	test('O Mudo: no signals between you and your partner', () => {
-		expect(match({ boss: 'mudo' }).rules.signals).toEqual([0, 1, 0, 1]);
+		expect(match({ boss: 'peter' }).rules.signals).toEqual([0, 1, 0, 1]);
 	});
 
 	test('A Sortuda: the vira often makes a rival card a manilha', () => {
@@ -209,7 +209,7 @@ describe('bosses and partners (B1.3)', () => {
 			brains,
 			goal: 100,
 			trinkets: list,
-			boss: 'professor',
+			boss: 'stuart',
 		});
 		expect(plain.trinketList[0]?.flawX).toBeUndefined();
 		expect(prof.trinketList[0]?.flawX).toBe(2);
@@ -223,7 +223,7 @@ describe('bosses and partners (B1.3)', () => {
 
 	test('10 companions; Nino levels up every table won', () => {
 		expect(COMPANION_IDS).toHaveLength(10);
-		const run = newRun(1, 'juninho');
+		const run = newRun(1, 'nino');
 		finishTable(run, win());
 		expect(run.partnerLevel).toBe(1);
 	});

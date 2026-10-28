@@ -474,7 +474,7 @@ Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 8; o Rei do Truco é fixo
 | A Cartomante | A vira fica oculta até o fim da 1ª vaza | Informação |
 | O Juiz | A Manha mais à esquerda fica desativada | Build |
 | O Agiota | Cada mão perdida custa $1 | Economia |
-| O Delegado | O Lance Corrida vale **metade** (`DELEGADO_CORRIDA_X = 0,5`; o design pedia 0) | Lance |
+| O Delegado | O Lance Corrida vale **metade** (`TONY_CORRIDA_X = 0,5`; o design pedia 0) | Lance |
 | Stuart | Os contras dos seus trinkets equipados contam em dobro | Trinkets |
 | O Mudo | Sem sinais com o parceiro | Sinais |
 | A Sortuda | 35% de chance de a vira dar manilha a um rival | Sorte |
@@ -619,7 +619,7 @@ Detalhe em [audio.md](audio.md); tudo ElevenLabs, normalizado com ffmpeg. Identi
 
 Na web, as ambiências e vozes tardias são baixadas em segundo plano, depois do menu: a mesa abre sem esperar por elas. O build Poki não as inclui (`VITE_POKI=1`).
 
-Gatilhos já ligados (`TableScene`, evento `handOver`): `caiu` toca quando a dupla dos rivais leva a mão (rival do assento 1); `oloco` quando a dupla do jogador leva a mão com 6 tentos ou mais (rival do assento 3). Pendente: `vo.juninho.oloco.2`; orçamento web 8,5 MB > 8 MB do Poki. **Proposta** (Pesquisa §5 itens 18–20): stinger próprio para ZAP e para "Doze!", e ambiência que sobe na mão decisiva.
+Gatilhos já ligados (`TableScene`, evento `handOver`): `caiu` toca quando a dupla dos rivais leva a mão (rival do assento 1); `oloco` quando a dupla do jogador leva a mão com 6 tentos ou mais (rival do assento 3). Pendente: `vo.nino.oloco.2`; orçamento web 8,5 MB > 8 MB do Poki. **Proposta** (Pesquisa §5 itens 18–20): stinger próprio para ZAP e para "Doze!", e ambiência que sobe na mão decisiva.
 
 ---
 
@@ -703,7 +703,7 @@ Regras do Truco do PLAN §5 · Fichas × Mult com `steps` · parceiro + sinais �
 | Ordem | Corta primeiro | Custo do corte |
 |---|---|---|
 | 1 | Concept art das salas 4–8 (ficam `bg.<id>` + fórmica) | Baixo |
-| 2 | Vozes que faltam (`vo.juninho.oloco.2`) | Baixo |
+| 2 | Vozes que faltam (`vo.nino.oloco.2`) | Baixo |
 | 3 | Mockups novos de Regras/Controles/Pausa (ficam as telas atuais) | Médio |
 | 4 | Ampliação de conteúdo além de 60 Manhas | Baixo (qualidade > quantidade, Pesquisa §5 item 30) |
 | 5 | Steam Deck Verified | Médio |

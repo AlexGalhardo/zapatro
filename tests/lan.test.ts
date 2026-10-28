@@ -52,13 +52,13 @@ function player(net: NetClient) {
 describe('LAN table', () => {
 	test('lobby: first free seat, sit, portraits are unique, only the host starts', async () => {
 		const url = await serve();
-		const a = await NetClient.connect(url, 'Ana', 'bia');
-		const b = await NetClient.connect(url, 'Beto', 'bia');
+		const a = await NetClient.connect(url, 'Ana', 'mia');
+		const b = await NetClient.connect(url, 'Beto', 'mia');
 		await until(() => b.lobby?.seats[1] != null);
 		const lobby = b.lobby as LobbyState;
 		expect(lobby.seats[0]?.name).toBe('Ana');
 		expect(lobby.seats[1]?.name).toBe('Beto');
-		expect(lobby.seats[1]?.char).not.toBe('bia');
+		expect(lobby.seats[1]?.char).not.toBe('mia');
 		expect(lobby.host).toBe(a.id);
 		b.send({ type: 'sit', seat: 2 });
 		await until(() => a.lobby?.seats[2]?.name === 'Beto');
@@ -72,7 +72,7 @@ describe('LAN table', () => {
 
 	test('one person against three bots plays a match to 12', async () => {
 		const url = await serve();
-		const net = await NetClient.connect(url, 'Solo', 'tonhao');
+		const net = await NetClient.connect(url, 'Solo', 'bruto');
 		const p = player(net);
 		await until(() => net.lobby !== null);
 		net.send({ type: 'start' });
@@ -82,7 +82,7 @@ describe('LAN table', () => {
 		// Seats other than yours are unknown at the deal.
 		for (const seat of [1, 2, 3] as const)
 			expect(first.snap.state.hands[seat].every((c) => c.id === 'hidden')).toBe(true);
-		expect(first.start.chars[0]).toBe('tonhao');
+		expect(first.start.chars[0]).toBe('bruto');
 		net.leave();
 	});
 
@@ -118,8 +118,8 @@ describe('LAN table', () => {
 
 	test('a player back in the lobby mid-match gets the table again (resync)', async () => {
 		const url = await serve();
-		const a = await NetClient.connect(url, 'Ana', 'bia');
-		const b = await NetClient.connect(url, 'Beto', 'joca');
+		const a = await NetClient.connect(url, 'Ana', 'mia');
+		const b = await NetClient.connect(url, 'Beto', 'chico');
 		const pa = player(a);
 		const seen: ServerMessage[] = [];
 		b.listen((m) => seen.push(m));
@@ -150,7 +150,7 @@ describe('LAN table', () => {
 		])
 			raw.send('m', junk);
 		await Bun.sleep(100);
-		const net = await NetClient.connect(url, 'Late', 'tonhao');
+		const net = await NetClient.connect(url, 'Late', 'bruto');
 		await until(() => net.lobby !== null);
 		expect(net.lobby?.seats.filter(Boolean).length).toBe(2);
 		void raw.leave();
@@ -160,7 +160,7 @@ describe('LAN table', () => {
 	test('isMessage accepts only well-formed client messages', () => {
 		expect(isMessage({ type: 'start' })).toBe(true);
 		expect(isMessage({ type: 'action', action: { kind: 'fold', seat: 0 } })).toBe(true);
-		expect(isMessage({ type: 'profile', name: 'a', char: 'bia' })).toBe(true);
+		expect(isMessage({ type: 'profile', name: 'a', char: 'mia' })).toBe(true);
 		for (const m of [
 			null,
 			1,

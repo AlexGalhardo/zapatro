@@ -9,9 +9,9 @@ export const BOSS_POOL = [
 	'cartomante',
 	'juiz',
 	'agiota',
-	'delegado',
-	'professor',
-	'mudo',
+	'tony',
+	'stuart',
+	'peter',
 	'sortuda',
 ] as const;
 export const FINAL_BOSS = 'reiDoTruco';
@@ -21,7 +21,7 @@ export type BossId = (typeof BOSS_POOL)[number] | typeof FINAL_BOSS;
  * O Delegado: ×Mult of the Corrida Lance. The design says 0, but Corrida is most of the hands a
  * team wins, so 0 made the table a coin flip on the clock (docs/balancing.md, A5).
  */
-export const DELEGADO_CORRIDA_X = 0.5;
+export const TONY_CORRIDA_X = 0.5;
 
 /** A Sortuda: chance that the vira makes a rival card a manilha. */
 export const SORTUDA_CHANCE = 0.35;

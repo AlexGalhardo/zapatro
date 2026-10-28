@@ -325,7 +325,7 @@ await group(browser, 'run', async (t) => {
 
 await group(browser, 'continue', async (t) => {
 	await t.open('?run=1&seed=9');
-	await t.eval('(g) => g.scene.keys.Run.choosePartner("donaCida")');
+	await t.eval('(g) => g.scene.keys.Run.choosePartner("cida")');
 	await t.eval('(g) => g.scene.keys.Run.play()');
 	t.check('the table of the run opens', await t.until('table', active('Table'), 5000));
 	const before = await t.eval<string>(
@@ -393,7 +393,7 @@ const SHOP = `(g) => {
 const runWith = (cond: string): string => `(g) => { const r = (${runOf})(g); return ${cond}; }`;
 const newRunIn = async (t: T, seed: number): Promise<void> => {
 	await t.open(`?run=1&seed=${seed}`);
-	await t.eval('(g) => g.scene.keys.Run.choosePartner("donaCida")');
+	await t.eval('(g) => g.scene.keys.Run.choosePartner("cida")');
 };
 
 await group(browser, 'settings', async (t) => {

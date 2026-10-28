@@ -121,7 +121,7 @@ describe('collection and equipping', () => {
 	});
 
 	test('up to the slots (Zé has one fewer), none is allowed, no repeats', () => {
-		expect(slotsFor('tonhao')).toBe(4);
+		expect(slotsFor('bruto')).toBe(4);
 		expect(slotsFor('ze')).toBe(3);
 		const col = Object.fromEntries(TRINKET_IDS.slice(0, 6).map((id) => [id, 1]));
 		const on: string[] = [];
@@ -146,7 +146,7 @@ describe('collection and equipping', () => {
 	});
 
 	test('an old run (no trinket fields) loads with none equipped', () => {
-		const run = newRun(1, 'tonhao') as unknown as Record<string, unknown>;
+		const run = newRun(1, 'bruto') as unknown as Record<string, unknown>;
 		run.trinkets = undefined;
 		run.trinketSlots = undefined;
 		run.collection = undefined;
@@ -200,7 +200,7 @@ describe('the shop odds', () => {
 	});
 
 	test('the shop after a table sells trinkets only', () => {
-		const run = newRun(3, 'tonhao');
+		const run = newRun(3, 'bruto');
 		const r: TableResult = {
 			won: true,
 			rivalTentos: 9,

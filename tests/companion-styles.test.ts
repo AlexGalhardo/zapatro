@@ -48,7 +48,7 @@ function habits(partner: CompanionId, tables = 200) {
 
 describe('partner styles (each partner plays the bets their own way)', () => {
 	const h = Object.fromEntries(
-		(['tonhao', 'donaCida', 'zeMalandro', 'juninho'] as const).map((p) => [p, habits(p)]),
+		(['bruto', 'cida', 'jhony', 'nino'] as const).map((p) => [p, habits(p)]),
 	) as Record<CompanionId, ReturnType<typeof habits>>;
 
 	test('every partner has a style', () => {
@@ -59,16 +59,16 @@ describe('partner styles (each partner plays the bets their own way)', () => {
 	// first changes with the deal sequence, so the test asks for the two of them over the rest.
 	test('Tonhão (aggressive) and Zé Malandro call truco the most; Dona Cida (cautious) the least', () => {
 		const rates = Object.values(h).map((x) => x.callRate);
-		const top = [h.tonhao.callRate, h.zeMalandro.callRate];
-		expect(Math.min(...top)).toBeGreaterThan(h.juninho.callRate);
-		expect(Math.min(...top)).toBeGreaterThan(h.donaCida.callRate);
-		expect(h.donaCida.callRate).toBe(Math.min(...rates));
+		const top = [h.bruto.callRate, h.jhony.callRate];
+		expect(Math.min(...top)).toBeGreaterThan(h.nino.callRate);
+		expect(Math.min(...top)).toBeGreaterThan(h.cida.callRate);
+		expect(h.cida.callRate).toBe(Math.min(...rates));
 	});
 
 	test('Zé Malandro (bluffer) calls truco with weak hands far more than the others', () => {
-		expect(h.zeMalandro.bluffRate).toBeGreaterThan(0.25);
-		for (const p of ['tonhao', 'donaCida', 'juninho'] as const)
-			expect(h.zeMalandro.bluffRate).toBeGreaterThan(h[p].bluffRate);
-		expect(h.donaCida.bluffRate).toBeLessThan(0.1);
+		expect(h.jhony.bluffRate).toBeGreaterThan(0.25);
+		for (const p of ['bruto', 'cida', 'nino'] as const)
+			expect(h.jhony.bluffRate).toBeGreaterThan(h[p].bluffRate);
+		expect(h.cida.bluffRate).toBeLessThan(0.1);
 	});
 });

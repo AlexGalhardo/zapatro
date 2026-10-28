@@ -29,7 +29,7 @@ test("the table's prize card shows exactly what the win pays", () => {
 					const before = run.money;
 					const reward = finishTable(run, win(tableMoney, rival));
 					const paid = run.money - before;
-					expect(mayDouble).toBe(partner === 'neide');
+					expect(mayDouble).toBe(partner === 'sheila');
 					if (reward?.doubled) {
 						// Sheila doubles what the table earned (never its losses) and the reward lines.
 						expect(paid).toBe(

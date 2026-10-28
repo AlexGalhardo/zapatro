@@ -34,13 +34,13 @@ const hand = (o: Partial<HandInfo> = {}): HandInfo => ({
 
 describe('starting decks (B2.1)', () => {
 	test('do Dinheiro: +$10, one Manha slot less', () => {
-		const money = newRun(1, 'tonhao', 'dinheiro');
+		const money = newRun(1, 'bruto', 'dinheiro');
 		expect(money.money).toBe(ECONOMY.startMoney + 10);
 		expect(money.manhaSlots).toBe(ECONOMY.manhaSlots - 1);
 	});
 
 	test('Viciado: an extra copy of every ♣ card, all ids unique', () => {
-		const run = newRun(1, 'tonhao', 'viciado');
+		const run = newRun(1, 'bruto', 'viciado');
 		expect(run.deck).toHaveLength(55);
 		expect(new Set(run.deck.map((c) => c.id)).size).toBe(55);
 	});
@@ -81,7 +81,7 @@ describe('starting decks (B2.1)', () => {
 	});
 
 	test('the run table passes the deck rules to the Match', () => {
-		const run = newRun(1, 'tonhao', 'blefe');
+		const run = newRun(1, 'bruto', 'blefe');
 		expect(tableMatch(run, { kind: 'random' }).rules.signals[0]).toBe(2);
 	});
 });
@@ -105,8 +105,8 @@ describe('stakes (B2.2)', () => {
 	});
 
 	test('higher stakes: bigger goals, no small-table prize, rivals start ahead', () => {
-		const a = newRun(1, 'tonhao', 'normal', 1);
-		const b = newRun(1, 'tonhao', 'normal', 8);
+		const a = newRun(1, 'bruto', 'normal', 1);
+		const b = newRun(1, 'bruto', 'normal', 8);
 		expect(currentGoal(b)).toBe(Math.round(currentGoal(a) * 1.8));
 		expect(tableMatch(b, { kind: 'random' }).state.score.them).toBe(7);
 		const r = finishTable(b, {
@@ -158,19 +158,19 @@ describe('feats, unlocks, almanac and stats (B2.3–B2.4)', () => {
 
 	test('run end: history, Stake progress, partner feat; Championship 4 unlocks Juninho', () => {
 		const m = meta();
-		const run = newRun(1, 'tonhao', 'normal', 1);
+		const run = newRun(1, 'bruto', 'normal', 1);
 		run.champ = 4;
 		expect(recordRunState(m, run)).toContain('campeonato4');
-		expect(isUnlocked(m, 'partner:juninho')).toBe(true);
+		expect(isUnlocked(m, 'partner:nino')).toBe(true);
 		run.champ = 8;
 		const got = recordRunEnd(m, run, 'won', 1000);
 		expect(got).toContain('reiDoTruco');
-		expect(got).toContain('comTonhao');
+		expect(got).toContain('comBruto');
 		expect(m.stats.wins).toBe(1);
 		expect(m.stats.history[0]).toMatchObject({
 			reason: 'won',
 			championship: 8,
-			partner: 'tonhao',
+			partner: 'bruto',
 		});
 		expect(maxStake(m, 'normal')).toBe(2);
 		expect(maxStake(m, 'interior')).toBe(1);

@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { SFX, SFX_MIN_INTERVAL, type SfxKey, VO_DEF, VO_LINES, type VoLine } from '../data/sfx';
 import { pitchRate, VoiceLimiter } from '../logic/voice-limiter';
+import { voKey, voLang } from '../logic/voice-lines';
 import { getSave } from './context';
 
 const limiter = new VoiceLimiter(SFX_MIN_INTERVAL);
@@ -24,18 +25,33 @@ export function sfx(scene: Phaser.Scene, key: SfxKey, volume = 1): void {
 	});
 }
 
-/** A character's voice line (`vo.<char>.<line>`), one at a time per character; silent if absent. */
-export function voice(scene: Phaser.Scene, char: string, line: VoLine): void {
-	if (import.meta.env.SOUND_MUTED === 'true') return;
-	const key = `vo.${char}.${line}`;
-	if (!scene.cache.audio.exists(key)) return;
-	if (!limiter.tryStart(`vo.${char}`, performance.now(), VO_DEF.ms, VO_DEF.voices)) return;
-	const v = getSave(scene).settings.volume;
+/** The voice line playing now, if any (jokes never start over another line). */
+let speaking: Phaser.Sound.BaseSound | null = null;
+
+export function voiceBusy(): boolean {
+	return speaking?.isPlaying === true;
+}
+
+/**
+ * A character's voice line in the Settings language (`vo.<lang>.<char>.<line>`), one at a time per
+ * character; silent if absent (not loaded yet, or a character without a voice).
+ */
+export function voice(scene: Phaser.Scene, char: string, line: VoLine): boolean {
+	if (import.meta.env.SOUND_MUTED === 'true') return false;
+	const save = getSave(scene);
+	const key = voKey(voLang(save.settings.lang), char, line);
+	if (!scene.cache.audio.exists(key)) return false;
+	if (!limiter.tryStart(`vo.${char}`, performance.now(), VO_DEF.ms, VO_DEF.voices)) return false;
+	const v = save.settings.volume;
 	const gain = v.master * v.sfx * VO_DEF.volume;
-	if (gain <= 0) return;
+	if (gain <= 0) return false;
 	const n = 1 + Math.floor(Math.random() * VO_LINES[line]);
 	const take = n > 1 && scene.cache.audio.exists(`${key}.${n}`) ? `${key}.${n}` : key;
-	scene.sound.play(take, { volume: gain });
+	const sound = scene.sound.add(take, { volume: gain });
+	sound.once('complete', () => sound.destroy());
+	sound.play();
+	speaking = sound;
+	return true;
 }
 
 /** Random take among the loaded variants of a key (take 1 is the base file). */

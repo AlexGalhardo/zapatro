@@ -16,10 +16,10 @@ import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL, SHOW_SCORE_PANEL } from '../config/features';
 import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
-import { sfx, voice } from '../core/audio';
+import { sfx, voice, voiceBusy } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
 import { shake, zoomPunch } from '../core/feel';
-import { duckMusic, playAmbience, playMusic } from '../core/music';
+import { duckMusic, playAmbience, playMusic, tableMusic } from '../core/music';
 import { pokiGameplay } from '../core/poki';
 import { trackZoom } from '../core/viewport';
 import { AI_PROFILE_IDS, AI_PROFILES, type AiProfileId } from '../data/ai-profiles';
@@ -31,7 +31,7 @@ import { JOKER_EFFECTS } from '../data/jokers';
 import type { Action as KeyAction } from '../data/keybinds';
 import type { LanceId } from '../data/lances';
 import { isManhaId } from '../data/manhas';
-import { DUCK, type VoLine } from '../data/sfx';
+import { DUCK, VO_JOKE, type VoJoke, type VoLine } from '../data/sfx';
 import { SPECIAL_CARDS, specialOf } from '../data/specials';
 import { TRINKET_SLOTS } from '../data/trinkets';
 import { TUTORIAL_DEAL, type TutorialAnchor, type TutorialTrigger } from '../data/tutorial';
@@ -80,6 +80,7 @@ import {
 	teamOf,
 } from '../logic/truco/table';
 import type { ViewSize } from '../logic/viewport';
+import { acceptLine, foldLine, jokeDue, nextJoke } from '../logic/voice-lines';
 import type { NetClient } from '../net/client';
 import type { ServerMessage, TableSnapshot, TableStart } from '../net/protocol';
 import { Button } from '../ui/Button';
@@ -475,6 +476,11 @@ export class TableScene extends Phaser.Scene {
 	 * deals or the AI (the match's Rng stays as the rules use it).
 	 */
 	private chatter = new Rng(1);
+	/** The call on the table (folding it to 6+ gets the bigger complaint). */
+	private pendingCall = 3;
+	private handsSinceJoke = 0;
+	/** Each character's last joke, so the next one is a different one. */
+	private lastJoke = new Map<string, VoJoke>();
 	private seats = new Map<Seat, SeatView>();
 	private handCards: Phaser.GameObjects.Image[] = [];
 	/** The key (or pad button) that plays each card, under it. */
@@ -636,7 +642,7 @@ export class TableScene extends Phaser.Scene {
 		}
 		const deal = this.tutorial ? TUTORIAL_DEAL : null;
 		const rng = new Rng(deal?.seed ?? params.seed ?? randomSeed());
-		const partner: CompanionId = isCompanion(params.partner) ? params.partner : 'tonhao';
+		const partner: CompanionId = isCompanion(params.partner) ? params.partner : 'bruto';
 		const rivals = rng.shuffle(COMPANION_IDS.filter((id) => id !== partner)).slice(0, 2) as [
 			CompanionId,
 			CompanionId,
@@ -686,7 +692,10 @@ export class TableScene extends Phaser.Scene {
 	private startTable(chars: Record<Seat, string>): void {
 		this.buildLayout(chars);
 		const boss = this.match.boss;
-		playMusic(this, boss === 'reiDoTruco' ? 'music.king' : boss ? 'music.boss' : 'music.table');
+		playMusic(
+			this,
+			boss === 'reiDoTruco' ? 'music.king' : boss ? 'music.boss' : tableMusic(this),
+		);
 		playAmbience(this, `amb.${this.place()}`);
 		this.bindKeys();
 		trackZoom(this, this.cameras.main, (view) => this.layout(view));
@@ -2022,6 +2031,22 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			duration: this.dur(300),
 		});
 		sfx(this, 'sfx.card.shuffle');
+		this.pendingCall = 3;
+		this.handsSinceJoke++;
+		if (k === 'normal' && jokeDue(this.handsSinceJoke, this.chatter.next()))
+			this.time.delayedCall(this.dur(VO_JOKE.delayMs), () => this.tellJoke());
+	}
+
+	/** A calm-moment joke by a random NPC, never over another line or speech bubble. */
+	private tellJoke(): void {
+		if (this.net || voiceBusy()) return;
+		for (const v of this.seats.values()) if (v.bubble.visible) return;
+		const seat = ([1, 2, 3] as const)[this.chatter.int(0, 2)] ?? 1;
+		const char = this.charOf(seat);
+		const joke = nextJoke(this.lastJoke.get(char), this.chatter.next());
+		if (!voice(this, char, joke)) return;
+		this.lastJoke.set(char, joke);
+		this.handsSinceJoke = 0;
 	}
 
 	private showBanner(text: string, ms = 900): void {
@@ -2515,6 +2540,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				shake(this, this.dur(160), 0.004);
 				if (e.seat === 0) this.showBanner(t(CALL_KEY[e.to] ?? 'table.call.3'));
 				this.cue('truco');
+				this.pendingCall = e.to;
 				if (e.seat !== 0) {
 					voice(this, this.charOf(e.seat), CALL_VO[e.to] ?? 'truco');
 					// The first call is shouted in one of five ways; Seis/Nove/Doze keep their name.
@@ -2531,7 +2557,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			case 'accepted':
 				sfx(this, 'sfx.bet.accept');
 				if (e.seat !== 0) {
-					voice(this, this.charOf(e.seat), 'bora');
+					voice(this, this.charOf(e.seat), acceptLine(this.chatter.next()));
 					this.say(e.seat, this.line('say.accept', 5));
 				}
 				await this.wait(500);
@@ -2539,7 +2565,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			case 'folded':
 				sfx(this, 'sfx.bet.run');
 				if (e.seat !== 0) {
-					voice(this, this.charOf(e.seat), 'corre');
+					voice(this, this.charOf(e.seat), foldLine(this.pendingCall));
 					this.say(e.seat, this.line('say.fold', 5));
 					this.face(e.seat, 'sweat', 900);
 				}
@@ -2597,11 +2623,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			case 'handOver': {
 				const { winner, tentos } = e.end;
 				this.refreshHud();
-				// Rivals gloat when they take the hand; a big hand of yours gets an "ô loco".
-				if (winner === 'them') {
-					sfx(this, 'sfx.hand.lose');
-					voice(this, this.charOf(1), 'caiu');
-				} else if (winner === 'us' && tentos >= 6) voice(this, this.charOf(3), 'oloco');
+				if (winner === 'them') sfx(this, 'sfx.hand.lose');
 				this.showBanner(
 					winner
 						? t(winner === 'us' ? 'table.hand.us' : 'table.hand.them', { n: tentos })
@@ -2831,7 +2853,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			{ icon: 'coin', label: 'table.end.prize', value: r.prize },
 			{ icon: 'next', label: 'table.end.speed', value: r.speed },
 			{ icon: 'calc', label: 'table.end.interest', value: r.interest },
-			...(this.runState?.partner === 'zeMalandro'
+			...(this.runState?.partner === 'jhony'
 				? [{ icon: 'people', label: 'table.end.partner' as I18nKey, value: r.partner }]
 				: []),
 			{ icon: 'cards', label: 'table.end.table', value: r.table },
