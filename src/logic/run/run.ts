@@ -87,7 +87,6 @@ export interface TableResult {
 	rivalTentos: number;
 	/** Money earned at the table (Manhas, bosses); may be negative. */
 	money: number;
-	fame: number;
 	hands: number;
 	bestHand: number;
 }
@@ -116,7 +115,6 @@ export interface TableProgress {
 	hands: number;
 	quedas: number;
 	rivalQuedas: number;
-	fame: number;
 	gritadorUsed: boolean;
 }
 
@@ -152,8 +150,6 @@ export interface RunState {
 	levels: LanceLevels;
 	partner: CompanionId;
 	partnerLevel: number;
-	/** Nino's level (a level per table won); 1 for the others, who do not level. */
-	fame: number;
 	upgrades: UpgradeId[];
 	/** Championship of the last upgrade bought (one per Championship). */
 	upgradeChamp: number;
@@ -229,7 +225,6 @@ export function newRun(
 		levels: {},
 		partner,
 		partnerLevel: partner === 'juninho' ? 0 : 1,
-		fame: d.fame ?? 0,
 		upgrades: [],
 		upgradeChamp: 0,
 		promises: [],
@@ -380,7 +375,6 @@ export function projectedReward(
 /** Ends the current table: rewards and the next phase (shop, run won or run lost). */
 export function finishTable(run: RunState, r: TableResult): Reward | null {
 	run.tableSave = null;
-	run.fame = r.fame;
 	run.extraLife = false;
 	for (const id of r.broken ?? []) {
 		const i = run.deck.findIndex((c) => c.id === id);

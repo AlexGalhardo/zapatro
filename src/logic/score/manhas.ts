@@ -13,20 +13,17 @@ export interface HandFacts {
 	myHand: Card[];
 	/** Seats that called or raised truco this hand. */
 	calls: readonly Seat[];
-	/** Fame of your team (design §5.3). */
-	fame: number;
 }
 
 export function handFacts(
 	state: TableState,
 	lance: LanceId | null,
 	calls: readonly Seat[],
-	fame = 0,
 ): HandFacts {
 	const played = state.tricks.flatMap((t) =>
 		t.plays.filter((p) => p.seat === 0).map((p) => p.card),
 	);
-	return { state, lance, myHand: [...played, ...state.hands[0]], calls, fame };
+	return { state, lance, myHand: [...played, ...state.hands[0]], calls };
 }
 
 const holdsManilha = (f: HandFacts): boolean => f.myHand.some((c) => c.rank === f.state.manilha);
@@ -83,10 +80,6 @@ function holds(f: HandFacts, w: ManhaWhen): boolean {
 			const won = wonTricks(s).map((p) => p.seat);
 			return won.includes(0) && won.includes(2);
 		}
-		case 'fameAtLeast':
-			return f.fame >= w.fame;
-		case 'fameAtMost':
-			return f.fame <= w.fame;
 	}
 }
 

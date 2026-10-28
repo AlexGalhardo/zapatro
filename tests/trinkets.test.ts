@@ -205,7 +205,6 @@ describe('the shop odds', () => {
 			won: true,
 			rivalTentos: 9,
 			money: 0,
-			fame: 0,
 			hands: 5,
 			bestHand: 50,
 		};

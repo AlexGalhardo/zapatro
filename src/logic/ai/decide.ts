@@ -191,8 +191,6 @@ export interface DecideContext {
 	profile: AiProfile;
 	/** The run deck (the AI knows its composition). */
 	deck: readonly Card[];
-	/** Fame of the rival team as this seat sees it: -1 honest … +1 bluffer (design §5.3). */
-	rivalFame: number;
 	/** Scales the reading of a call when answering it (Manha Cara de Pau: 0.7). */
 	callScale?: number;
 }
@@ -222,7 +220,7 @@ export function decide(
 	if (obs.pending) {
 		const p = winChance(obs, ctx.deck, rng);
 		// A call claims strength; a caller with a bluffing reputation claims less.
-		const read = (p - 0.12 * (1 - ctx.rivalFame * profile.fameWeight)) * (ctx.callScale ?? 1);
+		const read = (p - 0.12) * (ctx.callScale ?? 1);
 		const callerTeam = teamOf(obs.pending.by);
 		const foldLoses = obs.score[callerTeam] + obs.bet >= MATCH_POINTS;
 		const raise = has('truco');

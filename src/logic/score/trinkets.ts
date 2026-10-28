@@ -103,7 +103,7 @@ export function trinketCardChips(
 ): number {
 	let total = chips;
 	for (const e of list) {
-		const v = trinketValues(e.id, e.level);
+		const v = trinketValues(e.id, e.level, e.flawX);
 		if (!v) continue;
 		for (const fx of [v.perk, v.flaw]) {
 			if (fx.k !== 'cardChips') continue;
@@ -197,7 +197,7 @@ export function trinketSteps(
 	into: ScoreStep[],
 ): void {
 	for (const e of list) {
-		const v = trinketValues(e.id, e.level);
+		const v = trinketValues(e.id, e.level, e.flawX);
 		if (!v) continue;
 		const source = `trinket:${e.id}`;
 		// Each effect is read after the one before it was added: `running` sees the steps so far.

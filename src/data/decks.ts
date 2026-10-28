@@ -9,8 +9,6 @@ export interface DeckDef {
 	back: string;
 	/** Chips ×2 for cards of these ranks (do Interior). */
 	doubleChipRanks?: readonly string[];
-	/** Starting Fame (do Blefe: Bluffer). */
-	fame?: number;
 	extraSignals?: number;
 	money?: number;
 	manhaSlots?: number;
@@ -21,7 +19,7 @@ export interface DeckDef {
 export const DECKS: Record<DeckId, DeckDef> = {
 	normal: { back: 'default' },
 	interior: { back: 'interior', doubleChipRanks: ['4', '5', '6'] },
-	blefe: { back: 'blefe', fame: 0.5, extraSignals: 1 },
+	blefe: { back: 'blefe', extraSignals: 1 },
 	dinheiro: { back: 'dinheiro', money: 10, manhaSlots: -1 },
 	viciado: { back: 'viciado', extraSuit: 'clubs' },
 };

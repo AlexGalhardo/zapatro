@@ -17,7 +17,6 @@ export type ManhaTag =
 	| 'VAZA-3'
 	| 'PARCEIRO'
 	| 'OURO'
-	| 'FAMA'
 	| 'SINAL';
 
 export type Rarity = 'common' | 'uncommon' | 'rare' | 'legendary';
@@ -56,9 +55,7 @@ export type ManhaWhen =
 	| { k: 'manilhasHeld'; n: number }
 	| { k: 'manilhaRank'; rank: Rank }
 	/** You and your partner each won at least one trick. */
-	| { k: 'bothWon' }
-	| { k: 'fameAtLeast'; fame: number }
-	| { k: 'fameAtMost'; fame: number };
+	| { k: 'bothWon' };
 
 /** The effect repeats once per trick your team won that matches the filter. */
 export interface PerTrickWon {
@@ -468,22 +465,6 @@ export const MANHAS = [
 		tags: ['MANILHA'],
 		when: [{ k: 'won' }, { k: 'noManilha' }],
 		effect: { addMult: 4 },
-	},
-	{
-		id: 'mentirosoConvincente',
-		rarity: 'uncommon',
-		price: 6,
-		tags: ['FAMA', 'BLEFE'],
-		when: [{ k: 'fameAtLeast', fame: 0.2 }],
-		effect: { addMult: 5 },
-	},
-	{
-		id: 'palavraDeHonra',
-		rarity: 'uncommon',
-		price: 6,
-		tags: ['FAMA'],
-		when: [{ k: 'fameAtMost', fame: -0.2 }],
-		effect: { chips: 35 },
 	},
 	{
 		id: 'peitudo',

@@ -6,7 +6,6 @@ const win = (money: number, rivalTentos: number): TableResult => ({
 	won: true,
 	rivalTentos,
 	money,
-	fame: 0,
 	hands: 5,
 	bestHand: 50,
 });

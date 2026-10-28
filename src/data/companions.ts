@@ -42,7 +42,7 @@ export interface CompanionDef {
 	/**
 	 * The companion's own AI: the archetype's profile with the style. As a partner it plays the
 	 * bets his way (it never answers a rival's truco: only the player does); as a rival the
-	 * Championship's pool profile gives `error` and `fameWeight` and this gives the personality.
+	 * Championship's pool profile gives `error` and this gives the personality.
 	 */
 	profile: AiProfile;
 }

@@ -161,8 +161,6 @@ const CASES: [ManhaId, () => TableState, Ctx, number, () => TableState, Ctx][] =
 	['parceiroDeAco', S.limpa, { calls: [2] }, 1, S.limpa, { calls: [0] }],
 	['confiaEmMim', S.partner, {}, 1, S.limpa, {}],
 	['manilhaDeReserva', S.limpa, {}, 1, S.manilhas, {}],
-	['mentirosoConvincente', S.limpa, { fame: 0.5 }, 1, S.limpa, { fame: 0 }],
-	['palavraDeHonra', S.limpa, { fame: -0.5 }, 1, S.limpa, { fame: 0 }],
 	['peitudo', S.limpa, { calls: [1] }, 1, S.limpa, {}],
 	['caixaDeFosforo', S.manilhas, {}, 2, S.limpa, {}],
 	['ouTudoOuNada', () => S.limpa({ bet: 9 }), {}, 1, () => S.limpa({ bet: 6 }), {}],
@@ -181,10 +179,10 @@ const CASES: [ManhaId, () => TableState, Ctx, number, () => TableState, Ctx][] =
 ];
 
 describe('BETA Manhas (B1.1)', () => {
-	test('60 Manhas: 24 common, 18 uncommon, 12 rare, 6 legendary', () => {
+	test('58 Manhas: 24 common, 16 uncommon, 12 rare, 6 legendary', () => {
 		const n = (r: string) => MANHAS.filter((m) => m.rarity === r).length;
-		expect(MANHAS).toHaveLength(60);
-		expect([n('common'), n('uncommon'), n('rare'), n('legendary')]).toEqual([24, 18, 12, 6]);
+		expect(MANHAS).toHaveLength(58);
+		expect([n('common'), n('uncommon'), n('rare'), n('legendary')]).toEqual([24, 16, 12, 6]);
 	});
 
 	for (const [id, yes, yesCtx, times, no, noCtx] of CASES)

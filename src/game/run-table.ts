@@ -2,6 +2,7 @@ import { AI_PROFILES, type AiProfile, type AiProfileId } from '../data/ai-profil
 import { COMPANIONS, type CompanionId, PARTNER_STYLES } from '../data/companions';
 import { DECKS } from '../data/decks';
 import { stakeRules } from '../data/stakes';
+import { doubleFlaws } from '../data/trinkets';
 import { Rng } from '../logic/rng';
 import { currentBoss, currentGoal, equippedOf, type RunState } from '../logic/run/run';
 import { trinketTotals } from '../logic/run/trinkets';
@@ -37,23 +38,24 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		{ kind: 'ai', profile: partnerProfile(run) },
 		rivalBrain(p3, c3),
 	];
-	const totals = trinketTotals(equippedOf(run));
+	const boss = currentBoss(run);
+	const equipped = boss === 'professor' ? doubleFlaws(equippedOf(run)) : equippedOf(run);
+	const totals = trinketTotals(equipped);
 	return new Match({
 		rng: new Rng(tableSeed(run)),
 		brains,
 		deck: run.deck,
-		fame: run.fame,
 		goal: currentGoal(run),
 		levels: run.levels,
 		manhas: run.manhas,
 		partner: { id: run.partner, level: run.partnerLevel },
-		trinkets: equippedOf(run),
+		trinkets: equipped,
 		tablesWon: run.stats.tables,
 		startTentos: totals.startTentos,
 		startMoney: totals.startMoney,
 		loseTento: totals.loseTento,
 		rivalCatch: totals.rivalCatch,
-		boss: currentBoss(run),
+		boss,
 		extraSignals:
 			(run.upgrades.includes('maisSinal') ? 1 : 0) + (DECKS[run.startDeck].extraSignals ?? 0),
 		doubleChipRanks: DECKS[run.startDeck].doubleChipRanks,

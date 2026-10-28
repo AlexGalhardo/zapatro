@@ -341,8 +341,15 @@ export const TRINKET_VALUES: ReadonlyMap<string, readonly TrinketValues[]> = new
 	]),
 );
 
-export const trinketValues = (id: string, level: number): TrinketValues | null =>
-	TRINKET_VALUES.get(id)?.[Math.min(4, Math.max(1, level)) - 1] ?? null;
+export function trinketValues(id: string, level: number, flawX = 1): TrinketValues | null {
+	const lv = Math.min(4, Math.max(1, level));
+	const v = TRINKET_VALUES.get(id)?.[lv - 1];
+	if (!v || flawX === 1) return v ?? null;
+	const base = TRINKET_BY_ID.get(id);
+	return base
+		? { perk: v.perk, flaw: scaleFx(base.flaw, (FLAW_SCALE[lv - 1] ?? 1) * flawX) }
+		: null;
+}
 
 /** The number an i18n text shows (`{n}`), and the second one (`{m}`). */
 export function fxArgs(fx: Fx): { n: number; m: number } {
@@ -367,4 +374,10 @@ export function fxArgs(fx: Fx): { n: number; m: number } {
 export interface EquippedTrinket {
 	id: string;
 	level: TrinketLevel;
+	/** Extra factor on the Flaw (O Professor doubles it). */
+	flawX?: number;
 }
+
+/** O Professor: every equipped Flaw counts double on his table. */
+export const doubleFlaws = (list: readonly EquippedTrinket[]): EquippedTrinket[] =>
+	list.map((e) => ({ ...e, flawX: 2 }));

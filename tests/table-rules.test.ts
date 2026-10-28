@@ -79,7 +79,6 @@ describe('table-rule Manhas (A3.2)', () => {
 			{
 				profile: { ...AI_PROFILES.pro, error: 0 },
 				deck: standardDeck(),
-				rivalFame: 0,
 				callScale: 0,
 			},
 			new Rng(1),

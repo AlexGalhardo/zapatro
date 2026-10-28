@@ -2,7 +2,6 @@ import { describe, expect, test } from 'bun:test';
 import { AI_PROFILES } from '../src/data/ai-profiles';
 import { type SeatBrain, simulateMatch } from '../src/game/match';
 import { decide, honestSign, winChance } from '../src/logic/ai/decide';
-import { fameAfterShowdown, isStrongCall } from '../src/logic/ai/fame';
 import { Rng } from '../src/logic/rng';
 import { type Card, parseCard, standardDeck } from '../src/logic/truco/cards';
 import { observe } from '../src/logic/truco/observe';
@@ -94,7 +93,7 @@ describe('AI decisions (PA2)', () => {
 				const a = decide(
 					observe(called, 1),
 					legalActions(called, 1),
-					{ profile: { ...AI_PROFILES.calculator, error: 0 }, deck, rivalFame: 0 },
+					{ profile: { ...AI_PROFILES.calculator, error: 0 }, deck },
 					rng,
 				);
 				if (a.kind === 'fold') folds++;
@@ -132,7 +131,7 @@ describe('AI decisions (PA2)', () => {
 				decide(
 					observe(s, 0),
 					legalActions(s, 0),
-					{ profile: AI_PROFILES.pro, deck, rivalFame: 0 },
+					{ profile: AI_PROFILES.pro, deck },
 					new Rng(1000 + i),
 				);
 				best = Math.min(best, performance.now() - t0);
@@ -141,17 +140,6 @@ describe('AI decisions (PA2)', () => {
 		}
 		times.sort((a, b) => a - b);
 		expect(times[Math.floor(times.length * 0.99)]).toBeLessThan(5);
-	});
-});
-
-describe('Fame (design §5.3)', () => {
-	test('weak shown calls push towards bluffer, strong towards honest, clamped', () => {
-		expect(isStrongCall([c('3d')], 'K')).toBe(true);
-		expect(isStrongCall([c('4d'), c('Kc')], 'K')).toBe(true);
-		expect(isStrongCall([c('4d')], 'K')).toBe(false);
-		expect(fameAfterShowdown(0, false)).toBeGreaterThan(0);
-		expect(fameAfterShowdown(0, true)).toBeLessThan(0);
-		expect(fameAfterShowdown(0.95, false)).toBe(1);
 	});
 });
 

@@ -4,6 +4,7 @@ import { AI_PROFILES } from '../src/data/ai-profiles';
 import { BOSS_POOL } from '../src/data/bosses';
 import { COMPANION_IDS } from '../src/data/companions';
 import { PROMISES } from '../src/data/promises';
+import { TRINKET_BY_ID, trinketValues } from '../src/data/trinkets';
 import { Match, type MatchOptions, type SeatBrain } from '../src/game/match';
 import { decide } from '../src/logic/ai/decide';
 import { Rng } from '../src/logic/rng';
@@ -44,7 +45,6 @@ const win = (o: Partial<TableResult> = {}): TableResult => ({
 	won: true,
 	rivalTentos: 6,
 	money: 0,
-	fame: 0,
 	hands: 5,
 	bestHand: 50,
 	...o,
@@ -107,7 +107,6 @@ describe('card modifiers (B1.2)', () => {
 		const ctx = {
 			profile: { ...AI_PROFILES.pro, error: 0, signalRate: 0 },
 			deck: standardDeck(),
-			rivalFame: 0,
 		};
 		const a = decide(
 			observe(s, 1),
@@ -209,10 +208,24 @@ describe('bosses and partners (B1.3)', () => {
 		expect(hits).toBeGreaterThan(190);
 	});
 
-	test('O Professor: your Fame counts double for the rivals', () => {
-		expect(match({ boss: 'professor', fame: 0.4 }).fameSeenBy(1)).toBeCloseTo(0.8);
-		expect(match({ fame: 0.4 }).fameSeenBy(1)).toBeCloseTo(0.4);
-		expect(match({ boss: 'professor', fame: 0.4 }).fameSeenBy(2)).toBe(0);
+	test('O Professor: equipped Flaws count double, Perks do not', () => {
+		const list = [{ id: 'acoNaManga', level: 1 as const }];
+		const plain = new Match({ rng: new Rng(7), brains, goal: 100, trinkets: list });
+		const prof = new Match({
+			rng: new Rng(7),
+			brains,
+			goal: 100,
+			trinkets: list,
+			boss: 'professor',
+		});
+		expect(plain.trinketList[0]?.flawX).toBeUndefined();
+		expect(prof.trinketList[0]?.flawX).toBe(2);
+		const a = trinketValues('acoNaManga', 1);
+		const b = trinketValues('acoNaManga', 1, 2);
+		expect(b?.perk).toEqual(a?.perk);
+		const n = (f?: { n?: number }) => Math.abs(f?.n ?? 0);
+		expect(n(b?.flaw as { n?: number })).toBe(n(a?.flaw as { n?: number }) * 2);
+		expect(TRINKET_BY_ID.has('acoNaManga')).toBe(true);
 	});
 
 	test('10 companions; Nino levels up every table won', () => {

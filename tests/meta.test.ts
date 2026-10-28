@@ -33,11 +33,10 @@ const hand = (o: Partial<HandInfo> = {}): HandInfo => ({
 });
 
 describe('starting decks (B2.1)', () => {
-	test('do Dinheiro: +$10, one Manha slot less; do Blefe: Bluffer Fame', () => {
+	test('do Dinheiro: +$10, one Manha slot less', () => {
 		const money = newRun(1, 'tonhao', 'dinheiro');
 		expect(money.money).toBe(ECONOMY.startMoney + 10);
 		expect(money.manhaSlots).toBe(ECONOMY.manhaSlots - 1);
-		expect(newRun(1, 'tonhao', 'blefe').fame).toBe(0.5);
 	});
 
 	test('Viciado: an extra copy of every ♣ card, all ids unique', () => {
@@ -114,7 +113,6 @@ describe('stakes (B2.2)', () => {
 			won: true,
 			rivalTentos: 7,
 			money: 0,
-			fame: 0,
 			hands: 4,
 			bestHand: 10,
 		});

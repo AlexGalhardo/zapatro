@@ -340,7 +340,6 @@ export function simulateRun(
 			won: m.winner === 'us',
 			rivalTentos: m.state.score.them,
 			money: m.money,
-			fame: m.fame,
 			hands: m.hands,
 			bestHand,
 			broken: m.broken,

@@ -124,8 +124,6 @@ export interface ScoreContext {
 	calls?: readonly Seat[];
 	partner?: { id: CompanionId; level: number };
 	boss?: BossId;
-	/** Fame of your team (Manha conditions). */
-	fame?: number;
 	/** Starting deck do Interior: these ranks give Chips ×2. */
 	doubleChipRanks?: readonly string[];
 	/** Equipped trinkets, left to right (docs/trinkets.md). */
@@ -206,7 +204,7 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 	if (me === 'tiao' && s.over?.winner === 'them')
 		steps.push({ source: 'partner:tiao', money: -PARTNER_TRAITS.tiao.lostHandCost });
 	steps.push(...late);
-	const facts = handFacts(s, lance, ctx.calls ?? [], ctx.fame ?? 0);
+	const facts = handFacts(s, lance, ctx.calls ?? []);
 	if (ctx.trinkets?.length)
 		trinketSteps(
 			ctx.trinkets,

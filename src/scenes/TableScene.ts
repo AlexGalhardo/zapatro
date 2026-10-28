@@ -376,7 +376,6 @@ export class TableScene extends Phaser.Scene {
 	/** Joker/special effects of this hand already revealed by their roulette (the box hides the rest). */
 	private fxRevealed = Number.POSITIVE_INFINITY;
 	private betText!: Phaser.GameObjects.Text;
-	private fameText!: Phaser.GameObjects.Text;
 	private status!: Phaser.GameObjects.Text;
 	private statusBar!: Phaser.GameObjects.Graphics;
 	private statusW = 0;
@@ -602,7 +601,6 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 			actor: this.match.actor(),
 			bet: this.match.state.bet,
 			kind: this.match.state.kind,
-			fame: this.match.fame,
 			points: this.match.points,
 			goal: this.match.goal,
 			outcome: this.match.outcome,
@@ -1325,13 +1323,12 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				slotSize(slots),
 				RADIUS.button,
 			);
-		this.fameText = this.add.text(HUD.x + HUD_PAD, HUD.y + 38, '', small).setOrigin(0, 0.5);
 		this.quedasText = this.add.text(HUD.x + HUD_PAD, HUD.y + 68, '', small).setOrigin(0, 0.5);
 		this.hudGfx = this.add.graphics().setDepth(DEPTH.hudShapes);
 	}
 
 	/** Bars, ovals and dots of the sidebar and the HUD block. */
-	private drawHudShapes(us: number, them: number, fame: number): void {
+	private drawHudShapes(us: number, them: number): void {
 		const g = this.hudGfx.clear();
 		const m = this.match;
 		const lx = SIDE.x + SIDEBAR.pad;
@@ -1352,15 +1349,6 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, r);
 			else g.lineStyle(1.5, PALETTE.panelLight, 1).strokeCircle(x, y, r);
 		}
-		const fy = HUD.y + 38;
-		const fw = HUD.w - HUD_PAD - 38;
-		g.fillStyle(PALETTE.shadow, 0.6).fillRoundedRect(HUD.x + 38, fy - 4, fw, 8, 4);
-		g.fillStyle(PALETTE.fame, 1).fillRect(
-			HUD.x + 38 + (fw / 2) * (1 + fame) - 2,
-			fy - 6,
-			4,
-			12,
-		);
 		for (let i = 0; i < 12; i++) {
 			const x = HUD.x + HUD_PAD + 0.5 + i * 9.2;
 			const y = HUD.y + 54;
@@ -1495,12 +1483,10 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		);
 		this.moneyText.setText(t('table.money', { n: this.hudMoney }));
 		this.refreshPrize();
-		const fame = m.fame;
-		this.fameText.setText(t('table.fame'));
 		this.quedasText.setText(
 			m.goal !== undefined ? t('table.hud.quedas', { us: m.quedas }) : '',
 		);
-		this.drawHudShapes(s.score.us, s.score.them, fame);
+		this.drawHudShapes(s.score.us, s.score.them);
 		// A Cartomante hides the vira until the first trick is over.
 		const hidden = m.boss === 'cartomante' && s.tricks.length === 1 && !s.over;
 		this.vira.setTexture(hidden ? tex(this, 'card.back.default') : this.cardKey(s.vira));
@@ -2368,7 +2354,6 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				won: winner === 'us',
 				rivalTentos: m.state.score.them,
 				money: m.money,
-				fame: m.fame,
 				hands: m.hands,
 				bestHand: this.bestHand,
 				broken: m.broken,

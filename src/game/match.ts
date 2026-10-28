@@ -10,9 +10,8 @@ import {
 	type ManhaRule,
 	RIG_VIRA_CHANCE,
 } from '../data/manhas';
-import type { EquippedTrinket } from '../data/trinkets';
+import { doubleFlaws, type EquippedTrinket } from '../data/trinkets';
 import { decide, randomAction } from '../logic/ai/decide';
-import { fameAfterShowdown, isStrongCall } from '../logic/ai/fame';
 import type { HandInfo } from '../logic/meta';
 import { Rng } from '../logic/rng';
 import type { TableProgress } from '../logic/run/run';
@@ -53,7 +52,6 @@ export interface MatchOptions {
 	deck?: Card[];
 	dealer?: Seat;
 	score?: Record<Team, number>;
-	fame?: number;
 	/** Base chance of the human seat to catch rival signals (Manhas raise it). */
 	humanCatch?: number;
 	/** Forced first deal (debug params, tests). */
@@ -103,8 +101,6 @@ export class Match {
 	readonly rules: TableRules;
 	dealer: Seat;
 	state!: TableState;
-	/** Fame of the player's team (design §5.3). */
-	fame: number;
 	hands = 0;
 	readonly goal: number | undefined;
 	readonly levels: LanceLevels;
@@ -129,6 +125,9 @@ export class Match {
 	readonly rivalQuedasNeeded: number;
 	private readonly doubleChipRanks: readonly string[] | undefined;
 	private readonly trinkets: readonly EquippedTrinket[];
+	get trinketList(): readonly EquippedTrinket[] {
+		return this.trinkets;
+	}
 	private readonly tablesWon: number;
 	private readonly loseTento: number;
 	private readonly peekPile: boolean;
@@ -138,8 +137,6 @@ export class Match {
 	progress!: TableProgress;
 	/** Seats that called or raised truco in the current hand. */
 	private calls: Seat[] = [];
-	/** Strength of the player's team's last truco call in this hand (for Fame). */
-	private usCallStrong: boolean | null = null;
 	private gritadorUsed = false;
 	/** Cara de Pau: armed after your team runs, spent on your next call. */
 	private caraDePau = false;
@@ -149,7 +146,6 @@ export class Match {
 		this.rng = r ? new Rng(r.rng) : opts.rng;
 		this.brains = opts.brains;
 		this.deck = opts.deck ?? fullDeck();
-		this.fame = r?.fame ?? opts.fame ?? 0;
 		this.goal = opts.goal;
 		this.levels = opts.levels ?? {};
 		this.manhas = opts.manhas ?? [];
@@ -158,7 +154,8 @@ export class Match {
 		this.rivalQuedasNeeded = RIVAL_QUEDAS_TO_WIN + (opts.extraRivalQuedas ?? 0);
 		this.peekPile = opts.peekPile ?? false;
 		this.doubleChipRanks = opts.doubleChipRanks;
-		this.trinkets = opts.trinkets ?? [];
+		this.trinkets =
+			opts.boss === 'professor' ? doubleFlaws(opts.trinkets ?? []) : (opts.trinkets ?? []);
 		this.tablesWon = opts.tablesWon ?? 0;
 		this.loseTento = opts.loseTento ?? 0;
 		const catchOf = (b: SeatBrain): number =>
@@ -211,16 +208,10 @@ export class Match {
 		return this.caraDePau;
 	}
 
-	/** Your Fame as `seat` reads it (rivals only); O Professor counts it double. */
-	fameSeenBy(seat: Seat): number {
-		if (teamOf(seat) === 'us') return 0;
-		return this.fame * (this.boss === 'professor' ? 2 : 1);
-	}
-
 	/** What the finished hand means for the meta-progression (feats, stats). */
 	handInfo(): HandInfo {
 		const s = this.state;
-		const facts = handFacts(s, this.lastScore?.lance ?? null, this.calls, this.fame);
+		const facts = handFacts(s, this.lastScore?.lance ?? null, this.calls);
 		const noManilha = facts.myHand.every((c) => c.rank !== s.manilha);
 		const won = s.over?.winner === 'us';
 		return {
@@ -274,10 +265,6 @@ export class Match {
 			};
 		for (const e of events) {
 			if (e.type === 'truco') this.calls.push(e.seat);
-			if (e.type === 'truco' && teamOf(e.seat) === 'us')
-				this.usCallStrong = isStrongCall(before.hands[e.seat], before.manilha);
-			if (e.type === 'handOver' && e.end.reason === 'tricks' && this.usCallStrong !== null)
-				this.fame = fameAfterShowdown(this.fame, this.usCallStrong);
 			if (e.type === 'folded' && teamOf(e.seat) === 'us' && this.has('caraDePau'))
 				this.caraDePau = true;
 			if ((e.type === 'accepted' || e.type === 'folded') && teamOf(e.seat) === 'them')
@@ -294,7 +281,6 @@ export class Match {
 				calls: this.calls,
 				partner: this.partner,
 				boss: this.boss,
-				fame: this.fame,
 				doubleChipRanks: this.doubleChipRanks,
 				trinkets: this.trinkets,
 				handNumber: this.hands,
@@ -347,7 +333,6 @@ export class Match {
 			{
 				profile,
 				deck: this.deck,
-				rivalFame: this.fameSeenBy(seat),
 				...(answeringUs && this.caraDePau ? { callScale: CARA_DE_PAU_SCALE } : {}),
 			},
 			this.rng,
@@ -371,7 +356,6 @@ export class Match {
 	}
 
 	private dealHand(score: Record<Team, number>, forced?: MatchOptions['firstDeal']): void {
-		this.usCallStrong = null;
 		this.calls = [];
 		this.hands++;
 		this.progress = {
@@ -383,7 +367,6 @@ export class Match {
 			hands: this.hands,
 			quedas: this.quedas,
 			rivalQuedas: this.rivalQuedas,
-			fame: this.fame,
 			gritadorUsed: this.gritadorUsed,
 		};
 		const rules: TableRules =

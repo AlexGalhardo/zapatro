@@ -138,7 +138,7 @@ export function trinketTotals(list: readonly EquippedTrinket[]): TrinketTotals {
 		rivalCatch: 0,
 	};
 	for (const e of list) {
-		const v = trinketValues(e.id, e.level);
+		const v = trinketValues(e.id, e.level, e.flawX);
 		if (!v) continue;
 		for (const fx of [v.perk, v.flaw]) {
 			switch (fx.k) {
