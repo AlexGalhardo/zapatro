@@ -1,6 +1,7 @@
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { RESOLUTION_IDS, type ResolutionId } from '../data/display';
 import type { KeyBindings } from '../data/keybinds';
+import { isTrinketId } from '../data/trinkets';
 import { LANGS, type Lang } from '../i18n';
 import { defaultKeys, parseKeys } from './keybinds';
 
@@ -87,6 +88,8 @@ export interface MetaSave {
 	stakes: Record<string, number>;
 	/** Ids seen at least once (almanac). */
 	seen: string[];
+	/** Trinkets held across runs: id → highest level 1–4 (docs/trinkets.md). */
+	trinkets: Record<string, number>;
 	stats: LifetimeStats;
 }
 
@@ -136,6 +139,7 @@ export function defaultSave(lang: Lang): SaveData {
 			feats: [],
 			stakes: {},
 			seen: [],
+			trinkets: {},
 			stats: emptyStats(),
 		},
 		run: null,
@@ -236,6 +240,12 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
 				Object.entries(stakes).map(([k, v]) => [k, int(v, 0, 0, 8)]),
 			),
 			seen: strings(m.seen),
+			// Saves from before trinkets start with an empty collection (their Manhas are not converted).
+			trinkets: Object.fromEntries(
+				Object.entries(isObj(m.trinkets) ? m.trinkets : {})
+					.filter(([k]) => isTrinketId(k))
+					.map(([k, v]) => [k, int(v, 1, 1, 4)]),
+			),
 			stats: {
 				runs: int(st.runs, 0),
 				wins: int(st.wins, 0),

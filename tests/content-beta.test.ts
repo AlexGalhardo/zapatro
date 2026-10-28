@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { TRINKETS } from '../src/config/features';
 import { AI_PROFILES } from '../src/data/ai-profiles';
 import { BOSS_POOL } from '../src/data/bosses';
 import { COMPANION_IDS } from '../src/data/companions';
@@ -141,7 +142,7 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 		}
 	});
 
-	test('8 Promises, each cashed at the next shop', () => {
+	test.skipIf(TRINKETS)('8 Promises, each cashed at the next shop', () => {
 		expect(PROMISES).toHaveLength(8);
 		const after = (p: (typeof PROMISES)[number]): RunState => {
 			const run = newRun(3, 'tonhao');

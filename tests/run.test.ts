@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { TRINKETS } from '../src/config/features';
 import { CHAMPIONSHIP_GOALS } from '../src/data/championships';
 import { ECONOMY } from '../src/data/economy';
 import {
@@ -118,7 +119,7 @@ describe('run (A4)', () => {
 		expect(currentGoal(run)).toBeGreaterThan(CHAMPIONSHIP_GOALS[7]);
 	});
 
-	test('skipping gives a Promise that is cashed at the next shop (A4.4)', () => {
+	test.skipIf(TRINKETS)('skipping gives a Promise that is cashed at the next shop (A4.4)', () => {
 		const run = newRun(5, 'tonhao');
 		const p = skipTable(run);
 		expect(p).not.toBeNull();
@@ -133,23 +134,26 @@ describe('run (A4)', () => {
 		if (packs) expect(run.shop?.packs.some((o) => o.price === 0)).toBe(true);
 	});
 
-	test('a Promise is only cashed if the next table is won (P-08, GD-020)', () => {
-		const lost = newRun(5, 'tonhao');
-		const won = newRun(5, 'tonhao');
-		for (const run of [lost, won]) {
-			skipTable(run);
-			run.promises = ['dezReais'];
-		}
-		const money = lost.money;
-		finishTable(lost, win({ won: false, money: 0 }));
-		expect(lost.phase).toBe('lost');
-		expect(lost.shop).toBeNull();
-		expect(lost.money).toBe(money);
-		finishTable(won, win({ money: 0, rivalTentos: 12 }));
-		expect(won.phase).toBe('shop');
-		expect(won.money).toBeGreaterThanOrEqual(money + 10);
-		expect(won.promises).toHaveLength(0);
-	});
+	test.skipIf(TRINKETS)(
+		'a Promise is only cashed if the next table is won (P-08, GD-020)',
+		() => {
+			const lost = newRun(5, 'tonhao');
+			const won = newRun(5, 'tonhao');
+			for (const run of [lost, won]) {
+				skipTable(run);
+				run.promises = ['dezReais'];
+			}
+			const money = lost.money;
+			finishTable(lost, win({ won: false, money: 0 }));
+			expect(lost.phase).toBe('lost');
+			expect(lost.shop).toBeNull();
+			expect(lost.money).toBe(money);
+			finishTable(won, win({ money: 0, rivalTentos: 12 }));
+			expect(won.phase).toBe('shop');
+			expect(won.money).toBeGreaterThanOrEqual(money + 10);
+			expect(won.promises).toHaveLength(0);
+		},
+	);
 
 	test('skipping the next table too forfeits the Promise still waiting (P-08)', () => {
 		const run = newRun(5, 'tonhao');

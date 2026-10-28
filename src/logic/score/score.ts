@@ -11,9 +11,11 @@ import { type CompanionId, PARTNER_TRAITS } from '../../data/companions';
 import { JOKER_CHIPS, JOKER_DOUBLE_X } from '../../data/jokers';
 import { LANCES, type LanceId } from '../../data/lances';
 import { MANHA_BY_ID, type ManhaId } from '../../data/manhas';
+import type { EquippedTrinket } from '../../data/trinkets';
 import { type Card, isSpecial, isZap, type Rank } from '../truco/cards';
 import { jokerEffects, type Seat, type TableState, type Team } from '../truco/table';
 import { handFacts, manhaSteps, modSteps } from './manhas';
+import { trinketCardChips, trinketSteps } from './trinkets';
 
 /**
  * Hand scoring (PLAN §4.3, D-02, design §2.3–2.4). Pure. `steps` is the ordered list the UI
@@ -126,6 +128,14 @@ export interface ScoreContext {
 	fame?: number;
 	/** Starting deck do Interior: these ranks give Chips ×2. */
 	doubleChipRanks?: readonly string[];
+	/** Equipped trinkets, left to right (docs/trinkets.md). */
+	trinkets?: readonly EquippedTrinket[];
+	/** Where the table stands (trinket conditions): hand number, points before it, its goal. */
+	handNumber?: number;
+	points?: number;
+	goal?: number;
+	/** Tables the player has won in this run. */
+	tablesWon?: number;
 }
 
 /**
@@ -151,12 +161,17 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 			const double = ctx.doubleChipRanks?.includes(p.card.rank) && p.card.rank !== s.manilha;
 			steps.push({
 				source: `card:${p.card.id}`,
-				chips: partnerCardChips(
-					me,
+				chips: trinketCardChips(
+					ctx.trinkets ?? [],
 					p.card,
-					p.seat,
 					s.manilha,
-					cardChips(p.card, s.manilha) * (double ? 2 : 1),
+					partnerCardChips(
+						me,
+						p.card,
+						p.seat,
+						s.manilha,
+						cardChips(p.card, s.manilha) * (double ? 2 : 1),
+					),
 				),
 			});
 			for (const m of modSteps(p, s, index)) (m.xMult ? late : steps).push(m);
@@ -192,6 +207,21 @@ export function scoreHand(ctx: ScoreContext): HandScore {
 		steps.push({ source: 'partner:tiao', money: -PARTNER_TRAITS.tiao.lostHandCost });
 	steps.push(...late);
 	const facts = handFacts(s, lance, ctx.calls ?? [], ctx.fame ?? 0);
+	if (ctx.trinkets?.length)
+		trinketSteps(
+			ctx.trinkets,
+			{
+				state: s,
+				lance,
+				myHand: facts.myHand,
+				handNumber: ctx.handNumber ?? 1,
+				points: ctx.points ?? 0,
+				goal: ctx.goal ?? 0,
+				tablesWon: ctx.tablesWon ?? 0,
+				running: () => totals(steps),
+			},
+			steps,
+		);
 	for (const id of ctx.manhas ?? []) {
 		const def = MANHA_BY_ID.get(id);
 		if (def) steps.push(...manhaSteps(def, facts));

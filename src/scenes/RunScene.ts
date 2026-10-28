@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { CARD_W, COVER_H, COVER_W, cardArt, tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
-import { IS_DEMO, SHOP_SIMPLE, TABLE_SELECT } from '../config/features';
+import { IS_DEMO, SHOP_SIMPLE, TABLE_SELECT, TRINKETS } from '../config/features';
 import { inkOn, PALETTE, SHOP_RARITY_COLOR, shade, toCss } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx } from '../core/audio';
@@ -18,10 +18,12 @@ import { ECONOMY } from '../data/economy';
 import { isManhaId, MANHA_BY_ID, type Rarity } from '../data/manhas';
 import { rarityOfPrice } from '../data/rarity';
 import { MAX_STAKE } from '../data/stakes';
+import { isTrinketId, TRINKET_BY_ID, TRINKET_IDS } from '../data/trinkets';
 import { UPGRADES } from '../data/upgrades';
 import { botShop } from '../game/run-sim';
 import { getLang, type I18nKey, t } from '../i18n';
 import { flawText, perkText } from '../i18n/companion';
+import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
 import { isUnlocked, recordRunState } from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
 import { drawCandidates } from '../logic/run/draw';
@@ -52,6 +54,7 @@ import {
 	startTable,
 	useConsumable,
 } from '../logic/run/run';
+import { equip, levelOf, mergeCollection, unequip } from '../logic/run/trinkets';
 import { formatPoints } from '../logic/score/format';
 import { type Card, isSpecial, RANKS, type Rank, SUITS } from '../logic/truco/cards';
 import { Button, inkIcon } from '../ui/Button';
@@ -66,6 +69,7 @@ import { fadeTo, setupScreen } from '../ui/screen';
 import { addTitle, screenTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { uiPx } from '../ui/touch';
+import { levelColor, trinketCard, trinketCardHeight, trinketMedal } from '../ui/trinket-ui';
 import { shopSlate } from '../view/shop-slate';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
@@ -543,6 +547,20 @@ export class RunScene extends Phaser.Scene {
 		if (params.money !== undefined) this.run.money = params.money;
 		if (params.manhas)
 			this.run.manhas = params.manhas.filter(isManhaId).slice(0, this.run.manhaSlots);
+		// The profile's trinkets come along (and `?trinkets=` adds some for tests); with any, the
+		// first thing is the equip screen, as in the shop between tables.
+		for (const spec of params.trinkets ?? []) {
+			const [tid = '', lv = '1'] = spec.split(':');
+			if (isTrinketId(tid)) meta.trinkets[tid] = Math.min(4, Math.max(1, Number(lv) || 1));
+		}
+		mergeCollection(this.run.collection, meta.trinkets);
+		for (const tid of Object.keys(this.run.collection)) {
+			equip(this.run.trinkets, this.run.collection, tid, this.run.trinketSlots);
+		}
+		if (TRINKETS && Object.keys(this.run.collection).length) {
+			this.run.phase = 'shop';
+			this.run.shop = { offers: [], packs: [], upgrade: null, rerolls: 0, opened: null };
+		}
 		meta.stats.runs++;
 		this.save();
 		this.draw();
@@ -1234,6 +1252,7 @@ export class RunScene extends Phaser.Scene {
 	// --- Shop ----------------------------------------------------------------------------
 
 	private offerName(o: Offer): string {
+		if (o.kind === 'trinket') return trinketName(o.id);
 		if (o.kind === 'manha') return t(`manha.${o.id}.name` as I18nKey);
 		if (o.kind === 'consumable') return this.consumableName(o.item);
 		if (o.kind === 'upgrade') return t(`upgrade.${o.id}.name` as I18nKey);
@@ -1241,6 +1260,10 @@ export class RunScene extends Phaser.Scene {
 	}
 
 	private offerDesc(o: Offer): string {
+		if (o.kind === 'trinket') {
+			const x = trinketTexts(o.id, o.level);
+			return `${x.perk}\n${x.flaw}`;
+		}
 		if (o.kind === 'manha') return t(`manha.${o.id}.desc` as I18nKey);
 		if (o.kind === 'consumable') return this.consumableDesc(o.item);
 		if (o.kind === 'upgrade') return t(`upgrade.${o.id}.desc` as I18nKey);
@@ -1248,6 +1271,7 @@ export class RunScene extends Phaser.Scene {
 	}
 
 	private offerArt(o: Offer): string {
+		if (o.kind === 'trinket') return `icon.${TRINKET_BY_ID.get(o.id)?.icon ?? 'star'}`;
 		if (o.kind === 'manha') return `manha.${o.id}`;
 		if (o.kind === 'consumable')
 			return o.item.kind === 'simpatia' ? `simpatia.${o.item.id}` : `lance.${o.item.id}`;
@@ -1257,6 +1281,7 @@ export class RunScene extends Phaser.Scene {
 
 	/** Kind label and colour on top of an item card (Manhas show their rarity). */
 	private offerTag(o: Offer | PackOption): { tag: string; color: number } {
+		if (o.kind === 'trinket') return { tag: t('trinket.kind'), color: levelColor(o.level) };
 		if (o.kind === 'manha') {
 			const r = MANHA_BY_ID.get(o.id)?.rarity ?? 'common';
 			return { tag: t(`rarity.${r}` as I18nKey), color: RARITY_COLOR[r] };
@@ -1273,9 +1298,206 @@ export class RunScene extends Phaser.Scene {
 
 	/** Rarity of an offer: a Manha's own, else the one its base price falls in (src/data/rarity.ts). */
 	private offerRarity(o: Offer): Rarity {
+		if (o.kind === 'trinket')
+			return (['common', 'uncommon', 'rare', 'legendary'] as const)[o.level - 1] ?? 'common';
 		if (o.kind === 'manha') return MANHA_BY_ID.get(o.id)?.rarity ?? 'common';
 		if (o.kind === 'upgrade') return rarityOfPrice(UPGRADES[o.id].price);
 		return rarityOfPrice(ECONOMY.consumablePrice);
+	}
+
+	/** Saves the run and keeps the profile's collection up to date (it survives between runs). */
+	private syncCollection(run: RunState): void {
+		mergeCollection(getSave(this).meta.trinkets, run.collection);
+		this.save();
+	}
+
+	/**
+	 * The trinket shop (docs/trinkets.md), two columns on the chalkboard: the four offers on the
+	 * left; on the right the equipped slots (click to take one off) above the collection (click to
+	 * equip). "Next table" under both, the money on the title row.
+	 */
+	private drawTrinketShop(
+		run: RunState,
+		shop: ShopState,
+		slate: { x: number; y: number; w: number; h: number },
+	): void {
+		const mid = slate.x + slate.w / 2;
+		const usableW = slate.w * 0.86;
+		const margin = slate.h * 0.05;
+		const left = mid - usableW / 2;
+		const right = mid + usableW / 2;
+		const gap = 4;
+		const colGap = 8;
+		const leftW = Math.floor(usableW * 0.6);
+		const rightW = usableW - leftW - colGap;
+		const cardW = Math.floor((leftW - gap) / 2);
+		const items = shop.offers;
+		const heights = [0, 1].map((row) =>
+			trinketCardHeight(
+				this,
+				cardW,
+				items
+					.slice(row * 2, row * 2 + 2)
+					.flatMap((o) => (o.kind === 'trinket' ? [{ id: o.id, level: o.level }] : [])),
+			),
+		);
+		const cardH = Math.max(...heights, 40);
+		const nextH = 22;
+		const titleRow = 24;
+		const bodyH = cardH * 2 + gap;
+		const blockH = titleRow + bodyH + gap + nextH;
+		const yOff = Math.max(margin, (slate.h - blockH) / 2);
+		const top = slate.y + yOff;
+		this.body.add(
+			addTitle(this, left, top + 11, t('run.shop'), TYPE.screenTitle, PALETTE.manilha, 0),
+		);
+		this.body.add(
+			addTitle(this, right, top + 11, `$${run.money}`, TYPE.screenTitle, PALETTE.manilha, 1),
+		);
+		const bodyTop = top + titleRow;
+		for (const [k, o] of items.entries()) {
+			if (o.kind !== 'trinket') continue;
+			const buyIt = (): void => {
+				if (!this.err(buy(run, 'offers', k))) return;
+				sfx(this, 'sfx.shop.buy');
+				this.syncCollection(run);
+				this.draw();
+			};
+			const price = offerPrice(run, o);
+			this.body.add(
+				trinketCard(this, {
+					id: o.id,
+					level: o.level,
+					w: cardW,
+					h: cardH,
+					...(o.sold ? { sold: { label: t('run.sold') } } : {}),
+					price: {
+						label: price === 0 ? t('shop.free') : `$${price}`,
+						enabled: !o.sold && run.money >= price,
+						onClick: buyIt,
+						...(o.sold ? {} : { onBlocked: buyIt }),
+					},
+				})
+					.setPosition(
+						left + cardW / 2 + (k % 2) * (cardW + gap),
+						bodyTop + cardH / 2 + Math.floor(k / 2) * (cardH + gap),
+					)
+					.setData('offer', `offers:${k}`),
+			);
+		}
+		this.drawLoadout(run, left + leftW + colGap, bodyTop, rightW, bodyH);
+		this.button(
+			mid,
+			bodyTop + bodyH + gap + nextH / 2,
+			t('run.next'),
+			() => {
+				leaveShop(run);
+				this.save();
+				this.draw();
+			},
+			2 * cardW + gap,
+			PALETTE.good,
+			{ h: nextH, size: 11 },
+		);
+	}
+
+	/** Right column of the trinket shop: equipped slots, then the collection (clicks swap them). */
+	private drawLoadout(run: RunState, x: number, y: number, w: number, h: number): void {
+		const slots = 4;
+		const gap = 3;
+		const slot = Math.floor((w - gap * (slots - 1)) / slots);
+		const slotsY = y + 8 + slot / 2;
+		const label = (lx: number, ly: number, s: string): void => {
+			this.body.add(
+				this.add.text(lx, ly, s, {
+					fontFamily: UI_FONT,
+					fontSize: `${uiPx(6)}px`,
+					fontStyle: '700',
+					color: toCss(PALETTE.textLight),
+					shadow: TEXT_SHADOW,
+				}),
+			);
+		};
+		label(x, y - 1, t('trinket.equipped'));
+		const hover = (target: Phaser.GameObjects.GameObject, id: string, level: number): void => {
+			const v = trinketTexts(id, level);
+			target.on('pointerover', () =>
+				this.tip(
+					x + w / 2,
+					y + h,
+					`${trinketName(id)} · ${trinketRarityName(level)}\n+ ${v.perk}\n− ${v.flaw}`,
+					levelColor(level),
+				),
+			);
+			target.on('pointerout', () => this.tipText?.setVisible(false));
+		};
+		for (let i = 0; i < slots; i++) {
+			const cx = x + slot / 2 + i * (slot + gap);
+			const g = this.add.graphics();
+			g.lineStyle(1.5, PALETTE.panelLight, i < run.trinketSlots ? 1 : 0.3).strokeRoundedRect(
+				cx - slot / 2,
+				slotsY - slot / 2,
+				slot,
+				slot,
+				RADIUS.button,
+			);
+			this.body.add(g);
+			const id = run.trinkets[i];
+			const level = id ? levelOf(run.collection, id) : 0;
+			if (!id || level < 1) continue;
+			const m = trinketMedal(this, id, level, slot - 4).setPosition(cx, slotsY);
+			const zone = this.add
+				.zone(cx, slotsY, slot, slot)
+				.setInteractive({ useHandCursor: true });
+			zone.on('pointerdown', () => {
+				unequip(run.trinkets, id);
+				sfx(this, 'sfx.ui.confirm');
+				this.save();
+				this.draw();
+			});
+			hover(zone, id, level);
+			this.body.add([m, zone]);
+		}
+		const listTop = slotsY + slot / 2 + 8;
+		label(x, listTop - 8, t('trinket.collection'));
+		const owned = TRINKET_IDS.filter((id) => levelOf(run.collection, id) >= 1);
+		if (!owned.length) {
+			this.body.add(
+				this.add
+					.text(x, listTop + 2, t('trinket.noCollection'), {
+						fontFamily: UI_FONT,
+						fontSize: `${uiPx(6)}px`,
+						fontStyle: '700',
+						color: toCss(PALETTE.textDim),
+						wordWrap: { width: w },
+					})
+					.setOrigin(0, 0),
+			);
+			return;
+		}
+		const d = 17;
+		const cols = Math.max(1, Math.floor((w + 2) / (d + 2)));
+		const rows = Math.max(1, Math.floor((y + h - listTop) / (d + 2)));
+		for (const [i, id] of owned.slice(0, cols * rows).entries()) {
+			const level = levelOf(run.collection, id);
+			const cx = x + d / 2 + (i % cols) * (d + 2);
+			const cy = listTop + 4 + d / 2 + Math.floor(i / cols) * (d + 2);
+			const m = trinketMedal(this, id, level, d).setPosition(cx, cy);
+			const on = run.trinkets.includes(id);
+			if (on) m.setAlpha(0.35);
+			const zone = this.add.zone(cx, cy, d, d).setInteractive({ useHandCursor: true });
+			zone.on('pointerdown', () => {
+				if (on || !equip(run.trinkets, run.collection, id, run.trinketSlots)) {
+					sfx(this, 'sfx.ui.error');
+					return;
+				}
+				sfx(this, 'sfx.ui.confirm');
+				this.save();
+				this.draw();
+			});
+			hover(zone, id, level);
+			this.body.add([m, zone]);
+		}
 	}
 
 	/**
@@ -1396,6 +1618,10 @@ export class RunScene extends Phaser.Scene {
 			360 - SAFE.stage - (SHOP_SIMPLE ? 0 : 8 + BUTTON_H.primary),
 		);
 		const slate = { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+		if (TRINKETS) {
+			this.drawTrinketShop(run, shop, slate);
+			return;
+		}
 		if (SHOP_SIMPLE) {
 			this.drawShopSimple(run, shop, slate);
 			return;

@@ -3,7 +3,8 @@ import { COMPANIONS, type CompanionId, PARTNER_STYLES } from '../data/companions
 import { DECKS } from '../data/decks';
 import { stakeRules } from '../data/stakes';
 import { Rng } from '../logic/rng';
-import { currentBoss, currentGoal, type RunState } from '../logic/run/run';
+import { currentBoss, currentGoal, equippedOf, type RunState } from '../logic/run/run';
+import { trinketTotals } from '../logic/run/trinkets';
 import { Match, type MatchOptions, type SeatBrain } from './match';
 
 /**
@@ -36,6 +37,7 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		{ kind: 'ai', profile: partnerProfile(run) },
 		rivalBrain(p3, c3),
 	];
+	const totals = trinketTotals(equippedOf(run));
 	return new Match({
 		rng: new Rng(tableSeed(run)),
 		brains,
@@ -45,6 +47,12 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		levels: run.levels,
 		manhas: run.manhas,
 		partner: { id: run.partner, level: run.partnerLevel },
+		trinkets: equippedOf(run),
+		tablesWon: run.stats.tables,
+		startTentos: totals.startTentos,
+		startMoney: totals.startMoney,
+		loseTento: totals.loseTento,
+		rivalCatch: totals.rivalCatch,
 		boss: currentBoss(run),
 		extraSignals:
 			(run.upgrades.includes('maisSinal') ? 1 : 0) + (DECKS[run.startDeck].extraSignals ?? 0),

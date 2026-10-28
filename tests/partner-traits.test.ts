@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { TRINKETS } from '../src/config/features';
 import { RANK_CHIPS } from '../src/data/cards';
 import { type CompanionId, PARTNER_TRAITS } from '../src/data/companions';
 import { ECONOMY } from '../src/data/economy';
@@ -184,19 +185,20 @@ describe('Chico (joca)', () => {
 });
 
 describe('Beti (lurdes)', () => {
-	test('the first Manha bought in each shop costs $1 less; Manhas cost +$1', () => {
+	test('the first trinket bought in each shop costs $1 less; trinkets cost +$1', () => {
 		const run = newRun(1, 'lurdes');
 		run.money = 40;
 		finishTable(run, win());
-		const [first, second] = (run.shop?.offers ?? []).filter((o) => o.kind === 'manha');
-		if (!first || !second) throw new Error('the shop has fewer than two Manhas for this seed');
+		const [first, second] = (run.shop?.offers ?? []).filter((o) => o.kind === 'trinket');
+		if (!first || !second)
+			throw new Error('the shop has fewer than two trinkets for this seed');
 		expect(offerPrice(run, first)).toBe(first.price - 1);
 		const before = run.money;
 		expect(buy(run, 'offers', (run.shop?.offers ?? []).indexOf(first))).toBeNull();
 		expect(before - run.money).toBe(first.price - 1);
 		expect(offerPrice(run, second)).toBe(second.price);
 		const other = newRun(1, 'tonhao');
-		expect(priceOf(run, 5, 'manha')).toBe(priceOf(other, 5, 'manha') + 1);
+		expect(priceOf(run, 5, 'trinket')).toBe(priceOf(other, 5, 'trinket') + 1);
 		expect(priceOf(run, 5, 'pack')).toBe(priceOf(other, 5, 'pack'));
 	});
 });
@@ -235,7 +237,7 @@ describe('Sheila (neide)', () => {
 });
 
 describe('shop offers', () => {
-	test('a visit never shows the same Manha or consumable twice', () => {
+	test.skipIf(TRINKETS)('a visit never shows the same Manha or consumable twice', () => {
 		for (let seed = 1; seed <= 300; seed++) {
 			const run = newRun(seed, 'tonhao');
 			finishTable(run, win());

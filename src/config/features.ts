@@ -27,3 +27,10 @@ export const SHOW_MONEY_PANEL = false;
  * on the chalkboard (`ECONOMY.offers`) and "Next table". false: the full shop as it was.
  */
 export const SHOP_SIMPLE = true;
+
+/**
+ * Trinkets (docs/trinkets.md) replace the Manhas as the shop's item: four rarities of the same
+ * trinket, a Perk and a Flaw each, a collection kept in the profile and four equipped slots.
+ * false: the shop of Manhas as it was.
+ */
+export const TRINKETS = true;

@@ -1,3 +1,4 @@
+import { TRINKETS } from '../../config/features';
 import { AI_PROFILE_IDS, type AiProfileId } from '../../data/ai-profiles';
 import { BOSS_POOL, type BossId, FINAL_BOSS } from '../../data/bosses';
 import { CARD_MODS, type CardModId } from '../../data/card-mods';
@@ -16,6 +17,7 @@ import { LANCE_IDS } from '../../data/lances';
 import { MANHA_BY_ID, MANHAS, type ManhaId, type Rarity } from '../../data/manhas';
 import { PROMISE_MONEY, PROMISES, type PromiseId } from '../../data/promises';
 import { stakeRules } from '../../data/stakes';
+import type { EquippedTrinket } from '../../data/trinkets';
 import { CHEAP_REROLL, DISCOUNT, UPGRADE_IDS, UPGRADES, type UpgradeId } from '../../data/upgrades';
 import { Rng } from '../rng';
 import { type LanceLevels, tableGoal } from '../score/score';
@@ -30,6 +32,16 @@ import {
 	standardDeck,
 } from '../truco/cards';
 import type { Seat, Team } from '../truco/table';
+import {
+	type Collection,
+	equip,
+	equippedList,
+	levelOf,
+	slotsFor,
+	type TrinketOffer,
+	trinketOffers,
+	trinketTotals,
+} from './trinkets';
 
 /**
  * The run (PLAN A4, design §3): Championships of three tables, shop, Promises, bosses, partner
@@ -48,7 +60,8 @@ export type Offer =
 	| { kind: 'manha'; id: ManhaId; price: number; sold: boolean }
 	| { kind: 'consumable'; item: Consumable; price: number; sold: boolean }
 	| { kind: 'upgrade'; id: UpgradeId; price: number; sold: boolean }
-	| { kind: 'pack'; pack: PackKind; price: number; sold: boolean };
+	| { kind: 'pack'; pack: PackKind; price: number; sold: boolean }
+	| TrinketOffer;
 
 export type PackOption =
 	| { kind: 'card'; card: Card }
@@ -127,6 +140,11 @@ export interface RunState {
 	money: number;
 	manhas: ManhaId[];
 	manhaSlots: number;
+	/** Equipped trinkets, left to right (docs/trinkets.md), and how many fit. */
+	trinkets: string[];
+	trinketSlots: number;
+	/** Every trinket the player holds, at its highest level (also kept in the profile save). */
+	collection: Collection;
 	consumables: Consumable[];
 	consumableSlots: number;
 	deck: Card[];
@@ -187,6 +205,9 @@ export function newRun(
 		bosses,
 		money: (rules.startMoney ?? ECONOMY.startMoney) + (d.money ?? 0),
 		manhas: [],
+		trinkets: [],
+		trinketSlots: slotsFor(partner),
+		collection: {},
 		manhaSlots: Math.max(
 			1,
 			ECONOMY.manhaSlots +
@@ -244,8 +265,19 @@ export const goalOf = (run: RunState, size: TableSize): number =>
 	Math.round(
 		tableGoal(run.champ, size) *
 			stakeRules(run.stake).goalMult *
-			(run.partner === 'neide' ? PARTNER_TRAITS.neide.goalMult : 1),
+			(run.partner === 'neide' ? PARTNER_TRAITS.neide.goalMult : 1) *
+			trinketGoalMult(run),
 	);
+
+/** Table goal multiplier from the equipped trinkets' Flaws (Pé de Coelho, Rei do Pedaço…). */
+function trinketGoalMult(run: RunState): number {
+	const t = trinketTotals(equippedOf(run));
+	return 1 + (t.goalPct + t.goalPctPerChamp * Math.max(0, run.champ - 1)) / 100;
+}
+
+/** The equipped trinkets as the game plays them (highest level held). */
+export const equippedOf = (run: RunState): EquippedTrinket[] =>
+	equippedList(run.trinkets, run.collection);
 
 export const currentGoal = (run: RunState): number => goalOf(run, tableSize(run));
 
@@ -294,6 +326,7 @@ export function tableReward(
 	rivalTentos: number,
 ): { reward: Reward; money: number } {
 	const before = Math.max(0, run.money + tableMoney);
+	const totals = trinketTotals(equippedOf(run));
 	const reward: Reward = {
 		table: tableMoney,
 		prize:
@@ -301,11 +334,19 @@ export function tableReward(
 				? 0
 				: ECONOMY.prize[tableSize(run)],
 		// Jhony's flaw: the speed reward is halved (rounded down).
-		speed: Math.floor(
-			Math.min(ECONOMY.speedCap, Math.max(0, 12 - rivalTentos)) /
-				(run.partner === 'zeMalandro' ? PARTNER_TRAITS.zeMalandro.speedDivisor : 1),
+		speed: Math.max(
+			0,
+			Math.floor(
+				(Math.min(ECONOMY.speedCap, Math.max(0, 12 - rivalTentos)) * totals.speedX) /
+					(run.partner === 'zeMalandro' ? PARTNER_TRAITS.zeMalandro.speedDivisor : 1),
+			) + totals.speedFlat,
 		),
-		interest: interest(before, stakeRules(run.stake).interestCap),
+		interest:
+			interest(before, stakeRules(run.stake).interestCap) +
+			Math.min(
+				totals.interestStepsMax,
+				Math.floor(Math.max(0, before) / ECONOMY.interestStep) * totals.interestPer,
+			),
 		partner: 0,
 		doubled: false,
 	};
@@ -356,10 +397,12 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 	const { reward, money } = tableReward(run, r.money, r.rivalTentos);
 	run.money = money;
 	// Sheila: one table win in four pays double.
-	if (
-		run.partner === 'neide' &&
-		roll(run, (rng) => rng.chance(PARTNER_TRAITS.neide.doubleMoneyChance))
-	) {
+	const chance = Math.min(
+		1,
+		(run.partner === 'neide' ? PARTNER_TRAITS.neide.doubleMoneyChance : 0) +
+			trinketTotals(equippedOf(run)).doubleChance,
+	);
+	if (chance > 0 && roll(run, (rng) => rng.chance(chance))) {
 		reward.doubled = true;
 		run.money +=
 			Math.max(0, r.money) + reward.prize + reward.speed + reward.interest + reward.partner;
@@ -372,7 +415,7 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 		return reward;
 	}
 	advance(run);
-	openShop(run);
+	openShop(run, wonChampionship);
 	return reward;
 }
 
@@ -380,7 +423,7 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 export function continueEndless(run: RunState): void {
 	run.endless = true;
 	advance(run);
-	openShop(run);
+	openShop(run, true);
 }
 
 /**
@@ -405,7 +448,10 @@ export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'pack
 	// Cida's flaw: everything costs more; Beti's: Manhas do.
 	const up =
 		(run.partner === 'donaCida' ? PARTNER_TRAITS.donaCida.priceUp : 0) +
-		(run.partner === 'lurdes' && kind === 'manha' ? PARTNER_TRAITS.lurdes.manhaPriceUp : 0);
+		(run.partner === 'lurdes' && (kind === 'manha' || kind === 'trinket')
+			? PARTNER_TRAITS.lurdes.manhaPriceUp
+			: 0) +
+		trinketTotals(equippedOf(run)).shopPrice;
 	return Math.max(0, own + up);
 }
 
@@ -476,7 +522,27 @@ function makeOffers(run: RunState, rng: Rng): Offer[] {
 	return out;
 }
 
-function openShop(run: RunState): void {
+/** The shop of trinkets (docs/trinkets.md): four offers, nothing else. */
+function openTrinketShop(run: RunState, afterBoss: boolean): void {
+	run.phase = 'shop';
+	run.shop = roll(run, (rng) => {
+		const offers: Offer[] = trinketOffers(rng, run.collection, afterBoss, (base) =>
+			priceOf(run, base, 'trinket'),
+		);
+		// Zé: in the first shop of each Championship the cheapest offer is free.
+		if (run.partner === 'ze' && run.table === 1) {
+			const cheapest = offers.filter((o) => o.price > 0).sort((a, b) => a.price - b.price)[0];
+			if (cheapest) cheapest.price = 0;
+		}
+		return { offers, packs: [], upgrade: null, rerolls: 0, opened: null };
+	});
+}
+
+function openShop(run: RunState, afterBoss = false): void {
+	if (TRINKETS) {
+		openTrinketShop(run, afterBoss);
+		return;
+	}
 	run.phase = 'shop';
 	run.shop = roll(run, (rng) => {
 		const offers = makeOffers(run, rng);
@@ -550,7 +616,10 @@ const hasRoom = (run: RunState, o: Offer): boolean =>
 /** Buys an offer (`where`: offers, packs or the upgrade). A pack opens its options. */
 /** What `o` costs the player now: Beti's first Manha of each shop is $1 cheaper. */
 export function offerPrice(run: RunState, o: Offer): number {
-	const first = run.partner === 'lurdes' && o.kind === 'manha' && !run.shop?.firstManhaBought;
+	const first =
+		run.partner === 'lurdes' &&
+		(o.kind === 'manha' || o.kind === 'trinket') &&
+		!run.shop?.firstManhaBought;
 	return Math.max(0, o.price - (first ? PARTNER_TRAITS.lurdes.firstManhaOff : 0));
 }
 
@@ -569,7 +638,11 @@ export function buy(
 	if (!hasRoom(run, o)) return 'slots';
 	run.money -= price;
 	o.sold = true;
-	if (o.kind === 'manha') shop.firstManhaBought = true;
+	if (o.kind === 'manha' || o.kind === 'trinket') shop.firstManhaBought = true;
+	if (o.kind === 'trinket') {
+		run.collection[o.id] = Math.max(levelOf(run.collection, o.id), o.level);
+		equip(run.trinkets, run.collection, o.id, run.trinketSlots);
+	}
 	if (o.kind === 'manha') run.manhas.push(o.id);
 	if (o.kind === 'consumable') run.consumables.push(o.item);
 	if (o.kind === 'upgrade') applyUpgrade(run, o.id);
@@ -729,5 +802,9 @@ export function parseRun(raw: unknown): RunState | null {
 		stake: run.stake ?? 1,
 		legendary: run.legendary ?? false,
 		demo: run.demo ?? false,
+		// Saves from before trinkets: no equipped or held ones (their Manhas stay unused).
+		trinkets: Array.isArray(run.trinkets) ? run.trinkets : [],
+		trinketSlots: run.trinketSlots ?? slotsFor(run.partner),
+		collection: run.collection ?? {},
 	};
 }

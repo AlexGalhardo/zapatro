@@ -1,10 +1,11 @@
-import { SHOP_SIMPLE, TABLE_SELECT } from '../config/features';
+import { SHOP_SIMPLE, TABLE_SELECT, TRINKETS } from '../config/features';
 import { AI_PROFILES, type AiProfile } from '../data/ai-profiles';
 import { COMPANION_IDS, type CompanionId } from '../data/companions';
 import type { Consumable } from '../data/consumables';
 import { ECONOMY } from '../data/economy';
 import { DEFAULT_UNLOCKS } from '../data/feats';
 import { MANHA_BY_ID, type ManhaId } from '../data/manhas';
+import { FLAW_SCALE, PERK_SCALE, TRINKET_BY_ID } from '../data/trinkets';
 import { Rng } from '../logic/rng';
 import { drawCandidates } from '../logic/run/draw';
 import {
@@ -26,6 +27,7 @@ import {
 	tableSize,
 	useConsumable,
 } from '../logic/run/run';
+import type { TrinketOffer } from '../logic/run/trinkets';
 import { cardChips } from '../logic/score/score';
 import type { SeatBrain } from './match';
 import { tableMatch } from './run-table';
@@ -176,10 +178,56 @@ function pickPack(run: RunState, options: PackOption[], bot: RunBot, rng: Rng): 
 	return best;
 }
 
+/** How much the bot wants a trinket at a level: its worth times the Perk minus half the Flaw. */
+const trinketValue = (id: string, level: number): number =>
+	(TRINKET_BY_ID.get(id)?.worth ?? 1) *
+	((PERK_SCALE[level - 1] ?? 1) - 0.5 * (FLAW_SCALE[level - 1] ?? 1));
+
+/** Equips the best trinkets the run holds, as many as fit. */
+function botEquip(run: RunState): void {
+	run.trinkets = Object.entries(run.collection)
+		.sort((a, b) => trinketValue(b[0], b[1]) - trinketValue(a[0], a[1]))
+		.slice(0, run.trinketSlots)
+		.map(([id]) => id);
+}
+
+/** The bot's trinket shopping: the offers with the best value for their price, then equip. */
+function botTrinkets(run: RunState, bot: RunBot, rng: Rng): void {
+	const s = run.shop;
+	if (!s) return;
+	for (let guard = 0; guard < 6; guard++) {
+		const choices = s.offers
+			.map((o, i) => ({ o, i }))
+			.filter(
+				(x): x is { o: TrinketOffer; i: number } =>
+					x.o.kind === 'trinket' && !x.o.sold && offerPrice(run, x.o) <= run.money,
+			);
+		if (!choices.length) break;
+		if (bot === 'random' && rng.chance(0.4)) break;
+		const pick =
+			bot === 'random'
+				? rng.pick(choices)
+				: choices.reduce((a, b) =>
+						trinketValue(b.o.id, b.o.level) - offerPrice(run, b.o) * 0.15 >
+						trinketValue(a.o.id, a.o.level) - offerPrice(run, a.o) * 0.15
+							? b
+							: a,
+					);
+		buy(run, 'offers', pick.i);
+		if (bot === 'good') botEquip(run);
+	}
+	if (bot === 'good') botEquip(run);
+	leaveShop(run);
+}
+
 /** The bot's shopping (also drives `?auto=1` in the game). */
 export function botShop(run: RunState, bot: RunBot, rng: Rng): void {
 	const s = run.shop;
 	if (!s) return;
+	if (TRINKETS) {
+		botTrinkets(run, bot, rng);
+		return;
+	}
 	// Keep money for interest once the build has a few Manhas.
 	const keep =
 		bot === 'good' && run.manhas.length >= KEEP_FROM_GET()

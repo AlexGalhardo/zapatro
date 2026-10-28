@@ -6,7 +6,7 @@ const BANNED = [
 	/banca/i,
 	/a conta da m/i,
 	/a m.o vale/i,
-	/bolso/i,
+	// "bolso" was banned for the other game's HUD; two trinkets are named so by design (docs/trinkets.md).
 	/Boteco do Z/i,
 	/mesa 1\/4/i,
 	/\bGuia\b/,

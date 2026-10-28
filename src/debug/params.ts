@@ -27,6 +27,8 @@ export interface DebugParams {
 	money?: number;
 	/** Start the run with these manhas (ids, comma separated). */
 	manhas?: string[];
+	/** Start the run holding these trinkets: `id` or `id:level` (1-4), comma separated. */
+	trinkets?: string[];
 	partner?: string;
 	/** Quick match against this boss (and in its room, when it has concept art). */
 	boss?: string;
@@ -73,6 +75,7 @@ export function parseDebugParams(search: string): DebugParams {
 		champ: int(p.get('champ'), 1),
 		money: int(p.get('money'), 0),
 		manhas: list(p.get('manhas')),
+		trinkets: list(p.get('trinkets')),
 		partner: p.get('partner') ?? undefined,
 		boss: p.get('boss') ?? undefined,
 		goal: int(p.get('goal'), 1),

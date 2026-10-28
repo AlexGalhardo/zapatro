@@ -10,6 +10,7 @@ import {
 	type ManhaRule,
 	RIG_VIRA_CHANCE,
 } from '../data/manhas';
+import type { EquippedTrinket } from '../data/trinkets';
 import { decide, randomAction } from '../logic/ai/decide';
 import { fameAfterShowdown, isStrongCall } from '../logic/ai/fame';
 import type { HandInfo } from '../logic/meta';
@@ -66,6 +67,17 @@ export interface MatchOptions {
 	/** Owned Manhas, left to right (roguelite mode). */
 	manhas?: ManhaId[];
 	partner?: { id: CompanionId; level: number };
+	/** Equipped trinkets (docs/trinkets.md) and what the run adds around them. */
+	trinkets?: readonly EquippedTrinket[];
+	/** Tables the player has won in this run (Rei do Pedaço). */
+	tablesWon?: number;
+	/** Trinket Perks and Flaws that change the table's start and its rules. */
+	startTentos?: number;
+	startMoney?: number;
+	/** Tentos the player's team loses when it loses a hand (Lenda do Boteco). */
+	loseTento?: number;
+	/** Extra chance (pct) the rivals catch the pair's signals (Cantoria). */
+	rivalCatch?: number;
 	boss?: BossId;
 	/** Extra signals per hand for the player (Boteco upgrade). */
 	extraSignals?: number;
@@ -116,6 +128,9 @@ export class Match {
 	pileCard: Card | null = null;
 	readonly rivalQuedasNeeded: number;
 	private readonly doubleChipRanks: readonly string[] | undefined;
+	private readonly trinkets: readonly EquippedTrinket[];
+	private readonly tablesWon: number;
+	private readonly loseTento: number;
 	private readonly peekPile: boolean;
 	/** Bisbilhoteiro: a rival card shown to the player this hand. */
 	peek: { seat: Seat; cardId: string } | null = null;
@@ -143,6 +158,9 @@ export class Match {
 		this.rivalQuedasNeeded = RIVAL_QUEDAS_TO_WIN + (opts.extraRivalQuedas ?? 0);
 		this.peekPile = opts.peekPile ?? false;
 		this.doubleChipRanks = opts.doubleChipRanks;
+		this.trinkets = opts.trinkets ?? [];
+		this.tablesWon = opts.tablesWon ?? 0;
+		this.loseTento = opts.loseTento ?? 0;
 		const catchOf = (b: SeatBrain): number =>
 			b.kind === 'ai'
 				? b.profile.catchChance
@@ -153,7 +171,14 @@ export class Match {
 				? [0, 1, 0, 1]
 				: [1 + (opts.extraSignals ?? 0), 1, 1, 1]) as TableRules['signals'],
 			catchChance: opts.brains.map((b, i) =>
-				Math.min(1, Math.max(0, catchChanceFor(this.boss, i, catchOf(b)))),
+				Math.min(
+					1,
+					Math.max(
+						0,
+						catchChanceFor(this.boss, i, catchOf(b)) +
+							(teamOf(i as Seat) === 'them' ? (opts.rivalCatch ?? 0) / 100 : 0),
+					),
+				),
 			) as TableRules['catchChance'],
 			...(this.has('startBet3') || this.boss === 'reiDoTruco'
 				? { startBet: 3 as const }
@@ -164,13 +189,16 @@ export class Match {
 		};
 		this.dealer = r?.dealer ?? opts.dealer ?? 3;
 		this.points = r?.points ?? 0;
-		this.money = r?.money ?? 0;
+		this.money = r?.money ?? opts.startMoney ?? 0;
 		this.quedas = r?.quedas ?? 0;
 		this.rivalQuedas = r?.rivalQuedas ?? 0;
 		this.gritadorUsed = r?.gritadorUsed ?? false;
 		this.hands = (r?.hands ?? 1) - 1;
 		const start = r?.score ?? opts.score ?? { us: 0, them: 0 };
-		this.dealHand(r ? start : { ...start }, r ? undefined : opts.firstDeal);
+		this.dealHand(
+			r ? start : { ...start, us: Math.min(11, start.us + (opts.startTentos ?? 0)) },
+			r ? undefined : opts.firstDeal,
+		);
 	}
 
 	/** Manhas that work this table (the Juiz disables the leftmost). */
@@ -235,7 +263,15 @@ export class Match {
 
 	act(action: Action): TableEvent[] {
 		const before = this.state;
-		const { state, events } = apply(before, action, this.rng);
+		const applied = apply(before, action, this.rng);
+		const { events } = applied;
+		let { state } = applied;
+		// Lenda do Boteco's Flaw: losing a hand costs the pair tentos.
+		if (this.loseTento && state.over?.winner === 'them' && !before.over)
+			state = {
+				...state,
+				score: { ...state.score, us: Math.max(0, state.score.us - this.loseTento) },
+			};
 		for (const e of events) {
 			if (e.type === 'truco') this.calls.push(e.seat);
 			if (e.type === 'truco' && teamOf(e.seat) === 'us')
@@ -260,6 +296,11 @@ export class Match {
 				boss: this.boss,
 				fame: this.fame,
 				doubleChipRanks: this.doubleChipRanks,
+				trinkets: this.trinkets,
+				handNumber: this.hands,
+				points: this.points,
+				goal: this.goal,
+				tablesWon: this.tablesWon,
 			});
 			this.points += this.lastScore.points;
 			this.money += this.lastScore.money;
