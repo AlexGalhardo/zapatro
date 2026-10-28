@@ -1,7 +1,7 @@
 import { AI_PROFILES, type AiProfile } from '../data/ai-profiles';
 import { type BossId, SORTUDA_CHANCE } from '../data/bosses';
 import { CARD_MODS } from '../data/card-mods';
-import { RIVAL_QUEDAS_TO_WIN } from '../data/championships';
+import { QUEDAS_TO_LOSE } from '../data/championships';
 import type { CompanionId } from '../data/companions';
 import {
 	CARA_DE_PAU_SCALE,
@@ -116,7 +116,7 @@ export class Match {
 	lastScore: HandScore | null = null;
 	outcome: TableOutcome = 'playing';
 	quedas = 0;
-	/** Quedas the rivals closed at this table (they win the table on RIVAL_QUEDAS_TO_WIN). */
+	/** Quedas the rivals closed at this table (they win the table on QUEDAS_TO_LOSE). */
 	rivalQuedas = 0;
 	/** Vidro cards that broke at this table (they leave the run deck). */
 	broken: string[] = [];
@@ -151,7 +151,7 @@ export class Match {
 		this.manhas = opts.manhas ?? [];
 		this.partner = opts.partner;
 		this.boss = opts.boss;
-		this.rivalQuedasNeeded = RIVAL_QUEDAS_TO_WIN + (opts.extraRivalQuedas ?? 0);
+		this.rivalQuedasNeeded = QUEDAS_TO_LOSE + (opts.extraRivalQuedas ?? 0);
 		this.peekPile = opts.peekPile ?? false;
 		this.doubleChipRanks = opts.doubleChipRanks;
 		this.trinkets =

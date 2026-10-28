@@ -46,7 +46,7 @@ export const RIVAL_POOLS: readonly (readonly AiProfileId[])[] = [
 ];
 
 /**
- * A table is "melhor de três quedas" (Truco Paulista): the rivals must close 12 tentos this many
- * times to beat you. Each of their quedas resets only their tentos, like your Queda (D-04).
+ * The rivals beat you at a table the first time they reach 12 tentos (Truco Paulista: whoever
+ * gets to 12 first). Reaching 12 yourself closes a Queda: both pairs go back to 0 tentos.
  */
-export const RIVAL_QUEDAS_TO_WIN = 2;
+export const QUEDAS_TO_LOSE = 1;

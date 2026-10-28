@@ -92,7 +92,7 @@ import { fadeTo } from '../ui/screen';
 import { addTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
-import { trinketMedal } from '../ui/trinket-ui';
+import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
 import { handEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
@@ -221,11 +221,11 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
 const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
-	hud: [6, 114],
-	goal: [124, 40],
-	chipsMult: [168, 52],
-	bet: [224, 40],
-	theirs: [268, 52],
+	hud: [6, 40],
+	goal: [50, 52],
+	chipsMult: [106, 66],
+	bet: [176, 38],
+	theirs: [218, 102],
 	money: [323, 30],
 	bar: [324, 30],
 } as const satisfies Record<string, number | readonly [number, number]>;
@@ -241,6 +241,9 @@ const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
 
 /** Top of each sidebar card's label. */
 const SIDE_LABEL = 7;
+
+/** The tentos panel's two mini-cards (ours, theirs): top inside the panel, size, gap between them. */
+const TENTOS_CARD = { y: 6, w: (SIDE_INNER_W - 4) / 2, h: 88, gap: 4 } as const;
 
 /** The HUD block (the equipped trinkets and what they do): the sidebar's top card. */
 const HUD = { x: SIDE.x, y: SIDE.hud[0], w: SIDE.w, h: SIDE.hud[1] };
@@ -383,7 +386,7 @@ export class TableScene extends Phaser.Scene {
 	private statusBar!: Phaser.GameObjects.Graphics;
 	private statusW = 0;
 	private turnArrow!: Phaser.GameObjects.Triangle;
-	private quedasText!: Phaser.GameObjects.Text;
+	private betLabel!: Phaser.GameObjects.Text;
 	private banner!: Phaser.GameObjects.Text;
 	private pointsText!: Phaser.GameObjects.Text;
 	private scoreBox!: Phaser.GameObjects.Container;
@@ -950,15 +953,17 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				.setData('id', e.id)
 				.setSize(slotSize(this.slots), slotSize(this.slots))
 				.setInteractive({ useHandCursor: true });
-			const tx = trinketTexts(e.id, e.level, e.flawX);
-			this.tipOn(medal, this.manhaTip, () =>
-				this.manhaTip
-					.setText(
-						`${trinketName(e.id)} · ${trinketRarityName(e.level)}\n+ ${tx.perk}\n- ${tx.flaw}`,
-					)
-					.setOrigin(0, 0)
-					.setPosition(HUD.x + HUD.w + GAP.list, HUD.y),
-			);
+			medal.on('pointerover', (p: Phaser.Input.Pointer) => {
+				if (!p.wasTouch) this.showTrinketTip(e);
+			});
+			medal.on('pointerout', (p: Phaser.Input.Pointer) => {
+				if (!p.wasTouch) this.hideTrinketTip();
+			});
+			medal.on('pointerdown', (p: Phaser.Input.Pointer) => {
+				if (!p.wasTouch) return;
+				this.showTrinketTip(e);
+				this.time.delayedCall(TIP_MS, () => this.hideTrinketTip());
+			});
 			this.manhaRow.add(medal);
 		});
 		// Status bar over the felt; the arrow points at your hand when it is your turn.
@@ -1281,7 +1286,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		}
 		// Without a goal (quick match) the card counts the tentos to 12 instead.
 		// One line: the label on the left, the score on the right; the bar under it.
-		const goalLine = SIDE.goal[0] + 15;
+		const goalLine = SIDE.goal[0] + 19;
 		at(
 			goalLine,
 			t(
@@ -1299,7 +1304,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		// place (same sidebar) but faded, so the frozen 0 × 0 and $0 read as "not in this mode".
 		const off = this.match.goal === undefined ? 0.35 : 1;
 		at(SIDE.chipsMult[0] + SIDE_LABEL, t('table.side.chipsMult'), small).setAlpha(off);
-		const by = SIDE.chipsMult[0] + 21;
+		const by = SIDE.chipsMult[0] + 27;
 		this.add
 			.image(lx, by, panelTex(this, 52, 27, PALETTE.chips, 6))
 			.setOrigin(0)
@@ -1320,15 +1325,38 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			.text(lx + 88, by + 13.5, '0', this.bold(14))
 			.setOrigin(0.5)
 			.setAlpha(off);
-		at(SIDE.bet[0] + SIDE_LABEL, t('table.side.bet'), small);
+		// One line, like the goal card: the label on the left, the bet and its state on the right.
+		const betLine = SIDE.bet[0] + SIDE.bet[1] / 2;
+		this.betLabel = at(betLine, t('table.side.bet').toLocaleUpperCase(), small).setOrigin(
+			0,
+			0.5,
+		);
 		this.betText = this.add
-			.text(lx + 12, SIDE.bet[0] + 27, '', this.bold(15, PALETTE.manilha))
-			.setOrigin(0.5)
+			.text(lx + SIDE_INNER_W, betLine, '', this.bold(15, PALETTE.manilha))
+			.setOrigin(1, 0.5)
 			.setDepth(DEPTH.sideValue);
 		this.betNote = this.add
-			.text(lx + 34, SIDE.bet[0] + 27, '', this.bold(8, PALETTE.textLight))
-			.setOrigin(0, 0.5);
-		at(SIDE.theirs[0] + SIDE_LABEL, t('table.side.tentosBoth'), small);
+			.text(lx + SIDE_INNER_W, betLine, '', this.bold(8, PALETTE.textLight))
+			.setOrigin(1, 0.5);
+		// Tentos: two mini-cards side by side, ours (green) and theirs (red), 3 rows of 4 dots.
+		for (const [i, key] of (['table.side.us', 'table.side.them'] as const).entries()) {
+			const cx = lx + i * (TENTOS_CARD.w + TENTOS_CARD.gap);
+			this.add
+				.image(
+					cx,
+					SIDE.theirs[0] + TENTOS_CARD.y,
+					panelTex(this, TENTOS_CARD.w, TENTOS_CARD.h, PALETTE.panel, RADIUS.button),
+				)
+				.setOrigin(0);
+			this.add
+				.text(
+					cx + TENTOS_CARD.w / 2,
+					SIDE.theirs[0] + TENTOS_CARD.y + 9,
+					t(key).toLocaleUpperCase(),
+					small,
+				)
+				.setOrigin(0.5);
+		}
 		this.moneyText = this.add
 			.text(lx, SIDE.money[0] + SIDE.money[1] / 2, '', this.bold(14, PALETTE.money))
 			.setOrigin(0, 0.5)
@@ -1353,99 +1381,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				slotSize(slots),
 				RADIUS.button,
 			);
-		this.buildEffectLists();
-		this.quedasText = this.add
-			.text(HUD.x + HUD_PAD, SIDE.theirs[0] + 43, '', small)
-			.setOrigin(0, 0.5);
 		this.hudGfx = this.add.graphics().setDepth(DEPTH.hudShapes);
-	}
-
-	/**
-	 * Under the slots, the Bonus (green strip) and Flaw (red strip) of the equipped trinkets, one
-	 * strip each, in capitals, all one font size: a long text wraps and its strip grows. Bonuses
-	 * and Flaws are added in turn while they fit; the rest is "+N" (hover it for the list).
-	 */
-	private buildEffectLists(): void {
-		const x = HUD.x + HUD_PAD;
-		const top = HUD.y + HUD_PAD + 10 + slotSize(this.slots) / 2 + 4;
-		const bottom = HUD.y + HUD.h - HUD_PAD / 2;
-		const width = HUD.w - 2 * HUD_PAD;
-		const padX = 3;
-		const padY = 3;
-		const gap = 2;
-		const style = {
-			...this.bold(6, PALETTE.textDark),
-			align: 'left' as const,
-			wordWrap: { width: width - 2 * padX },
-			shadow: {
-				offsetX: 0,
-				offsetY: 0.6,
-				color: 'rgba(255,255,255,0.5)',
-				blur: 0,
-				fill: true,
-			},
-		};
-		type Strip = { str: string; color: number; h: number };
-		const measure = (str: string, color: number): Strip => {
-			const probe = this.add.text(0, 0, str.toLocaleUpperCase(), style);
-			const h = probe.height + 2 * padY;
-			probe.destroy();
-			return { str: str.toLocaleUpperCase(), color, h };
-		};
-		const bonus: Strip[] = [];
-		const flaws: Strip[] = [];
-		for (const e of this.match.trinketList) {
-			const tx = trinketTexts(e.id, e.level, e.flawX);
-			bonus.push(measure(tx.perk, PALETTE.good));
-			flaws.push(measure(tx.flaw, PALETTE.bad));
-		}
-		const hidden: Strip[] = [];
-		const more = measure('+99', PALETTE.panelLight).h + gap;
-		const all = [...bonus, ...flaws];
-		const total = all.reduce((n, l) => n + l.h + gap, 0);
-		if (total > bottom - top) {
-			// Not all fit: take them in turn (a Bonus, a Flaw, …) while they fit with the "+N" strip.
-			const room = bottom - top - more;
-			const order = bonus.flatMap((b, i) => [b, ...(flaws[i] ? [flaws[i]] : [])]);
-			let left = room;
-			const kept = new Set<Strip>();
-			for (const l of order) {
-				if (l.h + gap > left) continue;
-				kept.add(l);
-				left -= l.h + gap;
-			}
-			bonus.splice(0, bonus.length, ...bonus.filter((l) => kept.has(l)));
-			flaws.splice(0, flaws.length, ...flaws.filter((l) => kept.has(l)));
-			hidden.push(...all.filter((l) => !kept.has(l)));
-		}
-		const strips = this.add.graphics().setDepth(DEPTH.hudShapes);
-		let y = top;
-		const place = (l: Strip): void => {
-			strips
-				.fillStyle(shade(l.color, -0.45), 1)
-				.fillRoundedRect(x, y + 1, width, l.h, RADIUS.button / 2);
-			strips.fillStyle(l.color, 1).fillRoundedRect(x, y, width, l.h, RADIUS.button / 2);
-			this.add
-				.text(x + padX, y + padY, l.str, style)
-				.setOrigin(0, 0)
-				.setDepth(DEPTH.sideValue);
-			y += l.h + gap;
-		};
-		for (const l of [...bonus, ...flaws]) place(l);
-		if (hidden.length) {
-			const tag = measure(`+${hidden.length}`, PALETTE.panelLight);
-			place(tag);
-			const zone = this.add
-				.zone(x, y - tag.h - gap, width, tag.h)
-				.setOrigin(0, 0)
-				.setInteractive({ useHandCursor: true });
-			this.tipOn(zone, this.manhaTip, () =>
-				this.manhaTip
-					.setText(hidden.map((h) => h.str).join(' / '))
-					.setOrigin(0, 0)
-					.setPosition(HUD.x + HUD.w + GAP.list, HUD.y),
-			);
-		}
 	}
 
 	/** Bars, ovals and dots of the sidebar and the HUD block. */
@@ -1455,27 +1391,31 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const lx = SIDE.x + SIDEBAR.pad;
 		const done =
 			m.goal === undefined ? Math.min(1, us / 12) : Math.min(1, this.hudPoints / m.goal);
-		const barY = SIDE.goal[0] + 27;
+		const barY = SIDE.goal[0] + 34;
 		g.fillStyle(PALETTE.shadow, 0.6).fillRoundedRect(lx, barY, 114, 7, 3.5);
 		if (done > 0) g.fillStyle(PALETTE.manilha, 1).fillRoundedRect(lx, barY, 114 * done, 7, 3.5);
 		// Aposta: the number sits on a red block once a call is on the table.
 		const called = m.state.bet > 1 || m.state.pending !== null;
-		if (called) g.fillStyle(PALETTE.truco, 1).fillRoundedRect(lx, SIDE.bet[0] + 17, 25, 20, 5);
-		// Tentos: both pairs, twelve dots each, ours (gold ovals) over theirs (red circles).
-		for (let i = 0; i < 12; i++) {
-			const r = 3.6;
-			const x = lx + r + i * ((SIDE_INNER_W - 2 * r) / 11);
-			const y = SIDE.theirs[0] + 20;
-			if (i < Math.min(12, us)) g.fillStyle(PALETTE.manilha, 1).fillEllipse(x, y, 7, 5);
-			else g.lineStyle(1, PALETTE.panelLight, 1).strokeEllipse(x, y, 7, 5);
-			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y + 11, r);
-			else g.lineStyle(1.2, PALETTE.panelLight, 1).strokeCircle(x, y + 11, r);
+		if (called) {
+			const b = this.betText;
+			g.fillStyle(PALETTE.truco, 1).fillRoundedRect(
+				b.x - b.width - 4,
+				b.y - 10,
+				b.width + 8,
+				20,
+				5,
+			);
 		}
-		for (let i = 0; i < m.rivalQuedasNeeded; i++) {
-			const x = HUD.x + HUD.w - HUD_PAD - 4 - (m.rivalQuedasNeeded - 1 - i) * 11;
-			const y = SIDE.theirs[0] + 43;
-			if (i < m.rivalQuedas) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, 3.6);
-			else g.lineStyle(1.2, PALETTE.panelLight, 1).strokeCircle(x, y, 3.6);
+		// Tentos: 3 rows of 4 dots in each mini-card, lit in green (ours) or red (theirs).
+		for (const [i, n] of [us, them].entries()) {
+			const cx = lx + i * (TENTOS_CARD.w + TENTOS_CARD.gap);
+			const lit = i === 0 ? PALETTE.good : PALETTE.truco;
+			for (let d = 0; d < 12; d++) {
+				const x = cx + 10 + (d % 4) * ((TENTOS_CARD.w - 20) / 3);
+				const y = SIDE.theirs[0] + TENTOS_CARD.y + 30 + Math.floor(d / 4) * 19;
+				if (d < Math.min(12, n)) g.fillStyle(lit, 1).fillCircle(x, y, 4.4);
+				else g.lineStyle(1.4, PALETTE.panelLight, 1).strokeCircle(x, y, 4.4);
+			}
 		}
 	}
 
@@ -1593,6 +1533,14 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			.setText(s.pending ? `${s.pending.to}` : bet)
 			.setColor(toCss(called ? PALETTE.textLight : PALETTE.manilha));
 		this.betNote.setText(t(called ? 'table.side.called' : 'table.side.noCall'));
+		// The state goes right of the number when both fit beside the label, else only the number.
+		const gap = 5;
+		const room = SIDE_INNER_W - this.betLabel.width - 8;
+		const both = this.betText.width + gap + this.betNote.width <= room;
+		this.betNote.setVisible(both);
+		this.betText.setX(
+			SIDE.x + SIDEBAR.pad + SIDE_INNER_W - (both ? this.betNote.width + gap : 0),
+		);
 		this.pointsText.setText(
 			m.goal === undefined
 				? `${Math.min(12, s.score.us)} × ${Math.min(12, s.score.them)}`
@@ -1605,9 +1553,6 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			this.pointsText.setFontSize(--px);
 		this.moneyText.setText(t('table.money', { n: this.hudMoney }));
 		this.refreshPrize();
-		this.quedasText.setText(
-			m.goal !== undefined ? t('table.hud.quedas', { us: m.quedas }) : '',
-		);
 		this.drawHudShapes(s.score.us, s.score.them);
 		// A Cartomante hides the vira until the first trick is over.
 		const hidden = m.boss === 'cartomante' && s.tricks.length === 1 && !s.over;
@@ -1859,6 +1804,44 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			show();
 			this.pinTip(owner, box);
 		});
+	}
+
+	private trinketTip: Phaser.GameObjects.Container | null = null;
+
+	private hideTrinketTip(): void {
+		this.trinketTip?.destroy();
+		this.trinketTip = null;
+	}
+
+	/** Tooltip of an equipped trinket: name, rarity, Bonus (green) and Flaw (red) at its level. */
+	private showTrinketTip(e: { id: string; level: number; flawX?: number }): void {
+		this.hideTrinketTip();
+		const tx = trinketTexts(e.id, e.level, e.flawX);
+		const w = 150;
+		const rows: [string, number, number][] = [
+			[trinketName(e.id), PALETTE.textLight, 8],
+			[trinketRarityName(e.level), levelColor(e.level), 6.5],
+			[tx.perk, PALETTE.good, 7],
+			[tx.flaw, PALETTE.bad, 7],
+		];
+		const c = this.add.container(HUD.x + HUD.w + GAP.list, HUD.y).setDepth(DEPTH.tips);
+		const bg = this.add.graphics();
+		c.add(bg);
+		let y = 4;
+		for (const [str, color, px] of rows) {
+			const o = this.add
+				.text(5, y, str, {
+					...this.bold(px, color),
+					align: 'left',
+					wordWrap: { width: w - 10 },
+				})
+				.setOrigin(0, 0);
+			c.add(o);
+			y += o.height + 2;
+		}
+		bg.fillStyle(PALETTE.panelDark, 1).fillRoundedRect(0, 0, w, y + 3, RADIUS.button);
+		bg.lineStyle(1.5, levelColor(e.level), 1).strokeRoundedRect(0, 0, w, y + 3, RADIUS.button);
+		this.trinketTip = c;
 	}
 
 	/** Shows `box` for a touch on `owner`, closing any other pinned tip. */

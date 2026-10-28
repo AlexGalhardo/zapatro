@@ -155,8 +155,8 @@ export const en = {
 	'table.side.goal': 'Goal',
 	'table.side.chipsMult': 'Chips × Mult',
 	'table.side.bet': 'Bet',
-	'table.side.tentosBoth': 'Tentos: us × them',
-	'table.hud.quedas': 'Quedas: us {us} · them',
+	'table.side.us': 'Us',
+	'table.side.them': 'Them',
 	'table.lance.level': 'lv {n}',
 	'table.queda': 'QUEDA! Our tentos go back to 0',
 	'table.goalWin': 'Goal reached!',
@@ -295,7 +295,7 @@ export const en = {
 	'table.end.table': 'Table',
 	'table.end.double': 'Sheila ×2',
 	'table.end.total': 'Total',
-	'table.quedas': 'Quedas {us}/2 × {them}/2',
+	'table.quedas': 'Quedas {us}',
 	'table.manilhasSeen': 'Manilhas out: {n}/4',
 	'table.viraHidden': 'Manilha: ?',
 	'table.rivalQueda': 'They closed a queda! Their tentos go back to 0',
@@ -561,7 +561,7 @@ export const en = {
 	'promise.simpatiaGratis.name': 'Free charm',
 	'promise.simpatiaGratis.desc': 'A free Simpatia in the next shop',
 	'promise.vidaExtra.name': 'Extra life',
-	'promise.vidaExtra.desc': 'At the next table the rivals need 3 quedas',
+	'promise.vidaExtra.desc': 'At the next table the rivals need 2 quedas',
 	'boss.professor.name': 'The Professor',
 	'boss.professor.rule': "Your equipped trinkets' drawbacks count double",
 	'boss.irmaos.name': 'The Brothers',
@@ -917,7 +917,7 @@ export const en = {
 		'The two players on the sides are the rival team. Seats play in turn, counter-clockwise, one card each per trick.',
 	'tutorial.goal.title': 'Score and bet',
 	'tutorial.goal.body':
-		'Each hand is worth tentos (1 at first, more with truco). A team that reaches 12 tentos closes a "queda". If the rivals close 2 quedas, you lose the table; you win it by reaching the points goal first (more on that soon).',
+		'Each hand is worth tentos (1 at first, more with truco). If the rivals reach 12 tentos, you lose the table. If your team gets there first, it closes a "queda" and both pairs go back to 0. You win the table by reaching the points goal first (more on that soon).',
 	'tutorial.hand.title': 'Your three cards',
 	'tutorial.hand.body':
 		'Everyone gets 3 cards. From weakest to strongest: 4 · 5 · 6 · 7 · Q · J · K · A · 2 · 3. Hover a card to see how strong it is in this hand.',
@@ -952,7 +952,7 @@ export const en = {
 		'Here is the roguelite part. A hand you win scores Chips × Mult points. Chips come from the cards that won tricks and from the Lance; the bet (1, 3, 6, 9, 12) is the base Mult. Lost hands score nothing.',
 	'tutorial.lances.title': 'Lances and the goal',
 	'tutorial.lances.body':
-		'How you won is the Lance (Clean Sweep, Comeback, They Ran…): it adds Chips and Mult, and levels up in the shop (L shows the table). Reach the table goal in points before the rivals close 2 quedas. You also earn money ($) for the shop.',
+		'How you won is the Lance (Clean Sweep, Comeback, They Ran…): it adds Chips and Mult, and levels up in the shop (L shows the table). Reach the table goal in points before the rivals reach 12 tentos. You also earn money ($) for the shop.',
 	'tutorial.manhas.title': 'Manhas',
 	'tutorial.manhas.body':
 		'Manhas are your passive tricks, bought in the shop. They trigger from left to right during the count. This one, Seu Zé, gives +15 Chips per trick won with a 4, 5, 6 or 7: your zap counts!',
@@ -1005,7 +1005,7 @@ export const en = {
 	'rules.next': 'Next',
 	'rules.teams.title': 'Teams and goal',
 	'rules.teams.body':
-		'Truco Paulista is played in pairs: you and your partner against two rivals, seated crosswise. Everyone gets 3 cards per hand. Each hand is worth tentos (1, or more with truco); a team that reaches 12 tentos closes a "queda".\nIn this game, every hand you win also scores points (Chips × Mult). You win the table when your points reach its goal; you lose it when the rivals close 2 quedas.',
+		'Truco Paulista is played in pairs: you and your partner against two rivals, seated crosswise. Everyone gets 3 cards per hand. Each hand is worth tentos (1, or more with truco); a team that reaches 12 tentos closes a "queda".\nIn this game, every hand you win also scores points (Chips × Mult). You win the table when your points reach its goal; you lose it when the rivals reach 12 tentos.',
 	'rules.strength.title': 'Card strength',
 	'rules.strength.body':
 		'The deck has 40 cards (no 8, 9 or 10). From weakest to strongest: 4, 5, 6, 7, Q, J, K, A, 2, 3. Suits do not matter for common cards: two 3s tie.\nExample: a K beats a J, but loses to an A, a 2 or a 3. In the game, hover a card in your hand to see its strength in that hand.',
@@ -1032,7 +1032,7 @@ export const en = {
 		'Manhas are passive bonuses: each one has a condition and an effect, and they trigger from left to right, so their order matters. Between tables you visit the shop: buy Manhas, packs, card modifiers, Simpatias (one-use helpers) and Lance levels with the money ($) you won.\nHover a Manha at the table to read what it does.',
 	'rules.eleven.title': 'Hand of 11 and Queda',
 	'rules.eleven.body':
-		"Hand of 11: the team with 11 tentos sees each other's hands and chooses to play (worth 3) or run (rivals get 1); nobody may call truco. Iron hand (11 × 11): everyone plays blind and the winner closes 12.\nQueda: if your team closes 12 before the goal, you score the Queda Lance and only your tentos reset; the table goes on.",
+		"Hand of 11: the team with 11 tentos sees each other's hands and chooses to play (worth 3) or run (rivals get 1); nobody may call truco. Iron hand (11 × 11): everyone plays blind and the winner closes 12.\nQueda: if your team closes 12 before the goal, you score the Queda Lance and both pairs go back to 0 tentos; the table goes on.",
 	'rules.run.title': 'The run',
 	'rules.run.body':
 		'A run crosses 8 Championships, from the neighborhood boteco to the Rei do Truco, with 3 tables each: small, big and a boss with a twisted rule. You may skip a small or big table for a Promise. Lose a table and the run ends; your feats and stats stay in the Almanac, and Stakes make later runs harder.',

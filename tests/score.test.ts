@@ -145,12 +145,12 @@ describe('scoring (A2, D-02)', () => {
 		expect(tableGoal(8, 'boss')).toBe(CHAMPIONSHIP_GOALS[7] * 2);
 		expect(tableGoal(9, 'small')).toBe(Math.round(CHAMPIONSHIP_GOALS[7] * ENDLESS_GOAL_GROWTH));
 		expect(tableOutcome(100, 100, { us: 12, them: 12 })).toBe('won');
-		expect(tableOutcome(50, 100, { us: 3, them: 12 })).toBe('rivalQueda');
-		expect(tableOutcome(50, 100, { us: 3, them: 12 }, 1)).toBe('lost');
+		expect(tableOutcome(50, 100, { us: 3, them: 12 })).toBe('lost');
+		expect(tableOutcome(50, 100, { us: 3, them: 12 }, 0, 2)).toBe('rivalQueda');
 		expect(afterQueda({ us: 4, them: 12 }, 'them')).toEqual({ us: 4, them: 0 });
 		expect(tableOutcome(50, 100, { us: 12, them: 5 })).toBe('queda');
 		expect(tableOutcome(50, 100, { us: 6, them: 5 })).toBe('playing');
-		expect(afterQueda({ us: 12, them: 5 })).toEqual({ us: 0, them: 5 });
+		expect(afterQueda({ us: 12, them: 5 })).toEqual({ us: 0, them: 0 });
 	});
 });
 
@@ -177,7 +177,7 @@ describe('roguelite table (A2.3)', () => {
 	});
 
 	test(
-		'an unreachable goal: Quedas reset only our tentos, rivals at 12 lose',
+		'an unreachable goal: a Queda resets both pairs, rivals at 12 lose',
 		() => {
 			let quedas = 0;
 			for (let seed = 1; seed <= 20; seed++) {

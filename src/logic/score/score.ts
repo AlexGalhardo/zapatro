@@ -3,7 +3,7 @@ import { MANILHA_CHIPS, RANK_CHIPS, ZAP_CHIPS } from '../../data/cards';
 import {
 	CHAMPIONSHIP_GOALS,
 	ENDLESS_GOAL_GROWTH,
-	RIVAL_QUEDAS_TO_WIN,
+	QUEDAS_TO_LOSE,
 	TABLE_GOAL_MULT,
 	type TableSize,
 } from '../../data/championships';
@@ -257,15 +257,15 @@ export type TableOutcome = 'won' | 'lost' | 'queda' | 'rivalQueda' | 'playing';
 
 /**
  * State of the table after a hand was scored (§5.10): reaching the goal wins (checked first);
- * rivals at 12 close a queda and beat you on their RIVAL_QUEDAS_TO_WIN-th; the player's team at
- * 12 before the goal is a Queda. Every queda resets only that team's tentos.
+ * rivals at 12 beat you (on their QUEDAS_TO_LOSE-th time); the player's team at 12 before the
+ * goal is a Queda, which sends both pairs back to 0 tentos.
  */
 export function tableOutcome(
 	points: number,
 	goal: number,
 	score: Record<Team, number>,
 	rivalQuedas = 0,
-	needed = RIVAL_QUEDAS_TO_WIN,
+	needed = QUEDAS_TO_LOSE,
 ): TableOutcome {
 	if (points >= goal) return 'won';
 	if (score.them >= 12) return rivalQuedas + 1 >= needed ? 'lost' : 'rivalQueda';
@@ -273,8 +273,6 @@ export function tableOutcome(
 	return 'playing';
 }
 
-/** Tentos after a queda of `team`: only that team resets. */
-export const afterQueda = (
-	score: Record<Team, number>,
-	team: Team = 'us',
-): Record<Team, number> => ({ ...score, [team]: 0 });
+/** Tentos after a queda: ours closes 12 and both pairs restart; a rival one (extra lives) resets only theirs. */
+export const afterQueda = (score: Record<Team, number>, team: Team = 'us'): Record<Team, number> =>
+	team === 'us' ? { us: 0, them: 0 } : { ...score, them: 0 };
