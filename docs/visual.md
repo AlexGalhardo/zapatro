@@ -27,6 +27,8 @@ A v3 troca a identidade de pixel/chapado por **arte pintada** (cores saturadas, 
 
 **Resoluções-alvo** (palco lógico 640×360, zoom pela altura): desktop otimizado para 1920×1080 (47,91% dos jogadores) e 2560×1440 (27,04%), ambos 16:9; Android em paisagem, telas de 6,5\"+ (~20:9, de 2400×1080 a 3200×1440) em modo toque. Ultrawide (2559×999) e 16:10 (1280×800) só não podem quebrar. O menu é conferido em todos eles (`docs/media/gta-after/01-menu-*.png`).
 
+No toque, a escolha de parceiro sobe o título e alonga os três cartões para o texto (estilo, vantagem, defeito e o botão) caber dentro de cada um; com ponteiro o bloco continua centrado. Os tentos da mesa são 12 bolinhas em 4 fileiras de 3, com folga até o risco do meio. A loja desenha as 4 ofertas dentro da lousa: faixa da raridade (creme, azul, roxo, laranja, sem a palavra) com ícone e nome, o bônus e o contra no centro, e o preço numa barra na base do cartão.
+
 Pipeline: `bun scripts/portraits.ts` gera tudo acima a partir de `art-src/gta/` (originais versionados; `references/` é ignorado pelo git). Não há expressões pintadas: o retrato é um só por personagem (a chave `portrait.<id>.<expr>` ignora `<expr>`, como na v2). Fundos e cards entram pelo `BootScene` (`img.bg.*`, `img.card.*`, `img.back.*`); sem a imagem, a tela cai no fallback (fundo cinza `bgNeutral`, retrato desenhado, verso vetor).
 
 Telas e peso (WebP): cards 10 × ~60 kB, retratos 10 × ~27 kB, fundos 8 × ~190 kB, versos 3 × ~50 kB.

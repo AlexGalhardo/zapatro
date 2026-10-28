@@ -110,6 +110,8 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 
 ### 1.4.4 Pendências para a 1.0
 
+- [x] UI em tela curta (2026-10-28): no toque, a escolha de parceiro cabe no cartão (título mais alto, cartão mais alto); tentos em 4 fileiras de 3 com folga no meio; ofertas da loja dentro da lousa, raridade só pela cor.
+
 - [ ] Marcas reais nas pinturas: camisa estilo seleção do Nino (`char-nino`, `menu-4`), letreiro "Las Vegas" e torre do Paris Las Vegas no `background-6` (`bg/bg6`), Brahma e "51" no fundo da loja (`shop2`).
 - [ ] 8 chefes ainda em pixel 128×128 (`valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `irmaos`, `mudo`) e o vendedor da loja sem arte.
 - [ ] "JOKER" em inglês dentro da face pintada do coringa.

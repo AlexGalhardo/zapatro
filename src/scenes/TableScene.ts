@@ -96,6 +96,7 @@ import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
 import { handEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
+import { tentosBead } from '../view/tentos-grid';
 import { setBackdrop } from './BackdropScene';
 
 const CALL_KEY: Record<number, I18nKey> = {
@@ -218,25 +219,30 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
  * is hidden (SHOW_MONEY_PANEL).
  * shortcut: with SHOW_MONEY_PANEL on, its card overlaps the bar; shorten a card when it comes back.
  */
+/** Tentos card: four rows of three beads, plus the NÓS / ELES labels. */
+const TENTOS_H = 116;
+
 const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
 	hud: [6, 40],
+	// Same 4 px gap between every card. With the score panel on, the cards above the tentos
+	// give up a little height so the taller tentos card and the button bar still end on the felt.
 	...(SHOW_SCORE_PANEL
 		? ({
-				goal: [50, 52],
-				chipsMult: [106, 66],
-				bet: [176, 38],
-				theirs: [218, 102],
+				goal: [50, 48],
+				chipsMult: [102, 58],
+				bet: [164, 36],
+				theirs: [204, TENTOS_H],
 			} as const)
 		: ({
 				goal: [50, 56],
 				chipsMult: [0, 0],
 				bet: [110, 40],
-				theirs: [154, 102],
+				theirs: [154, TENTOS_H],
 			} as const)),
 	money: [323, 30],
-	bar: SHOW_SCORE_PANEL ? ([324, 30] as const) : ([260, 30] as const),
+	bar: SHOW_SCORE_PANEL ? ([324, 30] as const) : ([154 + TENTOS_H + GAP.list, 30] as const),
 } as const satisfies Record<string, number | readonly [number, number]>;
 
 /** The Championship card ("Campeonato 1 / Mesa 1"): top right of the felt, the felt's padding in. */
@@ -251,21 +257,28 @@ const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
 /** Top of each sidebar card's label. */
 const SIDE_LABEL = 7;
 
-/** The tentos panel: two halves (ours, theirs) side by side, three rows of four beads each. */
+/** The tentos panel: two halves (ours, theirs), four rows of three beads, clear of the divider. */
 const TENTOS = {
 	half: SIDE_INNER_W / 2,
-	/** Top of the first row inside the panel, and the bottom padding. */
-	top: 38,
-	bottom: 9,
+	/** First row's centre inside the panel, and the padding under the last row. */
+	top: 34,
+	bottom: 8,
+	r: 5.5,
+	/** Clear px between a bead's edge and the centre divider. */
+	gap: 6,
 };
-/** Even gap between the three rows of beads. */
-const tentosStep = (): number => 24;
-const beadR = (): number => Math.min(7, TENTOS.half / 8 - 1.5);
-/** Centre of bead `d` (0–11) of half `i` (0 ours, 1 theirs), in stage px. */
-const beadAt = (i: number, d: number): [number, number] => [
-	SIDEBAR.x + SIDEBAR.pad + i * TENTOS.half + TENTOS.half / 8 + (d % 4) * (TENTOS.half / 4),
-	SIDE.theirs[0] + TENTOS.top + Math.floor(d / 4) * tentosStep(),
-];
+const TENTOS_STEP = (TENTOS_H - TENTOS.top - TENTOS.bottom - TENTOS.r) / 3;
+/** Centre of bead `d` (0–11, row-major) of half `i` (0 ours, 1 theirs), in stage px. */
+const beadAt = (i: number, d: number): [number, number] =>
+	tentosBead(i, d, {
+		x: SIDEBAR.x + SIDEBAR.pad,
+		y: SIDE.theirs[0],
+		half: TENTOS.half,
+		top: TENTOS.top,
+		step: TENTOS_STEP,
+		r: TENTOS.r,
+		gap: TENTOS.gap,
+	});
 
 /** A bead of the tentos panel: an empty socket, or a lit one in green/red, drawn at screen zoom. */
 function beadTex(scene: Phaser.Scene, kind: 'empty' | 'green' | 'red', r: number): string {
@@ -1455,7 +1468,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			this.beads[i] = Array.from({ length: 12 }, (_, d) => {
 				const [x, y] = beadAt(i, d);
 				return this.add
-					.image(x, y, beadTex(this, 'empty', beadR()))
+					.image(x, y, beadTex(this, 'empty', TENTOS.r))
 					.setDepth(DEPTH.sideValue);
 			});
 		}
@@ -1530,7 +1543,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				const bead = this.beads[i]?.[d];
 				if (!bead) continue;
 				const on = d < lit;
-				bead.setTexture(beadTex(this, on ? kind : 'empty', beadR()));
+				bead.setTexture(beadTex(this, on ? kind : 'empty', TENTOS.r));
 				if (on && d >= (this.beadsLit[i] ?? 0) && !comfort.reduceFlashes) {
 					this.tweens.killTweensOf(bead);
 					bead.setScale(1.45);

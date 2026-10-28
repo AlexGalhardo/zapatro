@@ -1272,7 +1272,11 @@ function sizeOf(key: string): [number, number] {
 	if (key.startsWith('card.') || key.startsWith('pack.')) return [CARD_W, CARD_H];
 	if (key.startsWith('portrait.')) return [PORTRAIT, PORTRAIT];
 	if (key.startsWith('charcard.')) return [CHAR_W, CHAR_H];
-	if (key.startsWith('charcover.')) return [COVER_W, COVER_H];
+	if (key.startsWith('charcover.')) {
+		// `charcover.<id>.<h>` is a taller crop for the touch partner screen. Same art, sides cropped.
+		const h = Number(key.split('.')[2]);
+		return [COVER_W, h > COVER_H ? Math.round(h) : COVER_H];
+	}
 	if (key.startsWith('boss.')) return [96, 96];
 	if (key.startsWith('bg.')) return [160, 90];
 	if (key === 'ui.slot.manha') return [52, 52];
