@@ -933,6 +933,8 @@ export const en = {
 	'tutorial.hand.title': 'Your three cards',
 	'tutorial.hand.body':
 		'Everyone gets 3 cards. From weakest to strongest: 4 · 5 · 6 · 7 · Q · J · K · A · 2 · 3. Hover a card to see how strong it is in this hand.',
+	'tutorial.hand.body.touch':
+		'Everyone gets 3 cards. From weakest to strongest: 4 · 5 · 6 · 7 · Q · J · K · A · 2 · 3. Hold your finger on a card to see how strong it is in this hand.',
 	'tutorial.vira.title': 'Vira and manilha',
 	'tutorial.vira.body':
 		'This face-up card is the vira. The rank right after it is the manilha: here the vira is a 4, so every 5 is a manilha (they glow gold; ♦ < ♠ < ♥ < ♣). Two ranks above the vira, the clubs card is the ZAP, stronger than every manilha. Your 6♣ is the ZAP, the best card in the game!',

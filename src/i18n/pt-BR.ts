@@ -937,6 +937,8 @@ export const ptBR: Record<I18nKey, string> = {
 	'tutorial.hand.title': 'Suas três cartas',
 	'tutorial.hand.body':
 		'Cada um recebe 3 cartas. Da mais fraca para a mais forte: 4 · 5 · 6 · 7 · Q · J · K · A · 2 · 3. Passe o mouse numa carta para ver a força dela nesta mão.',
+	'tutorial.hand.body.touch':
+		'Cada um recebe 3 cartas. Da mais fraca para a mais forte: 4 · 5 · 6 · 7 · Q · J · K · A · 2 · 3. Segure o dedo numa carta para ver a força dela nesta mão.',
 	'tutorial.vira.title': 'Vira e manilha',
 	'tutorial.vira.body':
 		'Esta carta aberta é a vira. O valor logo acima dela é a manilha: aqui a vira é 4, então todo 5 é manilha (brilham em dourado; ♦ < ♠ < ♥ < ♣). Duas acima da vira, a carta de paus é o ZAP, mais forte que todas as manilhas. Seu 6♣ é o ZAP, a melhor carta do jogo!',

@@ -46,7 +46,7 @@ export const TUTORIAL_STEPS: readonly TutorialStep[] = [
 	{ id: 'welcome', on: 'start', anchor: 'partner' },
 	{ id: 'rivals', on: 'next', anchor: 'rivals' },
 	{ id: 'goal', on: 'next', anchor: 'score' },
-	{ id: 'hand', on: 'next', anchor: 'hand' },
+	{ id: 'hand', on: 'next', anchor: 'hand', keys: true },
 	{ id: 'vira', on: 'next', anchor: 'vira' },
 	{ id: 'signals', on: 'next', anchor: 'signal', keys: true },
 	{ id: 'truco', on: 'next', anchor: 'truco', keys: true },
