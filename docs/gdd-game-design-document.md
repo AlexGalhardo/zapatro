@@ -17,7 +17,7 @@ Código e PLAN citam "design §N" (o antigo `game-design-principles.md`). Equiva
 | 2 A mesa · 2.1 Regras do Truco | 3 | 4.4 Consumíveis | 7.4, 7.5 |
 | 2.2 Vitória, derrota e Queda | 5.2 | 4.5 Melhorias do Boteco | 7.6 |
 | 2.3 Pontuação | 4.1, 4.3 | 5 · 5.1 Parceiro | 8 · 8.1 |
-| 2.4 Lances | 4.4 | 5.2 Sinais · 5.3 Fama | 8.4 |
+| 2.4 Lances | 4.4 | 5.2 Sinais | 8.4 |
 | 2.5 Dinheiro | 6 | 5.4 IA rival | 8.3 |
 | 3 A run · 3.1 Estrutura · 3.2 Metas | 5 · 5.1 | 6 Meta-progressão | 10 |
 | 3.3 Pular mesa e Promessas | 5.3, 7.7 | 7.1 Tela e arte · 7.2 Game feel | 13.4 · 13.5 |
@@ -69,7 +69,7 @@ Código e PLAN citam "design §N" (o antigo `game-design-principles.md`). Equiva
 |---|---|---|
 | P1 | **Truco primeiro** | Isso deixa o Truco mais interessante? Se cabe em qualquer card game, é questionado |
 | P2 | **Pedir truco é a alavanca** | A aposta (1/3/6/9/12) é o Mult base; blefar, aceitar, correr e aumentar são as decisões centrais |
-| P3 | **Blefe com regra legível** | A IA decide por crença (o que viu + sinais flagrados) e Fama; blefe é leitura de sistema, não sorteio |
+| P3 | **Blefe com regra legível** | A IA decide por crença (o que viu + sinais flagrados); blefe é leitura de sistema, não sorteio |
 | P4 | **Builds quebradas, mas explicáveis** | Peças fracas sozinhas formam motores absurdos juntas; toda ativação mostra `[Manha] motivo · ganho`; o total vem dos `steps` |
 | P5 | **Dificuldade por regra, não por número** | Chefes e Estacas mudam regras; rival nunca é só "+50%" |
 
@@ -108,7 +108,7 @@ O PLAN §1.3 (e o design original) lista um 6º pilar, **informação incompleta
 
 | Escala | Duração | Loop | Recompensa |
 |---|---|---|---|
-| **Mão** | segundos | Sinal → (truco?) → 3 vazas → Lance → contagem Fichas × Mult | Pontos, dinheiro de Manhas, Fama |
+| **Mão** | segundos | Sinal → (truco?) → 3 vazas → Lance → contagem Fichas × Mult | Pontos, dinheiro dos trinkets |
 | **Mesa** | ≈ 4,1 mãos ⚖ | Mãos até Pontos ≥ meta (vitória) ou rivais fecharem 12 tentos 2 vezes (derrota) | Prêmio + rapidez + juros → loja |
 | **Campeonato** | 3 mesas | Pequena → loja → Grande → loja → Chefe → loja; Pequena/Grande puláveis por Promessa | Nível do parceiro, Melhoria do Boteco |
 | **Run** | 8 Campeonatos | Build cresce (Manhas, baralho, Lances); vencer o C8 vence a run; infinito opcional | Feitos, destraves |
@@ -281,6 +281,10 @@ Pago no fim de cada mesa vencida: prêmio + rapidez + juros. **Princípio** (Pes
 
 **Proposta** (Pesquisa §3.5): garantir algo útil na primeira loja da run (Balatro garante um pacote) — a confirmar se já acontece.
 
+### 7.1.1 Trinkets — 32 ⚖ (`src/data/trinkets.ts`, spec em [trinkets.md](trinkets.md))
+
+Substituem as Manhas na loja (flag `TRINKETS`; o código das Manhas fica). Cada trinket tem um **Bônus** (verde) e um **Contra** (vermelho) próprios e vem em 4 raridades: Normal, Raro, Épico e Lendário. O Bônus escala ×1 · 1,6 · 2,3 · 3,2, o Contra ×1 · 1,3 · 1,6 · 2 (um ×Mult só cresce a parte acima de 1) e o preço é $4 · 7 · 10 · 14. A **coleção** fica no save do perfil (vale a maior raridade que o jogador já teve); a run equipa até **4** (0 é permitido; Zé tem 1 a menos) e só os equipados contam. A loja oferece 4 trinkets por parada: depois de um chefe um é sempre Lendário; senão 50% de um Raro e 25% de um Épico (sorteios independentes, por seed), o resto Normal; nunca repete na mesma loja nem oferece raridade igual ou menor que a já possuída. Bônus e Contra entram nos mesmos `steps` da contagem (`trinket:<id>`); efeitos de run (meta, preço, Prêmio de Rapidez, juros, tentos iniciais) vêm de `trinketTotals`. **O Professor** dobra o Contra dos equipados na mesa dele. A mesa só perde quando os rivais fecham 2 quedas; a Queda da nossa dupla zera os tentos das duas duplas.
+
 ### 7.2 Manhas (os "Coringas") — 60 ⚖
 
 | Raridade | Quantidade |
@@ -294,9 +298,9 @@ O equivalente dos Jokers do Balatro.
 
 - Disparam da esquerda para a direita, depois da Aposta e do Lance; o jogador reordena (◀ ▶) na loja.
 - Fichas e Mult só contam na mão vencida; dinheiro conta sempre (Mão de Lixo paga mesmo perdendo). Toda ativação aparece como `[MÃO DE LIXO] Perdeu a 1ª vaza · +$2`.
-- Condições típicas: pediu truco sem manilha (`malandro`), perdeu a 1ª vaza (`maoDeLixo`), perdeu a 1ª e venceu a 3ª (`ultimaCartada`), aposta ≥ N (`sangueFrio`), rival correu sem você ter manilha (`teatro`), tem o ZAP (`zapZap`), Lance X (`ferroQuente`, `onzeLetras`), alguma vaza cangou (`cangaceiro`), faixa de Fama. Efeitos "por vaza vencida" filtram por quem venceu (parceiro), posto ou naipe da carta, ou manilha.
+- Condições típicas: pediu truco sem manilha (`malandro`), perdeu a 1ª vaza (`maoDeLixo`), perdeu a 1ª e venceu a 3ª (`ultimaCartada`), aposta ≥ N (`sangueFrio`), rival correu sem você ter manilha (`teatro`), tem o ZAP (`zapZap`), Lance X (`ferroQuente`, `onzeLetras`), alguma vaza cangou (`cangaceiro`). Efeitos "por vaza vencida" filtram por quem venceu (parceiro), posto ou naipe da carta, ou manilha.
 - Algumas Manhas mudam a mesa em vez da conta (`rule`): Rei da Mesa, Gritador, Contador de Cartas, Bisbilhoteiro, Vira Viciada, Cara de Pau.
-- 11 tags de sinergia: `BLEFE`, `MANILHA`, `APOSTA`, `PERDA`, `VAZA-1`, `VAZA-2`, `VAZA-3`, `PARCEIRO`, `OURO`, `FAMA`, `SINAL`; ligam Manhas a parceiros (Jhony) e ao bot.
+- 10 tags de sinergia: `BLEFE`, `MANILHA`, `APOSTA`, `PERDA`, `VAZA-1`, `VAZA-2`, `VAZA-3`, `PARCEIRO`, `OURO`, `SINAL`; ligam Manhas a parceiros (Jhony) e ao bot.
 - Meta de conteúdo cumprida: 20 no MVP, 60 na 1.0 (fonte de ideias: [brainstorm.md](brainstorm.md) §9).
 - Lista completa e números: [balancing.md](balancing.md) e `src/data/manhas.ts`. Conteúdo novo segue a skill `add-game-content`.
 
@@ -424,41 +428,39 @@ A tela de escolha mostra, em três cards por parceiro, o **Estilo**, a **Vantage
 
 ### 8.2 Rivais (personagens das mesas comuns)
 
-Os 9 companheiros que você não escolheu. O perfil de IA do assento é o do pool do Campeonato (erro e peso da Fama; GDD 5.1) com a coragem, agressividade e blefe do estilo do companheiro (`rivalBrain`, `src/game/run-table.ts`) mais os traços. Na seleção de mesas, passar o mouse no retrato do rival mostra vantagem e defeito.
+Os 9 companheiros que você não escolheu. O perfil de IA do assento é o do pool do Campeonato (erro; GDD 5.1) com a coragem, agressividade e blefe do estilo do companheiro (`rivalBrain`, `src/game/run-table.ts`) mais os traços. Na seleção de mesas, passar o mouse no retrato do rival mostra vantagem e defeito.
 
 ### 8.3 Perfis de IA ⚖ (`src/data/ai-profiles.ts`)
 
-| Perfil | Comportamento | Coragem | Agressividade | Blefe | Peso da Fama | Erro | Flagra | Sinaliza |
-|---|---|---|---|---|---|---|---|---|
-| Covarde (`coward`) | Corre com frequência | 0,10 | 0,10 | 0,03 | 0,4 | 0,05 | 0,15 | 0,6 |
-| Valentão (`bully`) | Pede e aceita truco com facilidade | 0,80 | 0,80 | 0,20 | 0,3 | 0,06 | 0,15 | 0,6 |
-| Calculista (`calculator`) | Joga pela força real, quase não blefa | 0,45 | 0,45 | 0,02 | 0,8 | 0,02 | 0,25 | 0,8 |
-| Blefador (`bluffer`) | Pede truco sem força | 0,55 | 0,60 | 0,35 | 0,4 | 0,06 | 0,20 | 0,5 |
-| Novato (`rookie`) | Erra decisões com frequência | 0,50 | 0,50 | 0,10 | 0,1 | 0,25 | 0,10 | 0,4 |
-| Profissional (`pro`) | Consistente, usa bem a Fama | 0,50 | 0,55 | 0,12 | 0,9 | 0,01 | 0,30 | 0,9 |
+| Perfil | Comportamento | Coragem | Agressividade | Blefe | Erro | Flagra | Sinaliza |
+|---|---|---|---|---|---|---|---|
+| Covarde (`coward`) | Corre com frequência | 0,10 | 0,10 | 0,4 | 0,05 | 0,15 | 0,6 |
+| Valentão (`bully`) | Pede e aceita truco com facilidade | 0,80 | 0,80 | 0,3 | 0,06 | 0,15 | 0,6 |
+| Calculista (`calculator`) | Joga pela força real, quase não blefa | 0,45 | 0,45 | 0,8 | 0,02 | 0,25 | 0,8 |
+| Blefador (`bluffer`) | Pede truco sem força | 0,55 | 0,60 | 0,4 | 0,06 | 0,20 | 0,5 |
+| Novato (`rookie`) | Erra decisões com frequência | 0,50 | 0,50 | 0,1 | 0,25 | 0,10 | 0,4 |
+| Profissional (`pro`) | Consistente, quase não erra | 0,50 | 0,55 | 0,9 | 0,01 | 0,30 | 0,9 |
 
-IA de **utilidade**, determinística por seed, só sobre `observe(state, seat)`: nunca lê a mão alheia nem a encoberta dos outros; vê a mão do parceiro na mão de 11 e não vê a própria na mão de ferro. Cada rival estima a força da sua dupla (crença) pelas cartas jogadas, sinais flagrados, Fama e efeitos de Manhas de blefe, e compara com a força da própria dupla. Um **bot** joga runs inteiras para o balanceamento.
+IA de **utilidade**, determinística por seed, só sobre `observe(state, seat)`: nunca lê a mão alheia nem a encoberta dos outros; vê a mão do parceiro na mão de 11 e não vê a própria na mão de ferro. Cada rival estima a força da sua dupla (crença) pelas cartas jogadas e sinais flagrados, e compara com a força da própria dupla. Um **bot** joga runs inteiras para o balanceamento.
 
 Limiares (`src/logic/ai/decide.ts`, PA2; `p` = chance de vencer a mão):
 
 | Decisão | Regra |
 |---|---|
 | Chance `p` | Monte Carlo: 40 distribuições das cartas desconhecidas, respeitando em 75% das vezes os sinais conhecidos, jogadas até o fim de forma gulosa |
-| Responder truco | leitura = `p` − 0,12 × (1 − Fama rival × peso da Fama), pois quem pede costuma ter força; aumenta se leitura > 0,80 − agressividade × 0,15; aceita se > 0,45 − coragem × 0,3; se correr entrega a partida, aceita com > 0,15 |
+| Responder truco | leitura = `p` − 0,12, pois quem pede costuma ter força; aumenta se leitura > 0,80 − agressividade × 0,15; aceita se > 0,45 − coragem × 0,3; se correr entrega a partida, aceita com > 0,15 |
 | Pedir truco | `p` > 0,72 − agressividade × 0,2, ou blefe (`p` < 0,35 e sorteio do blefe do perfil) |
 | Carta | Abrindo a vaza, a do meio; se a dupla já vence a vaza, a menor; senão a menor que vence, ou a menor |
 | Mão de 11 | Joga se `p` (vendo a mão do parceiro) > 0,42 − coragem × 0,1 |
 | Sinal | Honesto (ZAP, senão melhor manilha, senão 3, senão "nada"), com a chance do perfil |
 
-### 8.4 Sinais e Fama
+### 8.4 Sinais
 
 | Sistema | Regra |
 |---|---|
 | Sinais | Tabela fixa ensinada no tutorial (PLAN §5.8): piscada = ZAP · sobrancelha = copas (ou paus) · boca torta = espadilha · língua = pica-fumo · morder o lábio = um 3 · olhar para o alto = nada. 1 por mão antes da 1ª carta (baralho do Blefe e "Cara de conversa" dão +1); flagra base 20%, ajustada pelo perfil; sinal flagrado vira informação real na crença da IA rival |
 | Sinal falso | Permitido de propósito, para ser flagrado: blefe em outra camada. O parceiro também acredita (exceto Cida) |
 | Sinal do parceiro | Balão com o gesto exato que ele fez (ícone do sinal com o selo da carta que o gesto afirma); pode ser mentira (sinal falso), mas é sempre o gesto feito; a linha de status diz a categoria em palavras |
-| Fama | **Único medidor psicológico**: Honesto ↔ Blefador [−1, 1], vale a run inteira e fica visível. Muda só quando um truco seu chega às cartas mostradas: +0,25 blefe (sem manilha nem 3), −0,15 mão forte; Corrida não muda (o rival não viu as cartas), salvo Manha que diga o contrário |
-| Efeito da Fama | Blefador → rivais aceitam mais (mão forte rende); Honesto → rivais correm mais (blefe funciona). O loop é alternar o estilo para confundir a mesa |
 
 ---
 
@@ -473,7 +475,7 @@ Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 9; o Rei do Truco é fixo
 | O Juiz | A Manha mais à esquerda fica desativada | Build |
 | O Agiota | Cada mão perdida custa $1 | Economia |
 | O Delegado | O Lance Corrida vale **metade** (`DELEGADO_CORRIDA_X = 0,5`; o design pedia 0) | Lance |
-| O Professor | A Fama conta em dobro contra você | Blefe |
+| O Professor | Os contras dos seus trinkets equipados contam em dobro | Trinkets |
 | Os Irmãos | Sinais deles nunca flagrados; os seus com o dobro de chance | Sinais |
 | O Mudo | Sem sinais com o parceiro | Sinais |
 | A Sortuda | 35% de chance de a vira dar manilha a um rival | Sorte |
@@ -495,8 +497,8 @@ Meta só desbloqueia **variedade e dificuldade**, nunca poder: a run 1 tem a for
 |---|---|---|
 | Normal | sem alteração | inicial |
 | do Interior | 4, 5 e 6 dão ×2 Fichas | feito `lixo` (vencer com mão fraca) |
-| do Blefe | Fama começa em +0,5 (Blefador); +1 sinal por mão | feito `blefe` |
-| do Dinheiro | +$10; −1 espaço de Manha | feito `rico` (juntar $30 numa run) |
+| do Blefe | +1 sinal por mão | feito `blefe` |
+| do Dinheiro | +$10; −1 espaço de trinket | feito `rico` (juntar $30 numa run) |
 | Viciado | cópia extra de toda carta de ♣ (era "começa com 2 zaps") | feito `ferro` (vencer mão de ferro) |
 
 ### 10.3 Feitos — 37 (`src/data/feats.ts`)
@@ -573,7 +575,7 @@ Regra de fluxo: nada de tela de confirmação desnecessária; Esc/voltar do Andr
 
 ### 13.2 HUD da mesa (resumo; detalhe em Visual 10)
 
-Sidebar esquerda congelada, com 6 cartões: Campeonato · Mesa, Meta (barra de Pontos), Fichas × Mult, Aposta, Tentos deles e $; abaixo, botões (Regras, Manhas em lista, Configurações). Nada mais entra nela. O feltro ocupa o resto da tela: vira no canto superior esquerdo, cruz de cartas no centro (você embaixo, parceiro em cima, rivais à esquerda e à direita), botões de ação empilhados no canto inferior direito, com selo de tecla. No canto superior direito do feltro fica o bloco HUD: 5 slots de Manha (32×32), 2 slots de Simpatia/Lance, barra de Fama, 12 ovais de tentos NÓS e as quedas deles. Balão de fala só do parceiro e do "TRUCO!" de quem pediu. Detalhe em [visual.md](visual.md) §5.
+Sidebar esquerda congelada, com os cartões: trinkets equipados, Meta e Aposta (uma linha cada) e o painel de Tentos NÓS | ELES (3 × 4 contas; a contagem de Fichas × Mult aparece no popup do feltro); abaixo, botões (Regras, Manhas em lista, Configurações). Nada mais entra nela. O feltro ocupa o resto da tela: vira no canto superior esquerdo, cruz de cartas no centro (você embaixo, parceiro em cima, rivais à esquerda e à direita), botões de ação empilhados no canto inferior direito, com selo de tecla. No canto superior direito do feltro fica o bloco HUD: os 4 slots de trinkets equipados (detalhe no hover). Balão de fala só do parceiro e do "TRUCO!" de quem pediu. Detalhe em [visual.md](visual.md) §5.
 
 ### 13.3 Acessibilidade
 
@@ -591,7 +593,7 @@ Sidebar esquerda congelada, com 6 cartões: Campeonato · Mesa, Meta (barra de P
 ### 13.4 Tela e arte
 
 - Paisagem 16:9 em todas as plataformas (no celular o jogo gira para paisagem); 640×360 lógico, zoom inteiro.
-- Layout: fundo neutro cinza-grafite, sidebar esquerda de cartões (Campeonato · Mesa, Meta, Fichas × Mult, Aposta, Tentos deles, $; na mesa de chefe, também a regra do chefe), mesa de feltro com 4 jogadores em cruz paralela e, no canto superior direito do feltro, o bloco de Manhas, consumíveis, Fama, tentos NÓS e quedas.
+- Layout: fundo neutro cinza-grafite, sidebar esquerda de cartões (Campeonato · Mesa, Meta, Fichas × Mult, Aposta, Tentos deles, $; na mesa de chefe, também a regra do chefe), mesa de feltro com 4 jogadores em cruz paralela e, no canto superior direito do feltro, o cartão de trinkets equipados.
 - Cartas 48×64 px; manilha com placa dourada e ZAP com brilho em todas as cores. Personagens em card pintado 3:4 e busto 256×256 (Art Bible v3; os chefes sem pintura em pixel 128×128), uma expressão só; o sinal do parceiro vira selo e balão, e um sinal flagrado vira selo no retrato do rival que o flagrou. Chefes iguais aos companheiros. Detalhe em [visual.md](visual.md).
 
 ### 13.5 Game feel
@@ -660,7 +662,7 @@ Gatilhos já ligados (`TableScene`, evento `handOver`): `caiu` toca quando a dup
 - [ ] O Truco continua reconhecível (vira, manilhas, vazas, aposta, mão de 11, mão de ferro).
 - [ ] Pedir truco é a principal alavanca de pontos.
 - [ ] O parceiro influencia decisões.
-- [ ] O blefe funciona por regra legível (crença + Fama).
+- [ ] O blefe funciona por regra legível (crença).
 - [ ] Toda ativação de Manha mostra o motivo.
 - [ ] Chefes mudam regras, não números.
 - [ ] A meta-progressão só adiciona variedade.
@@ -695,7 +697,7 @@ Gatilhos já ligados (`TableScene`, evento `handOver`): `caiu` toca quando a dup
 
 ### 18.1 Nunca se corta
 
-Regras do Truco do PLAN §5 · Fichas × Mult com `steps` · parceiro + sinais + Fama · 8 Campeonatos com chefes · EN + PT-BR · save por mão · Steam + Android + demo web.
+Regras do Truco do PLAN §5 · Fichas × Mult com `steps` · parceiro + sinais · 8 Campeonatos com chefes · EN + PT-BR · save por mão · Steam + Android + demo web.
 
 ### 18.2 Ordem de corte (se faltar tempo)
 
@@ -709,7 +711,7 @@ Regras do Truco do PLAN §5 · Fichas × Mult com `steps` · parceiro + sinais +
 
 ### 18.3 Fora do escopo
 
-iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a LAN da Partida Rápida existe: multiplayer.md) · backend/contas/telemetria · newsletter · mapa de rotas e eventos de mapa · relíquias (cobertas pelas Melhorias) · dívida, investimento e agiota como sistema · superstições · confiança do parceiro, tilt, temperamento e pressão global · medidores psicológicos além da Fama (Respeito, Pressão) · desafios diários, contratos e modos alternativos · cartas com memória e carta de estimação (PLAN §1.5). Cortados no brainstorm para manter o jogo legível e viável para um dev solo; ficam como ideias futuras.
+iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a LAN da Partida Rápida existe: multiplayer.md) · backend/contas/telemetria · newsletter · mapa de rotas e eventos de mapa · relíquias (cobertas pelas Melhorias) · dívida, investimento e agiota como sistema · superstições · confiança do parceiro, tilt, temperamento e pressão global · medidores psicológicos (a Fama saiu do jogo em 2026-10-27; Respeito e Pressão nunca entraram) · desafios diários, contratos e modos alternativos · cartas com memória e carta de estimação (PLAN §1.5). Cortados no brainstorm para manter o jogo legível e viável para um dev solo; ficam como ideias futuras.
 
 ### 18.4 Fases e histórico
 
@@ -778,7 +780,6 @@ Estado implementado por versão (antigo `game-design.md`; detalhe no [CHANGELOG]
 | Promessa | Recompensa por pular mesa |
 | Campeonato / Mesa | "Ante" / "blind" |
 | Estaca | Nível de dificuldade cumulativo por baralho |
-| Fama | Medidor Honesto ↔ Blefador |
 | Coringa | Duas cartas por baralho com 10 efeitos sorteados |
 | Carta especial | Trevo, Olho ou Raio: carta única por baralho com 3 efeitos sorteados |
 | Flagra | Rival percebe um sinal |
