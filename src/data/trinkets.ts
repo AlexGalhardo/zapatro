@@ -129,7 +129,7 @@ export const TRINKETS: readonly TrinketDef[] = [
 		'crown',
 		3,
 		{ k: 'handX', c: 'zapWonTrick', x: 1.5 },
-		{ k: 'handMult', c: 'noZapHeld', n: -2 },
+		{ k: 'handMult', c: 'noZapHeld', n: -1 },
 	),
 	t('copoAmericano', 'coin', 2, { k: 'handMoney', c: 'won', n: 1 }, { k: 'shopPrice', n: 1 }),
 	t(
@@ -192,7 +192,7 @@ export const TRINKETS: readonly TrinketDef[] = [
 		'confiaEmMim',
 		'check',
 		2,
-		{ k: 'trickChips', f: { by: 'partner' }, n: 15 },
+		{ k: 'trickChips', f: { by: 'partner' }, n: 20 },
 		{ k: 'baseMult', n: -1 },
 	),
 	t(
@@ -207,7 +207,7 @@ export const TRINKETS: readonly TrinketDef[] = [
 		'refresh',
 		2,
 		{ k: 'handMult', c: 'lostFirstWonSecond', n: 6 },
-		{ k: 'handMult', c: 'wonFirst', n: -3 },
+		{ k: 'handMult', c: 'wonFirst', n: -1 },
 	),
 	t(
 		'gritoDeTruco',
@@ -230,14 +230,14 @@ export const TRINKETS: readonly TrinketDef[] = [
 		'cart',
 		1,
 		{ k: 'handChips', c: 'firstHand', n: 25 },
-		{ k: 'handChips', c: 'otherHand', n: -5 },
+		{ k: 'handChips', c: 'otherHand', n: -2 },
 	),
 	t(
 		'saideira',
 		'trophy',
 		2,
 		{ k: 'handMult', c: 'nearGoal', n: 10 },
-		{ k: 'handMult', c: 'farGoal', n: -3 },
+		{ k: 'handMult', c: 'farGoal', n: -1 },
 	),
 	t(
 		'viraDourada',
@@ -266,7 +266,7 @@ export const TRINKETS: readonly TrinketDef[] = [
 		'swords',
 		2,
 		{ k: 'handMult', c: 'bigHand', n: 8 },
-		{ k: 'handMult', c: 'normalHand', n: -2 },
+		{ k: 'handMult', c: 'normalHand', n: -1 },
 	),
 	t('bicheiro', 'coin', 2, { k: 'doubleChance', p: 0.25 }, { k: 'goalPct', n: 8 }),
 	t('cantoria', 'note', 1, { k: 'perSignal', n: 5 }, { k: 'rivalCatch', n: 10 }),

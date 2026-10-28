@@ -87,6 +87,10 @@ export function totals(steps: readonly ScoreStep[]): {
 		mult += st.addMult ?? 0;
 		if (st.xMult !== undefined) mult *= st.xMult;
 	}
+	// Flaws can push either number down, never below what a bare hand scores (Mult 1, no Chips < 0).
+	if (steps.some((st) => st.addMult !== undefined) && !steps.some((st) => st.xMult === 0))
+		mult = Math.max(1, mult);
+	chips = Math.max(0, chips);
 	return { chips, mult, points: chips * mult };
 }
 

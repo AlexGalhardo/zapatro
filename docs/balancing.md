@@ -421,3 +421,15 @@ Com a loja simples (`SHOP_SIMPLE`, 4 ofertas, sem Renovar nem pacotes) e a sele�
 Gate `bun run balance` após o ajuste: bot bom **24,4 · 25,4 · 24,4%** (antes 13,2 · 10,8 · 8,6%); aleatório 0,2 · 0,0 · 0,0%; 6,36 · 6,36 · 6,27 mãos por mesa. PASS nas 3 seeds.
 
 Nota: esta mudança reverte parte da dobra de metas de 2026-10-25, a pedido da calibração para o release 0.13.0; o dev aprovou calibrar antes do release.
+
+## Trinkets, sem Fama, 2 quedas (2026-10-27)
+
+Com os trinkets no lugar das Manhas o bot bom caiu para ~10–13% (22,6% com `TRINKETS=false`). Causa: os Contras de Mult (−1 a −3) zeravam a mão de aposta 1, porque o Mult base é 1 e `totals` deixava o Mult chegar a 0 ou menos (houve mãos com −113 pontos). Correções, nesta ordem:
+
+1. `totals` (`src/logic/score/score.ts`) nunca deixa o Mult abaixo de 1 nem as Fichas abaixo de 0 (o coringa "zerada" continua zerando).
+2. Contras suavizados no Normal (a escala de raridade fica): Zap de Ouro −2 → −1 Mult, Saideira −3 → −1, Mão de Ferro −2 → −1, Virada −3 → −1, Pinga de Abertura −5 → −2 Fichas; Confia em Mim ganhou Bônus +15 → +20 Fichas.
+3. Metas: `CHAMPIONSHIP_GOALS` 130 · 170 · 220 · 270 · 350 · 440 · 550 · 700 → **105 · 135 · 175 · 215 · 280 · 350 · 440 · 560** (×0,8).
+
+A regra "rivais chegam a 12 uma vez" (`QUEDAS_TO_LOSE = 1`) foi testada e descartada: o bot bom ganhava 0% (14% mesmo com metas de 5 pontos), pois uma única mão de truco 9/12 perdida encerra a mesa. Ficou `QUEDAS_TO_LOSE = 2` (decisão do dev); a Queda da nossa dupla zera os tentos das duas duplas.
+
+Gate `bun run balance` (500 runs por seed): bot bom **23,4 · 27,0 · 26,6%**; aleatório 0,0 · 0,2 · 0,2%; 6,35 · 6,14 · 6,19 mãos por mesa. PASS nas 3 seeds.
