@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
+import { TRINKETS } from '../config/features';
 import { PALETTE, shade } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS } from '../config/ui';
 import { type I18nKey, t } from '../i18n';
@@ -35,7 +36,7 @@ const PAGES = [
 	'signals',
 	'score',
 	'lances',
-	'manhas',
+	TRINKETS ? 'trinkets' : 'manhas',
 	'eleven',
 	'run',
 ] as const;

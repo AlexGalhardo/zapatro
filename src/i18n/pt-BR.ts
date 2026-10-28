@@ -1036,6 +1036,9 @@ export const ptBR: Record<I18nKey, string> = {
 	'rules.manhas.title': 'Manhas e a loja',
 	'rules.manhas.body':
 		'Manhas são bônus passivos: cada uma tem uma condição e um efeito, e disparam da esquerda para a direita, então a ordem importa. Entre as mesas você passa na loja: compre Manhas, pacotes, modificadores de carta, Simpatias (ajudas de uso único) e níveis de Lance com o dinheiro ($) ganho.\nNa mesa, passe o mouse numa Manha para ler o que ela faz.',
+	'rules.trinkets.title': 'Trinkets',
+	'rules.trinkets.body':
+		'Trinkets são amuletos com um Bônus (verde) e um Contra (vermelho).\nCada um vem em 4 raridades: Normal, Raro, Épico e Lendário.\nQuanto maior a raridade, maior o Bônus (×1, ×1,6, ×2,3, ×3,2) e o Contra (×1, ×1,3, ×1,6, ×2).\nUm trinket custa $4, $7, $10 ou $14 conforme a raridade.\nTodo trinket que você compra entra na sua coleção, que fica salva no seu perfil.\nSe você tem o mesmo trinket duas vezes, vale a maior raridade.\nVocê equipa até 4 trinkets por run, e pode equipar nenhum; só os equipados contam.\nClique num trinket na loja para equipar ou tirar; na mesa, passe o mouse para ler.\nA loja oferece 4 trinkets: depois de um chefe um deles é sempre Lendário, nas outras há 50% de chance de um Raro e 25% de um Épico.\nA loja nunca oferece uma raridade que você já tem, nem o mesmo trinket duas vezes.\nO chefe O Professor dobra os Contras dos seus trinkets equipados.',
 	'rules.eleven.title': 'Mão de 11 e Queda',
 	'rules.eleven.body':
 		'Mão de 11: a dupla com 11 tentos vê as cartas uma da outra e escolhe jogar (vale 3) ou correr (o rival ganha 1); ninguém pode pedir truco. Mão de ferro (11 × 11): todos jogam às cegas e quem vencer fecha 12.\nQueda: se a sua dupla fecha 12 antes da meta, você pontua o Lance Queda e as duas duplas voltam a 0 tentos; a mesa continua.',

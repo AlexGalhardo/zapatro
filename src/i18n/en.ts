@@ -1032,6 +1032,9 @@ export const en = {
 	'rules.manhas.title': 'Manhas and the shop',
 	'rules.manhas.body':
 		'Manhas are passive bonuses: each one has a condition and an effect, and they trigger from left to right, so their order matters. Between tables you visit the shop: buy Manhas, packs, card modifiers, Simpatias (one-use helpers) and Lance levels with the money ($) you won.\nHover a Manha at the table to read what it does.',
+	'rules.trinkets.title': 'Trinkets',
+	'rules.trinkets.body':
+		'Trinkets are charms with a Bonus (green) and a Flaw (red).\nEach one comes in 4 rarities: Normal, Rare, Epic and Legendary.\nThe higher the rarity, the bigger the Bonus (×1, ×1.6, ×2.3, ×3.2) and the Flaw (×1, ×1.3, ×1.6, ×2).\nA trinket costs $4, $7, $10 or $14 by rarity.\nEvery trinket you buy joins your collection, which is saved in your profile.\nIf you own the same trinket twice, the higher rarity counts.\nYou can equip up to 4 trinkets per run, and none is allowed; only the equipped ones count.\nClick a trinket in the shop to equip or take it off; at the table, hover one to read it.\nThe shop offers 4 trinkets: after a boss one is always Legendary, otherwise there is a 50% chance of a Rare and a 25% chance of an Epic.\nThe shop never offers a rarity you already own, nor the same trinket twice.\nThe Professor boss doubles the Flaws of your equipped trinkets.',
 	'rules.eleven.title': 'Hand of 11 and Queda',
 	'rules.eleven.body':
 		"Hand of 11: the team with 11 tentos sees each other's hands and chooses to play (worth 3) or run (rivals get 1); nobody may call truco. Iron hand (11 × 11): everyone plays blind and the winner closes 12.\nQueda: if your team closes 12 before the goal, you score the Queda Lance and both pairs go back to 0 tentos; the table goes on.",
