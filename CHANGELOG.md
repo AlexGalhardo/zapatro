@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The engine, tooling and CI come from the previous game, Gridbound
 (`AlexGalhardo/tibia-roguelite-game`, branch `dev`, commit `f4fb29a`), whose history lives there.
 
-Since 2026-10-24 the project has 15 releases, numbered in order from 0.1.0 to 0.14.0 (the next ones are 0.14.1 for a small fix and 0.15.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, 0.13.0 the painted look, and 0.14.0 the trinkets. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
+Since 2026-10-24 the project has 16 releases, numbered in order from 0.1.0 to 0.15.0 (the next ones are 0.15.1 for a small fix and 0.16.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, 0.13.0 the painted look, 0.14.0 the trinkets, and 0.15.0 the phone layouts. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
 
 ## [Unreleased]
+
+## [0.15.0] - 2026-10-28
 
 ### Changed
 
@@ -623,7 +625,8 @@ Since 2026-10-24 the project has 15 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.1...v0.14.0
 [0.13.1]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.12.0...v0.13.0
