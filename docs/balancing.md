@@ -1,6 +1,6 @@
 # Balanceamento
 
-Espelho dos números de `src/data/*` e resultados do bot (`bun scripts/sim.ts`, `bun run balance`). Metas (PLAN D-39): na Estaca 1, bot **bom** vence 20–35% das runs (40–60% até as metas ×2 de 2026-10-25) e bot **aleatório** menos de 5%; cada Estaca tira 5–8 p.p. do bot bom.
+Espelho dos números de `src/data/*` e resultados do bot (`bun scripts/sim.ts`, `bun run balance`). Metas (PLAN D-39): na Estaca 1, bot **bom** vence 5–20% das runs (20–35% até 2026-10-28, e 40–60% antes) e bot **aleatório** menos de 5%; cada Estaca tira 5–8 p.p. do bot bom.
 
 Os valores iniciais estão no design ([GDD §4–7](gdd-game-design-document.md)) e entram aqui conforme são implementados (PRÉ-ALPHA e ALPHA).
 
@@ -448,4 +448,4 @@ Pedido: passar a mesa por pontos estava fácil, mas o triplo saía da faixa. A b
 | ×2,5 | 263 · 338 · 438 · 538 · 700 · 875 · 1.100 · 1.400 | 6,0 · 9,7 · 7,7% | 8,47 · 7,99 · 8,22 | FAIL |
 | ×3 | 315 · 405 · 525 · 645 · 840 · 1.050 · 1.320 · 1.680 | 4,7 · 6,7 · 5,0% | 9,00 · 8,47 · 8,72 | FAIL |
 
-Ficou **×1,1**. Grande (×1,5, `Math.round`), Chefe (×2), Estacas, Sheila e o infinito multiplicam essa base. A partida rápida segue sem meta. O aleatório ficou em 0% em todos os fatores.
+O dev escolheu **×2** da base 105 · 135 · … · 560 (210 · 270 · 350 · 430 · 560 · 700 · 880 · 1.120), porque um humano passava fácil demais, e aceitou o bot bom ganhar menos. A faixa do bot bom em `scripts/balance.ts` baixou de propósito de 20–35% para **5–20%**, centrada nesses 9–13% e com folga para o ruído das seeds. Aleatório (< 5%) e ritmo (4–12 mãos) não mudaram: no ×2 o aleatório ficou em 0% e o ritmo em 7,91 · 7,51 · 7,68. Grande (×1,5, `Math.round`), Chefe (×2), Estacas, Sheila e o infinito multiplicam essa base. A partida rápida segue sem meta.

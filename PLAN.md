@@ -168,7 +168,7 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-36 | Três vazas empatadas → **ninguém pontua** | §5.5 |
 | D-37 | **Tutorial jogado** na 1ª run (pulável) + dicas contextuais + regras no Almanaque + força da carta no hover | Público EN não conhece Truco |
 | D-38 | Cartas **48×64 px** em resolução lógica **640×360** (zoom inteiro) | Troca o 32×48 do design |
-| D-39 | Meta de balanceamento: bot **bom** vence **20–35%** das runs na Estaca 1 (era 40–60% até as metas dobrarem a pedido do dev, 2026-10-25; faixa proposta, aguarda confirmação); bot **aleatório** < 5% | `bun run balance` falha fora das faixas |
+| D-39 | Meta de balanceamento: bot **bom** vence **5–20%** das runs na Estaca 1 (era 20–35%, e 40–60% antes disso; baixada de propósito em 2026-10-28 quando as metas dobraram de novo, porque o jogo estava fácil para um humano); bot **aleatório** < 5% | `bun run balance` falha fora das faixas |
 | D-40 | Arte: **placeholders por código** na pré-alpha; **PixelLab** a partir do ALPHA | Contrato de chaves + placeholder do template |
 | D-41 | Desktop **só Electron** (`desktop/`); remove o executável Bun de arquivo único | Menos um launcher no CI |
 | D-42 | Repositório **privado** | CI de 3 sistemas só em `main` e tags (minutos do Actions) |
@@ -486,7 +486,7 @@ Scripts herdados (`scripts/lib/pixellab.ts`, `pl-*.ts`, `assets-validate.ts`, `a
 ### 10.2 Simulação e balanceamento
 
 - `bun scripts/sim.ts --runs 500 --bot good|random --stake 1` → taxa de vitória, Campeonato médio alcançado, dinheiro por mesa, Manhas mais compradas, mãos por mesa.
-- `bun run balance` falha se: bot bom fora de 20–35% na Estaca 1 (D-39, desde a dobra das metas em 2026-10-25); aleatório ≥ 5%; alguma mesa média > 12 mãos ou < 4 (ritmo); algum `NaN`.
+- `bun run balance` falha se: bot bom fora de 5–20% na Estaca 1 (D-39; 20–35% até 2026-10-28, quando as metas dobraram de novo de propósito); aleatório ≥ 5%; alguma mesa média > 12 mãos ou < 4 (ritmo); algum `NaN`.
 - Resultados registrados em `docs/balancing.md` a cada mudança de número.
 
 ### 10.3 E2E e QA global (Playwright, herdado)

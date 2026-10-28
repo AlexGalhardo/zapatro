@@ -15,7 +15,7 @@ Since 2026-10-24 the project has 16 releases, numbered in order from 0.1.0 to 0.
 ### Changed
 
 - **shop:** Next table sits at the bottom-right of the screen, off the chalkboard, so the four offer cards can grow taller and fill the board. Equipped trinkets are smaller, with space between the labels and the icons.
-- **balance:** Table points goals are 1.1× what they were. Championship 1 now asks for 116 / 174 / 232 (small / big / boss) instead of 105 / 158 / 210. Stakes, partner flaws and endless mode still multiply that base.
+- **balance:** Table points goals are twice the previous bases (105 · 135 · … · 560). Championship 1 now asks for 210 / 315 / 420 (small / big / boss) instead of 105 / 158 / 210. The good-bot gate is 5–20% on purpose, so a harder table still passes; random-bot and pace checks are unchanged.
 - **signals:** Sending a signal names it on the table, and your partner answers with a thumbs-up and what they understood. Before your partner calls truco they show an emoji; OK lets the call through, Cancel keeps them from calling and play goes on. Automatic games still take OK.
 
 ## [0.15.0] - 2026-10-28
