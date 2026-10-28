@@ -8,7 +8,7 @@ import { SIGNAL_EMOJI } from '../data/characters';
 import { type I18nKey, t } from '../i18n';
 import { sentenceLines } from '../logic/sentences';
 import { SIGNS } from '../logic/truco/table';
-import { Button, inkIcon } from '../ui/Button';
+import { Button } from '../ui/Button';
 import { EMOJI_FONT, TEXT_SHADOW } from '../ui/font';
 import { keyHint } from '../ui/key-hint';
 import { onKey } from '../ui/keys';
@@ -179,9 +179,7 @@ export class RulesScene extends Phaser.Scene {
 		const close = new Button(this, '', back, { w: 26, h: 24 });
 		close.setPosition(L + 612, 26);
 		this.ui.add(close);
-		this.ui.add(
-			inkIcon(this.add.image(L + 612, 25, tex(this, 'icon.close')).setScale(0.7), 'close'),
-		);
+		this.ui.add(this.add.image(L + 612, 25, tex(this, 'icon.close')).setScale(0.7));
 		// Page buttons sit a panel padding above the frame's bottom edge (height - 6).
 		const y = height - 6 - PAD.panel - BUTTON_H.action / 2;
 		const prev = new Button(this, `◀ ${t('rules.prev')}`, () => this.turn(-1), {

@@ -13,7 +13,7 @@ import { getLang, type I18nKey, t } from '../i18n';
 import { flawText, perkText } from '../i18n/companion';
 import { en } from '../i18n/en';
 import { formatPoints } from '../logic/score/format';
-import { Button, inkIcon } from '../ui/Button';
+import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { backHint } from '../ui/key-hint';
 import { onKey } from '../ui/keys';
@@ -175,9 +175,7 @@ export class AlmanacScene extends Phaser.Scene {
 		const close = new Button(this, '', () => fadeTo(this, 'Menu'), { w: 26, h: 24 });
 		close.setPosition(L + 612, 26);
 		this.body.add(close);
-		this.body.add(
-			inkIcon(this.add.image(L + 612, 25, tex(this, 'icon.close')).setScale(0.7), 'close'),
-		);
+		this.body.add(this.add.image(L + 612, 25, tex(this, 'icon.close')).setScale(0.7));
 		// Same column as the detail panel above it (and the list panels of Feats and Stats).
 		const back = new Button(this, t('menu.back'), () => fadeTo(this, 'Menu'), {
 			w: DETAIL.w,

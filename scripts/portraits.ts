@@ -37,15 +37,14 @@ export const PAINTED: Record<string, string> = {
 	agiota: 'agiota',
 	stuart: 'professor',
 	peter: 'mudo',
+	tony: 'delegado',
+	valentao: 'valentao',
+	cartomante: 'cartomante',
 };
 
 /** Source file → portrait id (pixel art). `char-pedrao.png` is left out on purpose (docs/visual.md). */
 export const PORTRAITS: Record<string, string> = {
-	'char-valentao': 'valentao',
-	'char-cartomante': 'cartomante',
 	'char-juiz': 'juiz',
-	'char-delegado': 'delegado',
-	'char-irmaos': 'irmaos',
 };
 
 /** Clears the pixels connected to the corners that look like the corner colour. */
@@ -135,6 +134,7 @@ const BACKGROUNDS: Record<string, string> = {
 	'menu-5': 'menu-5.png',
 	'menu-6': 'menu-6.png',
 	'menu-7': 'menu-7.png',
+	'menu-final-2': 'menu-final-2.png',
 	shop: 'shop.jpeg',
 	partner: 'background-1.png',
 	street: 'background-2.png',

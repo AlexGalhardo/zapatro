@@ -58,7 +58,7 @@ import { equip, levelOf, mergeCollection, unequip } from '../logic/run/trinkets'
 import { formatPoints } from '../logic/score/format';
 import { type Card, isSpecial, RANKS, type Rank, SUITS } from '../logic/truco/cards';
 import { fitArt } from '../logic/viewport';
-import { Button, inkIcon } from '../ui/Button';
+import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { itemCard, RARITY_COLOR } from '../ui/item-card';
 import { backHint } from '../ui/key-hint';
@@ -310,9 +310,9 @@ export class RunScene extends Phaser.Scene {
 		return img;
 	}
 
-	/** An icon over a button: the cream vector ones take the buttons' dark ink. */
+	/** An icon over a button. */
 	private buttonIcon(x: number, y: number, name: string, size: number): void {
-		inkIcon(this.icon(x, y, name, size), name);
+		this.icon(x, y, name, size);
 	}
 
 	private button(
@@ -1530,8 +1530,9 @@ export class RunScene extends Phaser.Scene {
 			);
 			return;
 		}
-		const d = 16;
-		const cols = Math.max(1, Math.floor((w + gap) / (d + gap)));
+		// 8 per row (the 32 trinkets fill 4 rows); the medal is twice the old 16 px.
+		const d = 32;
+		const cols = Math.min(8, Math.max(1, Math.floor((w + gap) / (d + gap))));
 		const rows = Math.max(1, Math.floor((y + h - listTop + gap) / (d + gap)));
 		for (const [i, id] of owned.slice(0, cols * rows).entries()) {
 			const level = levelOf(run.collection, id);

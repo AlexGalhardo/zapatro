@@ -1,15 +1,8 @@
 import type Phaser from 'phaser';
 import { comfort } from './comfort';
 
-const KEYS = [
-	'img.bg.menu-1',
-	'img.bg.menu-2',
-	'img.bg.menu-3',
-	'img.bg.menu-4',
-	'img.bg.menu-5',
-	'img.bg.menu-6',
-	'img.bg.menu-7',
-] as const;
+// Only menu-final-2 for now: one painting, so no rotation (the other paintings stay in art-src/).
+const KEYS = ['img.bg.menu-final-2'] as const;
 /** Time each painting stays and the crossfade between two. */
 const HOLD_MS = 7000;
 const FADE_MS = 500;
@@ -32,16 +25,8 @@ export interface BakedUi {
 	bottom: number;
 }
 export const BAKED_UI: readonly BakedUi[] = [
-	{ x: 57, top: 290, bottom: 782 },
-	{ x: 63, top: 326, bottom: 800 },
-	{ x: 58, top: 312, bottom: 779 },
-	// menu-4 (1671 px wide, scaled to 1600): it bakes 8 buttons; `bottom` is its 7th, like the others.
-	{ x: 50, top: 244, bottom: 668 },
-	// menu-5 (1672 px wide, scaled to 1600): 8 baked buttons too; `bottom` is the 7th.
-	{ x: 62, top: 273, bottom: 706 },
-	// menu-6 and menu-7 paint only the logo: the column is placed as if their buttons started right
-	// under it, with menu-5's span (same logo size and place).
-	{ x: 62, top: 273, bottom: 706 },
+	// menu-final-2 paints only the logo: the column is placed as if its buttons started right under
+	// it, with the span of the logo (the same place as the other logo-only paintings).
 	{ x: 62, top: 273, bottom: 706 },
 ];
 

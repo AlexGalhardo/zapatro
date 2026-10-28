@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { tex } from '../art/flat';
-import { VECTOR_ICONS } from '../art/icons';
 import { buttonFill, buttonHover, PALETTE, shade, toCss } from '../config/palette';
 import { MOTION, RADIUS, SHADOW } from '../config/ui';
 import { sfx } from '../core/audio';
@@ -8,11 +7,6 @@ import { comfort } from '../view/comfort';
 import { EMOJI_FONT, UI_FONT } from './font';
 import { type HintMode, hintMode, keyHint } from './key-hint';
 import { touchUi, uiPx } from './touch';
-
-/** An icon laid over a button: the cream vector icons take the button's dark ink. */
-export function inkIcon(img: Phaser.GameObjects.Image, name: string): Phaser.GameObjects.Image {
-	return (VECTOR_ICONS as readonly string[]).includes(name) ? img.setTint(PALETTE.textDark) : img;
-}
 
 /** Minimum touch target in logical px (MOB rules: whole button area answers the tap). */
 const TOUCH_MIN_H = 22;
@@ -118,16 +112,9 @@ export class Button extends Phaser.GameObjects.Container {
 		this.hit = scene.add.zone(0, 0, this.bw, this.bh).setInteractive({ useHandCursor: true });
 		this.add([this.g, this.label, this.badge]);
 		if (opts.icon) {
-			this.iconImg = inkIcon(
-				scene.add
-					.image(
-						-this.bw / 2 + (this.left ?? 9) / 2 + 1,
-						-1,
-						tex(scene, `icon.${opts.icon}`),
-					)
-					.setScale(opts.iconScale ?? 0.7),
-				opts.icon,
-			);
+			this.iconImg = scene.add
+				.image(-this.bw / 2 + (this.left ?? 9) / 2 + 1, -1, tex(scene, `icon.${opts.icon}`))
+				.setScale(opts.iconScale ?? 0.7);
 			this.add(this.iconImg);
 		}
 		if (opts.emoji) {

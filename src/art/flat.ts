@@ -3,7 +3,6 @@ import { PALETTE, RARITY_COLOR, shade, toCss } from '../config/palette';
 import { PANEL_LOOK, RADIUS, SHADOW } from '../config/ui';
 import { MANHA_BY_ID } from '../data/manhas';
 import { type Card, isSpecial } from '../logic/truco/cards';
-import { drawVectorIcon, VECTOR_ICONS } from './icons';
 
 /**
  * The flat art of the game (docs/visual.md): every visual key is drawn by code on a 2D canvas,
@@ -224,9 +223,61 @@ export function suitColor(name: string, fourColor: boolean): number {
 	return name === 'hearts' || name === 'diamonds' ? PALETTE.suitRed : PALETTE.suitBlack;
 }
 
+/** Canvas shadows are in device px, so they scale with this texture's raster scale. */
+function withShadow(ctx: Ctx, rgba: string, blur: number, dy: number, draw: () => void): void {
+	const k = ctx.getTransform().a;
+	ctx.save();
+	ctx.shadowColor = rgba;
+	ctx.shadowBlur = blur * k;
+	ctx.shadowOffsetY = dy * k;
+	draw();
+	ctx.restore();
+}
+
+function cardPath(ctx: Ctx, x: number, y: number, w: number, h: number, r: number): void {
+	ctx.beginPath();
+	ctx.roundRect(x, y, w, h, r);
+}
+
+/**
+ * The card body with depth: a drop shadow under it, a rim lit from the top, a paper face with a
+ * slight gradient, a worn vignette toward the edges and a light bevel on the inside edge.
+ */
 function cardBody(ctx: Ctx, fill: number = PALETTE.cardFace): void {
-	box(ctx, 0, 0, CARD_W, CARD_H, 5, PALETTE.cardEdge);
-	box(ctx, 1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card, fill);
+	withShadow(ctx, 'rgba(20,10,0,0.45)', 3, 1.5, () => {
+		cardPath(ctx, 0, 0, CARD_W, CARD_H, 5);
+		ctx.fillStyle = css(PALETTE.cardEdge);
+		ctx.fill();
+	});
+	const rim = ctx.createLinearGradient(0, 0, 0, CARD_H);
+	rim.addColorStop(0, css(shade(PALETTE.cardEdge, 0.2)));
+	rim.addColorStop(1, css(shade(PALETTE.cardEdge, -0.3)));
+	cardPath(ctx, 0, 0, CARD_W, CARD_H, 5);
+	ctx.fillStyle = rim;
+	ctx.fill();
+	const paper = ctx.createLinearGradient(0, 1, 0, CARD_H - 1);
+	paper.addColorStop(0, css(shade(fill, 0.06)));
+	paper.addColorStop(0.55, css(fill));
+	paper.addColorStop(1, css(shade(fill, -0.12)));
+	cardPath(ctx, 1, 1, CARD_W - 2, CARD_H - 2, RADIUS.card);
+	ctx.fillStyle = paper;
+	ctx.fill();
+	const vig = ctx.createRadialGradient(
+		CARD_W * 0.42,
+		CARD_H * 0.35,
+		CARD_W * 0.15,
+		CARD_W / 2,
+		CARD_H / 2,
+		CARD_H * 0.72,
+	);
+	vig.addColorStop(0, 'rgba(255,250,235,0)');
+	vig.addColorStop(1, 'rgba(70,45,20,0.16)');
+	ctx.fillStyle = vig;
+	ctx.fill();
+	ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+	ctx.lineWidth = 0.8;
+	cardPath(ctx, 1.6, 1.6, CARD_W - 3.2, CARD_H - 3.2, RADIUS.card);
+	ctx.stroke();
 }
 
 /**
@@ -237,7 +288,7 @@ function cardBody(ctx: Ctx, fill: number = PALETTE.cardFace): void {
 function manilhaPlate(ctx: Ctx, zap: boolean): void {
 	const x = 9;
 	const y = CARD_H - 13;
-	box(ctx, x, y, 24, 8, 2, PALETTE.manilha);
+	withShadow(ctx, 'rgba(60,35,0,0.4)', 1.5, 0.8, () => box(ctx, x, y, 24, 8, 2, PALETTE.manilha));
 	if (zap) label(ctx, 'ZAP', x + 12, y + 4.5, 7, PALETTE.panelDark);
 	else star(ctx, x + 12, y + 4, 3.6, PALETTE.panelDark);
 }
@@ -249,23 +300,29 @@ function manilhaPlate(ctx: Ctx, zap: boolean): void {
 function drawCard(ctx: Ctx, rank: string, name: string, fourColor: boolean, mark = ''): void {
 	cardBody(ctx);
 	if (mark) {
-		ctx.strokeStyle = css(PALETTE.manilha);
-		ctx.lineWidth = 2;
-		ctx.beginPath();
-		ctx.roundRect(2, 2, CARD_W - 4, CARD_H - 4, 3);
-		ctx.stroke();
+		withShadow(ctx, 'rgba(60,35,0,0.35)', 1.5, 0.6, () => {
+			ctx.strokeStyle = css(PALETTE.manilha);
+			ctx.lineWidth = 2;
+			ctx.beginPath();
+			ctx.roundRect(2, 2, CARD_W - 4, CARD_H - 4, 3);
+			ctx.stroke();
+		});
 		manilhaPlate(ctx, mark === 'z');
 	}
 	const c = suitColor(name, fourColor);
-	label(ctx, rank, 9, 9, 12, c);
-	suit(ctx, name, 9, 20, 7, c);
+	const corner = (): void => {
+		label(ctx, rank, 9, 9, 12, c);
+		suit(ctx, name, 9, 20, 7, c);
+	};
+	withShadow(ctx, 'rgba(0,0,0,0.3)', 1.2, 0.6, corner);
 	ctx.save();
 	ctx.translate(CARD_W, CARD_H);
 	ctx.rotate(Math.PI);
-	label(ctx, rank, 9, 9, 12, c);
-	suit(ctx, name, 9, 20, 7, c);
+	withShadow(ctx, 'rgba(0,0,0,0.3)', 1.2, 0.6, corner);
 	ctx.restore();
-	suit(ctx, name, CARD_W / 2, CARD_H / 2, rank === 'A' ? 26 : 20, c);
+	withShadow(ctx, 'rgba(0,0,0,0.38)', 2.4, 1.2, () =>
+		suit(ctx, name, CARD_W / 2, CARD_H / 2, rank === 'A' ? 26 : 20, c),
+	);
 }
 
 /** Texture key of a card face (the joker and each special card have one face for the whole deck). */
@@ -590,7 +647,6 @@ const LOOKS: Record<string, Look> = {
 		hat: 'mortar',
 		hatColor: 0x222228,
 	},
-	irmaos: { bg: 0x9a4a2f, skin: 0xb9825a, shirt: 0x4f6f3f, hair: 'short', hairColor: BROWN },
 	mudo: {
 		bg: 0x55555f,
 		skin: 0xd09a6e,
@@ -958,9 +1014,6 @@ function drawAvatar(ctx: Ctx, id: string, expr: string, s: number, boss: boolean
 		ctx.imageSmoothingEnabled = painted;
 		if (painted) ctx.imageSmoothingQuality = 'high';
 		ctx.drawImage(bitmap, 0, 0, s, s);
-	} else if (id === 'irmaos') {
-		face(ctx, { ...look, shirt: 0x6f4f2f }, expr, s * 0.04, s * 0.1, s * 0.62);
-		face(ctx, look, expr, s * 0.34, s * 0.1, s * 0.62);
 	} else face(ctx, look, expr, 0, 0, s);
 	ctx.restore();
 }
@@ -1301,14 +1354,11 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 		const mark = flags.includes('z') ? 'z' : flags.includes('m') ? 'm' : '';
 		drawCard(ctx, a, b, flags.includes('4c'), mark);
 	} else if (kind === 'icon') {
-		// A vector drawing wins over a pixel bitmap of the same name (Settings and menus: one style).
-		const bmp = (VECTOR_ICONS as readonly string[]).includes(a)
-			? undefined
-			: iconBitmaps.get(a);
+		const bmp = iconBitmaps.get(a);
 		if (bmp) {
 			ctx.imageSmoothingEnabled = false;
 			ctx.drawImage(bmp, 0, 0, w, h);
-		} else drawVectorIcon(ctx, a, w);
+		}
 	} else if (kind === 'portrait') drawAvatar(ctx, a, b || 'neutral', w, false);
 	else if (kind === 'charcard') drawCharCard(ctx, a, w, h);
 	else if (kind === 'charcover') drawCharCard(ctx, a, w, h, true);
