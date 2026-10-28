@@ -23,3 +23,11 @@ Conferido sem achado:
 | Baixa | `src/scenes/RunScene.ts:552` (`?trinkets=`) | O atalho de teste grava os trinkets em `meta.trinkets`, o perfil do jogador, e eles ficam no save para sempre. | Somar só em `this.run.collection` e não em `meta`, ou documentar em `test-hacks.md` que o atalho persiste. |
 | Baixa | `src/i18n/*.ts` (`companion.ze.flaw`, `upgrade.maisManha.desc`, `deck.dinheiro.desc`) | O texto ainda fala em "espaço de Manha". A spec diz que o Zé passa a "1 slot de trinket a menos", e o código já faz isso (`slotsFor`). | Trocar os textos de Manha por trinket quando `TRINKETS` estiver ligado, em EN e PT-BR juntos. |
 | Pendente | Fama | A remoção ainda não começou: `fame` aparece em `match.ts`, `run-table.ts`, `ai/decide.ts`, `TableScene.ts` (4), `RunScene.ts`, `flat.ts` e `palette.ts`. O Professor ainda depende dela. | Fazer no marco da Fama: tirar barra, IA, feitos e cor; regra nova do Professor; `parseRun` ignorando `fame`; teste de save antigo. |
+
+### Resolvido pelo Sênior (73f04f5, d5737b4)
+
+- Média (mão de 11): `trucoAccepted`, `noTruco` e `bet1` leem `lastRaiser`/`reason`, não `s.bet`. Resolvido em 73f04f5, com teste.
+- Baixa (Lenda do Boteco): o `handOver` agora leva o placar depois da perda. Resolvido em 73f04f5.
+- Baixa (`?trinkets=`): a coleção de debug fica só na run e não vai ao perfil. Resolvido em 73f04f5.
+- Baixa (textos de Manha): Zé, Beti, "Mais Manha" e baralho Dinheiro falam trinket (o baralho Dinheiro tira 1 espaço de trinket). Resolvido em 73f04f5.
+- Pendente (Fama): removida (mecânica, barra, IA, Manhas, i18n); Professor agora dobra os contras dos trinkets. Resolvido em d5737b4.
