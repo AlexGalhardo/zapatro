@@ -22,6 +22,9 @@ export const SHOW_MANILHA_BOX = false;
 /** The sidebar's money card on the table ($): hidden; the money still exists (shop, end of table). */
 export const SHOW_MONEY_PANEL = false;
 
+/** The Chips × Mult card of the table's sidebar (the count shows in the felt's popup instead). */
+export const SHOW_SCORE_PANEL = false;
+
 /**
  * The shop reduced to what buys: no sidebar, no packs, no reroll, no Melhoria; the offers
  * on the chalkboard (`ECONOMY.offers`) and "Next table". false: the full shop as it was.

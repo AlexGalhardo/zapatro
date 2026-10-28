@@ -13,7 +13,7 @@ import {
 } from '../art/flat';
 import { titleMetrics } from '../art/title';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
-import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL } from '../config/features';
+import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL, SHOW_SCORE_PANEL } from '../config/features';
 import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx, voice } from '../core/audio';
@@ -222,10 +222,19 @@ const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
 	hud: [6, 40],
-	goal: [50, 52],
-	chipsMult: [106, 66],
-	bet: [176, 38],
-	theirs: [218, 102],
+	...(SHOW_SCORE_PANEL
+		? ({
+				goal: [50, 52],
+				chipsMult: [106, 66],
+				bet: [176, 38],
+				theirs: [218, 102],
+			} as const)
+		: ({
+				goal: [50, 56],
+				chipsMult: [0, 0],
+				bet: [110, 40],
+				theirs: [154, 166],
+			} as const)),
 	money: [323, 30],
 	bar: [324, 30],
 } as const satisfies Record<string, number | readonly [number, number]>;
@@ -242,8 +251,68 @@ const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
 /** Top of each sidebar card's label. */
 const SIDE_LABEL = 7;
 
-/** The tentos panel's two mini-cards (ours, theirs): top inside the panel, size, gap between them. */
-const TENTOS_CARD = { y: 6, w: (SIDE_INNER_W - 4) / 2, h: 88, gap: 4 } as const;
+/** The tentos panel: two halves (ours, theirs) side by side, three rows of four beads each. */
+const TENTOS = {
+	half: SIDE_INNER_W / 2,
+	/** Top of the first row inside the panel, and the bottom padding. */
+	top: 32,
+	bottom: 14,
+};
+const tentosRoom = (): number => SIDE.theirs[1] - TENTOS.top - TENTOS.bottom;
+const tentosStep = (): number => Math.min(30, tentosRoom() / 2);
+const beadR = (): number => Math.min(7, tentosStep() / 2 - 3, TENTOS.half / 8 - 1.5);
+/** Centre of bead `d` (0–11) of half `i` (0 ours, 1 theirs), in stage px. */
+const beadAt = (i: number, d: number): [number, number] => [
+	SIDEBAR.x + SIDEBAR.pad + i * TENTOS.half + TENTOS.half / 8 + (d % 4) * (TENTOS.half / 4),
+	SIDE.theirs[0] +
+		TENTOS.top +
+		(tentosRoom() - 2 * tentosStep()) / 2 +
+		Math.floor(d / 4) * tentosStep(),
+];
+
+/** A bead of the tentos panel: an empty socket, or a lit one in green/red, drawn at screen zoom. */
+function beadTex(scene: Phaser.Scene, kind: 'empty' | 'green' | 'red', r: number): string {
+	const d = Math.ceil(2 * r + 6);
+	return canvasTex(scene, `bead.${kind}.${r.toFixed(1)}`, d, d, (ctx) => {
+		const c = d / 2;
+		if (kind === 'empty') {
+			// A socket sunk into the panel: darker inside, shadow on top, a light rim below.
+			ctx.fillStyle = 'rgba(255,255,255,0.22)';
+			ctx.beginPath();
+			ctx.arc(c, c + 0.9, r, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.fillStyle = '#0d0b0a';
+			ctx.beginPath();
+			ctx.arc(c, c, r, 0, Math.PI * 2);
+			ctx.fill();
+			const g = ctx.createLinearGradient(0, c - r, 0, c + r);
+			g.addColorStop(0, 'rgba(0,0,0,0.85)');
+			g.addColorStop(0.6, 'rgba(0,0,0,0)');
+			ctx.fillStyle = g;
+			ctx.beginPath();
+			ctx.arc(c, c, r, 0, Math.PI * 2);
+			ctx.fill();
+			return;
+		}
+		const base = kind === 'green' ? PALETTE.good : PALETTE.truco;
+		ctx.fillStyle = 'rgba(0,0,0,0.55)';
+		ctx.beginPath();
+		ctx.arc(c, c + 1.4, r, 0, Math.PI * 2);
+		ctx.fill();
+		const g = ctx.createRadialGradient(c - r * 0.35, c - r * 0.4, r * 0.1, c, c, r);
+		g.addColorStop(0, toCss(shade(base, 0.45)));
+		g.addColorStop(0.55, toCss(base));
+		g.addColorStop(1, toCss(shade(base, -0.5)));
+		ctx.fillStyle = g;
+		ctx.beginPath();
+		ctx.arc(c, c, r, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.fillStyle = 'rgba(255,255,255,0.85)';
+		ctx.beginPath();
+		ctx.ellipse(c - r * 0.35, c - r * 0.42, r * 0.3, r * 0.2, -0.6, 0, Math.PI * 2);
+		ctx.fill();
+	});
+}
 
 /** The HUD block (the equipped trinkets and what they do): the sidebar's top card. */
 const HUD = { x: SIDE.x, y: SIDE.hud[0], w: SIDE.w, h: SIDE.hud[1] };
@@ -388,6 +457,8 @@ export class TableScene extends Phaser.Scene {
 	private turnArrow!: Phaser.GameObjects.Triangle;
 	private betLabel!: Phaser.GameObjects.Text;
 	private quedaMarks: Phaser.GameObjects.Zone[] = [];
+	private beads: Phaser.GameObjects.Image[][] = [[], []];
+	private beadsLit = [0, 0];
 	private banner!: Phaser.GameObjects.Text;
 	private pointsText!: Phaser.GameObjects.Text;
 	private scoreBox!: Phaser.GameObjects.Container;
@@ -719,6 +790,26 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 
 	private portraitPos(seat: Seat): [number, number] {
 		return SEAT_POS[seat].portrait;
+	}
+
+	/** Sidebar text with real depth: cream letters, a dark outline and a solid drop shadow. */
+	private deepText(
+		size: number,
+		color: number = PALETTE.textLight,
+	): Phaser.Types.GameObjects.Text.TextStyle {
+		return {
+			...this.bold(size, color),
+			stroke: toCss(shade(PALETTE.panelDark, -0.7)),
+			strokeThickness: 1.6,
+			shadow: {
+				offsetX: 0,
+				offsetY: 2,
+				color: 'rgba(0,0,0,0.85)',
+				blur: 0,
+				stroke: true,
+				fill: true,
+			},
+		};
 	}
 
 	private text(
@@ -1187,7 +1278,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const size = run ? tableSize(run) : 'small';
 		const rects = [
 			SIDE.goal,
-			SIDE.chipsMult,
+			...(SHOW_SCORE_PANEL ? [SIDE.chipsMult] : []),
 			SIDE.bet,
 			SIDE.theirs,
 			...(SHOW_MONEY_PANEL ? [SIDE.money] : []),
@@ -1233,7 +1324,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			this.add.text(lx, y, str, style).setOrigin(0, 0);
 		const atChamp = (y: number, str: string, style: Phaser.Types.GameObjects.Text.TextStyle) =>
 			this.add.text(cx, y, str, style).setOrigin(0, 0);
-		const small = this.text(7, PALETTE.textDim);
+		const small = this.deepText(7);
 		// The card names the Championship and the table (Mesa 1 → Mesa 2 → Chefão); the boss's
 		// rule is in the "in play" box. A quick match keeps its own title.
 		this.prizeText = null;
@@ -1297,35 +1388,42 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		).setOrigin(0, 0.5);
 		this.pointsText = this.add
 			.text(lx + SIDE_INNER_W, goalLine, '', {
-				...this.bold(15, PALETTE.manilha),
-				shadow: TEXT_SHADOW,
+				...this.deepText(15, PALETTE.manilha),
 			})
 			.setOrigin(1, 0.5);
 		// A quick match scores no hands and pays nothing: its Chips × Mult and money cards stay in
 		// place (same sidebar) but faded, so the frozen 0 × 0 and $0 read as "not in this mode".
 		const off = this.match.goal === undefined ? 0.35 : 1;
-		at(SIDE.chipsMult[0] + SIDE_LABEL, t('table.side.chipsMult'), small).setAlpha(off);
+		at(SIDE.chipsMult[0] + SIDE_LABEL, t('table.side.chipsMult'), small)
+			.setAlpha(off)
+			.setVisible(SHOW_SCORE_PANEL);
 		const by = SIDE.chipsMult[0] + 27;
 		this.add
 			.image(lx, by, panelTex(this, 52, 27, PALETTE.chips, 6))
 			.setOrigin(0)
-			.setAlpha(off);
+			.setAlpha(off)
+			.setVisible(SHOW_SCORE_PANEL);
 		this.add
 			.image(lx + 62, by, panelTex(this, 52, 27, PALETTE.mult, 6))
 			.setOrigin(0)
-			.setAlpha(off);
+			.setAlpha(off)
+			.setVisible(SHOW_SCORE_PANEL);
 		this.add
 			.text(lx + 57, by + 13.5, '×', this.text(9, PALETTE.textLight))
 			.setOrigin(0.5)
-			.setAlpha(off);
+			.setVisible(SHOW_SCORE_PANEL)
+			.setAlpha(off)
+			.setVisible(SHOW_SCORE_PANEL);
 		this.sideChips = this.add
 			.text(lx + 26, by + 13.5, '0', this.bold(14))
 			.setOrigin(0.5)
-			.setAlpha(off);
+			.setAlpha(off)
+			.setVisible(SHOW_SCORE_PANEL);
 		this.sideMult = this.add
 			.text(lx + 88, by + 13.5, '0', this.bold(14))
 			.setOrigin(0.5)
-			.setAlpha(off);
+			.setAlpha(off)
+			.setVisible(SHOW_SCORE_PANEL);
 		// One line, like the goal card: the label on the left, the bet and its state on the right.
 		const betLine = SIDE.bet[0] + SIDE.bet[1] / 2;
 		this.betLabel = at(betLine, t('table.side.bet').toLocaleUpperCase(), small).setOrigin(
@@ -1333,33 +1431,21 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			0.5,
 		);
 		this.betText = this.add
-			.text(lx + SIDE_INNER_W, betLine, '', this.bold(15, PALETTE.manilha))
+			.text(lx + SIDE_INNER_W, betLine, '', this.deepText(15, PALETTE.manilha))
 			.setOrigin(1, 0.5)
 			.setDepth(DEPTH.sideValue);
 		this.betNote = this.add
-			.text(lx + SIDE_INNER_W, betLine, '', this.bold(8, PALETTE.textLight))
+			.text(lx + SIDE_INNER_W, betLine, '', this.deepText(8))
 			.setOrigin(1, 0.5);
-		// Tentos: two mini-cards side by side, ours (green) and theirs (red), 3 rows of 4 dots.
+		// Tentos: one panel, ours (green beads) left and theirs (red) right, a groove between.
 		for (const [i, key] of (['table.side.us', 'table.side.them'] as const).entries()) {
-			const cx = lx + i * (TENTOS_CARD.w + TENTOS_CARD.gap);
+			const cx = lx + i * TENTOS.half + TENTOS.half / 2;
 			this.add
-				.image(
-					cx,
-					SIDE.theirs[0] + TENTOS_CARD.y,
-					panelTex(this, TENTOS_CARD.w, TENTOS_CARD.h, PALETTE.panel, RADIUS.button),
-				)
-				.setOrigin(0);
-			this.add
-				.text(
-					cx + TENTOS_CARD.w / 2,
-					SIDE.theirs[0] + TENTOS_CARD.y + 9,
-					t(key).toLocaleUpperCase(),
-					small,
-				)
+				.text(cx, SIDE.theirs[0] + 15, t(key).toLocaleUpperCase(), small)
 				.setOrigin(0.5);
 			// A mark appears here once the pair has closed a queda; hovering it explains it.
 			const zone = this.add
-				.zone(cx + TENTOS_CARD.w - 14, SIDE.theirs[0] + TENTOS_CARD.y + 9, 14, 14)
+				.zone(cx + TENTOS.half / 2 - 9, SIDE.theirs[0] + 15, 14, 14)
 				.setInteractive({ useHandCursor: true });
 			this.quedaMarks[i] = zone;
 			const text = t(i === 0 ? 'table.side.usQueda' : 'table.side.themQueda');
@@ -1369,6 +1455,12 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					.setOrigin(0, 0)
 					.setPosition(HUD.x + HUD.w + GAP.list, SIDE.theirs[0]),
 			);
+			this.beads[i] = Array.from({ length: 12 }, (_, d) => {
+				const [x, y] = beadAt(i, d);
+				return this.add
+					.image(x, y, beadTex(this, 'empty', beadR()))
+					.setDepth(DEPTH.sideValue);
+			});
 		}
 		this.moneyText = this.add
 			.text(lx, SIDE.money[0] + SIDE.money[1] / 2, '', this.bold(14, PALETTE.money))
@@ -1419,25 +1511,41 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				5,
 			);
 		}
-		// Tentos: 3 rows of 4 dots in each mini-card, lit in green (ours) or red (theirs).
+		// The groove between the halves: a dark line with a light edge.
+		const gx = lx + TENTOS.half;
+		const gy = SIDE.theirs[0] + 8;
+		const gh = SIDE.theirs[1] - 16;
+		g.fillStyle(shade(PALETTE.panelDark, -0.6), 1).fillRect(gx - 1, gy, 1.5, gh);
+		g.fillStyle(shade(PALETTE.panelLight, 0.1), 0.7).fillRect(gx + 0.5, gy, 1, gh);
 		for (const [i, n] of [us, them].entries()) {
-			const cx = lx + i * (TENTOS_CARD.w + TENTOS_CARD.gap);
-			const lit = i === 0 ? PALETTE.good : PALETTE.truco;
+			const lit = Math.min(12, n);
+			const kind = i === 0 ? 'green' : 'red';
 			const closed = (i === 0 ? m.quedas : m.rivalQuedas) > 0;
 			const mark = this.quedaMarks[i];
 			if (mark?.input) mark.input.enabled = closed;
 			if (closed)
-				g.fillStyle(lit, 1).fillCircle(
-					cx + TENTOS_CARD.w - 14,
-					SIDE.theirs[0] + TENTOS_CARD.y + 9,
+				g.fillStyle(i === 0 ? PALETTE.good : PALETTE.truco, 1).fillCircle(
+					lx + i * TENTOS.half + TENTOS.half - 9,
+					SIDE.theirs[0] + 15,
 					3.2,
 				);
 			for (let d = 0; d < 12; d++) {
-				const x = cx + 10 + (d % 4) * ((TENTOS_CARD.w - 20) / 3);
-				const y = SIDE.theirs[0] + TENTOS_CARD.y + 30 + Math.floor(d / 4) * 19;
-				if (d < Math.min(12, n)) g.fillStyle(lit, 1).fillCircle(x, y, 4.4);
-				else g.lineStyle(1.4, PALETTE.panelLight, 1).strokeCircle(x, y, 4.4);
+				const bead = this.beads[i]?.[d];
+				if (!bead) continue;
+				const on = d < lit;
+				bead.setTexture(beadTex(this, on ? kind : 'empty', beadR()));
+				if (on && d >= (this.beadsLit[i] ?? 0) && !comfort.reduceFlashes) {
+					this.tweens.killTweensOf(bead);
+					bead.setScale(1.45);
+					this.tweens.add({
+						targets: bead,
+						scale: 1,
+						duration: this.dur(180),
+						ease: 'Back.easeOut',
+					});
+				}
 			}
+			this.beadsLit[i] = lit;
 		}
 	}
 
@@ -2392,7 +2500,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			bump.setScale(1.3);
 			this.tweens.add({ targets: bump, scale: 1, duration: this.dur(90) });
 			if (!st) continue;
-			if (/^(manha|mod|joker):/.test(st.source)) {
+			if (/^(manha|mod|joker|trinket):/.test(st.source)) {
 				await this.showEffect(st);
 				continue;
 			}
