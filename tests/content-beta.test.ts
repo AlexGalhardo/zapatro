@@ -168,7 +168,7 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 		const life = after('vidaExtra');
 		expect(life.extraLife).toBe(true);
 		leaveShop(life);
-		expect(match({ extraRivalQuedas: life.extraLife ? 1 : 0 }).rivalQuedasNeeded).toBe(2);
+		expect(match({ extraRivalQuedas: life.extraLife ? 1 : 0 }).rivalQuedasNeeded).toBe(3);
 	});
 
 	test('Espiar o monte shows a card that nobody holds', () => {

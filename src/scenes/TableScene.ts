@@ -387,6 +387,7 @@ export class TableScene extends Phaser.Scene {
 	private statusW = 0;
 	private turnArrow!: Phaser.GameObjects.Triangle;
 	private betLabel!: Phaser.GameObjects.Text;
+	private quedaMarks: Phaser.GameObjects.Zone[] = [];
 	private banner!: Phaser.GameObjects.Text;
 	private pointsText!: Phaser.GameObjects.Text;
 	private scoreBox!: Phaser.GameObjects.Container;
@@ -1356,6 +1357,18 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					small,
 				)
 				.setOrigin(0.5);
+			// A mark appears here once the pair has closed a queda; hovering it explains it.
+			const zone = this.add
+				.zone(cx + TENTOS_CARD.w - 14, SIDE.theirs[0] + TENTOS_CARD.y + 9, 14, 14)
+				.setInteractive({ useHandCursor: true });
+			this.quedaMarks[i] = zone;
+			const text = t(i === 0 ? 'table.side.usQueda' : 'table.side.themQueda');
+			this.tipOn(zone, this.manhaTip, () =>
+				this.manhaTip
+					.setText(text)
+					.setOrigin(0, 0)
+					.setPosition(HUD.x + HUD.w + GAP.list, SIDE.theirs[0]),
+			);
 		}
 		this.moneyText = this.add
 			.text(lx, SIDE.money[0] + SIDE.money[1] / 2, '', this.bold(14, PALETTE.money))
@@ -1410,6 +1423,15 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		for (const [i, n] of [us, them].entries()) {
 			const cx = lx + i * (TENTOS_CARD.w + TENTOS_CARD.gap);
 			const lit = i === 0 ? PALETTE.good : PALETTE.truco;
+			const closed = (i === 0 ? m.quedas : m.rivalQuedas) > 0;
+			const mark = this.quedaMarks[i];
+			if (mark?.input) mark.input.enabled = closed;
+			if (closed)
+				g.fillStyle(lit, 1).fillCircle(
+					cx + TENTOS_CARD.w - 14,
+					SIDE.theirs[0] + TENTOS_CARD.y + 9,
+					3.2,
+				);
 			for (let d = 0; d < 12; d++) {
 				const x = cx + 10 + (d % 4) * ((TENTOS_CARD.w - 20) / 3);
 				const y = SIDE.theirs[0] + TENTOS_CARD.y + 30 + Math.floor(d / 4) * 19;

@@ -46,7 +46,7 @@ export const RIVAL_POOLS: readonly (readonly AiProfileId[])[] = [
 ];
 
 /**
- * The rivals beat you at a table the first time they reach 12 tentos (Truco Paulista: whoever
- * gets to 12 first). Reaching 12 yourself closes a Queda: both pairs go back to 0 tentos.
+ * The rivals beat you at a table the second time they reach 12 tentos (a rival Queda resets only
+ * their tentos). Reaching 12 yourself closes a Queda: both pairs go back to 0 tentos.
  */
-export const QUEDAS_TO_LOSE = 1;
+export const QUEDAS_TO_LOSE = 2;

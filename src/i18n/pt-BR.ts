@@ -160,6 +160,8 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.side.bet': 'Aposta',
 	'table.side.us': 'Nós',
 	'table.side.them': 'Eles',
+	'table.side.usQueda': 'Nós já fechamos uma queda nesta mesa',
+	'table.side.themQueda': 'Eles já fecharam uma queda: mais uma e você perde a mesa',
 	'table.moves': 'Jogadas',
 	'table.lance.level': 'nv {n}',
 	'table.queda': 'QUEDA! Nossos tentos voltam a 0',
@@ -565,7 +567,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'promise.simpatiaGratis.name': 'Simpatia grátis',
 	'promise.simpatiaGratis.desc': 'Uma Simpatia grátis na próxima loja',
 	'promise.vidaExtra.name': 'Vida extra',
-	'promise.vidaExtra.desc': 'Na próxima mesa os rivais precisam de 2 quedas',
+	'promise.vidaExtra.desc': 'Na próxima mesa os rivais precisam de 3 quedas',
 	'boss.professor.name': 'O Professor',
 	'boss.professor.rule': 'Os contras dos seus trinkets equipados contam em dobro',
 	'boss.irmaos.name': 'Os Irmãos',
@@ -921,7 +923,7 @@ export const ptBR: Record<I18nKey, string> = {
 		'Os dois jogadores dos lados são a dupla rival. Cada um joga na sua vez, no sentido anti-horário, uma carta por vaza.',
 	'tutorial.goal.title': 'Placar e aposta',
 	'tutorial.goal.body':
-		'Cada mão tem um valor em tentos (1 no começo, mais com truco). Se os rivais chegam a 12 tentos, você perde a mesa. Se a sua dupla chega primeiro, fecha uma "queda" e as duas duplas voltam a 0. Você vence a mesa batendo antes a meta de pontos (explico já já).',
+		'Cada mão tem um valor em tentos (1 no começo, mais com truco). A dupla que chega a 12 tentos fecha uma "queda". Se os rivais fecharem 2 quedas, você perde a mesa; quando a sua dupla fecha uma, as duas duplas voltam a 0. Você vence a mesa batendo antes a meta de pontos (explico já já).',
 	'tutorial.hand.title': 'Suas três cartas',
 	'tutorial.hand.body':
 		'Cada um recebe 3 cartas. Da mais fraca para a mais forte: 4 · 5 · 6 · 7 · Q · J · K · A · 2 · 3. Passe o mouse numa carta para ver a força dela nesta mão.',
@@ -956,7 +958,7 @@ export const ptBR: Record<I18nKey, string> = {
 		'Aqui entra o roguelite. Mão vencida pontua Fichas × Mult. As Fichas vêm das cartas que venceram vazas e do Lance; a aposta (1, 3, 6, 9, 12) é o Mult base. Mão perdida não pontua.',
 	'tutorial.lances.title': 'Lances e a meta',
 	'tutorial.lances.body':
-		'O jeito que você venceu é o Lance (Vaza Limpa, Virada, Corrida…): soma Fichas e Mult e sobe de nível na loja (L mostra a tabela). Bata a meta de pontos da mesa antes de os rivais chegarem a 12 tentos. Você também ganha dinheiro ($) para a loja.',
+		'O jeito que você venceu é o Lance (Vaza Limpa, Virada, Corrida…): soma Fichas e Mult e sobe de nível na loja (L mostra a tabela). Bata a meta de pontos da mesa antes de os rivais fecharem 2 quedas. Você também ganha dinheiro ($) para a loja.',
 	'tutorial.manhas.title': 'Manhas',
 	'tutorial.manhas.body':
 		'Manhas são seus truques passivos, comprados na loja. Disparam da esquerda para a direita na contagem. Esta, o Seu Zé, dá +15 Fichas por vaza vencida com 4, 5, 6 ou 7: seu zap conta!',
@@ -1009,7 +1011,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'rules.next': 'Próxima',
 	'rules.teams.title': 'Duplas e objetivo',
 	'rules.teams.body':
-		'O Truco Paulista é jogado em duplas: você e seu parceiro contra dois rivais, sentados em cruz. Cada um recebe 3 cartas por mão. Cada mão tem um valor em tentos (1, ou mais com truco); a dupla que chega a 12 tentos fecha uma "queda".\nNeste jogo, toda mão vencida também pontua (Fichas × Mult). Você vence a mesa quando os pontos batem a meta; perde quando os rivais chegam a 12 tentos.',
+		'O Truco Paulista é jogado em duplas: você e seu parceiro contra dois rivais, sentados em cruz. Cada um recebe 3 cartas por mão. Cada mão tem um valor em tentos (1, ou mais com truco); a dupla que chega a 12 tentos fecha uma "queda".\nNeste jogo, toda mão vencida também pontua (Fichas × Mult). Você vence a mesa quando os pontos batem a meta; perde quando os rivais fecham 2 quedas.',
 	'rules.strength.title': 'Força das cartas',
 	'rules.strength.body':
 		'O baralho tem 40 cartas (sem 8, 9 e 10). Da mais fraca para a mais forte: 4, 5, 6, 7, Q, J, K, A, 2, 3. Nas cartas comuns o naipe não importa: dois 3 empatam.\nExemplo: um K ganha de um J, mas perde para um A, um 2 ou um 3. No jogo, passe o mouse numa carta da sua mão para ver a força dela naquela mão.',
