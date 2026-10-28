@@ -23,6 +23,8 @@ interface Sheet {
 	rows: number;
 	/** Row-major names of the sheet; null cells are skipped. */
 	grid: (string | null)[];
+	/** Margin cut from each cell; sheets with no grid lines and edge-to-edge icons use less. */
+	inset?: number;
 }
 
 const SHEETS: Sheet[] = [
@@ -59,10 +61,28 @@ const SHEETS: Sheet[] = [
 			'megaphone',
 			'calc',
 			'people',
-			null,
-			null,
-			null,
-			null,
+			'handCard',
+			'envelope',
+			'question',
+			'deck',
+		],
+	},
+	{
+		src: 'references/concept-art-gta/icons-3.png',
+		cols: 5,
+		rows: 2,
+		inset: 2,
+		grid: [
+			'dice',
+			'goldCard',
+			'monocle',
+			'piggy',
+			'matchbox',
+			'heart',
+			'handshake',
+			'anvil',
+			'clover',
+			'beerBottle',
 		],
 	},
 	{
@@ -77,15 +97,16 @@ await mkdir(OUT, { recursive: true });
 
 let n = 0;
 for (const sheet of SHEETS) {
+	const inset = sheet.inset ?? INSET;
 	const meta = await sharp(sheet.src).metadata();
 	const cw = Math.floor((meta.width ?? 0) / sheet.cols);
 	const ch = Math.floor((meta.height ?? 0) / sheet.rows);
 	for (const [i, name] of sheet.grid.entries()) {
 		if (!name) continue;
-		const left = (i % sheet.cols) * cw + INSET;
-		const top = Math.floor(i / sheet.cols) * ch + INSET;
+		const left = (i % sheet.cols) * cw + inset;
+		const top = Math.floor(i / sheet.cols) * ch + inset;
 		const { data, info } = await sharp(sheet.src)
-			.extract({ left, top, width: cw - 2 * INSET, height: ch - 2 * INSET })
+			.extract({ left, top, width: cw - 2 * inset, height: ch - 2 * inset })
 			.ensureAlpha()
 			.raw()
 			.toBuffer({ resolveWithObject: true });
