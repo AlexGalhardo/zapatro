@@ -12,6 +12,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-10-28
+
 ### Changed
 
 - **ui:** The UI icons are painted in the GTA VI style, cut from `references/concept-art-gta/icons.png`; the 28 icons of the sheet replace the old pixel and vector drawings.
@@ -658,7 +660,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.18.0...HEAD
+[0.18.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.14.0...v0.15.0
