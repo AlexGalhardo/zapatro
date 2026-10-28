@@ -4,6 +4,12 @@
  */
 export const UI_FONT = '"Rubik", "Segoe UI", sans-serif';
 export const TITLE_FONT = UI_FONT;
+/**
+ * Color emoji from the OS (Noto on Android WebView, Apple/Segoe on desktop). Rubik has no emoji
+ * glyphs, so a signal must use this family or the canvas draws an empty box.
+ */
+export const EMOJI_FONT =
+	'"Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "SamsungColorEmoji", sans-serif';
 /** Default weight for UI text (500 medium; titles and emphasis use 700). */
 export const UI_WEIGHT = '500';
 /**

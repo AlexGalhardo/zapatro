@@ -25,7 +25,7 @@ import { trackZoom } from '../core/viewport';
 import { AI_PROFILE_IDS, AI_PROFILES, type AiProfileId } from '../data/ai-profiles';
 import { BOSS_POOL, type BossId, FINAL_BOSS } from '../data/bosses';
 import { CHAMPIONSHIPS, type ChampionshipId } from '../data/championships';
-import { type Expression, SIGN_CATEGORY, TABLE_TIMING } from '../data/characters';
+import { type Expression, SIGN_CATEGORY, SIGNAL_EMOJI, TABLE_TIMING } from '../data/characters';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import { JOKER_EFFECTS } from '../data/jokers';
 import type { Action as KeyAction } from '../data/keybinds';
@@ -83,7 +83,7 @@ import type { ViewSize } from '../logic/viewport';
 import type { NetClient } from '../net/client';
 import type { ServerMessage, TableSnapshot, TableStart } from '../net/protocol';
 import { Button } from '../ui/Button';
-import { TEXT_SHADOW, UI_FONT } from '../ui/font';
+import { EMOJI_FONT, TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { actionHint, hintMode, keyHint } from '../ui/key-hint';
 import { onKey, onSceneEvent } from '../ui/keys';
 import { type ButtonNav, buttonNav } from '../ui/nav';
@@ -94,7 +94,7 @@ import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
-import { handEffects } from '../view/hand-effects';
+import { handEffects, visibleHandEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
 import { tentosBead } from '../view/tentos-grid';
 import { setBackdrop } from './BackdropScene';
@@ -114,7 +114,7 @@ const TIP_MS = 4000;
 
 /** Row height of the signal picker (touch buttons are taller). */
 const CALL_BTN = [3, 6, 9, 12];
-const SIGN_ROW = (): number => (touchUi.on ? 24 : 18);
+const SIGN_ROW = (): number => (touchUi.on ? 28 : 22);
 
 const isBoss = (id: string): boolean =>
 	id === FINAL_BOSS || (BOSS_POOL as readonly string[]).includes(id);
@@ -924,14 +924,12 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 				.triangle(0, 0, 0, 0, 8, -5, 8, 5, PALETTE.cardFace)
 				.setVisible(false)
 				.setDepth(DEPTH.speech);
-			// Your partner's signal, as a category mark in a round bubble at the card's corner.
+			// Your partner's signal: the same emoji as the picker, at the card's corner.
 			const expression = this.add
 				.container(ax + SEAT_CARD.w - 2, ay + 4, [
-					this.add.circle(0, 0, 11, PALETTE.cardFace),
 					this.add
-						.text(0, 0, '', { ...this.bold(13, PALETTE.textDark), shadow: undefined })
+						.text(0, 0, '', { fontFamily: EMOJI_FONT, fontSize: '22px' })
 						.setOrigin(0.5),
-					this.add.image(0, 0, tex(this, 'icon.signal.zap')).setVisible(false),
 				])
 				.setVisible(false)
 				.setDepth(DEPTH.signal);
@@ -1160,17 +1158,15 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		drawPanel(pickerBg, -46, -SIGN_ROW() / 2 - 6, 190, SIGNS.length * SIGN_ROW() + 12);
 		this.signPicker.add(pickerBg);
 		this.signBtns = SIGNS.map((sign, i) => {
-			// Face icon + gesture + meaning: the signal reads at a glance (pixel "emoji").
 			const btn = new Button(this, signLabel(sign), () => this.sendSignal(sign), {
 				w: 176,
-				h: 16,
-				size: 7,
+				h: SIGN_ROW() - 4,
+				size: 8,
+				left: 28,
+				emoji: SIGNAL_EMOJI[sign],
 			});
 			btn.setPosition(48, i * SIGN_ROW());
-			const face = this.add
-				.image(-30, i * SIGN_ROW(), tex(this, `icon.signal.${sign}`))
-				.setScale((SIGN_ROW() - 1) / 24);
-			this.signPicker.add([btn, face]);
+			this.signPicker.add(btn);
 			return btn;
 		});
 		this.eleven = this.buildEleven();
@@ -1225,7 +1221,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.popup.setPosition(cx, cy - 72);
 		this.scoreBox.setPosition(cx, cy - 20);
 		this.banner.setPosition(cx, cy - 40);
-		this.signPicker.setPosition(ACTIONS.x - ACTIONS.w / 2 - 148, 150);
+		this.signPicker.setPosition(ACTIONS.x - ACTIONS.w / 2 - 148, 126);
 		this.eleven.setPosition(cx, cy + 14);
 		this.endPanel.setPosition(cx, cy - 10);
 		this.layoutHand();
@@ -1567,14 +1563,15 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 	}
 
 	/**
-	 * The "in play" box at the felt's base: one row per rule that changes this hand (icon, name and
-	 * a line of text). Hidden on a plain hand; returns its height (0 when hidden).
+	 * The "in play" box at the felt's base: icon, name and a line of text. At most the two newest
+	 * lines, so a third drops the oldest and the box stays clear of the left portrait. Hidden on a
+	 * plain hand; returns its height (0 when hidden).
 	 */
 	private drawEffects(): number {
 		const s = this.match.state;
 		// A new hand (fewer effects than were shown) starts the count again.
 		if (jokerEffects(s).length < this.fxRevealed) this.fxRevealed = 0;
-		const list = handEffects(s, this.match.boss, this.fxRevealed);
+		const list = visibleHandEffects(handEffects(s, this.match.boss, this.fxRevealed));
 		const box = this.effectBox.removeAll(true).setVisible(list.length > 0);
 		if (!list.length) return 0;
 		const w = 150;
@@ -2101,19 +2098,11 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.status.setText(t('table.partnerSign', { cat: t(`sign.cat.${cat}` as I18nKey) }));
 	}
 
-	/** Emoji the partner flashes before calling truco, from the honest signal of their hand. */
+	/** The partner's warning before a truco: the honest signal, as the same emoji the player sends. */
 	private partnerTrucoEmoji(): string {
 		const hand = this.match.state.hands[2];
 		const sign = hand?.length ? honestSign(hand, this.match.state.manilha) : 'nothing';
-		const emoji: Record<Sign, string> = {
-			zap: '💪',
-			copas: '💪',
-			espadilha: '💪',
-			picafumo: '💪',
-			three: '3️⃣',
-			nothing: '😏',
-		};
-		return emoji[sign];
+		return SIGNAL_EMOJI[sign];
 	}
 
 	/**
@@ -2137,10 +2126,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		const g = this.add.graphics();
 		drawPanel(g, x, y, w, h);
 		const emoji = this.add
-			.text(x + w / 2, y + 18, this.partnerTrucoEmoji(), {
-				fontFamily: UI_FONT,
-				fontSize: '22px',
-				color: toCss(PALETTE.textLight),
+			.text(x + w / 2, y + 20, this.partnerTrucoEmoji(), {
+				fontFamily: EMOJI_FONT,
+				fontSize: '28px',
 			})
 			.setOrigin(0.5);
 		const go = (ok: boolean): void => {
@@ -2164,22 +2152,12 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		this.partnerAsk = box;
 	}
 
-	/** The gesture of a signal in the round bubble over a portrait: the partner's, or a caught rival's. */
+	/** The signal emoji over a portrait: the partner's, or a caught rival's. */
 	private signMark(seat: Seat, sign: Sign): void {
 		const v = this.seats.get(seat);
 		if (!v) return;
-		const [disc, mark, icon] = v.expression.list as [
-			Phaser.GameObjects.Arc,
-			Phaser.GameObjects.Text,
-			Phaser.GameObjects.Image,
-		];
-		mark.setText('');
-		// Only the gesture face and its card badge: no round backing (their dark outline reads
-		// on the felt and on the portrait).
-		disc.setVisible(false);
-		icon.setTexture(tex(this, `icon.signal.${sign}`))
-			.setDisplaySize(26, 26)
-			.setVisible(true);
+		const mark = v.expression.list[0] as Phaser.GameObjects.Text;
+		mark.setText(SIGNAL_EMOJI[sign]);
 		v.expression.setVisible(true);
 		this.time.delayedCall(this.dur(TABLE_TIMING.signalFace), () =>
 			v.expression.setVisible(false),

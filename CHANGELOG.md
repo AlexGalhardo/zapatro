@@ -12,6 +12,11 @@ Since 2026-10-24 the project has 17 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Changed
+
+- **signals:** Secret signals are one set of emoji — wink, raised eyebrow, crooked mouth, tongue, biting a lip, eyes up — in the picker, the manual, on the table and in your partner's warning before a truco.
+- **table:** The in-play box on the felt keeps the two newest lines. A third one drops the oldest.
+
 ## [0.16.0] - 2026-10-28
 
 ### Changed

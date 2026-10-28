@@ -17,7 +17,7 @@ src/game/     match.ts: partida/mesa (IA, Fama, pontos, meta, quedas, chefes, pa
    ── nada acima importa Phaser ──
 src/art/      flat.ts (`tex()` desenha cada chave por código; as pinturas de public/assets/gfx/{card,portrait,back}
               e os PNG legados entram por `registerPortraits`), icons.ts (ícones vetoriais `icon.<nome>`,
-              sinais `icon.signal.<sinal>`), title.ts (título do menu)
+              sinais `SIGNAL_EMOJI`), title.ts (título do menu)
 src/scenes/BackdropScene.ts  fundo pintado sob toda tela (`setBackdrop`), escurecido por `BACKDROP_BRIGHTNESS`
 src/scenes/   Boot → Menu ⇄ Settings → Keybinds; Menu → Almanac (Almanaque + Estatísticas); Menu → Run (parceiro, próxima mesa, loja, fim) ⇄ Table
               (fila de TableEvent; selo do sinal flagrado `signMark` no retrato do rival) ⇄ Pause; Menu → Rules (livro de páginas ilustradas com dados de src/data); Menu → Table (partida rápida: truco puro a 12, sem meta; `?goal=N` só para testes); Menu → Table + Tutorial

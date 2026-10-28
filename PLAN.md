@@ -94,10 +94,10 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 - [x] Fundos pintados sob toda tela (`BackdropScene`/`setBackdrop`), escurecidos por `BACKDROP_BRIGHTNESS` exceto o menu; menu com 3 pinturas em crossfade e `BAKED_UI` por imagem (D-64).
 - [x] Versos, coringa e especiais pintados inteiros em 2:3; feltro pintado tingido por Campeonato.
 - [x] Carregamento tardio das pinturas que a primeira tela não usa: primeiro download web 9,39 → 7,55 MB (GD-017, D-65).
-- [x] Ícones vetoriais dos sinais (`icon.signal.*`) no manual e na escolha; selos de atalho opcionais e desligados por padrão; botões com gradiente e profundidade (D-66, D-67).
+- [x] Emoji dos sinais (`SIGNAL_EMOJI`) no manual e na escolha; selos de atalho opcionais e desligados por padrão; botões com gradiente e profundidade (D-66, D-67).
 - [x] LAN estável: `resync` para quem volta ao lobby com a partida já começada, validação das mensagens no servidor, `scripts/lan-smoke.ts` cobrindo a sessão inteira (D-68).
 - [x] Seleção de mesas desligada (`TABLE_SELECT = false` em `src/config/features.ts`); baralho e estaca fora da UI da escolha de parceiro (D-69).
-- [x] Sinal do parceiro mostra o gesto exato (`icon.signal.*` ao lado do card, sem disco de fundo; o servidor LAN manda o sinal exato ao parceiro) (D-70).
+- [x] Sinal do parceiro mostra o mesmo emoji da escolha (ao lado do card; o servidor LAN manda o sinal exato ao parceiro) (D-70).
 - [x] Só o jogador responde ao truco da dupla (a opção `partnerFolds` saiu) e traços roguelite novos dos companheiros; os números seguem em calibragem (D-71).
 - [x] Fundos de jogo sorteados entre 6 pinturas (`VARIANTS`) a cada mesa e run nova; overlays mantêm a da mesa (D-64).
 - [x] Mesa reorganizada (a Fama saiu depois, ver docs/trinkets.md): HUD (Manhas, Fama, Quedas) no topo da sidebar, card "Campeonato N / Mesa 1 · Mesa 2 · Chefão" no canto superior direito do feltro, caixa "em jogo" na base do feltro; Manilha/ZAP e dinheiro escondidos por flags (`SHOW_MANILHA_BOX`, `SHOW_MONEY_PANEL`), código mantido. Conferido em 1920×1080, 2560×1440 e toque 2400×1080.

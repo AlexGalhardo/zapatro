@@ -3,7 +3,7 @@ import { PALETTE, RARITY_COLOR, shade, toCss } from '../config/palette';
 import { PANEL_LOOK, RADIUS, SHADOW } from '../config/ui';
 import { MANHA_BY_ID } from '../data/manhas';
 import { type Card, isSpecial } from '../logic/truco/cards';
-import { drawSignalIcon, drawVectorIcon, VECTOR_ICONS } from './icons';
+import { drawVectorIcon, VECTOR_ICONS } from './icons';
 
 /**
  * The flat art of the game (docs/visual.md): every visual key is drawn by code on a 2D canvas,
@@ -1280,7 +1280,6 @@ function sizeOf(key: string): [number, number] {
 	if (key.startsWith('boss.')) return [96, 96];
 	if (key.startsWith('bg.')) return [160, 90];
 	if (key === 'ui.slot.manha') return [52, 52];
-	if (key.startsWith('ui.sign.')) return [14, 14];
 	if (key.startsWith('ui.')) return [16, 16];
 	if (key.startsWith('trophy.')) return [32, 32];
 	return [ICON, ICON];
@@ -1301,8 +1300,6 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 		const flags = parts.slice(3);
 		const mark = flags.includes('z') ? 'z' : flags.includes('m') ? 'm' : '';
 		drawCard(ctx, a, b, flags.includes('4c'), mark);
-	} else if (key.startsWith('icon.signal.') || key.startsWith('ui.sign.')) {
-		drawSignalIcon(ctx, b, w);
 	} else if (kind === 'icon') {
 		// A vector drawing wins over a pixel bitmap of the same name (Settings and menus: one style).
 		const bmp = (VECTOR_ICONS as readonly string[]).includes(a)
