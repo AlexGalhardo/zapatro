@@ -449,3 +449,7 @@ Pedido: passar a mesa por pontos estava fácil, mas o triplo saía da faixa. A b
 | ×3 | 315 · 405 · 525 · 645 · 840 · 1.050 · 1.320 · 1.680 | 4,7 · 6,7 · 5,0% | 9,00 · 8,47 · 8,72 | FAIL |
 
 O dev escolheu **×2** da base 105 · 135 · … · 560 (210 · 270 · 350 · 430 · 560 · 700 · 880 · 1.120), porque um humano passava fácil demais, e aceitou o bot bom ganhar menos. A faixa do bot bom em `scripts/balance.ts` baixou de propósito de 20–35% para **5–20%**, centrada nesses 9–13% e com folga para o ruído das seeds. Aleatório (< 5%) e ritmo (4–12 mãos) não mudaram: no ×2 o aleatório ficou em 0% e o ritmo em 7,91 · 7,51 · 7,68. Grande (×1,5, `Math.round`), Chefe (×2), Estacas, Sheila e o infinito multiplicam essa base. A partida rápida segue sem meta.
+
+## Registro: remoção de Os Irmãos (2026-10-28)
+
+Pool de bosses cai de 9 para 8 (sem `irmaos`). `bun run balance --seeds 3`: bot bom 7,4 · 8,6 · 7,0% (faixa 5–20%), bot aleatório 0,0% em todos os seeds, 7,68–7,74 mãos por mesa (4–12), sem NaN. Portão PASS.

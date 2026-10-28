@@ -34,7 +34,7 @@ Oculta = "sim" só para feitos que estragam surpresa. Aqui, só vencer o chefe f
 | `mesaPerfeita` | Clean table | Win a table with the rivals at 0 tentos | Mesa limpa | Vença uma mesa com os rivais a 0 tentos | não | feltro vazio, sem marcas |
 | `chefe` | Boss down | Beat a boss | Chefe no chão | Vença um chefe | não | chapéu caído sobre a mesa |
 | `valentao` | Not scared | Beat The Bully | Sem medo | Vença O Valentão | não | chapéu de valentão com um X |
-| `professor` | Schooled | Beat The Professor | Lição aprendida | Vença O Professor | não | óculos sobre um livro fechado |
+| `professor` | Schooled | Beat Stuart | Lição aprendida | Vença Stuart | não | óculos sobre um livro fechado |
 | `sortuda` | Luck runs out | Beat The Lucky One | Acabou a sorte | Vença A Sortuda | não | trevo de quatro folhas partido |
 | `campeonato2` | On the road | Reach Championship 2 | Pé na estrada | Chegue ao Campeonato 2 | não | estrada de terra com placa de ida |
 | `campeonato4` | Club member | Reach Championship 4 (unlocks Nino) | Sócio do clube | Chegue ao Campeonato 4 (destrava o Nino) | não | crachá de clube com estrela |

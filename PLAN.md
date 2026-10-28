@@ -113,8 +113,8 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 - [x] UI em tela curta (2026-10-28): no toque, a escolha de parceiro cabe no cartão (título mais alto, cartão mais alto); tentos em 4 fileiras de 3 com folga no meio; ofertas da loja dentro da lousa, raridade só pela cor.
 - [x] Loja (2026-10-28): "Próxima mesa" no canto inferior direito, fora da lousa; as 4 ofertas ocupam a altura da lousa; ícones equipados menores, com folga entre rótulos e fileiras.
 
-- [ ] Marcas reais nas pinturas: camisa estilo seleção do Nino (`char-nino`, `menu-4`), letreiro "Las Vegas" e torre do Paris Las Vegas no `background-6` (`bg/bg6`), Brahma e "51" no fundo da loja (`shop2`).
-- [ ] 8 chefes ainda em pixel 128×128 (`valentao`, `cartomante`, `juiz`, `agiota`, `delegado`, `professor`, `irmaos`, `mudo`) e o vendedor da loja sem arte.
+- [ ] Marcas reais nas pinturas: camisa estilo seleção do Nino (`char-nino`; `menu-4` saiu do jogo em 2026-10-28), letreiro "Las Vegas" e torre do Paris Las Vegas no `background-6` (`bg/bg6`), Brahma e "51" no fundo da loja (`shop2`).
+- [ ] 1 chefe ainda em pixel 128×128 (`juiz`; `valentao`, `cartomante` e `delegado` ganharam pintura em 2026-10-28, `irmaos` saiu do jogo) e o vendedor da loja sem arte.
 - [ ] "JOKER" em inglês dentro da face pintada do coringa.
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
 - [ ] Sistemas inalcançáveis pelas flags: pular mesa e Promessas (`TABLE_SELECT = false`), pacotes, renovação, Melhorias e baralhos/versos destraváveis (`SHOP_SIMPLE = true`, baralho e estaca fora da UI), Estacas e os feitos que dependem deles.

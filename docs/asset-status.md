@@ -149,7 +149,6 @@
 | `boss.delegado` | 1 | PixelLab | ✅ |
 | `boss.reiDoTruco` | 1 | PixelLab | ✅ |
 | `boss.professor` | 2 | PixelLab | ✅ |
-| `boss.irmaos` | 2 | PixelLab | ✅ |
 | `boss.mudo` | 2 | PixelLab | ✅ |
 | `boss.sortuda` | 2 | PixelLab | ✅ |
 

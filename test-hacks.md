@@ -13,7 +13,7 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 | `hand=3c,2h,4d` | 3 cartas; `JK`/`JK2` = coringa, `TV`/`OL`/`RA` = cartas especiais | Sua primeira mão |
 | `score=11-4` | `nós-eles`, cada um < 12 | Placar inicial: `11-x` mão de onze, `11-11` mão de ferro |
 | `reveal=1` | | Mostra as mãos dos rivais |
-| `boss=<id>` | `valentao` `cartomante` `juiz` `agiota` `delegado` `professor` `irmaos` `mudo` `sortuda` `reiDoTruco` | Partida rápida contra esse chefe, com a regra dele na lateral. Continua sem meta, a não ser que `goal=N` também esteja na URL |
+| `boss=<id>` | `valentao` `cartomante` `juiz` `agiota` `delegado` `professor` `mudo` `sortuda` `reiDoTruco` | Partida rápida contra esse chefe, com a regra dele na lateral. Continua sem meta, a não ser que `goal=N` também esteja na URL |
 | `partner=<id>` | `tonhao` `donaCida` `zeMalandro` `juninho` `ze` `bia` `joca` `lurdes` `tiao` `neide` | Parceiro (partida rápida); na run nova força o id entre os 3 candidatos, se destravado |
 | `champ=N` | 1–8 | Partida rápida: ambiência sonora do Campeonato N (`2` = Bar de Estrada). Sem efeito na run nova |
 

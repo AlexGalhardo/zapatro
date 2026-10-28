@@ -283,7 +283,7 @@ Pago no fim de cada mesa vencida: prêmio + rapidez + juros. **Princípio** (Pes
 
 ### 7.1.1 Trinkets — 32 ⚖ (`src/data/trinkets.ts`, spec em [trinkets.md](trinkets.md))
 
-Substituem as Manhas na loja (flag `TRINKETS`; o código das Manhas fica). Cada trinket tem um **Bônus** (verde) e um **Contra** (vermelho) próprios e vem em 4 raridades: Normal, Raro, Épico e Lendário. O Bônus escala ×1 · 1,6 · 2,3 · 3,2, o Contra ×1 · 1,3 · 1,6 · 2 (um ×Mult só cresce a parte acima de 1) e o preço é $4 · 7 · 10 · 14. A **coleção** fica no save do perfil (vale a maior raridade que o jogador já teve); a run equipa até **4** (0 é permitido; Zé tem 1 a menos) e só os equipados contam. A loja oferece 4 trinkets por parada: depois de um chefe um é sempre Lendário; senão 50% de um Raro e 25% de um Épico (sorteios independentes, por seed), o resto Normal; nunca repete na mesma loja nem oferece raridade igual ou menor que a já possuída. Bônus e Contra entram nos mesmos `steps` da contagem (`trinket:<id>`); efeitos de run (meta, preço, Prêmio de Rapidez, juros, tentos iniciais) vêm de `trinketTotals`. **O Professor** dobra o Contra dos equipados na mesa dele. A mesa só perde quando os rivais fecham 2 quedas; a Queda da nossa dupla zera os tentos das duas duplas.
+Substituem as Manhas na loja (flag `TRINKETS`; o código das Manhas fica). Cada trinket tem um **Bônus** (verde) e um **Contra** (vermelho) próprios e vem em 4 raridades: Normal, Raro, Épico e Lendário. O Bônus escala ×1 · 1,6 · 2,3 · 3,2, o Contra ×1 · 1,3 · 1,6 · 2 (um ×Mult só cresce a parte acima de 1) e o preço é $4 · 7 · 10 · 14. A **coleção** fica no save do perfil (vale a maior raridade que o jogador já teve); a run equipa até **4** (0 é permitido; Zé tem 1 a menos) e só os equipados contam. A loja oferece 4 trinkets por parada: depois de um chefe um é sempre Lendário; senão 50% de um Raro e 25% de um Épico (sorteios independentes, por seed), o resto Normal; nunca repete na mesma loja nem oferece raridade igual ou menor que a já possuída. Bônus e Contra entram nos mesmos `steps` da contagem (`trinket:<id>`); efeitos de run (meta, preço, Prêmio de Rapidez, juros, tentos iniciais) vêm de `trinketTotals`. **Stuart** (o chefe antigo O Professor) dobra o Contra dos equipados na mesa dele. A mesa só perde quando os rivais fecham 2 quedas; a Queda da nossa dupla zera os tentos das duas duplas.
 
 ### 7.2 Manhas (os "Coringas") — 60 ⚖
 
@@ -466,7 +466,7 @@ Limiares (`src/logic/ai/decide.ts`, PA2; `p` = chance de vencer a mão):
 
 ## 9. Chefes ⚖ (`src/data/bosses.ts`)
 
-Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 9; o Rei do Truco é fixo no C8. Card pintado 3:4 (`charcard.<id>`) quando há pintura (Sortuda, Rei do Truco); os outros 8 seguem no retrato 128×128 em pixel art (`public/assets/gfx/portrait/<id>.png`, GD-015) até ganharem pintura.
+Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 8; o Rei do Truco é fixo no C8. Card pintado 3:4 (`charcard.<id>`) quando há pintura (Sortuda, Rei do Truco); os sem pintura seguem no retrato 128×128 em pixel art (`public/assets/gfx/portrait/<id>.png`, GD-015) até ganharem pintura.
 
 | Chefe | Regra | Eixo do Truco mexido |
 |---|---|---|
@@ -475,8 +475,7 @@ Mesa 3 de cada Campeonato. C1–C7 sorteiam do pool de 9; o Rei do Truco é fixo
 | O Juiz | A Manha mais à esquerda fica desativada | Build |
 | O Agiota | Cada mão perdida custa $1 | Economia |
 | O Delegado | O Lance Corrida vale **metade** (`DELEGADO_CORRIDA_X = 0,5`; o design pedia 0) | Lance |
-| O Professor | Os contras dos seus trinkets equipados contam em dobro | Trinkets |
-| Os Irmãos | Sinais deles nunca flagrados; os seus com o dobro de chance | Sinais |
+| Stuart | Os contras dos seus trinkets equipados contam em dobro | Trinkets |
 | O Mudo | Sem sinais com o parceiro | Sinais |
 | A Sortuda | 35% de chance de a vira dar manilha a um rival | Sorte |
 | **O Rei do Truco** | Toda mão começa valendo 3 | Aposta |

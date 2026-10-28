@@ -12,6 +12,24 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Changed
+
+- **ui:** The UI icons are painted in the GTA VI style, cut from `references/concept-art-gta/icons.png`; the 28 icons of the sheet replace the old pixel and vector drawings.
+- **boss:** The boss `O Professor` is named Stuart (PT-BR and EN); the id stays `professor`.
+- **art:** Valentão, Delegado and Cartomante use the paintings of Bruto, Tony and Beti (`char-bruto`, `char-tony`, `char-beti`); the pixel portraits of those three are gone.
+- **menu:** The main-menu paintings `menu-4` and `menu-5` are back, repainted (the rotation has seven paintings again); both are logo-only, placed like `menu-6` and `menu-7`.
+- **menu:** The main menu uses one painting, `menu-final-2` (logo only); the gameplay backgrounds keep their own paintings.
+- **cards:** The card faces have depth: a drop shadow under the card, a lit rim, a paper gradient, a worn vignette, a bevel on the inside edge, and shadows under the rank, the corner suits, the big suit and the manilha plate.
+- **table:** A manilha (not the ZAP) has a darkened face and an orange glow around the card.
+- **table:** The ZAP has a gold comet running around the card's edge in circles and four stars blinking at its corners, in addition to the gold glow and the sparkles.
+- **table:** The partner's truco confirmation card stacks OK above Cancel, and the emoji sits inside the card. A title asks "Seu parceiro te mandou um sinal antes de pedir truco. Confirmar truco?" (EN and PT-BR). Its text is 50% larger, and the card grows to fit.
+- **icons:** The gamepad icon is cut whole: the icon cutter ignores the white grid lines and the bluish grip next to the grey background.
+
+### Removed
+
+- **boss:** The boss Os Irmãos is out of the game: pool of 8 bosses, with the Rei do Truco fixed at 8.
+- **ui:** The vector drawings of the 20 icons that now have a painted one; 8 icons without art yet (list, doc, refresh, monitor, upload, download, note, pause) stay vector.
+
 ## [0.17.0] - 2026-10-28
 
 ### Changed

@@ -97,7 +97,7 @@ profundidade. Os tentos e as quedas das duas duplas ficam no painel "Tentos: nó
 ## Fama
 
 A Fama sai do jogo (decisão do dev, 2026-10-27): era escondida e confusa. Saem a barra, o efeito
-na IA dos rivais e os bônus que dependiam dela. O chefe O Professor, cuja regra dobrava a Fama,
+na IA dos rivais e os bônus que dependiam dela. O chefe Stuart (antes O Professor), cuja regra dobrava a Fama,
 passa a ter: **os contras dos seus trinkets equipados contam em dobro** (só na mesa dele). Saves
 antigos ignoram o campo.
 
