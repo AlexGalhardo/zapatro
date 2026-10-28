@@ -18,8 +18,9 @@ export const trinketRarityName = (level: number): string =>
 export function trinketTexts(
 	id: string,
 	level: TrinketLevel | number,
+	flawX = 1,
 ): { perk: string; flaw: string } {
-	const v = trinketValues(id, level);
+	const v = trinketValues(id, level, flawX);
 	if (!v) return { perk: '', flaw: '' };
 	return { perk: text(id, 'perk', v.perk), flaw: text(id, 'flaw', v.flaw) };
 }

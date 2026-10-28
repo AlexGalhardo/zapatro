@@ -155,7 +155,7 @@ export const en = {
 	'table.side.goal': 'Goal',
 	'table.side.chipsMult': 'Chips × Mult',
 	'table.side.bet': 'Bet',
-	'table.side.theirTentos': 'Their tentos',
+	'table.side.tentosBoth': 'Tentos: us × them',
 	'table.hud.quedas': 'Quedas: us {us} · them',
 	'table.lance.level': 'lv {n}',
 	'table.queda': 'QUEDA! Our tentos go back to 0',

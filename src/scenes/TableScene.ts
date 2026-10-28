@@ -33,12 +33,14 @@ import type { LanceId } from '../data/lances';
 import { isManhaId } from '../data/manhas';
 import { DUCK, type VoLine } from '../data/sfx';
 import { SPECIAL_CARDS, specialOf } from '../data/specials';
+import { TRINKET_SLOTS } from '../data/trinkets';
 import { TUTORIAL_DEAL, type TutorialAnchor, type TutorialTrigger } from '../data/tutorial';
 import { Match, manilhasSeen, type SeatBrain } from '../game/match';
 import { RemoteMatch } from '../game/remote-match';
 import { GOOD_BOT } from '../game/run-sim';
 import { rivalBrain, tableMatch } from '../game/run-table';
 import { getLang, type I18nKey, t } from '../i18n';
+import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
 import { honestSign } from '../logic/ai/decide';
 import { actionFor } from '../logic/keybinds';
 import { recordHand, recordRunEnd, recordRunState, recordTable } from '../logic/meta';
@@ -90,6 +92,7 @@ import { fadeTo } from '../ui/screen';
 import { addTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
+import { trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
 import { handEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
@@ -210,7 +213,7 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
  * apart from the felt's top (6) to its bottom (354), where the bottom bar ends.
  */
 /**
- * Sidebar cards top to bottom, 4 px apart: the HUD block (Manhas, Fame, our tentos, their quedas),
+ * Sidebar cards top to bottom, 4 px apart: the HUD block (trinket slots, bonuses, flaws),
  * the goal, Chips × Mult, the bet and their tentos; the button bar keeps the base. The money card
  * is hidden (SHOW_MONEY_PANEL).
  * shortcut: with SHOW_MONEY_PANEL on, its card overlaps the bar; shorten a card when it comes back.
@@ -218,11 +221,11 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
 const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
-	hud: [6, 80],
-	goal: [90, 70],
-	chipsMult: [164, 55],
-	bet: [223, 42],
-	theirs: [269, 50],
+	hud: [6, 91],
+	goal: [101, 52],
+	chipsMult: [157, 55],
+	bet: [216, 42],
+	theirs: [262, 58],
 	money: [323, 30],
 	bar: [324, 30],
 } as const satisfies Record<string, number | readonly [number, number]>;
@@ -239,7 +242,7 @@ const SIDE_INNER_W = SIDEBAR.w - 2 * SIDEBAR.pad;
 /** Top of each sidebar card's label. */
 const SIDE_LABEL = 7;
 
-/** The HUD block (Manhas, Fame, our tentos and their quedas): the sidebar's top card. */
+/** The HUD block (the equipped trinkets and what they do): the sidebar's top card. */
 const HUD = { x: SIDE.x, y: SIDE.hud[0], w: SIDE.w, h: SIDE.hud[1] };
 
 /** Inner margin of the HUD block: the sidebar's padding. */
@@ -406,9 +409,9 @@ export class TableScene extends Phaser.Scene {
 	private hudGfx!: Phaser.GameObjects.Graphics;
 	private betNote!: Phaser.GameObjects.Text;
 	private manhaRow!: Phaser.GameObjects.Container;
-	/** Manha slots of the run (5 in a quick match). */
+	/** Trinket slots drawn in the HUD block (always four, the unusable ones dimmed). */
 	private get slots(): number {
-		return this.runState?.manhaSlots ?? 5;
+		return TRINKET_SLOTS;
 	}
 	private manhaTip!: Phaser.GameObjects.Text;
 	/** Strength of the hovered card in this hand (A6.2). */
@@ -941,6 +944,23 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			);
 			this.manhaRow.add(icon);
 		});
+		this.match.trinketList.forEach((e, i) => {
+			const medal = trinketMedal(this, e.id, e.level, slotSize(this.slots))
+				.setPosition(i * slotStep(this.slots), 0)
+				.setData('id', e.id)
+				.setSize(slotSize(this.slots), slotSize(this.slots))
+				.setInteractive({ useHandCursor: true });
+			const tx = trinketTexts(e.id, e.level, e.flawX);
+			this.tipOn(medal, this.manhaTip, () =>
+				this.manhaTip
+					.setText(
+						`${trinketName(e.id)} · ${trinketRarityName(e.level)}\n+ ${tx.perk}\n- ${tx.flaw}`,
+					)
+					.setOrigin(0, 0)
+					.setPosition(HUD.x + HUD.w + GAP.list, HUD.y),
+			);
+			this.manhaRow.add(medal);
+		});
 		// Status bar over the felt; the arrow points at your hand when it is your turn.
 		this.statusBar = this.add.graphics().setDepth(DEPTH.statusBar);
 		this.status = this.add
@@ -1299,13 +1319,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.betNote = this.add
 			.text(lx + 34, SIDE.bet[0] + 28, '', this.bold(8, PALETTE.textLight))
 			.setOrigin(0, 0.5);
-		at(SIDE.theirs[0] + SIDE_LABEL, t('table.side.theirTentos'), small);
+		at(SIDE.theirs[0] + SIDE_LABEL, t('table.side.tentosBoth'), small);
 		this.moneyText = this.add
 			.text(lx, SIDE.money[0] + SIDE.money[1] / 2, '', this.bold(14, PALETTE.money))
 			.setOrigin(0, 0.5)
 			.setAlpha(off)
 			.setVisible(SHOW_MONEY_PANEL);
-		// The Manha slots, fame, our tentos and their quedas: the sidebar's top card.
+		// The trinket slots and what the equipped ones do: the sidebar's top card.
 		this.add
 			.image(
 				HUD.x,
@@ -1314,17 +1334,70 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			)
 			.setOrigin(0);
 		const slots = this.slots;
-		const g = this.add.graphics().lineStyle(1.5, PALETTE.panelLight, 1);
+		const usable = this.runState?.trinketSlots ?? slots;
+		const g = this.add.graphics();
 		for (let i = 0; i < slots; i++)
-			g.strokeRoundedRect(
+			g.lineStyle(1.5, PALETTE.panelLight, i < usable ? 1 : 0.3).strokeRoundedRect(
 				HUD.x + HUD_PAD + i * slotStep(slots),
 				HUD.y + HUD_PAD + 10 - slotSize(slots) / 2,
 				slotSize(slots),
 				slotSize(slots),
 				RADIUS.button,
 			);
-		this.quedasText = this.add.text(HUD.x + HUD_PAD, HUD.y + 68, '', small).setOrigin(0, 0.5);
+		this.buildEffectLists();
+		this.quedasText = this.add
+			.text(HUD.x + HUD_PAD, SIDE.theirs[0] + 47, '', small)
+			.setOrigin(0, 0.5);
 		this.hudGfx = this.add.graphics().setDepth(DEPTH.hudShapes);
+	}
+
+	/**
+	 * Under the slots, every equipped trinket's Bonus (green strip) and Flaw (red strip), one per
+	 * line, dark text with a light depth on the strip. A line shrinks to fit; past the room left
+	 * the list ends in "…".
+	 */
+	private buildEffectLists(): void {
+		const top = HUD.y + HUD_PAD + 10 + slotSize(this.slots) / 2 + 3;
+		const lh = 6.8;
+		const room = Math.floor((HUD.y + HUD.h - 2 - top) / lh);
+		const width = HUD.w - 2 * HUD_PAD;
+		const lines: { str: string; color: number }[] = [];
+		for (const e of this.match.trinketList) {
+			const tx = trinketTexts(e.id, e.level, e.flawX);
+			lines.push({ str: tx.perk, color: PALETTE.good }, { str: tx.flaw, color: PALETTE.bad });
+		}
+		const bonus = lines.filter((l) => l.color === PALETTE.good);
+		const flaws = lines.filter((l) => l.color === PALETTE.bad);
+		const shown = [...bonus, ...flaws];
+		if (shown.length > room)
+			shown.splice(room - 1, shown.length - room + 1, {
+				str: '…',
+				color: PALETTE.panelLight,
+			});
+		const strips = this.add.graphics().setDepth(DEPTH.hudShapes);
+		shown.forEach((l, i) => {
+			const y = top + i * lh;
+			if (l.str !== '…')
+				strips.fillStyle(l.color, 1).fillRoundedRect(HUD.x + HUD_PAD, y, width, lh - 1, 2);
+			const o = this.add
+				.text(HUD.x + HUD_PAD + 2, y + (lh - 1) / 2, l.str, {
+					...this.bold(5.5, PALETTE.textDark),
+					shadow: {
+						offsetX: 0,
+						offsetY: 0.6,
+						color: 'rgba(255,255,255,0.45)',
+						blur: 0,
+						fill: true,
+					},
+				})
+				.setOrigin(0, 0.5)
+				.setDepth(DEPTH.sideValue);
+			for (
+				let px = Number.parseInt(String(o.style.fontSize), 10);
+				o.width > width - 4 && px > 4;
+			)
+				o.setFontSize(--px);
+		});
 	}
 
 	/** Bars, ovals and dots of the sidebar and the HUD block. */
@@ -1334,31 +1407,27 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const lx = SIDE.x + SIDEBAR.pad;
 		const done =
 			m.goal === undefined ? Math.min(1, us / 12) : Math.min(1, this.hudPoints / m.goal);
-		const barY = SIDE.goal[0] + 53;
+		const barY = SIDE.goal[0] + 41;
 		g.fillStyle(PALETTE.shadow, 0.6).fillRoundedRect(lx, barY, 114, 7, 3.5);
 		if (done > 0) g.fillStyle(PALETTE.manilha, 1).fillRoundedRect(lx, barY, 114 * done, 7, 3.5);
 		// Aposta: the number sits on a red block once a call is on the table.
 		const called = m.state.bet > 1 || m.state.pending !== null;
 		if (called) g.fillStyle(PALETTE.truco, 1).fillRoundedRect(lx, SIDE.bet[0] + 18, 25, 20, 5);
+		// Tentos: both pairs, twelve dots each, ours (gold ovals) over theirs (red circles).
 		for (let i = 0; i < 12; i++) {
-			// Six dots spread over the inner width (the panel's padding on both sides), two rows
-			// whose bottom padding matches.
-			const r = 4.5;
-			const x = lx + r + (i % 6) * ((SIDE_INNER_W - 2 * r) / 5);
-			const y = SIDE.theirs[0] + 24.5 + Math.floor(i / 6) * 13;
-			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, r);
-			else g.lineStyle(1.5, PALETTE.panelLight, 1).strokeCircle(x, y, r);
-		}
-		for (let i = 0; i < 12; i++) {
-			const x = HUD.x + HUD_PAD + 0.5 + i * 9.2;
-			const y = HUD.y + 54;
-			if (i < Math.min(12, us)) g.fillStyle(PALETTE.manilha, 1).fillEllipse(x + 3, y, 7, 5);
-			else g.lineStyle(1, PALETTE.panelLight, 1).strokeEllipse(x + 3, y, 7, 5);
+			const r = 3.6;
+			const x = lx + r + i * ((SIDE_INNER_W - 2 * r) / 11);
+			const y = SIDE.theirs[0] + 21;
+			if (i < Math.min(12, us)) g.fillStyle(PALETTE.manilha, 1).fillEllipse(x, y, 7, 5);
+			else g.lineStyle(1, PALETTE.panelLight, 1).strokeEllipse(x, y, 7, 5);
+			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y + 11, r);
+			else g.lineStyle(1.2, PALETTE.panelLight, 1).strokeCircle(x, y + 11, r);
 		}
 		for (let i = 0; i < m.rivalQuedasNeeded; i++) {
-			const x = HUD.x + HUD.w - HUD_PAD - 4 - (m.rivalQuedasNeeded - 1 - i) * 13;
-			if (i < m.rivalQuedas) g.fillStyle(PALETTE.truco, 1).fillCircle(x, HUD.y + 68, 4);
-			else g.lineStyle(1.5, PALETTE.panelLight, 1).strokeCircle(x, HUD.y + 68, 4);
+			const x = HUD.x + HUD.w - HUD_PAD - 4 - (m.rivalQuedasNeeded - 1 - i) * 11;
+			const y = SIDE.theirs[0] + 47;
+			if (i < m.rivalQuedas) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, 3.6);
+			else g.lineStyle(1.2, PALETTE.panelLight, 1).strokeCircle(x, y, 3.6);
 		}
 	}
 
@@ -2295,7 +2364,8 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		]
 			.filter(Boolean)
 			.join(' ');
-		const name = t(`${kind}.${id}.name` as I18nKey);
+		const name =
+			kind === 'trinket' ? trinketName(id ?? '') : t(`${kind}.${id}.name` as I18nKey);
 		const why = kind === 'manha' ? ` ${t(`manha.${id}.why` as I18nKey)} ·` : '';
 		const color =
 			st.money !== undefined
@@ -2310,10 +2380,21 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			.setScale(1.2);
 		this.tweens.add({ targets: this.popup, scale: 1, duration: this.dur(140) });
 		const icon = this.manhaRow.list.find(
-			(o) => o instanceof Phaser.GameObjects.Image && o.getData('id') === id,
+			(o) =>
+				(o instanceof Phaser.GameObjects.Image ||
+					o instanceof Phaser.GameObjects.Container) &&
+				o.getData('id') === id,
 		);
-		if (icon)
-			this.tweens.add({ targets: icon, scale: 0.52, yoyo: true, duration: this.dur(120) });
+		if (
+			icon instanceof Phaser.GameObjects.Image ||
+			icon instanceof Phaser.GameObjects.Container
+		)
+			this.tweens.add({
+				targets: icon,
+				scale: icon.scale * 1.3,
+				yoyo: true,
+				duration: this.dur(120),
+			});
 		sfx(this, st.money !== undefined ? 'sfx.money' : 'sfx.manha.trigger');
 		await this.wait(650);
 		this.popup.setVisible(false);

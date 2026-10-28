@@ -158,7 +158,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.side.goal': 'Meta',
 	'table.side.chipsMult': 'Fichas × Mult',
 	'table.side.bet': 'Aposta',
-	'table.side.theirTentos': 'Tentos deles',
+	'table.side.tentosBoth': 'Tentos: nós × eles',
 	'table.hud.quedas': 'Quedas {us} / deles',
 	'table.moves': 'Jogadas',
 	'table.lance.level': 'nv {n}',
