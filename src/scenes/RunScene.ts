@@ -68,8 +68,8 @@ import { drawPanel } from '../ui/panel';
 import { fadeTo, setupScreen } from '../ui/screen';
 import { addTitle, screenTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
-import { uiPx } from '../ui/touch';
-import { levelColor, trinketCard, trinketCardHeight, trinketMedal } from '../ui/trinket-ui';
+import { touchUi, uiPx } from '../ui/touch';
+import { levelColor, trinketCard, trinketMedal } from '../ui/trinket-ui';
 import { shopSlate } from '../view/shop-slate';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
@@ -247,11 +247,13 @@ export class RunScene extends Phaser.Scene {
 		color: number = PALETTE.textLight,
 		o: [number, number] = [0.5, 0.5],
 		wrap?: number,
+		/** Draw at `px` even on a touch screen (the partner cards shrink to fit). */
+		exact = false,
 	): Phaser.GameObjects.Text {
 		const txt = this.add
 			.text(x, y, s, {
 				fontFamily: UI_FONT,
-				fontSize: `${uiPx(px)}px`,
+				fontSize: `${exact ? px : uiPx(px)}px`,
 				fontStyle: '700',
 				color: toCss(color),
 				align: o[0] === 0 ? 'left' : o[0] === 1 ? 'right' : 'center',
@@ -380,19 +382,34 @@ export class RunScene extends Phaser.Scene {
 		// card over the panel's whole height on the left (3:4 art, the sides cropped to the column),
 		// and on the right the name, style, perk and flaw with the pick button on the base.
 		const pad = 5;
-		// Title, panels and Back are one block centred on the stage both ways; the title, the
-		// panels and Back are one `BLOCK_GAP` apart. The panels leave about 5% of the stage free on
-		// each side.
-		const BLOCK_GAP = 14;
+		// Pointer screens: title, panels and Back are one block centred on the stage. Touch screens
+		// (the text grows to 10 px and spills): the title sits near the top and the cards take the
+		// rest, so every section and the pick button stay inside the card, clear of Back.
+		const mobile = touchUi.on;
+		const BLOCK_GAP = mobile ? 6 : 14;
 		const titleH = TYPE.screenTitle;
 		const backH = BUTTON_H.primary;
-		const [panelW, panelH, gap] = [184, COVER_H + 2 * pad, GAP.card];
-		const blockH = titleH + BLOCK_GAP + panelH + BLOCK_GAP + backH;
-		const blockTop = (this.h - blockH) / 2;
-		const top = blockTop + titleH + BLOCK_GAP;
-		this.title(cx, blockTop + titleH / 2, t('run.choosePartner'), TYPE.screenTitle);
+		const panelW = mobile ? 200 : 184;
+		const gap = GAP.card;
+		let panelH: number;
+		let top: number;
+		let titleY: number;
+		if (mobile) {
+			titleY = 18;
+			const backTop = this.h - 6 - backH;
+			top = Math.round(titleY + titleH / 2 + BLOCK_GAP);
+			panelH = backTop - BLOCK_GAP - top;
+		} else {
+			panelH = COVER_H + 2 * pad;
+			const blockH = titleH + BLOCK_GAP + panelH + BLOCK_GAP + backH;
+			const blockTop = (this.h - blockH) / 2;
+			top = blockTop + titleH + BLOCK_GAP;
+			titleY = blockTop + titleH / 2;
+		}
+		this.title(cx, titleY, t('run.choosePartner'), TYPE.screenTitle);
 		const x0 = cx - (3 * panelW + 2 * gap) / 2;
-		const [cw, ch] = [COVER_W, COVER_H];
+		const cw = COVER_W;
+		const ch = mobile ? panelH - 2 * pad : COVER_H;
 		const btnH = 24;
 		const sub = 4;
 		const tx = (i: number): number => x0 + i * (panelW + gap) + pad + cw + pad;
@@ -420,31 +437,52 @@ export class RunScene extends Phaser.Scene {
 		const HEAD_PX = 10.5;
 		// Each sub-card's height is that of the tallest of the three panels' in its row, so the
 		// rows line up across the panels.
-		const probe = (text: string, px: number): number => {
-			const o = this.put(0, 0, text, px, PALETTE.textLight, [0, 0], tw - 2 * SUB_PAD);
+		const probe = (text: string, px: number, exact = false): number => {
+			const o = this.put(0, 0, text, px, PALETTE.textLight, [0, 0], tw - 2 * SUB_PAD, exact);
 			const h = o.height;
 			o.destroy();
 			return h;
 		};
-		const heights = [0, 1, 2].map((row) =>
-			Math.max(
-				...offer.map((id) => {
-					const c = cards(id)[row];
-					return (
-						SUB_PAD * 2 +
-						probe((c?.title ?? '').toLocaleUpperCase(getLang()), HEAD_PX) +
-						1 +
-						probe(c?.body ?? '', 6.5)
-					);
-				}),
-			),
-		);
+		const rowHeights = (px: number, exact: boolean): number[] =>
+			[0, 1, 2].map((row) =>
+				Math.max(
+					...offer.map((id) => {
+						const c = cards(id)[row];
+						return (
+							SUB_PAD * 2 +
+							probe((c?.title ?? '').toLocaleUpperCase(getLang()), HEAD_PX) +
+							1 +
+							probe(c?.body ?? '', px, exact)
+						);
+					}),
+				),
+			);
+		// Touch text starts at the touch minimum. If the three sections still pass the button,
+		// step the body down until they sit inside the card.
+		let bodyPx = mobile ? 10 : 6.5;
+		const room = panelH - 2 * pad - btnH - 4;
+		const stackOf = (hs: number[]): number =>
+			hs.reduce((sum, h) => sum + h, 0) + sub * Math.max(0, hs.length - 1);
+		if (mobile) {
+			while (bodyPx > 7 && stackOf(rowHeights(bodyPx, bodyPx < uiPx(bodyPx))) > room) {
+				bodyPx -= 0.5;
+			}
+		}
+		const exactBody = mobile && bodyPx < uiPx(bodyPx);
+		const heights = rowHeights(bodyPx, exactBody);
 		offer.forEach((id, i) => {
 			const px = x0 + i * (panelW + gap);
 			this.box(px, top, panelW, panelH);
 			this.body.add(
 				this.add
-					.image(px + pad + cw / 2, top + pad + ch / 2, tex(this, `charcover.${id}`))
+					.image(
+						px + pad + cw / 2,
+						top + pad + ch / 2,
+						tex(
+							this,
+							ch > COVER_H ? `charcover.${id}.${Math.round(ch)}` : `charcover.${id}`,
+						),
+					)
 					.setDisplaySize(cw, ch),
 			);
 			// The name on a dark strip at the foot of the card, as on the table seats.
@@ -489,10 +527,11 @@ export class RunScene extends Phaser.Scene {
 					tx(i) + SUB_PAD,
 					head.getBounds().bottom + 1,
 					c.body,
-					6.5,
+					bodyPx,
 					PALETTE.textLight,
 					[0, 0],
 					tw - 2 * SUB_PAD,
+					exactBody,
 				);
 				ty += h + sub;
 			}
@@ -1326,40 +1365,32 @@ export class RunScene extends Phaser.Scene {
 		shop: ShopState,
 		slate: { x: number; y: number; w: number; h: number },
 	): void {
+		// One inset from the chalkboard, one gap between cards, a wider gap before the loadout.
+		// Card size is whatever is left under the title and above "Next table", so the grid
+		// stays on the board on a short slate and on a touch screen.
+		const PAD = 6;
+		const GAP = 6;
+		const COL_GAP = 16;
+		const NEXT_H = 22;
 		const mid = slate.x + slate.w / 2;
-		const usableW = slate.w * 0.86;
-		const margin = slate.h * 0.05;
-		const left = mid - usableW / 2;
-		const right = mid + usableW / 2;
-		const gap = 4;
-		const colGap = 8;
-		const leftW = Math.floor(usableW * 0.6);
-		const rightW = usableW - leftW - colGap;
-		const cardW = Math.floor((leftW - gap) / 2);
+		const left = slate.x + PAD;
+		const right = slate.x + slate.w - PAD;
+		const usableW = right - left;
+		const leftW = Math.floor(usableW * 0.58);
+		const rightW = usableW - leftW - COL_GAP;
+		const cardW = Math.floor((leftW - GAP) / 2);
+		const titleY = slate.y + PAD + 13;
+		const bodyTop = titleY + 14 + GAP;
+		const nextY = slate.y + slate.h - PAD - NEXT_H / 2;
+		const bodyH = Math.floor(nextY - NEXT_H / 2 - GAP - bodyTop);
+		const cardH = Math.floor((bodyH - GAP) / 2);
 		const items = shop.offers;
-		const heights = [0, 1].map((row) =>
-			trinketCardHeight(
-				this,
-				cardW,
-				items
-					.slice(row * 2, row * 2 + 2)
-					.flatMap((o) => (o.kind === 'trinket' ? [{ id: o.id, level: o.level }] : [])),
-			),
-		);
-		const cardH = Math.max(...heights, 40);
-		const nextH = 22;
-		const titleRow = 30;
-		const bodyH = cardH * 2 + gap;
-		const blockH = titleRow + bodyH + gap + nextH;
-		const yOff = Math.max(margin, (slate.h - blockH) / 2);
-		const top = slate.y + yOff;
 		this.body.add(
-			addTitle(this, left, top + 11, t('run.shop'), TYPE.screenTitle, PALETTE.manilha, 0),
+			addTitle(this, left, titleY, t('run.shop'), TYPE.screenTitle, PALETTE.manilha, 0),
 		);
 		this.body.add(
-			addTitle(this, right, top + 11, `$${run.money}`, TYPE.screenTitle, PALETTE.manilha, 1),
+			addTitle(this, right, titleY, `$${run.money}`, TYPE.screenTitle, PALETTE.manilha, 1),
 		);
-		const bodyTop = top + titleRow;
 		for (const [k, o] of items.entries()) {
 			if (o.kind !== 'trinket') continue;
 			const buyIt = (): void => {
@@ -1384,25 +1415,25 @@ export class RunScene extends Phaser.Scene {
 					},
 				})
 					.setPosition(
-						left + cardW / 2 + (k % 2) * (cardW + gap),
-						bodyTop + cardH / 2 + Math.floor(k / 2) * (cardH + gap),
+						left + cardW / 2 + (k % 2) * (cardW + GAP),
+						bodyTop + cardH / 2 + Math.floor(k / 2) * (cardH + GAP),
 					)
 					.setData('offer', `offers:${k}`),
 			);
 		}
-		this.drawLoadout(run, left + leftW + colGap, bodyTop, rightW, bodyH);
+		this.drawLoadout(run, left + leftW + COL_GAP, bodyTop, rightW, bodyH);
 		this.button(
 			mid,
-			bodyTop + bodyH + gap + nextH / 2,
+			nextY,
 			t('run.next'),
 			() => {
 				leaveShop(run);
 				this.save();
 				this.draw();
 			},
-			2 * cardW + gap,
+			2 * cardW + GAP,
 			PALETTE.good,
-			{ h: nextH, size: 11 },
+			{ h: NEXT_H, size: 11 },
 		);
 	}
 
@@ -1410,7 +1441,12 @@ export class RunScene extends Phaser.Scene {
 	private drawLoadout(run: RunState, x: number, y: number, w: number, h: number): void {
 		const slots = 4;
 		const gap = 3;
-		const slot = Math.floor((w - gap * (slots - 1)) / slots);
+		// Leave the lower half of the column for the collection, so a wide row of slots
+		// cannot push the icons past "Next table".
+		const slot = Math.min(
+			Math.floor((w - gap * (slots - 1)) / slots),
+			Math.max(18, Math.floor((h - 28) * 0.46)),
+		);
 		const slotsY = y + 8 + slot / 2;
 		const label = (lx: number, ly: number, s: string): void => {
 			this.body.add(

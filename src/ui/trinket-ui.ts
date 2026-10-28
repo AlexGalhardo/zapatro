@@ -3,7 +3,7 @@ import { canvasTex, tex } from '../art/flat';
 import { PALETTE, SHOP_RARITY_COLOR, shade, toCss } from '../config/palette';
 import { MOTION } from '../config/ui';
 import { TRINKET_BY_ID, type TrinketLevel } from '../data/trinkets';
-import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
+import { trinketName, trinketTexts } from '../i18n/trinket';
 import { Button } from './Button';
 import { TEXT_SHADOW, UI_FONT } from './font';
 import { uiPx } from './touch';
@@ -15,21 +15,41 @@ export const levelColor = (level: number): number =>
 	];
 
 /** One padding for everything inside a trinket card, one gap between the pieces (stage px). */
-export const CARD = { pad: 4, gap: 2, ribbon: 9, medal: 22, price: 14 } as const;
+export const CARD = { pad: 5, gap: 3 } as const;
 
 const text = (
 	px: number,
 	color: number,
 	wrap?: number,
+	align: 'left' | 'center' = 'left',
+	exact = false,
 ): Phaser.Types.GameObjects.Text.TextStyle => ({
 	fontFamily: UI_FONT,
-	fontSize: `${uiPx(px)}px`,
+	fontSize: `${exact ? px : uiPx(px)}px`,
 	fontStyle: '700',
 	color: toCss(color),
-	align: 'left',
+	align,
 	wordWrap: wrap ? { width: wrap } : undefined,
 	shadow: TEXT_SHADOW,
 });
+
+/** Dark ink on the cream Normal header; light ink on blue, purple and orange. */
+const headerInk = (level: number): number => {
+	const c = levelColor(level);
+	const y = 0.299 * ((c >> 16) & 255) + 0.587 * ((c >> 8) & 255) + 0.114 * (c & 255);
+	return y > 180 ? PALETTE.textDark : PALETTE.textLight;
+};
+
+/** Header band and price footer sized to the card, leaving a middle for the effects. */
+function bands(h: number): { header: number; price: number } {
+	let header = Math.round(Math.min(24, Math.max(16, h * 0.26)));
+	let price = Math.round(Math.min(22, Math.max(16, h * 0.24)));
+	if (header + price > h - 18) {
+		header = Math.max(14, Math.floor(h * 0.24));
+		price = Math.max(14, Math.floor(h * 0.22));
+	}
+	return { header, price };
+}
 
 /** The round medallion of a trinket: the rarity's ring and glow with its icon inside. */
 export function trinketMedal(
@@ -62,13 +82,16 @@ export function trinketMedal(
 	return scene.add.container(0, 0, [scene.add.image(0, 0, key), img]);
 }
 
-/** The card body: a lit frame in the rarity's colour, a dark inside, a thick lower edge, a shadow. */
-function body(scene: Phaser.Scene, w: number, h: number, level: number): string {
+/**
+ * Card body: rarity colour is the border and the header band (no rarity word). The middle is
+ * dark. A thick lower edge and a shadow sit under it.
+ */
+function body(scene: Phaser.Scene, w: number, h: number, level: number, header: number): string {
 	const c = levelColor(level);
 	const reach = 4;
 	return canvasTex(
 		scene,
-		`trinketcard.${level}.${w}x${h}`,
+		`trinketcard.${level}.${w}x${h}.${header}`,
 		w + 2 * reach,
 		h + 2 * reach + 2,
 		(ctx) => {
@@ -88,55 +111,24 @@ function body(scene: Phaser.Scene, w: number, h: number, level: number): string 
 			ctx.fillStyle = toCss(shade(c, -0.55));
 			path(reach, reach + 2, w, h, r);
 			ctx.fill();
-			const frame = ctx.createLinearGradient(0, reach, 0, reach + h);
-			frame.addColorStop(0, toCss(shade(c, 0.35)));
-			frame.addColorStop(0.5, toCss(c));
-			frame.addColorStop(1, toCss(shade(c, -0.3)));
-			ctx.fillStyle = frame;
+			// Border and header: one rarity-coloured card. The dark middle is painted over it.
+			ctx.fillStyle = toCss(c);
 			path(reach, reach, w, h, r);
 			ctx.fill();
-			const inside = ctx.createLinearGradient(0, reach + CARD.ribbon, 0, reach + h);
-			inside.addColorStop(0, toCss(shade(c, -0.62)));
+			const inset = 2.5;
+			const iy = reach + header;
+			const ih = h - header - inset;
+			const inside = ctx.createLinearGradient(0, iy, 0, iy + ih);
+			inside.addColorStop(0, toCss(shade(c, -0.72)));
 			inside.addColorStop(1, toCss(shade(c, -0.88)));
 			ctx.fillStyle = inside;
-			path(reach + 1.5, reach + CARD.ribbon, w - 3, h - CARD.ribbon - 1.5, 3.5);
+			path(reach + inset, iy, w - 2 * inset, ih, 4);
 			ctx.fill();
 			ctx.lineWidth = 1;
-			ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+			ctx.strokeStyle = 'rgba(255,255,255,0.35)';
 			path(reach + 0.5, reach + 0.5, w - 1, h - 1, r);
 			ctx.stroke();
 		},
-	);
-}
-
-/** The height a trinket card needs for the longest of these texts (name, Perk, Flaw). */
-export function trinketCardHeight(
-	scene: Phaser.Scene,
-	w: number,
-	list: readonly { id: string; level: number }[],
-): number {
-	const room = w - CARD.pad * 2 - CARD.medal - CARD.gap - 3;
-	const probe = (s: string, px: number): number => {
-		const t = scene.add.text(0, 0, s, text(px, PALETTE.textLight, room));
-		const h = t.height;
-		t.destroy();
-		return h;
-	};
-	const tallest = Math.max(
-		...list.map((o) => {
-			const tx = trinketTexts(o.id, o.level);
-			return (
-				probe(trinketName(o.id), 8) +
-				CARD.gap +
-				probe(tx.perk, 6) +
-				CARD.gap +
-				probe(tx.flaw, 6)
-			);
-		}),
-		0,
-	);
-	return Math.ceil(
-		CARD.ribbon + CARD.pad + Math.max(tallest, CARD.medal + CARD.gap + CARD.price) + CARD.pad,
 	);
 }
 
@@ -150,49 +142,72 @@ export interface TrinketCardOpts {
 }
 
 /**
- * A trinket for sale (landscape): the rarity ribbon, the medallion with its price under it, and
- * the name, the Perk (green) and the Flaw (red) beside them. Centred on (0, 0); lifts on hover.
+ * A trinket for sale. The header is the rarity's colour with the icon and the name on one line.
+ * Perk (green) and flaw (red) sit centred in the middle. The price is a full-width footer.
+ * Centred on (0, 0); lifts on hover.
  */
 export function trinketCard(scene: Phaser.Scene, o: TrinketCardOpts): Phaser.GameObjects.Container {
 	const { w, h } = o;
+	const { header, price: priceH } = bands(h);
 	const c = scene.add.container(0, 0);
 	const hit = scene.add.zone(0, 0, w, h).setInteractive();
-	c.add([scene.add.image(0, 1, body(scene, w, h, o.level)), hit]);
+	c.add([scene.add.image(0, 1, body(scene, w, h, o.level, header)), hit]);
 	const left = -w / 2;
 	const top = -h / 2;
-	c.add(
-		scene.add
-			.text(0, top + CARD.ribbon / 2 + 0.5, trinketRarityName(o.level).toLocaleUpperCase(), {
-				...text(6, PALETTE.textDark),
-				align: 'center',
-				shadow: undefined,
-			})
-			.setOrigin(0.5),
-	);
-	const medal = trinketMedal(scene, o.id, o.level, CARD.medal);
-	medal.setPosition(
-		left + CARD.pad + CARD.medal / 2,
-		top + CARD.ribbon + CARD.pad + CARD.medal / 2,
-	);
+	const medalD = Math.max(12, header - 6);
+	const medal = trinketMedal(scene, o.id, o.level, medalD);
+	medal.setPosition(left + CARD.pad + medalD / 2, top + header / 2);
 	c.add(medal);
-	const tx = left + CARD.pad + CARD.medal + CARD.gap + 4;
-	const room = w - CARD.pad * 2 - CARD.medal - CARD.gap - 3;
-	const { perk, flaw } = trinketTexts(o.id, o.level);
-	let y = top + CARD.ribbon + CARD.pad;
-	const name = scene.add.text(tx, y, trinketName(o.id), text(8, PALETTE.textLight, room));
+	const nameX = left + CARD.pad + medalD + CARD.gap;
+	const nameRoom = w - 2 * CARD.pad - medalD - CARD.gap;
+	let namePx = 8;
+	const name = scene.add
+		.text(
+			nameX,
+			top + header / 2,
+			trinketName(o.id),
+			text(namePx, headerInk(o.level), undefined, 'left', true),
+		)
+		.setOrigin(0, 0.5);
+	while (name.width > nameRoom && namePx > 6) {
+		namePx -= 0.5;
+		name.setFontSize(namePx);
+	}
 	c.add(name);
-	y += name.height + CARD.gap;
-	const p = scene.add.text(tx, y, perk, text(6, PALETTE.good, room));
-	c.add(p);
-	y += p.height + CARD.gap;
-	c.add(scene.add.text(tx, y, flaw, text(6, PALETTE.bad, room)));
+	const { perk, flaw } = trinketTexts(o.id, o.level);
+	const midTop = top + header + 3;
+	const midH = h - header - priceH - 6;
+	const room = w - 2 * CARD.pad - 4;
+	let descPx = 7;
+	const measure = (
+		size: number,
+	): { perk: Phaser.GameObjects.Text; flaw: Phaser.GameObjects.Text; h: number } => {
+		const perkText = scene.add
+			.text(0, 0, perk, text(size, PALETTE.good, room, 'center', true))
+			.setOrigin(0.5, 0);
+		const flawText = scene.add
+			.text(0, 0, flaw, text(size, PALETTE.bad, room, 'center', true))
+			.setOrigin(0.5, 0);
+		return { perk: perkText, flaw: flawText, h: perkText.height + CARD.gap + flawText.height };
+	};
+	let block = measure(descPx);
+	while (descPx > 6 && block.h > midH) {
+		block.perk.destroy();
+		block.flaw.destroy();
+		descPx -= 0.5;
+		block = measure(descPx);
+	}
+	const y0 = midTop + Math.max(0, (midH - block.h) / 2);
+	block.perk.setY(y0);
+	block.flaw.setY(y0 + block.perk.height + CARD.gap);
+	c.add([block.perk, block.flaw]);
 	const price = new Button(scene, o.price.label, o.price.onClick, {
-		w: CARD.medal + 2,
-		h: CARD.price,
-		size: 8,
+		w: w - 4,
+		h: Math.max(14, priceH - 2),
+		size: 10,
 		color: PALETTE.manilha,
 		...(o.price.onBlocked ? { onBlocked: o.price.onBlocked } : {}),
-	}).setPosition(left + CARD.pad + CARD.medal / 2, top + h - CARD.pad - CARD.price / 2 - 1);
+	}).setPosition(0, h / 2 - priceH / 2);
 	price.setEnabled(o.price.enabled && !o.sold);
 	c.add(price);
 	if (o.sold) {

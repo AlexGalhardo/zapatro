@@ -79,8 +79,10 @@ mesmo peso, sem perder a regra "um bônus e um contra diferentes".
 
 Duas colunas dentro da lousa:
 
-- **Esquerda:** as 4 ofertas do vendedor (cartas com raridade, nome, bônus em verde, contra em
-  vermelho e preço).
+- **Esquerda:** as 4 ofertas do vendedor, numa grade 2×2 que cabe na lousa. Cada carta leva a
+  cor da raridade na borda e na faixa de cima (Normal creme, Raro azul, Épico roxo, Lendário
+  laranja), com o ícone e o nome nessa faixa. O bônus (verde) e o contra (vermelho) ficam no
+  centro. O preço é um botão na largura da carta, no rodapé. Sem o nome da raridade escrito.
 - **Direita, em cima:** os 4 slots equipados (vazios permitidos), clique para desequipar.
 - **Direita, embaixo:** a coleção do jogador (todos os trinkets que ele tem, na maior raridade),
   clique para equipar num slot livre.

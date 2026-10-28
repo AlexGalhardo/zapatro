@@ -12,6 +12,15 @@ Since 2026-10-24 the project has 15 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Changed
+
+- **ui:** The table shows each team's 12 tentos as four rows of three beads, with a clear gap before the centre line.
+- **shop:** Trinket offers sit inside the chalkboard. Rarity is the card's colour (cream, blue, purple, orange) on the border and the title row, which holds the icon and the name. The perk and the flaw sit in the middle, and the price is a full-width button at the bottom.
+
+### Fixed
+
+- **ui:** On a touch screen the partner choice keeps each partner's style, perk, flaw and button inside the card. The title sits nearer the top and the cards are taller.
+
 ## [0.14.0] - 2026-10-27
 
 ### Added
