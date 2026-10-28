@@ -1,9 +1,9 @@
-// Voice barks in PT-BR (D-30, docs/audio.md). Per character: designs a voice from its description
+// Voice barks in PT-BR and EN (D-30, docs/audio.md, docs/audio-final-game.md). Per character: designs a voice from its description
 // (Voice Design, eleven_ttv_v3), saves it (uses one voice slot), speaks every line of
 // scripts/el-catalog.ts with Eleven v4 (Text to Dialogue, the newest TTS model) using a different
 // audio tag per take, then deletes the voice to free the slot. Raw takes:
 // art-src/elevenlabs/vo/<key>/<n>.mp3 (skipped when present); normalize with audio-normalize.ts.
-// Usage: bun scripts/el-voices.ts [char ...]
+// Usage: bun --use-system-ca scripts/el-voices.ts [char ...]
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { AUDIO, rawFile, VOICES } from './el-catalog';
@@ -11,14 +11,17 @@ import { characterCredits, logAudio, postAudio, postJson } from './lib/elevenlab
 
 /** Audio tags (Eleven v4 delivery) per line; take n uses tag n. */
 const TAGS: Record<string, string[]> = {
-	truco: ['[shouting]', '[excited]', '[laughing]'],
+	truco: ['[shouting]', '[excited]'],
 	seis: ['[shouting]', '[defiant]'],
 	nove: ['[shouting]', '[confident]'],
 	doze: ['[shouting]', '[triumphant]'],
 	bora: ['[excited]', '[defiant]'],
 	corre: ['[disappointed]', '[sighs]'],
-	caiu: ['[triumphant]', '[laughing]'],
-	oloco: ['[surprised]', '[laughing]'],
+	ver: ['[confident]', '[defiant]'],
+	sacanagem: ['[shouting]', '[disappointed]'],
+	piada1: ['[confident]', '[laughing]'],
+	piada2: ['[confident]', '[laughing]'],
+	piada3: ['[confident]', '[laughing]'],
 };
 
 const SAMPLE =
@@ -58,12 +61,12 @@ for (const [char, description] of Object.entries(VOICES)) {
 	})) as { voice_id: string };
 	try {
 		for (const { a, n } of missing) {
-			const line = a.key.split('.')[2] as string;
+			const [, lang, , line] = a.key.split('.') as [string, string, string, string];
 			const tag = TAGS[line]?.[n - 1] ?? '';
 			const audio = await postAudio('/v1/text-to-dialogue?output_format=mp3_44100_128', {
 				inputs: [{ text: `${tag} ${a.prompt}`.trim(), voice_id: voice.voice_id }],
 				model_id: 'eleven_v4',
-				language_code: 'pt',
+				language_code: lang,
 			});
 			const out = rawFile(a, n);
 			mkdirSync(dirname(out), { recursive: true });

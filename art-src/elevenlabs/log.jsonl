@@ -325,3 +325,842 @@
 {"at":"2026-10-25T15:52:39.905Z","kind":"sfx","key":"sfx.card.cover","take":1,"seconds":0.5,"prompt":"Single playing card placed face down on felt with a muffled slide, very short, mono"}
 {"at":"2026-10-25T15:53:11.993Z","kind":"sfx","key":"sfx.hand.lose","take":1,"seconds":0.5,"prompt":"Soft descending two-note wooden xylophone, gentle disappointment, dry, mono"}
 {"at":"2026-10-25T15:53:50.787Z","kind":"sfx","key":"sfx.hand.lose","take":1,"seconds":0.5,"prompt":"Two hollow wooden blocks tapped one after the other, the second lower in pitch, a gentle disappointed sound, dry, mono"}
+{"at":"2026-10-28T21:53:20.214Z","kind":"vo","key":"vo.pt.bruto.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:53:20.841Z","kind":"vo","key":"vo.pt.bruto.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:53:21.468Z","kind":"vo","key":"vo.pt.bruto.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:53:22.281Z","kind":"vo","key":"vo.pt.bruto.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:53:22.993Z","kind":"vo","key":"vo.pt.bruto.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:53:23.650Z","kind":"vo","key":"vo.pt.bruto.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:53:24.399Z","kind":"vo","key":"vo.pt.bruto.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:53:25.162Z","kind":"vo","key":"vo.pt.bruto.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:53:25.942Z","kind":"vo","key":"vo.pt.bruto.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:53:26.805Z","kind":"vo","key":"vo.pt.bruto.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:53:27.519Z","kind":"vo","key":"vo.pt.bruto.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:53:28.476Z","kind":"vo","key":"vo.pt.bruto.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:53:29.378Z","kind":"vo","key":"vo.pt.bruto.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:53:30.068Z","kind":"vo","key":"vo.pt.bruto.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:53:30.964Z","kind":"vo","key":"vo.pt.bruto.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:53:31.968Z","kind":"vo","key":"vo.pt.bruto.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:53:33.074Z","kind":"vo","key":"vo.pt.bruto.piada1","take":1,"model":"eleven_v4","text":"[confident] Aqui não tem conversa fiada!"}
+{"at":"2026-10-28T21:53:34.107Z","kind":"vo","key":"vo.pt.bruto.piada1","take":2,"model":"eleven_v4","text":"[laughing] Aqui não tem conversa fiada!"}
+{"at":"2026-10-28T21:53:35.279Z","kind":"vo","key":"vo.pt.bruto.piada2","take":1,"model":"eleven_v4","text":"[confident] Respeito é o que eu cobro, e hoje tá caro."}
+{"at":"2026-10-28T21:53:36.754Z","kind":"vo","key":"vo.pt.bruto.piada2","take":2,"model":"eleven_v4","text":"[laughing] Respeito é o que eu cobro, e hoje tá caro."}
+{"at":"2026-10-28T21:53:37.992Z","kind":"vo","key":"vo.pt.bruto.piada3","take":1,"model":"eleven_v4","text":"[confident] Segura a cerveja que lá vem trovão."}
+{"at":"2026-10-28T21:53:39.763Z","kind":"vo","key":"vo.pt.bruto.piada3","take":2,"model":"eleven_v4","text":"[laughing] Segura a cerveja que lá vem trovão."}
+{"at":"2026-10-28T21:53:40.739Z","kind":"vo","key":"vo.en.bruto.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:53:41.736Z","kind":"vo","key":"vo.en.bruto.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:53:42.441Z","kind":"vo","key":"vo.en.bruto.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:53:43.107Z","kind":"vo","key":"vo.en.bruto.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:53:43.910Z","kind":"vo","key":"vo.en.bruto.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:53:44.748Z","kind":"vo","key":"vo.en.bruto.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:53:45.569Z","kind":"vo","key":"vo.en.bruto.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:53:46.253Z","kind":"vo","key":"vo.en.bruto.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:53:46.924Z","kind":"vo","key":"vo.en.bruto.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:53:47.668Z","kind":"vo","key":"vo.en.bruto.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:53:48.453Z","kind":"vo","key":"vo.en.bruto.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:53:49.231Z","kind":"vo","key":"vo.en.bruto.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:53:50.228Z","kind":"vo","key":"vo.en.bruto.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:53:50.994Z","kind":"vo","key":"vo.en.bruto.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:53:51.759Z","kind":"vo","key":"vo.en.bruto.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:53:52.508Z","kind":"vo","key":"vo.en.bruto.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:53:53.429Z","kind":"vo","key":"vo.en.bruto.piada1","take":1,"model":"eleven_v4","text":"[confident] No small talk at this table!"}
+{"at":"2026-10-28T21:53:54.432Z","kind":"vo","key":"vo.en.bruto.piada1","take":2,"model":"eleven_v4","text":"[laughing] No small talk at this table!"}
+{"at":"2026-10-28T21:53:55.565Z","kind":"vo","key":"vo.en.bruto.piada2","take":1,"model":"eleven_v4","text":"[confident] Respect is what I charge, and today it's pricey."}
+{"at":"2026-10-28T21:53:57.189Z","kind":"vo","key":"vo.en.bruto.piada2","take":2,"model":"eleven_v4","text":"[laughing] Respect is what I charge, and today it's pricey."}
+{"at":"2026-10-28T21:53:58.199Z","kind":"vo","key":"vo.en.bruto.piada3","take":1,"model":"eleven_v4","text":"[confident] Hold your beer, here comes thunder."}
+{"at":"2026-10-28T21:53:59.484Z","kind":"vo","key":"vo.en.bruto.piada3","take":2,"model":"eleven_v4","text":"[laughing] Hold your beer, here comes thunder."}
+{"at":"2026-10-28T21:54:28.561Z","kind":"music","key":"music.table2","model":"music_v2_5","seconds":60,"credits":1743,"prompt":"Sunset Miami Beach lounge, synthwave-tinged tropical house, warm analog pads, soft electric piano, chill groove at 100 bpm, palm trees and neon, retro sunshine. instrumental, no vocals, seamless loop, upbeat but relaxed card-game table background, mid-tempo so it never fights the voice lines"}
+{"at":"2026-10-28T21:54:30.622Z","kind":"vo","key":"vo.pt.cida.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:54:31.358Z","kind":"vo","key":"vo.pt.cida.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:54:32.228Z","kind":"vo","key":"vo.pt.cida.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:54:32.547Z","kind":"vo","key":"vo.pt.agiota.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:54:33.139Z","kind":"vo","key":"vo.pt.beti.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:54:33.354Z","kind":"vo","key":"vo.pt.cida.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:54:33.789Z","kind":"vo","key":"vo.pt.agiota.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:54:34.064Z","kind":"vo","key":"vo.pt.beti.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:54:34.386Z","kind":"vo","key":"vo.pt.cida.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:54:34.495Z","kind":"vo","key":"vo.pt.agiota.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:54:34.799Z","kind":"vo","key":"vo.pt.beti.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:54:35.048Z","kind":"vo","key":"vo.pt.cida.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:54:35.282Z","kind":"vo","key":"vo.pt.agiota.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:54:35.455Z","kind":"vo","key":"vo.pt.beti.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:54:35.884Z","kind":"vo","key":"vo.pt.cida.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:54:36.033Z","kind":"vo","key":"vo.pt.agiota.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:54:36.251Z","kind":"vo","key":"vo.pt.beti.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:54:36.684Z","kind":"vo","key":"vo.pt.agiota.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:54:36.736Z","kind":"vo","key":"vo.pt.cida.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:54:36.893Z","kind":"vo","key":"vo.pt.beti.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:54:37.398Z","kind":"vo","key":"vo.pt.agiota.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:54:37.756Z","kind":"vo","key":"vo.pt.cida.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:54:37.757Z","kind":"vo","key":"vo.pt.beti.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:54:38.135Z","kind":"vo","key":"vo.pt.agiota.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:54:38.438Z","kind":"vo","key":"vo.pt.beti.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:54:38.551Z","kind":"music","key":"music.table3","model":"music_v2_5","seconds":60,"credits":0,"prompt":"Hawaiian casino lounge, slack-key guitar and ukulele with vibraphone and upright bass, brushed drums, smoky jazz-lounge swing at 96 bpm, ocean breeze, poker night. instrumental, no vocals, seamless loop, upbeat but relaxed card-game table background, mid-tempo so it never fights the voice lines"}
+{"at":"2026-10-28T21:54:38.598Z","kind":"vo","key":"vo.pt.cida.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:54:38.848Z","kind":"vo","key":"vo.pt.agiota.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:54:39.230Z","kind":"vo","key":"vo.pt.beti.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:54:39.284Z","kind":"vo","key":"vo.pt.cida.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:54:39.761Z","kind":"vo","key":"vo.pt.agiota.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:54:39.920Z","kind":"vo","key":"vo.pt.cida.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:54:40.060Z","kind":"vo","key":"vo.pt.beti.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:54:40.459Z","kind":"vo","key":"vo.pt.agiota.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:54:40.828Z","kind":"vo","key":"vo.pt.cida.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:54:40.938Z","kind":"vo","key":"vo.pt.beti.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:54:41.234Z","kind":"vo","key":"vo.pt.agiota.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:54:41.672Z","kind":"vo","key":"vo.pt.beti.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:54:42.001Z","kind":"vo","key":"vo.pt.agiota.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:54:42.001Z","kind":"vo","key":"vo.pt.cida.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:54:42.766Z","kind":"vo","key":"vo.pt.beti.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:54:43.080Z","kind":"vo","key":"vo.pt.agiota.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:54:43.080Z","kind":"vo","key":"vo.pt.cida.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:54:43.416Z","kind":"vo","key":"vo.pt.beti.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:54:44.162Z","kind":"vo","key":"vo.pt.cida.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:54:44.194Z","kind":"vo","key":"vo.pt.agiota.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:54:44.326Z","kind":"vo","key":"vo.pt.beti.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:54:45.119Z","kind":"vo","key":"vo.pt.agiota.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:54:45.232Z","kind":"vo","key":"vo.pt.beti.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:54:45.263Z","kind":"vo","key":"vo.pt.cida.piada1","take":1,"model":"eleven_v4","text":"[confident] Ai, que dó... de vocês!"}
+{"at":"2026-10-28T21:54:46.208Z","kind":"vo","key":"vo.pt.agiota.piada1","take":1,"model":"eleven_v4","text":"[confident] Perdeu a mão? Põe na conta, com juros!"}
+{"at":"2026-10-28T21:54:46.427Z","kind":"vo","key":"vo.pt.cida.piada1","take":2,"model":"eleven_v4","text":"[laughing] Ai, que dó... de vocês!"}
+{"at":"2026-10-28T21:54:46.539Z","kind":"vo","key":"vo.pt.beti.piada1","take":1,"model":"eleven_v4","text":"[confident] A bola de cristal disse que você vai perder!"}
+{"at":"2026-10-28T21:54:47.666Z","kind":"vo","key":"vo.pt.cida.piada2","take":1,"model":"eleven_v4","text":"[confident] Tô na cerveja, mas na cartada eu tô sóbria!"}
+{"at":"2026-10-28T21:54:47.675Z","kind":"music","key":"music.table4","model":"music_v2_5","seconds":60,"credits":0,"prompt":"Sao Paulo bar at golden hour, samba-rock with cavaquinho, nylon guitar, 7-string guitar bass runs, light pandeiro and tamborim, cozy beer-table groove at 104 bpm. instrumental, no vocals, seamless loop, upbeat but relaxed card-game table background, mid-tempo so it never fights the voice lines"}
+{"at":"2026-10-28T21:54:47.695Z","kind":"vo","key":"vo.pt.agiota.piada1","take":2,"model":"eleven_v4","text":"[laughing] Perdeu a mão? Põe na conta, com juros!"}
+{"at":"2026-10-28T21:54:48.149Z","kind":"vo","key":"vo.pt.beti.piada1","take":2,"model":"eleven_v4","text":"[laughing] A bola de cristal disse que você vai perder!"}
+{"at":"2026-10-28T21:54:48.727Z","kind":"vo","key":"vo.pt.agiota.piada2","take":1,"model":"eleven_v4","text":"[confident] Todo mundo me deve, até a sorte."}
+{"at":"2026-10-28T21:54:49.253Z","kind":"vo","key":"vo.pt.cida.piada2","take":2,"model":"eleven_v4","text":"[laughing] Tô na cerveja, mas na cartada eu tô sóbria!"}
+{"at":"2026-10-28T21:54:49.372Z","kind":"vo","key":"vo.pt.beti.piada2","take":1,"model":"eleven_v4","text":"[confident] Dá a mão que eu leio... o seu blefe!"}
+{"at":"2026-10-28T21:54:50.108Z","kind":"vo","key":"vo.pt.agiota.piada2","take":2,"model":"eleven_v4","text":"[laughing] Todo mundo me deve, até a sorte."}
+{"at":"2026-10-28T21:54:50.554Z","kind":"vo","key":"vo.pt.cida.piada3","take":1,"model":"eleven_v4","text":"[confident] Pode vir, meu bem, a tia Cida não perdoa!"}
+{"at":"2026-10-28T21:54:50.733Z","kind":"vo","key":"vo.pt.beti.piada2","take":2,"model":"eleven_v4","text":"[laughing] Dá a mão que eu leio... o seu blefe!"}
+{"at":"2026-10-28T21:54:51.163Z","kind":"vo","key":"vo.pt.agiota.piada3","take":1,"model":"eleven_v4","text":"[confident] Dinheiro não aceita desaforo, amigo."}
+{"at":"2026-10-28T21:54:51.908Z","kind":"vo","key":"vo.pt.beti.piada3","take":1,"model":"eleven_v4","text":"[confident] Vela acesa, sorte garantida, meu filho!"}
+{"at":"2026-10-28T21:54:52.270Z","kind":"vo","key":"vo.pt.cida.piada3","take":2,"model":"eleven_v4","text":"[laughing] Pode vir, meu bem, a tia Cida não perdoa!"}
+{"at":"2026-10-28T21:54:52.380Z","kind":"vo","key":"vo.pt.agiota.piada3","take":2,"model":"eleven_v4","text":"[laughing] Dinheiro não aceita desaforo, amigo."}
+{"at":"2026-10-28T21:54:53.090Z","kind":"vo","key":"vo.en.cida.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:54:53.260Z","kind":"vo","key":"vo.en.agiota.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:54:53.305Z","kind":"vo","key":"vo.pt.beti.piada3","take":2,"model":"eleven_v4","text":"[laughing] Vela acesa, sorte garantida, meu filho!"}
+{"at":"2026-10-28T21:54:53.820Z","kind":"vo","key":"vo.en.cida.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:54:53.871Z","kind":"vo","key":"vo.en.agiota.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:54:54.043Z","kind":"vo","key":"vo.en.beti.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:54:54.680Z","kind":"vo","key":"vo.en.agiota.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:54:54.680Z","kind":"vo","key":"vo.en.cida.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:54:54.768Z","kind":"vo","key":"vo.en.beti.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:54:55.540Z","kind":"vo","key":"vo.en.cida.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:54:55.541Z","kind":"vo","key":"vo.en.agiota.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:54:55.541Z","kind":"vo","key":"vo.en.beti.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:54:56.194Z","kind":"vo","key":"vo.en.beti.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:54:56.309Z","kind":"vo","key":"vo.en.cida.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:54:56.312Z","kind":"vo","key":"vo.en.agiota.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:54:56.961Z","kind":"vo","key":"vo.en.beti.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:54:56.976Z","kind":"vo","key":"vo.en.agiota.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:54:57.177Z","kind":"vo","key":"vo.en.cida.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:54:57.722Z","kind":"vo","key":"vo.en.agiota.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:54:57.755Z","kind":"vo","key":"vo.en.beti.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:54:57.856Z","kind":"vo","key":"vo.en.cida.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:54:58.495Z","kind":"vo","key":"vo.en.agiota.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:54:58.501Z","kind":"vo","key":"vo.en.beti.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:54:58.977Z","kind":"vo","key":"vo.en.cida.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:54:59.227Z","kind":"vo","key":"vo.en.agiota.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:54:59.254Z","kind":"vo","key":"vo.en.beti.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:54:59.677Z","kind":"vo","key":"vo.en.cida.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:54:59.945Z","kind":"vo","key":"vo.en.beti.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:55:00.055Z","kind":"vo","key":"vo.en.agiota.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:55:00.473Z","kind":"vo","key":"vo.en.cida.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:55:00.771Z","kind":"vo","key":"vo.en.beti.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:55:00.781Z","kind":"vo","key":"vo.en.agiota.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:55:01.341Z","kind":"vo","key":"vo.en.cida.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:55:01.482Z","kind":"vo","key":"vo.en.agiota.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:55:01.485Z","kind":"vo","key":"vo.en.beti.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:55:02.035Z","kind":"vo","key":"vo.en.cida.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:55:02.139Z","kind":"vo","key":"vo.en.beti.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:55:02.249Z","kind":"vo","key":"vo.en.agiota.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:55:02.845Z","kind":"vo","key":"vo.en.cida.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:55:02.845Z","kind":"vo","key":"vo.en.beti.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:55:03.577Z","kind":"vo","key":"vo.en.agiota.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:55:03.906Z","kind":"vo","key":"vo.en.cida.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:55:04.013Z","kind":"vo","key":"vo.en.beti.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:55:04.317Z","kind":"vo","key":"vo.en.agiota.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:55:04.661Z","kind":"vo","key":"vo.en.cida.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:55:04.846Z","kind":"vo","key":"vo.en.beti.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:55:05.170Z","kind":"vo","key":"vo.en.agiota.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:55:05.388Z","kind":"vo","key":"vo.en.cida.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:55:05.580Z","kind":"vo","key":"vo.en.beti.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:55:06.419Z","kind":"vo","key":"vo.en.cida.piada1","take":1,"model":"eleven_v4","text":"[confident] Aww, how sad... for you!"}
+{"at":"2026-10-28T21:55:06.419Z","kind":"vo","key":"vo.en.agiota.piada1","take":1,"model":"eleven_v4","text":"[confident] Lost the hand? Put it on the tab, with interest!"}
+{"at":"2026-10-28T21:55:06.495Z","kind":"vo","key":"vo.en.beti.piada1","take":1,"model":"eleven_v4","text":"[confident] The crystal ball says you will lose!"}
+{"at":"2026-10-28T21:55:07.594Z","kind":"vo","key":"vo.en.beti.piada1","take":2,"model":"eleven_v4","text":"[laughing] The crystal ball says you will lose!"}
+{"at":"2026-10-28T21:55:07.689Z","kind":"vo","key":"vo.en.cida.piada1","take":2,"model":"eleven_v4","text":"[laughing] Aww, how sad... for you!"}
+{"at":"2026-10-28T21:55:07.924Z","kind":"vo","key":"vo.en.agiota.piada1","take":2,"model":"eleven_v4","text":"[laughing] Lost the hand? Put it on the tab, with interest!"}
+{"at":"2026-10-28T21:55:08.719Z","kind":"vo","key":"vo.en.cida.piada2","take":1,"model":"eleven_v4","text":"[confident] I'm on the beer, but my cards are sober!"}
+{"at":"2026-10-28T21:55:08.733Z","kind":"vo","key":"vo.en.beti.piada2","take":1,"model":"eleven_v4","text":"[confident] Give me your hand and I'll read... your bluff!"}
+{"at":"2026-10-28T21:55:09.002Z","kind":"vo","key":"vo.en.agiota.piada2","take":1,"model":"eleven_v4","text":"[confident] Everybody owes me, even luck."}
+{"at":"2026-10-28T21:55:10.078Z","kind":"vo","key":"vo.en.cida.piada2","take":2,"model":"eleven_v4","text":"[laughing] I'm on the beer, but my cards are sober!"}
+{"at":"2026-10-28T21:55:10.130Z","kind":"vo","key":"vo.en.beti.piada2","take":2,"model":"eleven_v4","text":"[laughing] Give me your hand and I'll read... your bluff!"}
+{"at":"2026-10-28T21:55:10.149Z","kind":"vo","key":"vo.en.agiota.piada2","take":2,"model":"eleven_v4","text":"[laughing] Everybody owes me, even luck."}
+{"at":"2026-10-28T21:55:11.106Z","kind":"vo","key":"vo.en.agiota.piada3","take":1,"model":"eleven_v4","text":"[confident] Money doesn't take disrespect, friend."}
+{"at":"2026-10-28T21:55:11.257Z","kind":"vo","key":"vo.en.beti.piada3","take":1,"model":"eleven_v4","text":"[confident] Lit candle, guaranteed luck, dear!"}
+{"at":"2026-10-28T21:55:11.319Z","kind":"vo","key":"vo.en.cida.piada3","take":1,"model":"eleven_v4","text":"[confident] Come on, honey, Auntie Cida doesn't forgive!"}
+{"at":"2026-10-28T21:55:12.227Z","kind":"vo","key":"vo.en.agiota.piada3","take":2,"model":"eleven_v4","text":"[laughing] Money doesn't take disrespect, friend."}
+{"at":"2026-10-28T21:55:12.526Z","kind":"vo","key":"vo.en.beti.piada3","take":2,"model":"eleven_v4","text":"[laughing] Lit candle, guaranteed luck, dear!"}
+{"at":"2026-10-28T21:55:12.664Z","kind":"vo","key":"vo.en.cida.piada3","take":2,"model":"eleven_v4","text":"[laughing] Come on, honey, Auntie Cida doesn't forgive!"}
+{"at":"2026-10-28T21:55:26.200Z","kind":"vo","key":"vo.pt.tony.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:55:26.965Z","kind":"vo","key":"vo.pt.tony.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:55:27.424Z","kind":"vo","key":"vo.pt.jhony.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:55:27.630Z","kind":"vo","key":"vo.pt.tony.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:55:28.059Z","kind":"vo","key":"vo.pt.jhony.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:55:28.421Z","kind":"vo","key":"vo.pt.tony.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:55:28.813Z","kind":"vo","key":"vo.pt.jhony.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:55:29.085Z","kind":"vo","key":"vo.pt.tony.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:55:29.583Z","kind":"vo","key":"vo.pt.jhony.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:55:29.688Z","kind":"vo","key":"vo.pt.tony.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:55:30.099Z","kind":"vo","key":"vo.pt.ayla.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:55:30.426Z","kind":"vo","key":"vo.pt.tony.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:55:30.426Z","kind":"vo","key":"vo.pt.jhony.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:55:30.855Z","kind":"vo","key":"vo.pt.ayla.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:55:31.035Z","kind":"vo","key":"vo.pt.jhony.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:55:31.055Z","kind":"vo","key":"vo.pt.tony.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:55:31.593Z","kind":"vo","key":"vo.pt.ayla.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:55:31.655Z","kind":"vo","key":"vo.pt.jhony.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:55:31.784Z","kind":"vo","key":"vo.pt.tony.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:55:32.391Z","kind":"vo","key":"vo.pt.jhony.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:55:32.398Z","kind":"vo","key":"vo.pt.ayla.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:55:32.680Z","kind":"vo","key":"vo.pt.tony.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:55:33.151Z","kind":"vo","key":"vo.pt.jhony.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:55:33.174Z","kind":"vo","key":"vo.pt.ayla.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:55:33.366Z","kind":"vo","key":"vo.pt.tony.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:55:33.872Z","kind":"vo","key":"vo.pt.ayla.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:55:34.142Z","kind":"vo","key":"vo.pt.jhony.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:55:34.143Z","kind":"vo","key":"vo.pt.tony.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:55:34.788Z","kind":"vo","key":"vo.pt.ayla.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:55:35.000Z","kind":"vo","key":"vo.pt.jhony.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:55:35.006Z","kind":"vo","key":"vo.pt.tony.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:55:35.720Z","kind":"vo","key":"vo.pt.ayla.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:55:35.833Z","kind":"vo","key":"vo.pt.jhony.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:55:35.837Z","kind":"vo","key":"vo.pt.tony.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:55:36.473Z","kind":"vo","key":"vo.pt.ayla.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:55:36.473Z","kind":"vo","key":"vo.pt.jhony.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:55:37.192Z","kind":"vo","key":"vo.pt.jhony.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:55:37.301Z","kind":"vo","key":"vo.pt.tony.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:55:37.421Z","kind":"vo","key":"vo.pt.ayla.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:55:38.103Z","kind":"vo","key":"vo.pt.jhony.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:55:38.150Z","kind":"vo","key":"vo.pt.tony.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:55:38.251Z","kind":"vo","key":"vo.pt.ayla.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:55:38.991Z","kind":"vo","key":"vo.pt.ayla.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:55:39.000Z","kind":"vo","key":"vo.pt.jhony.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:55:39.393Z","kind":"vo","key":"vo.pt.tony.piada1","take":1,"model":"eleven_v4","text":"[confident] Documentos, e a carta mais alta!"}
+{"at":"2026-10-28T21:55:39.708Z","kind":"vo","key":"vo.pt.ayla.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:55:40.032Z","kind":"vo","key":"vo.pt.jhony.piada1","take":1,"model":"eleven_v4","text":"[confident] Esse jogo eu pago em dinheiro vivo!"}
+{"at":"2026-10-28T21:55:40.562Z","kind":"vo","key":"vo.pt.ayla.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:55:40.784Z","kind":"vo","key":"vo.pt.tony.piada1","take":2,"model":"eleven_v4","text":"[laughing] Documentos, e a carta mais alta!"}
+{"at":"2026-10-28T21:55:41.441Z","kind":"vo","key":"vo.pt.jhony.piada1","take":2,"model":"eleven_v4","text":"[laughing] Esse jogo eu pago em dinheiro vivo!"}
+{"at":"2026-10-28T21:55:41.515Z","kind":"vo","key":"vo.pt.ayla.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:55:42.023Z","kind":"vo","key":"vo.pt.tony.piada2","take":1,"model":"eleven_v4","text":"[confident] Você tem o direito de blefar... eu tenho o de prender."}
+{"at":"2026-10-28T21:55:42.495Z","kind":"vo","key":"vo.pt.jhony.piada2","take":1,"model":"eleven_v4","text":"[confident] Relógio de ouro não marca hora de perder."}
+{"at":"2026-10-28T21:55:42.595Z","kind":"vo","key":"vo.pt.ayla.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:55:43.500Z","kind":"vo","key":"vo.pt.tony.piada2","take":2,"model":"eleven_v4","text":"[laughing] Você tem o direito de blefar... eu tenho o de prender."}
+{"at":"2026-10-28T21:55:43.830Z","kind":"vo","key":"vo.pt.jhony.piada2","take":2,"model":"eleven_v4","text":"[laughing] Relógio de ouro não marca hora de perder."}
+{"at":"2026-10-28T21:55:43.925Z","kind":"vo","key":"vo.pt.ayla.piada1","take":1,"model":"eleven_v4","text":"[confident] Rock baby! Esse truco é pesado!"}
+{"at":"2026-10-28T21:55:44.751Z","kind":"vo","key":"vo.pt.jhony.piada3","take":1,"model":"eleven_v4","text":"[confident] Até meu colar tá rindo de vocês!"}
+{"at":"2026-10-28T21:55:45.210Z","kind":"vo","key":"vo.pt.tony.piada3","take":1,"model":"eleven_v4","text":"[confident] Isso aqui é jogo limpo, ou eu fecho o boteco!"}
+{"at":"2026-10-28T21:55:45.851Z","kind":"vo","key":"vo.pt.ayla.piada1","take":2,"model":"eleven_v4","text":"[laughing] Rock baby! Esse truco é pesado!"}
+{"at":"2026-10-28T21:55:46.028Z","kind":"vo","key":"vo.pt.jhony.piada3","take":2,"model":"eleven_v4","text":"[laughing] Até meu colar tá rindo de vocês!"}
+{"at":"2026-10-28T21:55:46.562Z","kind":"vo","key":"vo.pt.tony.piada3","take":2,"model":"eleven_v4","text":"[laughing] Isso aqui é jogo limpo, ou eu fecho o boteco!"}
+{"at":"2026-10-28T21:55:46.568Z","kind":"vo","key":"vo.en.jhony.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:55:47.289Z","kind":"vo","key":"vo.pt.ayla.piada2","take":1,"model":"eleven_v4","text":"[confident] Meu skate tem mais manha que o seu baralho!"}
+{"at":"2026-10-28T21:55:47.290Z","kind":"vo","key":"vo.en.jhony.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:55:47.476Z","kind":"vo","key":"vo.en.tony.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:55:47.995Z","kind":"vo","key":"vo.en.jhony.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:55:48.167Z","kind":"vo","key":"vo.en.tony.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:55:48.702Z","kind":"vo","key":"vo.en.jhony.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:55:48.751Z","kind":"vo","key":"vo.pt.ayla.piada2","take":2,"model":"eleven_v4","text":"[laughing] Meu skate tem mais manha que o seu baralho!"}
+{"at":"2026-10-28T21:55:48.813Z","kind":"vo","key":"vo.en.tony.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:55:49.378Z","kind":"vo","key":"vo.en.jhony.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:55:49.467Z","kind":"vo","key":"vo.en.tony.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:55:49.887Z","kind":"vo","key":"vo.pt.ayla.piada3","take":1,"model":"eleven_v4","text":"[confident] Vem na manobra, que eu caio e levanto!"}
+{"at":"2026-10-28T21:55:50.020Z","kind":"vo","key":"vo.en.jhony.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:55:50.126Z","kind":"vo","key":"vo.en.tony.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:55:50.815Z","kind":"vo","key":"vo.en.jhony.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:55:50.820Z","kind":"vo","key":"vo.en.tony.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:55:51.672Z","kind":"vo","key":"vo.en.jhony.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:55:51.676Z","kind":"vo","key":"vo.en.tony.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:55:51.709Z","kind":"vo","key":"vo.pt.ayla.piada3","take":2,"model":"eleven_v4","text":"[laughing] Vem na manobra, que eu caio e levanto!"}
+{"at":"2026-10-28T21:55:52.535Z","kind":"vo","key":"vo.en.ayla.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:55:52.535Z","kind":"vo","key":"vo.en.jhony.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:55:52.535Z","kind":"vo","key":"vo.en.tony.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:55:53.182Z","kind":"vo","key":"vo.en.tony.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:55:53.223Z","kind":"vo","key":"vo.en.ayla.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:55:53.312Z","kind":"vo","key":"vo.en.jhony.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:55:54.035Z","kind":"vo","key":"vo.en.ayla.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:55:54.035Z","kind":"vo","key":"vo.en.tony.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:55:54.036Z","kind":"vo","key":"vo.en.jhony.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:55:54.851Z","kind":"vo","key":"vo.en.jhony.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:55:54.852Z","kind":"vo","key":"vo.en.ayla.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:55:54.852Z","kind":"vo","key":"vo.en.tony.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:55:55.537Z","kind":"vo","key":"vo.en.jhony.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:55:55.543Z","kind":"vo","key":"vo.en.tony.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:55:55.861Z","kind":"vo","key":"vo.en.ayla.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:55:56.417Z","kind":"vo","key":"vo.en.tony.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:55:56.529Z","kind":"vo","key":"vo.en.jhony.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:55:56.751Z","kind":"vo","key":"vo.en.ayla.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:55:57.110Z","kind":"vo","key":"vo.en.tony.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:55:57.277Z","kind":"vo","key":"vo.en.jhony.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:55:57.513Z","kind":"vo","key":"vo.en.ayla.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:55:58.098Z","kind":"vo","key":"vo.en.tony.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:55:58.098Z","kind":"vo","key":"vo.en.jhony.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:55:58.420Z","kind":"vo","key":"vo.en.ayla.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:55:58.812Z","kind":"vo","key":"vo.en.tony.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:55:59.104Z","kind":"vo","key":"vo.en.ayla.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:55:59.119Z","kind":"vo","key":"vo.en.jhony.piada1","take":1,"model":"eleven_v4","text":"[confident] I'm paying for this game in cold cash!"}
+{"at":"2026-10-28T21:55:59.825Z","kind":"vo","key":"vo.en.tony.piada1","take":1,"model":"eleven_v4","text":"[confident] License, and your highest card!"}
+{"at":"2026-10-28T21:55:59.994Z","kind":"vo","key":"vo.en.ayla.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:56:00.215Z","kind":"vo","key":"vo.en.jhony.piada1","take":2,"model":"eleven_v4","text":"[laughing] I'm paying for this game in cold cash!"}
+{"at":"2026-10-28T21:56:00.792Z","kind":"vo","key":"vo.en.ayla.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:56:01.123Z","kind":"vo","key":"vo.en.tony.piada1","take":2,"model":"eleven_v4","text":"[laughing] License, and your highest card!"}
+{"at":"2026-10-28T21:56:02.062Z","kind":"vo","key":"vo.en.jhony.piada2","take":1,"model":"eleven_v4","text":"[confident] A gold watch doesn't tell the time for losing."}
+{"at":"2026-10-28T21:56:02.452Z","kind":"vo","key":"vo.en.ayla.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:56:02.453Z","kind":"vo","key":"vo.en.tony.piada2","take":1,"model":"eleven_v4","text":"[confident] You have the right to bluff... I have the right to arrest."}
+{"at":"2026-10-28T21:56:03.129Z","kind":"vo","key":"vo.en.ayla.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:56:03.229Z","kind":"vo","key":"vo.en.jhony.piada2","take":2,"model":"eleven_v4","text":"[laughing] A gold watch doesn't tell the time for losing."}
+{"at":"2026-10-28T21:56:03.838Z","kind":"vo","key":"vo.en.ayla.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:56:03.979Z","kind":"vo","key":"vo.en.tony.piada2","take":2,"model":"eleven_v4","text":"[laughing] You have the right to bluff... I have the right to arrest."}
+{"at":"2026-10-28T21:56:04.106Z","kind":"vo","key":"vo.en.jhony.piada3","take":1,"model":"eleven_v4","text":"[confident] Even my chain is laughing at you!"}
+{"at":"2026-10-28T21:56:04.656Z","kind":"vo","key":"vo.en.ayla.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:56:05.026Z","kind":"vo","key":"vo.en.tony.piada3","take":1,"model":"eleven_v4","text":"[confident] Clean game, or I shut down the bar!"}
+{"at":"2026-10-28T21:56:05.385Z","kind":"vo","key":"vo.en.jhony.piada3","take":2,"model":"eleven_v4","text":"[laughing] Even my chain is laughing at you!"}
+{"at":"2026-10-28T21:56:05.497Z","kind":"vo","key":"vo.en.ayla.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:56:06.324Z","kind":"vo","key":"vo.en.tony.piada3","take":2,"model":"eleven_v4","text":"[laughing] Clean game, or I shut down the bar!"}
+{"at":"2026-10-28T21:56:06.654Z","kind":"vo","key":"vo.en.ayla.piada1","take":1,"model":"eleven_v4","text":"[confident] Rock baby! This truco goes hard!"}
+{"at":"2026-10-28T21:56:08.271Z","kind":"vo","key":"vo.en.ayla.piada1","take":2,"model":"eleven_v4","text":"[laughing] Rock baby! This truco goes hard!"}
+{"at":"2026-10-28T21:56:09.421Z","kind":"vo","key":"vo.en.ayla.piada2","take":1,"model":"eleven_v4","text":"[confident] My skateboard has more tricks than your deck!"}
+{"at":"2026-10-28T21:56:10.788Z","kind":"vo","key":"vo.en.ayla.piada2","take":2,"model":"eleven_v4","text":"[laughing] My skateboard has more tricks than your deck!"}
+{"at":"2026-10-28T21:56:12.200Z","kind":"vo","key":"vo.en.ayla.piada3","take":1,"model":"eleven_v4","text":"[confident] Bring the trick, I fall and get back up!"}
+{"at":"2026-10-28T21:56:13.456Z","kind":"vo","key":"vo.en.ayla.piada3","take":2,"model":"eleven_v4","text":"[laughing] Bring the trick, I fall and get back up!"}
+{"at":"2026-10-28T21:56:20.045Z","kind":"vo","key":"vo.pt.nino.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:56:20.678Z","kind":"vo","key":"vo.pt.nino.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:56:21.514Z","kind":"vo","key":"vo.pt.nino.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:56:21.515Z","kind":"vo","key":"vo.pt.stuart.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:56:22.363Z","kind":"vo","key":"vo.pt.stuart.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:56:22.689Z","kind":"vo","key":"vo.pt.nino.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:56:23.230Z","kind":"vo","key":"vo.pt.stuart.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:56:23.391Z","kind":"vo","key":"vo.pt.nino.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:56:23.875Z","kind":"vo","key":"vo.pt.stuart.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:56:24.027Z","kind":"vo","key":"vo.pt.nino.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:56:24.683Z","kind":"vo","key":"vo.pt.stuart.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:56:24.690Z","kind":"vo","key":"vo.pt.nino.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:56:25.306Z","kind":"vo","key":"vo.pt.stuart.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:56:25.571Z","kind":"vo","key":"vo.pt.nino.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:56:26.024Z","kind":"vo","key":"vo.pt.stuart.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:56:26.447Z","kind":"vo","key":"vo.pt.nino.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:56:26.735Z","kind":"vo","key":"vo.pt.stuart.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:56:27.425Z","kind":"vo","key":"vo.pt.nino.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:56:27.617Z","kind":"vo","key":"vo.pt.sheila.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:56:27.618Z","kind":"vo","key":"vo.pt.stuart.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:56:28.408Z","kind":"vo","key":"vo.pt.nino.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:56:28.492Z","kind":"vo","key":"vo.pt.sheila.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:56:28.824Z","kind":"vo","key":"vo.pt.stuart.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:56:29.043Z","kind":"vo","key":"vo.pt.nino.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:56:29.532Z","kind":"vo","key":"vo.pt.sheila.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:56:29.538Z","kind":"vo","key":"vo.pt.stuart.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:56:29.744Z","kind":"vo","key":"vo.pt.nino.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:56:30.183Z","kind":"vo","key":"vo.pt.stuart.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:56:30.199Z","kind":"vo","key":"vo.pt.sheila.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:56:30.371Z","kind":"vo","key":"vo.pt.nino.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:56:30.833Z","kind":"vo","key":"vo.pt.stuart.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:56:30.909Z","kind":"vo","key":"vo.pt.sheila.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:56:31.180Z","kind":"vo","key":"vo.pt.nino.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:56:31.570Z","kind":"vo","key":"vo.pt.stuart.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:56:31.612Z","kind":"vo","key":"vo.pt.sheila.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:56:32.155Z","kind":"vo","key":"vo.pt.nino.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:56:32.446Z","kind":"vo","key":"vo.pt.sheila.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:56:32.557Z","kind":"vo","key":"vo.pt.stuart.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:56:33.148Z","kind":"vo","key":"vo.pt.nino.piada1","take":1,"model":"eleven_v4","text":"[confident] Camisa 10 em campo, bicho!"}
+{"at":"2026-10-28T21:56:33.474Z","kind":"vo","key":"vo.pt.sheila.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:56:33.585Z","kind":"vo","key":"vo.pt.stuart.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:56:34.169Z","kind":"vo","key":"vo.pt.sheila.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:56:34.295Z","kind":"vo","key":"vo.pt.nino.piada1","take":2,"model":"eleven_v4","text":"[laughing] Camisa 10 em campo, bicho!"}
+{"at":"2026-10-28T21:56:34.830Z","kind":"vo","key":"vo.pt.stuart.piada1","take":1,"model":"eleven_v4","text":"[confident] Pela matemática, você tem 12% de chance."}
+{"at":"2026-10-28T21:56:34.955Z","kind":"vo","key":"vo.pt.sheila.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:56:35.468Z","kind":"vo","key":"vo.pt.nino.piada2","take":1,"model":"eleven_v4","text":"[confident] Eu jogo truco igual jogo bola: no drible!"}
+{"at":"2026-10-28T21:56:35.628Z","kind":"vo","key":"vo.pt.sheila.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:56:36.295Z","kind":"vo","key":"vo.pt.sheila.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:56:36.339Z","kind":"vo","key":"vo.pt.stuart.piada1","take":2,"model":"eleven_v4","text":"[laughing] Pela matemática, você tem 12% de chance."}
+{"at":"2026-10-28T21:56:36.917Z","kind":"vo","key":"vo.pt.nino.piada2","take":2,"model":"eleven_v4","text":"[laughing] Eu jogo truco igual jogo bola: no drible!"}
+{"at":"2026-10-28T21:56:37.251Z","kind":"vo","key":"vo.pt.sheila.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:56:37.682Z","kind":"vo","key":"vo.pt.stuart.piada2","take":1,"model":"eleven_v4","text":"[confident] A filosofia ensina: quem blefa, aprende."}
+{"at":"2026-10-28T21:56:38.135Z","kind":"vo","key":"vo.pt.sheila.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:56:38.424Z","kind":"vo","key":"vo.pt.nino.piada3","take":1,"model":"eleven_v4","text":"[confident] Gol de placa, meu povo!"}
+{"at":"2026-10-28T21:56:39.040Z","kind":"vo","key":"vo.pt.sheila.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:56:39.236Z","kind":"vo","key":"vo.pt.stuart.piada2","take":2,"model":"eleven_v4","text":"[laughing] A filosofia ensina: quem blefa, aprende."}
+{"at":"2026-10-28T21:56:39.600Z","kind":"vo","key":"vo.pt.nino.piada3","take":2,"model":"eleven_v4","text":"[laughing] Gol de placa, meu povo!"}
+{"at":"2026-10-28T21:56:39.922Z","kind":"vo","key":"vo.pt.sheila.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:56:40.552Z","kind":"vo","key":"vo.en.nino.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:56:40.606Z","kind":"vo","key":"vo.pt.stuart.piada3","take":1,"model":"eleven_v4","text":"[confident] Café, ideias e planos... e agora, um truco."}
+{"at":"2026-10-28T21:56:41.212Z","kind":"vo","key":"vo.en.nino.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:56:41.271Z","kind":"vo","key":"vo.pt.sheila.piada1","take":1,"model":"eleven_v4","text":"[confident] Amor, esse jogo é caro, mas eu tô bem acompanhada!"}
+{"at":"2026-10-28T21:56:42.109Z","kind":"vo","key":"vo.en.nino.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:56:42.501Z","kind":"vo","key":"vo.pt.stuart.piada3","take":2,"model":"eleven_v4","text":"[laughing] Café, ideias e planos... e agora, um truco."}
+{"at":"2026-10-28T21:56:42.959Z","kind":"vo","key":"vo.en.nino.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:56:43.001Z","kind":"vo","key":"vo.pt.sheila.piada1","take":2,"model":"eleven_v4","text":"[laughing] Amor, esse jogo é caro, mas eu tô bem acompanhada!"}
+{"at":"2026-10-28T21:56:43.354Z","kind":"vo","key":"vo.en.stuart.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:56:43.897Z","kind":"vo","key":"vo.en.nino.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:56:44.154Z","kind":"vo","key":"vo.en.stuart.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:56:44.386Z","kind":"vo","key":"vo.pt.sheila.piada2","take":1,"model":"eleven_v4","text":"[confident] Bolsa de grife, jogada de rainha!"}
+{"at":"2026-10-28T21:56:44.557Z","kind":"vo","key":"vo.en.nino.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:56:44.949Z","kind":"vo","key":"vo.en.stuart.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:56:45.229Z","kind":"vo","key":"vo.en.nino.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:56:45.608Z","kind":"vo","key":"vo.en.stuart.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:56:45.693Z","kind":"vo","key":"vo.pt.sheila.piada2","take":2,"model":"eleven_v4","text":"[laughing] Bolsa de grife, jogada de rainha!"}
+{"at":"2026-10-28T21:56:45.848Z","kind":"vo","key":"vo.en.nino.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:56:46.534Z","kind":"vo","key":"vo.en.stuart.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:56:46.570Z","kind":"vo","key":"vo.en.nino.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:56:46.908Z","kind":"vo","key":"vo.pt.sheila.piada3","take":1,"model":"eleven_v4","text":"[confident] Ai, quebrou uma unha... e a sua esperança!"}
+{"at":"2026-10-28T21:56:47.335Z","kind":"vo","key":"vo.en.stuart.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:56:47.549Z","kind":"vo","key":"vo.en.nino.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:56:47.969Z","kind":"vo","key":"vo.en.stuart.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:56:48.402Z","kind":"vo","key":"vo.en.nino.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:56:48.845Z","kind":"vo","key":"vo.en.stuart.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:56:48.957Z","kind":"vo","key":"vo.pt.sheila.piada3","take":2,"model":"eleven_v4","text":"[laughing] Ai, quebrou uma unha... e a sua esperança!"}
+{"at":"2026-10-28T21:56:49.562Z","kind":"vo","key":"vo.en.nino.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:56:49.762Z","kind":"vo","key":"vo.en.sheila.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:56:49.763Z","kind":"vo","key":"vo.en.stuart.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:56:50.527Z","kind":"vo","key":"vo.en.sheila.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:56:50.527Z","kind":"vo","key":"vo.en.stuart.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:56:50.527Z","kind":"vo","key":"vo.en.nino.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:56:51.153Z","kind":"vo","key":"vo.en.stuart.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:56:51.159Z","kind":"vo","key":"vo.en.nino.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:56:51.222Z","kind":"vo","key":"vo.en.sheila.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:56:51.867Z","kind":"vo","key":"vo.en.stuart.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:56:51.899Z","kind":"vo","key":"vo.en.nino.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:56:51.919Z","kind":"vo","key":"vo.en.sheila.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:56:52.573Z","kind":"vo","key":"vo.en.sheila.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:56:52.585Z","kind":"vo","key":"vo.en.stuart.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:56:52.592Z","kind":"vo","key":"vo.en.nino.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:56:53.271Z","kind":"vo","key":"vo.en.stuart.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:56:53.304Z","kind":"vo","key":"vo.en.sheila.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:56:53.691Z","kind":"vo","key":"vo.en.nino.piada1","take":1,"model":"eleven_v4","text":"[confident] Number 10 on the pitch, man!"}
+{"at":"2026-10-28T21:56:54.018Z","kind":"vo","key":"vo.en.sheila.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:56:54.127Z","kind":"vo","key":"vo.en.stuart.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:56:54.686Z","kind":"vo","key":"vo.en.sheila.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:56:54.741Z","kind":"vo","key":"vo.en.nino.piada1","take":2,"model":"eleven_v4","text":"[laughing] Number 10 on the pitch, man!"}
+{"at":"2026-10-28T21:56:55.025Z","kind":"vo","key":"vo.en.stuart.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:56:55.373Z","kind":"vo","key":"vo.en.sheila.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:56:55.883Z","kind":"vo","key":"vo.en.nino.piada2","take":1,"model":"eleven_v4","text":"[confident] I play truco like I play football: with a dribble!"}
+{"at":"2026-10-28T21:56:56.040Z","kind":"vo","key":"vo.en.stuart.piada1","take":1,"model":"eleven_v4","text":"[confident] Mathematically, you have a 12% chance."}
+{"at":"2026-10-28T21:56:56.265Z","kind":"vo","key":"vo.en.sheila.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:56:57.174Z","kind":"vo","key":"vo.en.sheila.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:56:57.422Z","kind":"vo","key":"vo.en.stuart.piada1","take":2,"model":"eleven_v4","text":"[laughing] Mathematically, you have a 12% chance."}
+{"at":"2026-10-28T21:56:57.434Z","kind":"vo","key":"vo.en.nino.piada2","take":2,"model":"eleven_v4","text":"[laughing] I play truco like I play football: with a dribble!"}
+{"at":"2026-10-28T21:56:58.002Z","kind":"vo","key":"vo.en.sheila.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:56:58.453Z","kind":"vo","key":"vo.en.nino.piada3","take":1,"model":"eleven_v4","text":"[confident] What a goal, folks!"}
+{"at":"2026-10-28T21:56:58.648Z","kind":"vo","key":"vo.en.stuart.piada2","take":1,"model":"eleven_v4","text":"[confident] Philosophy teaches: who bluffs, learns."}
+{"at":"2026-10-28T21:56:58.753Z","kind":"vo","key":"vo.en.sheila.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:56:59.601Z","kind":"vo","key":"vo.en.sheila.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:56:59.960Z","kind":"vo","key":"vo.en.nino.piada3","take":2,"model":"eleven_v4","text":"[laughing] What a goal, folks!"}
+{"at":"2026-10-28T21:56:59.979Z","kind":"vo","key":"vo.en.stuart.piada2","take":2,"model":"eleven_v4","text":"[laughing] Philosophy teaches: who bluffs, learns."}
+{"at":"2026-10-28T21:57:00.570Z","kind":"vo","key":"vo.en.sheila.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:57:01.313Z","kind":"vo","key":"vo.en.stuart.piada3","take":1,"model":"eleven_v4","text":"[confident] Coffee, ideas and plans... and now, a truco."}
+{"at":"2026-10-28T21:57:01.420Z","kind":"vo","key":"vo.en.sheila.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:57:02.697Z","kind":"vo","key":"vo.en.stuart.piada3","take":2,"model":"eleven_v4","text":"[laughing] Coffee, ideas and plans... and now, a truco."}
+{"at":"2026-10-28T21:57:02.818Z","kind":"vo","key":"vo.en.sheila.piada1","take":1,"model":"eleven_v4","text":"[confident] Darling, this game is expensive, but I'm in good company!"}
+{"at":"2026-10-28T21:57:04.790Z","kind":"vo","key":"vo.en.sheila.piada1","take":2,"model":"eleven_v4","text":"[laughing] Darling, this game is expensive, but I'm in good company!"}
+{"at":"2026-10-28T21:57:05.848Z","kind":"vo","key":"vo.en.sheila.piada2","take":1,"model":"eleven_v4","text":"[confident] Designer bag, queen's play!"}
+{"at":"2026-10-28T21:57:06.953Z","kind":"vo","key":"vo.en.sheila.piada2","take":2,"model":"eleven_v4","text":"[laughing] Designer bag, queen's play!"}
+{"at":"2026-10-28T21:57:08.466Z","kind":"vo","key":"vo.en.sheila.piada3","take":1,"model":"eleven_v4","text":"[confident] Oh, I broke a nail... and your hope!"}
+{"at":"2026-10-28T21:57:10.144Z","kind":"vo","key":"vo.en.sheila.piada3","take":2,"model":"eleven_v4","text":"[laughing] Oh, I broke a nail... and your hope!"}
+{"at":"2026-10-28T21:57:14.218Z","kind":"vo","key":"vo.pt.ze.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:57:15.290Z","kind":"vo","key":"vo.pt.ze.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:57:16.000Z","kind":"vo","key":"vo.pt.ze.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:57:16.654Z","kind":"vo","key":"vo.pt.ze.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:57:17.060Z","kind":"vo","key":"vo.pt.peter.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:57:17.327Z","kind":"vo","key":"vo.pt.ze.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:57:17.842Z","kind":"vo","key":"vo.pt.peter.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:57:18.186Z","kind":"vo","key":"vo.pt.ze.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:57:18.797Z","kind":"vo","key":"vo.pt.peter.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:57:18.915Z","kind":"vo","key":"vo.pt.ze.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:57:19.749Z","kind":"vo","key":"vo.pt.ze.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:57:20.076Z","kind":"vo","key":"vo.pt.peter.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:57:20.626Z","kind":"vo","key":"vo.pt.ze.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:57:21.059Z","kind":"vo","key":"vo.pt.peter.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:57:21.563Z","kind":"vo","key":"vo.pt.ze.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:57:21.758Z","kind":"vo","key":"vo.pt.peter.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:57:22.283Z","kind":"vo","key":"vo.pt.ze.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:57:22.414Z","kind":"vo","key":"vo.pt.peter.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:57:22.884Z","kind":"vo","key":"vo.pt.ze.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:57:23.072Z","kind":"vo","key":"vo.pt.peter.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:57:23.661Z","kind":"vo","key":"vo.pt.ze.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:57:23.815Z","kind":"vo","key":"vo.pt.peter.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:57:24.333Z","kind":"vo","key":"vo.pt.ze.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:57:24.668Z","kind":"vo","key":"vo.pt.peter.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:57:25.424Z","kind":"vo","key":"vo.pt.peter.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:57:25.427Z","kind":"vo","key":"vo.pt.ze.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:57:25.445Z","kind":"vo","key":"vo.pt.valentao.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:57:26.047Z","kind":"vo","key":"vo.pt.peter.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:57:26.096Z","kind":"vo","key":"vo.pt.valentao.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:57:26.363Z","kind":"vo","key":"vo.pt.ze.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:57:26.785Z","kind":"vo","key":"vo.pt.valentao.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:57:26.786Z","kind":"vo","key":"vo.pt.peter.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:57:27.465Z","kind":"vo","key":"vo.pt.valentao.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:57:27.499Z","kind":"vo","key":"vo.pt.peter.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:57:27.555Z","kind":"vo","key":"vo.pt.ze.piada1","take":1,"model":"eleven_v4","text":"[confident] Fiado só amanhã, mas carta é na hora!"}
+{"at":"2026-10-28T21:57:28.472Z","kind":"vo","key":"vo.pt.valentao.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:57:28.692Z","kind":"vo","key":"vo.pt.peter.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:57:29.104Z","kind":"vo","key":"vo.pt.ze.piada1","take":2,"model":"eleven_v4","text":"[laughing] Fiado só amanhã, mas carta é na hora!"}
+{"at":"2026-10-28T21:57:29.113Z","kind":"vo","key":"vo.pt.valentao.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:57:29.609Z","kind":"vo","key":"vo.pt.peter.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:57:30.128Z","kind":"vo","key":"vo.pt.valentao.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:57:30.715Z","kind":"vo","key":"vo.pt.ze.piada2","take":1,"model":"eleven_v4","text":"[confident] Esse truco eu aprendi atrás do balcão."}
+{"at":"2026-10-28T21:57:30.717Z","kind":"vo","key":"vo.pt.peter.piada1","take":1,"model":"eleven_v4","text":"[confident] Hmm... interessante."}
+{"at":"2026-10-28T21:57:31.153Z","kind":"vo","key":"vo.pt.valentao.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:57:31.848Z","kind":"vo","key":"vo.pt.peter.piada1","take":2,"model":"eleven_v4","text":"[laughing] Hmm... interessante."}
+{"at":"2026-10-28T21:57:31.867Z","kind":"vo","key":"vo.pt.valentao.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:57:32.097Z","kind":"vo","key":"vo.pt.ze.piada2","take":2,"model":"eleven_v4","text":"[laughing] Esse truco eu aprendi atrás do balcão."}
+{"at":"2026-10-28T21:57:32.709Z","kind":"vo","key":"vo.pt.valentao.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:57:33.053Z","kind":"vo","key":"vo.pt.peter.piada2","take":1,"model":"eleven_v4","text":"[confident] Não preciso de sinal... eu sinto a sua mão."}
+{"at":"2026-10-28T21:57:33.329Z","kind":"vo","key":"vo.pt.ze.piada3","take":1,"model":"eleven_v4","text":"[confident] Uma gelada por conta da casa, que eu cobro depois!"}
+{"at":"2026-10-28T21:57:33.418Z","kind":"vo","key":"vo.pt.valentao.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:57:34.085Z","kind":"vo","key":"vo.pt.valentao.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:57:34.510Z","kind":"vo","key":"vo.pt.peter.piada2","take":2,"model":"eleven_v4","text":"[laughing] Não preciso de sinal... eu sinto a sua mão."}
+{"at":"2026-10-28T21:57:34.799Z","kind":"vo","key":"vo.pt.valentao.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:57:35.098Z","kind":"vo","key":"vo.pt.ze.piada3","take":2,"model":"eleven_v4","text":"[laughing] Uma gelada por conta da casa, que eu cobro depois!"}
+{"at":"2026-10-28T21:57:35.439Z","kind":"vo","key":"vo.pt.peter.piada3","take":1,"model":"eleven_v4","text":"[confident] Silêncio também é jogada."}
+{"at":"2026-10-28T21:57:35.477Z","kind":"vo","key":"vo.pt.valentao.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:57:35.785Z","kind":"vo","key":"vo.en.ze.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:57:36.444Z","kind":"vo","key":"vo.en.ze.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:57:36.472Z","kind":"vo","key":"vo.pt.valentao.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:57:36.532Z","kind":"vo","key":"vo.pt.peter.piada3","take":2,"model":"eleven_v4","text":"[laughing] Silêncio também é jogada."}
+{"at":"2026-10-28T21:57:37.154Z","kind":"vo","key":"vo.en.peter.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:57:37.226Z","kind":"vo","key":"vo.en.ze.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:57:37.528Z","kind":"vo","key":"vo.pt.valentao.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:57:37.842Z","kind":"vo","key":"vo.en.peter.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:57:37.934Z","kind":"vo","key":"vo.en.ze.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:57:38.544Z","kind":"vo","key":"vo.en.peter.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:57:38.583Z","kind":"vo","key":"vo.pt.valentao.piada1","take":1,"model":"eleven_v4","text":"[confident] Aqui quem manda sou eu e o meu truco!"}
+{"at":"2026-10-28T21:57:38.653Z","kind":"vo","key":"vo.en.ze.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:57:39.291Z","kind":"vo","key":"vo.en.peter.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:57:39.510Z","kind":"vo","key":"vo.en.ze.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:57:39.998Z","kind":"vo","key":"vo.pt.valentao.piada1","take":2,"model":"eleven_v4","text":"[laughing] Aqui quem manda sou eu e o meu truco!"}
+{"at":"2026-10-28T21:57:40.005Z","kind":"vo","key":"vo.en.peter.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:57:40.243Z","kind":"vo","key":"vo.en.ze.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:57:41.030Z","kind":"vo","key":"vo.en.peter.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:57:41.039Z","kind":"vo","key":"vo.pt.valentao.piada2","take":1,"model":"eleven_v4","text":"[confident] Tá olhando o quê? Joga logo!"}
+{"at":"2026-10-28T21:57:41.042Z","kind":"vo","key":"vo.en.ze.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:57:41.847Z","kind":"vo","key":"vo.en.peter.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:57:41.847Z","kind":"vo","key":"vo.en.ze.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:57:42.273Z","kind":"vo","key":"vo.pt.valentao.piada2","take":2,"model":"eleven_v4","text":"[laughing] Tá olhando o quê? Joga logo!"}
+{"at":"2026-10-28T21:57:43.022Z","kind":"vo","key":"vo.en.peter.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:57:43.022Z","kind":"vo","key":"vo.en.ze.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:57:43.364Z","kind":"vo","key":"vo.pt.valentao.piada3","take":1,"model":"eleven_v4","text":"[confident] Meu punho é mais forte que a sua carta!"}
+{"at":"2026-10-28T21:57:43.726Z","kind":"vo","key":"vo.en.peter.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:57:43.742Z","kind":"vo","key":"vo.en.ze.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:57:44.436Z","kind":"vo","key":"vo.en.ze.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:57:44.620Z","kind":"vo","key":"vo.pt.valentao.piada3","take":2,"model":"eleven_v4","text":"[laughing] Meu punho é mais forte que a sua carta!"}
+{"at":"2026-10-28T21:57:44.663Z","kind":"vo","key":"vo.en.peter.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:57:45.258Z","kind":"vo","key":"vo.en.ze.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:57:45.281Z","kind":"vo","key":"vo.en.valentao.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:57:45.330Z","kind":"vo","key":"vo.en.peter.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:57:46.148Z","kind":"vo","key":"vo.en.valentao.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:57:46.148Z","kind":"vo","key":"vo.en.ze.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:57:46.157Z","kind":"vo","key":"vo.en.peter.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:57:46.727Z","kind":"vo","key":"vo.en.peter.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:57:46.874Z","kind":"vo","key":"vo.en.ze.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:57:46.889Z","kind":"vo","key":"vo.en.valentao.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:57:47.401Z","kind":"vo","key":"vo.en.peter.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:57:47.506Z","kind":"vo","key":"vo.en.valentao.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:57:47.584Z","kind":"vo","key":"vo.en.ze.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:57:48.213Z","kind":"vo","key":"vo.en.peter.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:57:48.213Z","kind":"vo","key":"vo.en.valentao.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:57:48.898Z","kind":"vo","key":"vo.en.valentao.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:57:48.898Z","kind":"vo","key":"vo.en.ze.piada1","take":1,"model":"eleven_v4","text":"[confident] Credit is for tomorrow, but cards are for now!"}
+{"at":"2026-10-28T21:57:48.937Z","kind":"vo","key":"vo.en.peter.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:57:49.675Z","kind":"vo","key":"vo.en.valentao.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:57:49.891Z","kind":"vo","key":"vo.en.peter.piada1","take":1,"model":"eleven_v4","text":"[confident] Hmm... interesting."}
+{"at":"2026-10-28T21:57:50.327Z","kind":"vo","key":"vo.en.ze.piada1","take":2,"model":"eleven_v4","text":"[laughing] Credit is for tomorrow, but cards are for now!"}
+{"at":"2026-10-28T21:57:50.337Z","kind":"vo","key":"vo.en.valentao.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:57:51.065Z","kind":"vo","key":"vo.en.peter.piada1","take":2,"model":"eleven_v4","text":"[laughing] Hmm... interesting."}
+{"at":"2026-10-28T21:57:51.340Z","kind":"vo","key":"vo.en.ze.piada2","take":1,"model":"eleven_v4","text":"[confident] I learned this truco behind the counter."}
+{"at":"2026-10-28T21:57:51.341Z","kind":"vo","key":"vo.en.valentao.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:57:52.220Z","kind":"vo","key":"vo.en.peter.piada2","take":1,"model":"eleven_v4","text":"[confident] I need no signal... I feel your hand."}
+{"at":"2026-10-28T21:57:52.467Z","kind":"vo","key":"vo.en.ze.piada2","take":2,"model":"eleven_v4","text":"[laughing] I learned this truco behind the counter."}
+{"at":"2026-10-28T21:57:52.536Z","kind":"vo","key":"vo.en.valentao.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:57:53.424Z","kind":"vo","key":"vo.en.valentao.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:57:53.442Z","kind":"vo","key":"vo.en.peter.piada2","take":2,"model":"eleven_v4","text":"[laughing] I need no signal... I feel your hand."}
+{"at":"2026-10-28T21:57:53.613Z","kind":"vo","key":"vo.en.ze.piada3","take":1,"model":"eleven_v4","text":"[confident] A cold one on the house, I'll bill you later!"}
+{"at":"2026-10-28T21:57:54.229Z","kind":"vo","key":"vo.en.valentao.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:57:54.275Z","kind":"vo","key":"vo.en.peter.piada3","take":1,"model":"eleven_v4","text":"[confident] Silence is also a play."}
+{"at":"2026-10-28T21:57:54.824Z","kind":"vo","key":"vo.en.ze.piada3","take":2,"model":"eleven_v4","text":"[laughing] A cold one on the house, I'll bill you later!"}
+{"at":"2026-10-28T21:57:54.951Z","kind":"vo","key":"vo.en.valentao.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:57:55.592Z","kind":"vo","key":"vo.en.peter.piada3","take":2,"model":"eleven_v4","text":"[laughing] Silence is also a play."}
+{"at":"2026-10-28T21:57:55.604Z","kind":"vo","key":"vo.en.valentao.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:57:56.295Z","kind":"vo","key":"vo.en.valentao.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:57:57.160Z","kind":"vo","key":"vo.en.valentao.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:57:58.237Z","kind":"vo","key":"vo.en.valentao.piada1","take":1,"model":"eleven_v4","text":"[confident] I run this place, and so does my truco!"}
+{"at":"2026-10-28T21:57:59.544Z","kind":"vo","key":"vo.en.valentao.piada1","take":2,"model":"eleven_v4","text":"[laughing] I run this place, and so does my truco!"}
+{"at":"2026-10-28T21:58:00.575Z","kind":"vo","key":"vo.en.valentao.piada2","take":1,"model":"eleven_v4","text":"[confident] What are you looking at? Play already!"}
+{"at":"2026-10-28T21:58:02.005Z","kind":"vo","key":"vo.en.valentao.piada2","take":2,"model":"eleven_v4","text":"[laughing] What are you looking at? Play already!"}
+{"at":"2026-10-28T21:58:03.475Z","kind":"vo","key":"vo.en.valentao.piada3","take":1,"model":"eleven_v4","text":"[confident] My fist is stronger than your card!"}
+{"at":"2026-10-28T21:58:04.725Z","kind":"vo","key":"vo.en.valentao.piada3","take":2,"model":"eleven_v4","text":"[laughing] My fist is stronger than your card!"}
+{"at":"2026-10-28T21:58:10.066Z","kind":"vo","key":"vo.pt.mia.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:58:10.908Z","kind":"vo","key":"vo.pt.mia.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:58:12.039Z","kind":"vo","key":"vo.pt.sortuda.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:58:12.040Z","kind":"vo","key":"vo.pt.mia.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:58:12.738Z","kind":"vo","key":"vo.pt.mia.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:58:12.738Z","kind":"vo","key":"vo.pt.sortuda.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:58:13.445Z","kind":"vo","key":"vo.pt.mia.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:58:13.476Z","kind":"vo","key":"vo.pt.sortuda.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:58:14.489Z","kind":"vo","key":"vo.pt.sortuda.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:58:14.509Z","kind":"vo","key":"vo.pt.mia.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:58:15.180Z","kind":"vo","key":"vo.pt.mia.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:58:15.316Z","kind":"vo","key":"vo.pt.sortuda.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:58:16.130Z","kind":"vo","key":"vo.pt.sortuda.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:58:16.130Z","kind":"vo","key":"vo.pt.mia.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:58:16.850Z","kind":"vo","key":"vo.pt.sortuda.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:58:16.904Z","kind":"vo","key":"vo.pt.mia.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:58:17.616Z","kind":"vo","key":"vo.pt.sortuda.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:58:17.750Z","kind":"vo","key":"vo.pt.mia.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:58:18.312Z","kind":"vo","key":"vo.pt.sortuda.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:58:18.468Z","kind":"vo","key":"vo.pt.mia.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:58:19.102Z","kind":"vo","key":"vo.pt.mia.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:58:19.171Z","kind":"vo","key":"vo.pt.sortuda.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:58:19.768Z","kind":"vo","key":"vo.pt.mia.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:58:19.787Z","kind":"vo","key":"vo.pt.sortuda.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:58:20.491Z","kind":"vo","key":"vo.pt.sortuda.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:58:20.500Z","kind":"vo","key":"vo.pt.mia.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:58:20.858Z","kind":"vo","key":"vo.pt.cartomante.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:58:21.156Z","kind":"vo","key":"vo.pt.sortuda.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:58:21.406Z","kind":"vo","key":"vo.pt.mia.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:58:21.538Z","kind":"vo","key":"vo.pt.cartomante.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:58:21.889Z","kind":"vo","key":"vo.pt.sortuda.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:58:22.283Z","kind":"vo","key":"vo.pt.cartomante.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:58:22.537Z","kind":"vo","key":"vo.pt.mia.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:58:22.733Z","kind":"vo","key":"vo.pt.sortuda.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:58:22.953Z","kind":"vo","key":"vo.pt.cartomante.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:58:23.670Z","kind":"vo","key":"vo.pt.cartomante.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:58:23.671Z","kind":"vo","key":"vo.pt.sortuda.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:58:23.810Z","kind":"vo","key":"vo.pt.mia.piada1","take":1,"model":"eleven_v4","text":"[confident] Treino pesado, jogo leve, vitória na mão!"}
+{"at":"2026-10-28T21:58:24.267Z","kind":"vo","key":"vo.pt.cartomante.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:58:25.127Z","kind":"vo","key":"vo.pt.sortuda.piada1","take":1,"model":"eleven_v4","text":"[confident] Sorte? Não, é talento... com um pouquinho de sorte."}
+{"at":"2026-10-28T21:58:25.162Z","kind":"vo","key":"vo.pt.cartomante.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:58:25.354Z","kind":"vo","key":"vo.pt.mia.piada1","take":2,"model":"eleven_v4","text":"[laughing] Treino pesado, jogo leve, vitória na mão!"}
+{"at":"2026-10-28T21:58:25.831Z","kind":"vo","key":"vo.pt.cartomante.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:58:26.538Z","kind":"vo","key":"vo.pt.mia.piada2","take":1,"model":"eleven_v4","text":"[confident] Pode olhar, mas só quem aguenta o peso vence."}
+{"at":"2026-10-28T21:58:26.539Z","kind":"vo","key":"vo.pt.cartomante.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:58:26.842Z","kind":"vo","key":"vo.pt.sortuda.piada1","take":2,"model":"eleven_v4","text":"[laughing] Sorte? Não, é talento... com um pouquinho de sorte."}
+{"at":"2026-10-28T21:58:27.410Z","kind":"vo","key":"vo.pt.cartomante.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:58:27.844Z","kind":"vo","key":"vo.pt.sortuda.piada2","take":1,"model":"eleven_v4","text":"[confident] Hoje a manilha é minha, eu já sei."}
+{"at":"2026-10-28T21:58:28.064Z","kind":"vo","key":"vo.pt.cartomante.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:58:28.065Z","kind":"vo","key":"vo.pt.mia.piada2","take":2,"model":"eleven_v4","text":"[laughing] Pode olhar, mas só quem aguenta o peso vence."}
+{"at":"2026-10-28T21:58:28.706Z","kind":"vo","key":"vo.pt.cartomante.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:58:28.988Z","kind":"vo","key":"vo.pt.sortuda.piada2","take":2,"model":"eleven_v4","text":"[laughing] Hoje a manilha é minha, eu já sei."}
+{"at":"2026-10-28T21:58:29.240Z","kind":"vo","key":"vo.pt.mia.piada3","take":1,"model":"eleven_v4","text":"[confident] Meu bíceps trabalha, minha cartada também!"}
+{"at":"2026-10-28T21:58:29.383Z","kind":"vo","key":"vo.pt.cartomante.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:58:30.004Z","kind":"vo","key":"vo.pt.sortuda.piada3","take":1,"model":"eleven_v4","text":"[confident] Sopra a ficha que dá sorte!"}
+{"at":"2026-10-28T21:58:30.080Z","kind":"vo","key":"vo.pt.cartomante.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:58:30.820Z","kind":"vo","key":"vo.pt.mia.piada3","take":2,"model":"eleven_v4","text":"[laughing] Meu bíceps trabalha, minha cartada também!"}
+{"at":"2026-10-28T21:58:31.038Z","kind":"vo","key":"vo.pt.cartomante.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:58:31.271Z","kind":"vo","key":"vo.pt.sortuda.piada3","take":2,"model":"eleven_v4","text":"[laughing] Sopra a ficha que dá sorte!"}
+{"at":"2026-10-28T21:58:31.883Z","kind":"vo","key":"vo.en.mia.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:58:32.001Z","kind":"vo","key":"vo.en.sortuda.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:58:32.432Z","kind":"vo","key":"vo.pt.cartomante.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:58:32.809Z","kind":"vo","key":"vo.en.mia.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:58:32.916Z","kind":"vo","key":"vo.en.sortuda.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:58:33.611Z","kind":"vo","key":"vo.pt.cartomante.piada1","take":1,"model":"eleven_v4","text":"[confident] Eu vi esse seu truco antes de você nascer!"}
+{"at":"2026-10-28T21:58:33.640Z","kind":"vo","key":"vo.en.mia.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:58:33.648Z","kind":"vo","key":"vo.en.sortuda.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:58:34.324Z","kind":"vo","key":"vo.en.sortuda.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:58:34.354Z","kind":"vo","key":"vo.en.mia.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:58:34.887Z","kind":"vo","key":"vo.pt.cartomante.piada1","take":2,"model":"eleven_v4","text":"[laughing] Eu vi esse seu truco antes de você nascer!"}
+{"at":"2026-10-28T21:58:35.061Z","kind":"vo","key":"vo.en.sortuda.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:58:35.063Z","kind":"vo","key":"vo.en.mia.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:58:35.712Z","kind":"vo","key":"vo.en.mia.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:58:35.745Z","kind":"vo","key":"vo.en.sortuda.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:58:35.993Z","kind":"vo","key":"vo.pt.cartomante.piada2","take":1,"model":"eleven_v4","text":"[confident] As cartas falam, e hoje elas riem de você."}
+{"at":"2026-10-28T21:58:36.403Z","kind":"vo","key":"vo.en.mia.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:58:36.430Z","kind":"vo","key":"vo.en.sortuda.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:58:37.180Z","kind":"vo","key":"vo.en.mia.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:58:37.181Z","kind":"vo","key":"vo.en.sortuda.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:58:37.645Z","kind":"vo","key":"vo.pt.cartomante.piada2","take":2,"model":"eleven_v4","text":"[laughing] As cartas falam, e hoje elas riem de você."}
+{"at":"2026-10-28T21:58:37.965Z","kind":"vo","key":"vo.en.mia.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:58:38.119Z","kind":"vo","key":"vo.en.sortuda.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:58:38.823Z","kind":"vo","key":"vo.en.mia.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:58:38.828Z","kind":"vo","key":"vo.pt.cartomante.piada3","take":1,"model":"eleven_v4","text":"[confident] A vira tá escondida, mas o seu medo não!"}
+{"at":"2026-10-28T21:58:38.977Z","kind":"vo","key":"vo.en.sortuda.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:58:39.468Z","kind":"vo","key":"vo.en.mia.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:58:39.641Z","kind":"vo","key":"vo.en.sortuda.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:58:40.103Z","kind":"vo","key":"vo.en.mia.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:58:40.178Z","kind":"vo","key":"vo.pt.cartomante.piada3","take":2,"model":"eleven_v4","text":"[laughing] A vira tá escondida, mas o seu medo não!"}
+{"at":"2026-10-28T21:58:40.306Z","kind":"vo","key":"vo.en.sortuda.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:58:40.780Z","kind":"vo","key":"vo.en.mia.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:58:41.078Z","kind":"vo","key":"vo.en.sortuda.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:58:41.078Z","kind":"vo","key":"vo.en.cartomante.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:58:41.824Z","kind":"vo","key":"vo.en.mia.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:58:41.825Z","kind":"vo","key":"vo.en.cartomante.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:58:41.934Z","kind":"vo","key":"vo.en.sortuda.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:58:42.706Z","kind":"vo","key":"vo.en.cartomante.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:58:42.706Z","kind":"vo","key":"vo.en.mia.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:58:42.920Z","kind":"vo","key":"vo.en.sortuda.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:58:43.686Z","kind":"vo","key":"vo.en.cartomante.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:58:43.686Z","kind":"vo","key":"vo.en.mia.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:58:43.918Z","kind":"vo","key":"vo.en.sortuda.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:58:44.356Z","kind":"vo","key":"vo.en.cartomante.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:58:44.960Z","kind":"vo","key":"vo.en.mia.piada1","take":1,"model":"eleven_v4","text":"[confident] Heavy workout, light game, victory in hand!"}
+{"at":"2026-10-28T21:58:45.211Z","kind":"vo","key":"vo.en.cartomante.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:58:45.359Z","kind":"vo","key":"vo.en.sortuda.piada1","take":1,"model":"eleven_v4","text":"[confident] Luck? No, it's talent... with a little luck."}
+{"at":"2026-10-28T21:58:46.007Z","kind":"vo","key":"vo.en.cartomante.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:58:46.278Z","kind":"vo","key":"vo.en.mia.piada1","take":2,"model":"eleven_v4","text":"[laughing] Heavy workout, light game, victory in hand!"}
+{"at":"2026-10-28T21:58:46.736Z","kind":"vo","key":"vo.en.cartomante.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:58:46.807Z","kind":"vo","key":"vo.en.sortuda.piada1","take":2,"model":"eleven_v4","text":"[laughing] Luck? No, it's talent... with a little luck."}
+{"at":"2026-10-28T21:58:47.274Z","kind":"vo","key":"vo.en.mia.piada2","take":1,"model":"eleven_v4","text":"[confident] Go ahead and look, only the strong win."}
+{"at":"2026-10-28T21:58:47.527Z","kind":"vo","key":"vo.en.cartomante.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:58:47.958Z","kind":"vo","key":"vo.en.sortuda.piada2","take":1,"model":"eleven_v4","text":"[confident] Today the manilha is mine, I just know."}
+{"at":"2026-10-28T21:58:48.395Z","kind":"vo","key":"vo.en.cartomante.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:58:48.505Z","kind":"vo","key":"vo.en.mia.piada2","take":2,"model":"eleven_v4","text":"[laughing] Go ahead and look, only the strong win."}
+{"at":"2026-10-28T21:58:49.199Z","kind":"vo","key":"vo.en.cartomante.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:58:49.263Z","kind":"vo","key":"vo.en.sortuda.piada2","take":2,"model":"eleven_v4","text":"[laughing] Today the manilha is mine, I just know."}
+{"at":"2026-10-28T21:58:49.575Z","kind":"vo","key":"vo.en.mia.piada3","take":1,"model":"eleven_v4","text":"[confident] My biceps work, and so does my play!"}
+{"at":"2026-10-28T21:58:49.860Z","kind":"vo","key":"vo.en.cartomante.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:58:50.232Z","kind":"vo","key":"vo.en.sortuda.piada3","take":1,"model":"eleven_v4","text":"[confident] Blow on the chip, it brings luck!"}
+{"at":"2026-10-28T21:58:50.491Z","kind":"vo","key":"vo.en.cartomante.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:58:50.805Z","kind":"vo","key":"vo.en.mia.piada3","take":2,"model":"eleven_v4","text":"[laughing] My biceps work, and so does my play!"}
+{"at":"2026-10-28T21:58:51.165Z","kind":"vo","key":"vo.en.cartomante.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:58:51.295Z","kind":"vo","key":"vo.en.sortuda.piada3","take":2,"model":"eleven_v4","text":"[laughing] Blow on the chip, it brings luck!"}
+{"at":"2026-10-28T21:58:52.016Z","kind":"vo","key":"vo.en.cartomante.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:58:52.757Z","kind":"vo","key":"vo.en.cartomante.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:58:54.129Z","kind":"vo","key":"vo.en.cartomante.piada1","take":1,"model":"eleven_v4","text":"[confident] I saw this truco of yours before you were born!"}
+{"at":"2026-10-28T21:58:55.403Z","kind":"vo","key":"vo.en.cartomante.piada1","take":2,"model":"eleven_v4","text":"[laughing] I saw this truco of yours before you were born!"}
+{"at":"2026-10-28T21:58:56.495Z","kind":"vo","key":"vo.en.cartomante.piada2","take":1,"model":"eleven_v4","text":"[confident] The cards speak, and today they laugh at you."}
+{"at":"2026-10-28T21:58:57.982Z","kind":"vo","key":"vo.en.cartomante.piada2","take":2,"model":"eleven_v4","text":"[laughing] The cards speak, and today they laugh at you."}
+{"at":"2026-10-28T21:58:59.310Z","kind":"vo","key":"vo.en.cartomante.piada3","take":1,"model":"eleven_v4","text":"[confident] The vira is hidden, but your fear is not!"}
+{"at":"2026-10-28T21:59:00.875Z","kind":"vo","key":"vo.en.cartomante.piada3","take":2,"model":"eleven_v4","text":"[laughing] The vira is hidden, but your fear is not!"}
+{"at":"2026-10-28T21:59:04.687Z","kind":"vo","key":"vo.pt.chico.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:59:05.516Z","kind":"vo","key":"vo.pt.chico.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:59:06.359Z","kind":"vo","key":"vo.pt.chico.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:59:07.083Z","kind":"vo","key":"vo.pt.chico.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:59:07.702Z","kind":"vo","key":"vo.pt.reiDoTruco.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:59:07.779Z","kind":"vo","key":"vo.pt.chico.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:59:08.368Z","kind":"vo","key":"vo.pt.reiDoTruco.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:59:08.503Z","kind":"vo","key":"vo.pt.chico.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:59:09.016Z","kind":"vo","key":"vo.pt.reiDoTruco.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:59:09.169Z","kind":"vo","key":"vo.pt.chico.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:59:09.897Z","kind":"vo","key":"vo.pt.reiDoTruco.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:59:10.115Z","kind":"vo","key":"vo.pt.chico.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:59:10.699Z","kind":"vo","key":"vo.pt.reiDoTruco.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:59:10.752Z","kind":"vo","key":"vo.pt.chico.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:59:11.364Z","kind":"vo","key":"vo.pt.reiDoTruco.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:59:11.586Z","kind":"vo","key":"vo.pt.chico.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:59:12.098Z","kind":"vo","key":"vo.pt.reiDoTruco.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:59:12.255Z","kind":"vo","key":"vo.pt.chico.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:59:12.947Z","kind":"vo","key":"vo.pt.chico.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:59:12.947Z","kind":"vo","key":"vo.pt.reiDoTruco.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:59:14.007Z","kind":"vo","key":"vo.pt.chico.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:59:14.007Z","kind":"vo","key":"vo.pt.reiDoTruco.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:59:14.803Z","kind":"vo","key":"vo.pt.chico.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:59:14.908Z","kind":"vo","key":"vo.pt.reiDoTruco.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:59:15.700Z","kind":"vo","key":"vo.pt.reiDoTruco.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:59:15.700Z","kind":"vo","key":"vo.pt.juiz.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:59:15.815Z","kind":"vo","key":"vo.pt.chico.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:59:16.383Z","kind":"vo","key":"vo.pt.juiz.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:59:16.383Z","kind":"vo","key":"vo.pt.reiDoTruco.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:59:16.689Z","kind":"vo","key":"vo.pt.chico.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:59:17.225Z","kind":"vo","key":"vo.pt.juiz.seis","take":1,"model":"eleven_v4","text":"[shouting] SEIS!"}
+{"at":"2026-10-28T21:59:17.226Z","kind":"vo","key":"vo.pt.reiDoTruco.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:59:17.683Z","kind":"vo","key":"vo.pt.chico.piada1","take":1,"model":"eleven_v4","text":"[confident] Peixe grande não cai em anzol pequeno!"}
+{"at":"2026-10-28T21:59:17.897Z","kind":"vo","key":"vo.pt.juiz.seis","take":2,"model":"eleven_v4","text":"[defiant] SEIS!"}
+{"at":"2026-10-28T21:59:17.940Z","kind":"vo","key":"vo.pt.reiDoTruco.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:59:18.735Z","kind":"vo","key":"vo.pt.juiz.nove","take":1,"model":"eleven_v4","text":"[shouting] NOVE!"}
+{"at":"2026-10-28T21:59:18.915Z","kind":"vo","key":"vo.pt.reiDoTruco.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:59:18.915Z","kind":"vo","key":"vo.pt.chico.piada1","take":2,"model":"eleven_v4","text":"[laughing] Peixe grande não cai em anzol pequeno!"}
+{"at":"2026-10-28T21:59:19.383Z","kind":"vo","key":"vo.pt.juiz.nove","take":2,"model":"eleven_v4","text":"[confident] NOVE!"}
+{"at":"2026-10-28T21:59:19.963Z","kind":"vo","key":"vo.pt.reiDoTruco.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:59:20.180Z","kind":"vo","key":"vo.pt.chico.piada2","take":1,"model":"eleven_v4","text":"[confident] Pode vir, que o chapéu dá sorte!"}
+{"at":"2026-10-28T21:59:20.187Z","kind":"vo","key":"vo.pt.juiz.doze","take":1,"model":"eleven_v4","text":"[shouting] DOZE!"}
+{"at":"2026-10-28T21:59:21.071Z","kind":"vo","key":"vo.pt.juiz.doze","take":2,"model":"eleven_v4","text":"[triumphant] DOZE!"}
+{"at":"2026-10-28T21:59:21.072Z","kind":"vo","key":"vo.pt.reiDoTruco.piada1","take":1,"model":"eleven_v4","text":"[confident] Eu era rei antes de vocês nascerem."}
+{"at":"2026-10-28T21:59:21.311Z","kind":"vo","key":"vo.pt.chico.piada2","take":2,"model":"eleven_v4","text":"[laughing] Pode vir, que o chapéu dá sorte!"}
+{"at":"2026-10-28T21:59:21.781Z","kind":"vo","key":"vo.pt.juiz.corre","take":1,"model":"eleven_v4","text":"[disappointed] Tô fora!"}
+{"at":"2026-10-28T21:59:22.450Z","kind":"vo","key":"vo.pt.reiDoTruco.piada1","take":2,"model":"eleven_v4","text":"[laughing] Eu era rei antes de vocês nascerem."}
+{"at":"2026-10-28T21:59:22.550Z","kind":"vo","key":"vo.pt.juiz.corre","take":2,"model":"eleven_v4","text":"[sighs] Tô fora!"}
+{"at":"2026-10-28T21:59:22.551Z","kind":"vo","key":"vo.pt.chico.piada3","take":1,"model":"eleven_v4","text":"[confident] Tô só no palito, esperando a sua jogada."}
+{"at":"2026-10-28T21:59:23.211Z","kind":"vo","key":"vo.pt.juiz.bora","take":1,"model":"eleven_v4","text":"[excited] Bora!"}
+{"at":"2026-10-28T21:59:23.850Z","kind":"vo","key":"vo.pt.chico.piada3","take":2,"model":"eleven_v4","text":"[laughing] Tô só no palito, esperando a sua jogada."}
+{"at":"2026-10-28T21:59:23.888Z","kind":"vo","key":"vo.pt.reiDoTruco.piada2","take":1,"model":"eleven_v4","text":"[confident] A coroa não cai, só muda de cabeça... e hoje é a minha."}
+{"at":"2026-10-28T21:59:24.049Z","kind":"vo","key":"vo.pt.juiz.bora","take":2,"model":"eleven_v4","text":"[defiant] Bora!"}
+{"at":"2026-10-28T21:59:24.809Z","kind":"vo","key":"vo.en.chico.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:59:25.030Z","kind":"vo","key":"vo.pt.juiz.ver","take":1,"model":"eleven_v4","text":"[confident] Quero ver!"}
+{"at":"2026-10-28T21:59:25.573Z","kind":"vo","key":"vo.en.chico.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:59:25.765Z","kind":"vo","key":"vo.pt.juiz.ver","take":2,"model":"eleven_v4","text":"[defiant] Quero ver!"}
+{"at":"2026-10-28T21:59:25.781Z","kind":"vo","key":"vo.pt.reiDoTruco.piada2","take":2,"model":"eleven_v4","text":"[laughing] A coroa não cai, só muda de cabeça... e hoje é a minha."}
+{"at":"2026-10-28T21:59:26.374Z","kind":"vo","key":"vo.en.chico.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:59:26.594Z","kind":"vo","key":"vo.pt.juiz.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:59:27.108Z","kind":"vo","key":"vo.en.chico.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:59:27.108Z","kind":"vo","key":"vo.pt.reiDoTruco.piada3","take":1,"model":"eleven_v4","text":"[confident] Respeito se conquista, truco se cobra."}
+{"at":"2026-10-28T21:59:27.757Z","kind":"vo","key":"vo.pt.juiz.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] Tá de sacanagem comigo!"}
+{"at":"2026-10-28T21:59:27.973Z","kind":"vo","key":"vo.en.chico.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:59:28.501Z","kind":"vo","key":"vo.pt.reiDoTruco.piada3","take":2,"model":"eleven_v4","text":"[laughing] Respeito se conquista, truco se cobra."}
+{"at":"2026-10-28T21:59:28.727Z","kind":"vo","key":"vo.en.chico.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:59:28.871Z","kind":"vo","key":"vo.pt.juiz.piada1","take":1,"model":"eleven_v4","text":"[confident] Ordem na mesa! Truco é coisa séria!"}
+{"at":"2026-10-28T21:59:29.213Z","kind":"vo","key":"vo.en.reiDoTruco.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:59:29.407Z","kind":"vo","key":"vo.en.chico.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:59:29.873Z","kind":"vo","key":"vo.en.reiDoTruco.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:59:30.133Z","kind":"vo","key":"vo.en.chico.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:59:30.319Z","kind":"vo","key":"vo.pt.juiz.piada1","take":2,"model":"eleven_v4","text":"[laughing] Ordem na mesa! Truco é coisa séria!"}
+{"at":"2026-10-28T21:59:30.898Z","kind":"vo","key":"vo.en.reiDoTruco.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:59:31.204Z","kind":"vo","key":"vo.en.chico.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:59:31.204Z","kind":"vo","key":"vo.pt.juiz.piada2","take":1,"model":"eleven_v4","text":"[confident] Condenado a perder a mão."}
+{"at":"2026-10-28T21:59:31.630Z","kind":"vo","key":"vo.en.reiDoTruco.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:59:32.050Z","kind":"vo","key":"vo.en.chico.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:59:32.227Z","kind":"vo","key":"vo.pt.juiz.piada2","take":2,"model":"eleven_v4","text":"[laughing] Condenado a perder a mão."}
+{"at":"2026-10-28T21:59:32.336Z","kind":"vo","key":"vo.en.reiDoTruco.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:59:32.772Z","kind":"vo","key":"vo.en.chico.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:59:33.001Z","kind":"vo","key":"vo.en.reiDoTruco.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:59:33.243Z","kind":"vo","key":"vo.pt.juiz.piada3","take":1,"model":"eleven_v4","text":"[confident] Silêncio! O martelo já decidiu."}
+{"at":"2026-10-28T21:59:33.431Z","kind":"vo","key":"vo.en.chico.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:59:33.767Z","kind":"vo","key":"vo.en.reiDoTruco.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:59:34.159Z","kind":"vo","key":"vo.en.chico.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:59:34.457Z","kind":"vo","key":"vo.en.reiDoTruco.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:59:35.030Z","kind":"vo","key":"vo.pt.juiz.piada3","take":2,"model":"eleven_v4","text":"[laughing] Silêncio! O martelo já decidiu."}
+{"at":"2026-10-28T21:59:35.033Z","kind":"vo","key":"vo.en.chico.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:59:35.204Z","kind":"vo","key":"vo.en.reiDoTruco.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:59:35.946Z","kind":"vo","key":"vo.en.juiz.truco","take":1,"model":"eleven_v4","text":"[shouting] TRUCO!"}
+{"at":"2026-10-28T21:59:36.052Z","kind":"vo","key":"vo.en.chico.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:59:36.276Z","kind":"vo","key":"vo.en.reiDoTruco.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:59:36.818Z","kind":"vo","key":"vo.en.juiz.truco","take":2,"model":"eleven_v4","text":"[excited] TRUCO!"}
+{"at":"2026-10-28T21:59:37.042Z","kind":"vo","key":"vo.en.reiDoTruco.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:59:37.042Z","kind":"vo","key":"vo.en.chico.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:59:37.741Z","kind":"vo","key":"vo.en.juiz.seis","take":1,"model":"eleven_v4","text":"[shouting] SIX!"}
+{"at":"2026-10-28T21:59:38.010Z","kind":"vo","key":"vo.en.reiDoTruco.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:59:38.344Z","kind":"vo","key":"vo.en.chico.piada1","take":1,"model":"eleven_v4","text":"[confident] Big fish don't bite small hooks!"}
+{"at":"2026-10-28T21:59:38.890Z","kind":"vo","key":"vo.en.juiz.seis","take":2,"model":"eleven_v4","text":"[defiant] SIX!"}
+{"at":"2026-10-28T21:59:39.004Z","kind":"vo","key":"vo.en.reiDoTruco.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:59:39.460Z","kind":"vo","key":"vo.en.chico.piada1","take":2,"model":"eleven_v4","text":"[laughing] Big fish don't bite small hooks!"}
+{"at":"2026-10-28T21:59:39.594Z","kind":"vo","key":"vo.en.juiz.nove","take":1,"model":"eleven_v4","text":"[shouting] NINE!"}
+{"at":"2026-10-28T21:59:39.983Z","kind":"vo","key":"vo.en.reiDoTruco.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:59:40.405Z","kind":"vo","key":"vo.en.chico.piada2","take":1,"model":"eleven_v4","text":"[confident] Come on, the hat is lucky!"}
+{"at":"2026-10-28T21:59:40.405Z","kind":"vo","key":"vo.en.juiz.nove","take":2,"model":"eleven_v4","text":"[confident] NINE!"}
+{"at":"2026-10-28T21:59:40.723Z","kind":"vo","key":"vo.en.reiDoTruco.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:59:41.248Z","kind":"vo","key":"vo.en.juiz.doze","take":1,"model":"eleven_v4","text":"[shouting] TWELVE!"}
+{"at":"2026-10-28T21:59:41.482Z","kind":"vo","key":"vo.en.reiDoTruco.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:59:41.483Z","kind":"vo","key":"vo.en.chico.piada2","take":2,"model":"eleven_v4","text":"[laughing] Come on, the hat is lucky!"}
+{"at":"2026-10-28T21:59:42.198Z","kind":"vo","key":"vo.en.juiz.doze","take":2,"model":"eleven_v4","text":"[triumphant] TWELVE!"}
+{"at":"2026-10-28T21:59:42.365Z","kind":"vo","key":"vo.en.reiDoTruco.piada1","take":1,"model":"eleven_v4","text":"[confident] I was king before you were born."}
+{"at":"2026-10-28T21:59:42.417Z","kind":"vo","key":"vo.en.chico.piada3","take":1,"model":"eleven_v4","text":"[confident] Just chewing my toothpick, waiting for your move."}
+{"at":"2026-10-28T21:59:42.877Z","kind":"vo","key":"vo.en.juiz.corre","take":1,"model":"eleven_v4","text":"[disappointed] I'm out!"}
+{"at":"2026-10-28T21:59:43.658Z","kind":"vo","key":"vo.en.reiDoTruco.piada1","take":2,"model":"eleven_v4","text":"[laughing] I was king before you were born."}
+{"at":"2026-10-28T21:59:43.682Z","kind":"vo","key":"vo.en.chico.piada3","take":2,"model":"eleven_v4","text":"[laughing] Just chewing my toothpick, waiting for your move."}
+{"at":"2026-10-28T21:59:43.753Z","kind":"vo","key":"vo.en.juiz.corre","take":2,"model":"eleven_v4","text":"[sighs] I'm out!"}
+{"at":"2026-10-28T21:59:44.673Z","kind":"vo","key":"vo.en.juiz.bora","take":1,"model":"eleven_v4","text":"[excited] Let's go!"}
+{"at":"2026-10-28T21:59:45.286Z","kind":"vo","key":"vo.en.reiDoTruco.piada2","take":1,"model":"eleven_v4","text":"[confident] The crown never falls, it only changes heads... and today it's mine."}
+{"at":"2026-10-28T21:59:45.609Z","kind":"vo","key":"vo.en.juiz.bora","take":2,"model":"eleven_v4","text":"[defiant] Let's go!"}
+{"at":"2026-10-28T21:59:46.813Z","kind":"vo","key":"vo.en.juiz.ver","take":1,"model":"eleven_v4","text":"[confident] Show me!"}
+{"at":"2026-10-28T21:59:47.391Z","kind":"vo","key":"vo.en.reiDoTruco.piada2","take":2,"model":"eleven_v4","text":"[laughing] The crown never falls, it only changes heads... and today it's mine."}
+{"at":"2026-10-28T21:59:47.612Z","kind":"vo","key":"vo.en.juiz.ver","take":2,"model":"eleven_v4","text":"[defiant] Show me!"}
+{"at":"2026-10-28T21:59:48.392Z","kind":"vo","key":"vo.en.reiDoTruco.piada3","take":1,"model":"eleven_v4","text":"[confident] Respect is earned, truco is collected."}
+{"at":"2026-10-28T21:59:48.392Z","kind":"vo","key":"vo.en.juiz.sacanagem","take":1,"model":"eleven_v4","text":"[shouting] You're kidding me!"}
+{"at":"2026-10-28T21:59:49.497Z","kind":"vo","key":"vo.en.juiz.sacanagem","take":2,"model":"eleven_v4","text":"[disappointed] You're kidding me!"}
+{"at":"2026-10-28T21:59:49.644Z","kind":"vo","key":"vo.en.reiDoTruco.piada3","take":2,"model":"eleven_v4","text":"[laughing] Respect is earned, truco is collected."}
+{"at":"2026-10-28T21:59:50.755Z","kind":"vo","key":"vo.en.juiz.piada1","take":1,"model":"eleven_v4","text":"[confident] Order at the table! Truco is serious business!"}
+{"at":"2026-10-28T21:59:52.213Z","kind":"vo","key":"vo.en.juiz.piada1","take":2,"model":"eleven_v4","text":"[laughing] Order at the table! Truco is serious business!"}
+{"at":"2026-10-28T21:59:53.160Z","kind":"vo","key":"vo.en.juiz.piada2","take":1,"model":"eleven_v4","text":"[confident] Sentenced to lose the hand."}
+{"at":"2026-10-28T21:59:54.132Z","kind":"vo","key":"vo.en.juiz.piada2","take":2,"model":"eleven_v4","text":"[laughing] Sentenced to lose the hand."}
+{"at":"2026-10-28T21:59:54.996Z","kind":"vo","key":"vo.en.juiz.piada3","take":1,"model":"eleven_v4","text":"[confident] Silence! The gavel has decided."}
+{"at":"2026-10-28T21:59:56.390Z","kind":"vo","key":"vo.en.juiz.piada3","take":2,"model":"eleven_v4","text":"[laughing] Silence! The gavel has decided."}
