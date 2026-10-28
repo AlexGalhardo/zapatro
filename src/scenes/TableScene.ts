@@ -233,10 +233,10 @@ const SIDE = {
 				goal: [50, 56],
 				chipsMult: [0, 0],
 				bet: [110, 40],
-				theirs: [154, 166],
+				theirs: [154, 102],
 			} as const)),
 	money: [323, 30],
-	bar: [324, 30],
+	bar: SHOW_SCORE_PANEL ? ([324, 30] as const) : ([260, 30] as const),
 } as const satisfies Record<string, number | readonly [number, number]>;
 
 /** The Championship card ("Campeonato 1 / Mesa 1"): top right of the felt, the felt's padding in. */
@@ -255,19 +255,16 @@ const SIDE_LABEL = 7;
 const TENTOS = {
 	half: SIDE_INNER_W / 2,
 	/** Top of the first row inside the panel, and the bottom padding. */
-	top: 32,
-	bottom: 14,
+	top: 38,
+	bottom: 9,
 };
-const tentosRoom = (): number => SIDE.theirs[1] - TENTOS.top - TENTOS.bottom;
-const tentosStep = (): number => Math.min(30, tentosRoom() / 2);
-const beadR = (): number => Math.min(7, tentosStep() / 2 - 3, TENTOS.half / 8 - 1.5);
+/** Even gap between the three rows of beads. */
+const tentosStep = (): number => 24;
+const beadR = (): number => Math.min(7, TENTOS.half / 8 - 1.5);
 /** Centre of bead `d` (0–11) of half `i` (0 ours, 1 theirs), in stage px. */
 const beadAt = (i: number, d: number): [number, number] => [
 	SIDEBAR.x + SIDEBAR.pad + i * TENTOS.half + TENTOS.half / 8 + (d % 4) * (TENTOS.half / 4),
-	SIDE.theirs[0] +
-		TENTOS.top +
-		(tentosRoom() - 2 * tentosStep()) / 2 +
-		Math.floor(d / 4) * tentosStep(),
+	SIDE.theirs[0] + TENTOS.top + Math.floor(d / 4) * tentosStep(),
 ];
 
 /** A bead of the tentos panel: an empty socket, or a lit one in green/red, drawn at screen zoom. */
