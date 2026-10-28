@@ -566,7 +566,7 @@ export const en = {
 	'boss.professor.rule': "Your equipped trinkets' drawbacks count double",
 	'boss.irmaos.name': 'The Brothers',
 	'boss.irmaos.rule': 'Their signals are never caught; yours are caught twice as often',
-	'boss.mudo.name': 'The Mute',
+	'boss.mudo.name': 'Peter',
 	'boss.mudo.rule': 'No signals with your partner',
 	'boss.sortuda.name': 'The Lucky One',
 	'boss.sortuda.rule': 'The rivals get manilhas more often',

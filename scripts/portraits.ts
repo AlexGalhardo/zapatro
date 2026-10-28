@@ -8,7 +8,7 @@
  * Converts the pixel-art character concept art (references/concept-art/zapatro/char-*.png, 1254×1254) into
  * the game's 128×128 portraits: area downscale, at most 32 colours, no dithering, and the flat
  * background removed from the image corners (the game paints the background by role).
- * O Mudo has no concept: it comes from PixelLab (art-src/portrait/mudo.png). Local only, no network. Usage: bun scripts/portraits.ts
+ * Every portrait without a painting is pixel art from a concept. Local only, no network. Usage: bun scripts/portraits.ts
  */
 import { mkdir } from 'node:fs/promises';
 import sharp from 'sharp';
@@ -36,6 +36,7 @@ export const PAINTED: Record<string, string> = {
 	sortuda: 'sortuda',
 	agiota: 'agiota',
 	stuart: 'professor',
+	peter: 'mudo',
 };
 
 /** Source file → portrait id (pixel art). `char-pedrao.png` is left out on purpose (docs/visual.md). */
@@ -92,7 +93,7 @@ async function convert(file: string, id: string): Promise<void> {
 }
 
 /** Portraits drawn at 128×128 with PixelLab (art-src/portrait/<id>.png): only the background is cut. */
-export const NATIVE = ['mudo'] as const;
+export const NATIVE = [] as const;
 
 async function convertNative(id: string): Promise<void> {
 	const { data, info } = await sharp(`art-src/portrait/${id}.png`)

@@ -570,7 +570,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'boss.professor.rule': 'Os contras dos seus trinkets equipados contam em dobro',
 	'boss.irmaos.name': 'Os Irmãos',
 	'boss.irmaos.rule': 'Os sinais deles nunca são flagrados; os seus, com o dobro de chance',
-	'boss.mudo.name': 'O Mudo',
+	'boss.mudo.name': 'Peter',
 	'boss.mudo.rule': 'Sem sinais com o parceiro',
 	'boss.sortuda.name': 'A Sortuda',
 	'boss.sortuda.rule': 'Os rivais recebem manilha com mais frequência',
