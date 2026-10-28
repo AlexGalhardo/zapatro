@@ -12,6 +12,10 @@ Since 2026-10-24 the project has 14 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Fixed
+
+- **tutorial:** on touch screens the "Your three cards" step tells you to hold a finger on a card to see its strength (it said to hover with the mouse).
+
 ## [0.13.1] - 2026-10-27
 
 ### Fixed
