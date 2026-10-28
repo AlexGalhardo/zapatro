@@ -12,6 +12,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-10-28
+
 ### Added
 
 - **docs:** `docs/audio-final-game.md` plans the 1.0 final audio (a PT-BR and EN voice per character, 8 standard lines, 3 unique jokes each, 3 new table music loops) with the ElevenLabs prompts and a credit budget.
@@ -682,7 +684,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.18.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.15.0...v0.16.0
