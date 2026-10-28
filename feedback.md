@@ -31,3 +31,72 @@ Conferido sem achado:
 - Baixa (`?trinkets=`): a coleção de debug fica só na run e não vai ao perfil. Resolvido em 73f04f5.
 - Baixa (textos de Manha): Zé, Beti, "Mais Manha" e baralho Dinheiro falam trinket (o baralho Dinheiro tira 1 espaço de trinket). Resolvido em 73f04f5.
 - Pendente (Fama): removida (mecânica, barra, IA, Manhas, i18n); Professor agora dobra os contras dos trinkets. Resolvido em d5737b4.
+
+---
+
+## QA de balanceamento: trinkets (branch `feat/trinkets`)
+
+Ciclo de QA do Estagiário, 2026-10-27. Só leitura da lógica: nenhum arquivo do Sênior foi editado. Script: `scripts/qa-trinkets.ts`.
+
+## Estado atual
+
+- Branch `feat/trinkets` em `10b3154` (docs), sobre `5c3a697` (feat), com `a76ece0` (metas ×0,6) incluído. `main` em `bdc2375` (v0.13.1).
+- Árvore da branch tem alterações **de outro agente, não commitadas**: `src/data/championships.ts`, `src/logic/ai/decide.ts`, `src/logic/truco/table.ts`, `scripts/_cal.ts`. Não são minhas, não foram commitadas por mim.
+- Gates na branch (2026-10-27 21:55):
+  - `bun run typecheck`: sem erros em 206 arquivos (com `scripts/qa-trinkets.ts`).
+  - `bun test` (ciclo 1): 335 rodados, 0 falhas, 4 puladas.
+  - `bun run balance`: **FAIL** (ver Balanceamento).
+
+## Balanceamento
+
+### B-1 · Alta · Trinkets pioram o bot bom em vez de ajudar
+
+- **Quando:** 2026-10-27 21:50, ciclo 1.
+- **Evidência:**
+  - Com trinkets (bot compra e equipa): `bun scripts/qa-trinkets.ts --runs 1000 --seeds 3` → win rate **13,0%** (3000 partidas), Campeonato médio 4,83, 7,03 mãos por mesa.
+  - Sem trinkets, mesma branch (cópia exportada com `TRINKETS = false` em `src/config/features.ts`, 3000 partidas): win rate **22,6%**, Campeonato médio 5,83, 6,23 mãos por mesa.
+  - Diferença: **−9,6 p.p.** em favor da base.
+- **Severidade:** alta (é o item que o balance está acusando).
+- **Sugestão:** os contras estão pesando mais que os bônus para o bot. Proposta: (a) reduzir o contra dos trinkets de maior peso (candidatos: `Cartas de ♥/♠/♦ valem −5 Fichas`, `Figurão`, `Seu Zé`, que cortam Fichas em muitas vazas), ou (b) subir o bônus Normal dos trinkets que o bot mais equipa. Medir cada mudança com `bun scripts/qa-trinkets.ts`. Número é do Sênior aplicar.
+
+### B-2 · Alta · `bun run balance` falha na faixa do bot bom
+
+- **Quando:** 2026-10-27 21:40.
+- **Evidência:** `bun run balance` → bot bom **12,6 · 14,2 · 13,8%** (faixa 20–35%, FAIL nas 3 seeds). Aleatório 0,0 · 0,0 · 0,0% (PASS), 7,35 · 7,24 · 7,23 mãos por mesa (PASS).
+- **Severidade:** alta (gate de release).
+- **Sugestão:** é o mesmo problema do B-1 visto pelo gate. Corrigir o B-1 deve bastar; se não bastar, o próximo passo é a meta de pontos (`CHAMPIONSHIP_GOALS`, hoje ×0,6), que já foi reduzida.
+
+### B-3 · Média · Efeito de cada trinket isolado não está medido
+
+- **Quando:** 2026-10-27 21:55.
+- **Evidência:** `simulateRun(seed, bot, maxChamp, stake, partner)` (`src/game/run-sim.ts:296`) não aceita uma coleção pré-carregada. Sem isso, o QA não consegue equipar um trinket sozinho nem por raridade, então não há lista de dominantes (> base + 10 p.p.) nem de inúteis (≤ base).
+- **Severidade:** média (bloqueia o item de dominantes/inúteis do pedido).
+- **Sugestão:** adicionar um parâmetro opcional `setup?: (run: Run) => void` em `simulateRun`, chamado depois de `newRun`. Assim o QA passa uma função que faz `run.collection[id] = nível` e `equip(...)`. Mudança pequena, em arquivo do Sênior; o QA não a faz.
+
+### B-4 · OK · Odds da loja conferem com a spec
+
+- **Quando:** 2026-10-27 21:45, 10 000 lojas por caso (`shopLevels`).
+- **Evidência:**
+  - Após chefe: Lendário **100,00%** (esperado 100%), Raro 50,89%, Épico 24,49%.
+  - Loja comum: Lendário 0%, Raro 50,34% (esperado 50%), Épico 25,45% (esperado 25%).
+- **Severidade:** nenhuma (conforme).
+
+## Bugs
+
+### X-1 · Média · Arquivos untracked somem entre ciclos de QA
+
+- **Quando:** entre 2026-10-27 (release v0.13.1) e o ciclo 1.
+- **Evidência:** `docs/trinkets.md` e `scripts/qa-trinkets.ts` existiam e depois sumiram da árvore, sem mudança no `git status`. Foi preciso recriar o script. `docs/trinkets.md` voltou depois, em `10b3154`.
+- **Severidade:** média (perda de trabalho não commitado).
+- **Sugestão:** ver se o fluxo de release (`scripts/release.ts` ou `git clean`) remove arquivos untracked. Se remover, trocar por checagem que avisa em vez de apagar.
+
+## Sugestões de melhoria
+
+- **S-1:** hook `setup` em `simulateRun` (ver B-3). Permite o relatório por trinket e por raridade que o pedido original exige.
+- **S-2:** o bot de trinkets (`trinketValue` em `src/game/run-sim.ts`) equipa pelo valor bônus − preço × 0,15, sem olhar o contra. Sugestão: descontar o contra do trinket na conta, para o bot não equipar o que o prejudica.
+- **S-3:** o script `scripts/qa-trinkets.ts` ainda só mede a base com o bot de trinkets. Quando o hook de B-3 existir, adicionar o modo "um trinket por vez" e a tabela por raridade (Normal/Raro/Épico/Lendário).
+
+## Resolvido
+
+- Typecheck e testes da branch: verdes no ciclo 1 (335 testes, 0 falhas). Typecheck verde depois de incluir `scripts/qa-trinkets.ts`.
+- O script `scripts/qa-trinkets.ts` foi recriado depois de sumir (ver X-1).
