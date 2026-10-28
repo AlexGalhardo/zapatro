@@ -221,8 +221,8 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
 const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
-	hud: [6, 91],
-	goal: [101, 52],
+	hud: [6, 99],
+	goal: [109, 44],
 	chipsMult: [157, 55],
 	bet: [216, 42],
 	theirs: [262, 58],
@@ -1280,12 +1280,21 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			}
 		}
 		// Without a goal (quick match) the card counts the tentos to 12 instead.
+		// One line: the label on the left, the score on the right; the bar under it.
+		const goalLine = SIDE.goal[0] + 17;
 		at(
-			SIDE.goal[0] + SIDE_LABEL,
-			t(this.match.goal === undefined ? 'table.side.tentos' : 'table.side.goal'),
+			goalLine,
+			t(
+				this.match.goal === undefined ? 'table.side.tentos' : 'table.side.goal',
+			).toLocaleUpperCase(),
 			small,
-		);
-		this.pointsText = at(SIDE.goal[0] + 21, '', this.bold(15, PALETTE.manilha));
+		).setOrigin(0, 0.5);
+		this.pointsText = this.add
+			.text(lx + SIDE_INNER_W, goalLine, '', {
+				...this.bold(15, PALETTE.manilha),
+				shadow: TEXT_SHADOW,
+			})
+			.setOrigin(1, 0.5);
 		// A quick match scores no hands and pays nothing: its Chips × Mult and money cards stay in
 		// place (same sidebar) but faded, so the frozen 0 × 0 and $0 read as "not in this mode".
 		const off = this.match.goal === undefined ? 0.35 : 1;
@@ -1407,7 +1416,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const lx = SIDE.x + SIDEBAR.pad;
 		const done =
 			m.goal === undefined ? Math.min(1, us / 12) : Math.min(1, this.hudPoints / m.goal);
-		const barY = SIDE.goal[0] + 41;
+		const barY = SIDE.goal[0] + 30;
 		g.fillStyle(PALETTE.shadow, 0.6).fillRoundedRect(lx, barY, 114, 7, 3.5);
 		if (done > 0) g.fillStyle(PALETTE.manilha, 1).fillRoundedRect(lx, barY, 114 * done, 7, 3.5);
 		// Aposta: the number sits on a red block once a call is on the table.
@@ -1550,6 +1559,11 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				? `${Math.min(12, s.score.us)} × ${Math.min(12, s.score.them)}`
 				: `${formatPoints(this.hudPoints, lang)} / ${formatPoints(m.goal, lang)}`,
 		);
+		// Big numbers shrink so the score never reaches the label on its left.
+		const base = uiPx(15);
+		this.pointsText.setFontSize(base);
+		for (let px = base; this.pointsText.width > SIDE_INNER_W - 40 && px > 8; )
+			this.pointsText.setFontSize(--px);
 		this.moneyText.setText(t('table.money', { n: this.hudMoney }));
 		this.refreshPrize();
 		this.quedasText.setText(
