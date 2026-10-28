@@ -221,11 +221,11 @@ const FELT = { x: 147, y: 6, w: 487, h: 348 };
 const SIDE = {
 	x: SIDEBAR.x,
 	w: SIDEBAR.w,
-	hud: [6, 99],
-	goal: [109, 44],
-	chipsMult: [157, 55],
-	bet: [216, 42],
-	theirs: [262, 58],
+	hud: [6, 114],
+	goal: [124, 40],
+	chipsMult: [168, 52],
+	bet: [224, 40],
+	theirs: [268, 52],
 	money: [323, 30],
 	bar: [324, 30],
 } as const satisfies Record<string, number | readonly [number, number]>;
@@ -1281,7 +1281,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		}
 		// Without a goal (quick match) the card counts the tentos to 12 instead.
 		// One line: the label on the left, the score on the right; the bar under it.
-		const goalLine = SIDE.goal[0] + 17;
+		const goalLine = SIDE.goal[0] + 15;
 		at(
 			goalLine,
 			t(
@@ -1322,11 +1322,11 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			.setAlpha(off);
 		at(SIDE.bet[0] + SIDE_LABEL, t('table.side.bet'), small);
 		this.betText = this.add
-			.text(lx + 12, SIDE.bet[0] + 28, '', this.bold(15, PALETTE.manilha))
+			.text(lx + 12, SIDE.bet[0] + 27, '', this.bold(15, PALETTE.manilha))
 			.setOrigin(0.5)
 			.setDepth(DEPTH.sideValue);
 		this.betNote = this.add
-			.text(lx + 34, SIDE.bet[0] + 28, '', this.bold(8, PALETTE.textLight))
+			.text(lx + 34, SIDE.bet[0] + 27, '', this.bold(8, PALETTE.textLight))
 			.setOrigin(0, 0.5);
 		at(SIDE.theirs[0] + SIDE_LABEL, t('table.side.tentosBoth'), small);
 		this.moneyText = this.add
@@ -1355,58 +1355,97 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			);
 		this.buildEffectLists();
 		this.quedasText = this.add
-			.text(HUD.x + HUD_PAD, SIDE.theirs[0] + 47, '', small)
+			.text(HUD.x + HUD_PAD, SIDE.theirs[0] + 43, '', small)
 			.setOrigin(0, 0.5);
 		this.hudGfx = this.add.graphics().setDepth(DEPTH.hudShapes);
 	}
 
 	/**
-	 * Under the slots, every equipped trinket's Bonus (green strip) and Flaw (red strip), one per
-	 * line, dark text with a light depth on the strip. A line shrinks to fit; past the room left
-	 * the list ends in "…".
+	 * Under the slots, the Bonus (green strip) and Flaw (red strip) of the equipped trinkets, one
+	 * strip each, in capitals, all one font size: a long text wraps and its strip grows. Bonuses
+	 * and Flaws are added in turn while they fit; the rest is "+N" (hover it for the list).
 	 */
 	private buildEffectLists(): void {
-		const top = HUD.y + HUD_PAD + 10 + slotSize(this.slots) / 2 + 3;
-		const lh = 6.8;
-		const room = Math.floor((HUD.y + HUD.h - 2 - top) / lh);
+		const x = HUD.x + HUD_PAD;
+		const top = HUD.y + HUD_PAD + 10 + slotSize(this.slots) / 2 + 4;
+		const bottom = HUD.y + HUD.h - HUD_PAD / 2;
 		const width = HUD.w - 2 * HUD_PAD;
-		const lines: { str: string; color: number }[] = [];
+		const padX = 3;
+		const padY = 3;
+		const gap = 2;
+		const style = {
+			...this.bold(6, PALETTE.textDark),
+			align: 'left' as const,
+			wordWrap: { width: width - 2 * padX },
+			shadow: {
+				offsetX: 0,
+				offsetY: 0.6,
+				color: 'rgba(255,255,255,0.5)',
+				blur: 0,
+				fill: true,
+			},
+		};
+		type Strip = { str: string; color: number; h: number };
+		const measure = (str: string, color: number): Strip => {
+			const probe = this.add.text(0, 0, str.toLocaleUpperCase(), style);
+			const h = probe.height + 2 * padY;
+			probe.destroy();
+			return { str: str.toLocaleUpperCase(), color, h };
+		};
+		const bonus: Strip[] = [];
+		const flaws: Strip[] = [];
 		for (const e of this.match.trinketList) {
 			const tx = trinketTexts(e.id, e.level, e.flawX);
-			lines.push({ str: tx.perk, color: PALETTE.good }, { str: tx.flaw, color: PALETTE.bad });
+			bonus.push(measure(tx.perk, PALETTE.good));
+			flaws.push(measure(tx.flaw, PALETTE.bad));
 		}
-		const bonus = lines.filter((l) => l.color === PALETTE.good);
-		const flaws = lines.filter((l) => l.color === PALETTE.bad);
-		const shown = [...bonus, ...flaws];
-		if (shown.length > room)
-			shown.splice(room - 1, shown.length - room + 1, {
-				str: '…',
-				color: PALETTE.panelLight,
-			});
+		const hidden: Strip[] = [];
+		const more = measure('+99', PALETTE.panelLight).h + gap;
+		const all = [...bonus, ...flaws];
+		const total = all.reduce((n, l) => n + l.h + gap, 0);
+		if (total > bottom - top) {
+			// Not all fit: take them in turn (a Bonus, a Flaw, …) while they fit with the "+N" strip.
+			const room = bottom - top - more;
+			const order = bonus.flatMap((b, i) => [b, ...(flaws[i] ? [flaws[i]] : [])]);
+			let left = room;
+			const kept = new Set<Strip>();
+			for (const l of order) {
+				if (l.h + gap > left) continue;
+				kept.add(l);
+				left -= l.h + gap;
+			}
+			bonus.splice(0, bonus.length, ...bonus.filter((l) => kept.has(l)));
+			flaws.splice(0, flaws.length, ...flaws.filter((l) => kept.has(l)));
+			hidden.push(...all.filter((l) => !kept.has(l)));
+		}
 		const strips = this.add.graphics().setDepth(DEPTH.hudShapes);
-		shown.forEach((l, i) => {
-			const y = top + i * lh;
-			if (l.str !== '…')
-				strips.fillStyle(l.color, 1).fillRoundedRect(HUD.x + HUD_PAD, y, width, lh - 1, 2);
-			const o = this.add
-				.text(HUD.x + HUD_PAD + 2, y + (lh - 1) / 2, l.str, {
-					...this.bold(5.5, PALETTE.textDark),
-					shadow: {
-						offsetX: 0,
-						offsetY: 0.6,
-						color: 'rgba(255,255,255,0.45)',
-						blur: 0,
-						fill: true,
-					},
-				})
-				.setOrigin(0, 0.5)
+		let y = top;
+		const place = (l: Strip): void => {
+			strips
+				.fillStyle(shade(l.color, -0.45), 1)
+				.fillRoundedRect(x, y + 1, width, l.h, RADIUS.button / 2);
+			strips.fillStyle(l.color, 1).fillRoundedRect(x, y, width, l.h, RADIUS.button / 2);
+			this.add
+				.text(x + padX, y + padY, l.str, style)
+				.setOrigin(0, 0)
 				.setDepth(DEPTH.sideValue);
-			for (
-				let px = Number.parseInt(String(o.style.fontSize), 10);
-				o.width > width - 4 && px > 4;
-			)
-				o.setFontSize(--px);
-		});
+			y += l.h + gap;
+		};
+		for (const l of [...bonus, ...flaws]) place(l);
+		if (hidden.length) {
+			const tag = measure(`+${hidden.length}`, PALETTE.panelLight);
+			place(tag);
+			const zone = this.add
+				.zone(x, y - tag.h - gap, width, tag.h)
+				.setOrigin(0, 0)
+				.setInteractive({ useHandCursor: true });
+			this.tipOn(zone, this.manhaTip, () =>
+				this.manhaTip
+					.setText(hidden.map((h) => h.str).join(' / '))
+					.setOrigin(0, 0)
+					.setPosition(HUD.x + HUD.w + GAP.list, HUD.y),
+			);
+		}
 	}
 
 	/** Bars, ovals and dots of the sidebar and the HUD block. */
@@ -1416,17 +1455,17 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const lx = SIDE.x + SIDEBAR.pad;
 		const done =
 			m.goal === undefined ? Math.min(1, us / 12) : Math.min(1, this.hudPoints / m.goal);
-		const barY = SIDE.goal[0] + 30;
+		const barY = SIDE.goal[0] + 27;
 		g.fillStyle(PALETTE.shadow, 0.6).fillRoundedRect(lx, barY, 114, 7, 3.5);
 		if (done > 0) g.fillStyle(PALETTE.manilha, 1).fillRoundedRect(lx, barY, 114 * done, 7, 3.5);
 		// Aposta: the number sits on a red block once a call is on the table.
 		const called = m.state.bet > 1 || m.state.pending !== null;
-		if (called) g.fillStyle(PALETTE.truco, 1).fillRoundedRect(lx, SIDE.bet[0] + 18, 25, 20, 5);
+		if (called) g.fillStyle(PALETTE.truco, 1).fillRoundedRect(lx, SIDE.bet[0] + 17, 25, 20, 5);
 		// Tentos: both pairs, twelve dots each, ours (gold ovals) over theirs (red circles).
 		for (let i = 0; i < 12; i++) {
 			const r = 3.6;
 			const x = lx + r + i * ((SIDE_INNER_W - 2 * r) / 11);
-			const y = SIDE.theirs[0] + 21;
+			const y = SIDE.theirs[0] + 20;
 			if (i < Math.min(12, us)) g.fillStyle(PALETTE.manilha, 1).fillEllipse(x, y, 7, 5);
 			else g.lineStyle(1, PALETTE.panelLight, 1).strokeEllipse(x, y, 7, 5);
 			if (i < Math.min(12, them)) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y + 11, r);
@@ -1434,7 +1473,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		}
 		for (let i = 0; i < m.rivalQuedasNeeded; i++) {
 			const x = HUD.x + HUD.w - HUD_PAD - 4 - (m.rivalQuedasNeeded - 1 - i) * 11;
-			const y = SIDE.theirs[0] + 47;
+			const y = SIDE.theirs[0] + 43;
 			if (i < m.rivalQuedas) g.fillStyle(PALETTE.truco, 1).fillCircle(x, y, 3.6);
 			else g.lineStyle(1.2, PALETTE.panelLight, 1).strokeCircle(x, y, 3.6);
 		}
