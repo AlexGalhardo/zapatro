@@ -17,7 +17,7 @@ Fonte da verdade: **[docs/visual.md](../../../docs/visual.md) §0 (Art Bible v3,
 | Versos, coringa, especiais | pintura inteira 2:3 | `art-src/gta/card-*` → `back/<nome>.webp` | `img.back.<nome>`, desenhados por `drawBack`/`paintedFace` |
 | Cartas comuns, modificadores, painéis, botões | vetor por código | `src/art/flat.ts` | `card.<rank>.<suit>` (`.m` e `.z` com moldura), `card.mod.*` |
 | Ícones de UI | pixel (folha) ou vetor | `ui-icons.png` → `bun scripts/icons.ts` → `icon/*.png`; o resto em `src/art/icons.ts` | `icon.<nome>` |
-| Sinais secretos | vetor (paths SVG) | `SIGNAL_ICON` em `src/art/icons.ts` | `icon.signal.<sinal>` (e `ui.sign.<sinal>`) |
+| Sinais secretos | emoji Unicode | `SIGNAL_EMOJI` em `src/data/characters.ts` | o mesmo mapa no manual, na escolha, na mesa e no aviso de truco |
 | Ícone do app | vetor | `art-src/app-icon.svg` → `bun run app-icons` | — |
 
 ## Regras

@@ -4,7 +4,7 @@ import { JOKER_EFFECTS } from '../src/data/jokers';
 import { SPECIAL_CARDS } from '../src/data/specials';
 import { setLang } from '../src/i18n';
 import type { TableState } from '../src/logic/truco/table';
-import { handEffects } from '../src/view/hand-effects';
+import { handEffects, visibleHandEffects } from '../src/view/hand-effects';
 
 const effects = [...JOKER_EFFECTS, ...Object.values(SPECIAL_CARDS).flat()];
 const state = (kind: TableState['kind'], played: string[]): TableState =>
@@ -31,4 +31,12 @@ test('a plain hand has no effect line; every effect, boss and hand kind has a na
 	expect(handEffects(state('normal', ['freeze', 'claim']), undefined, 1)).toHaveLength(1);
 	// The same effect twice in a hand shows once.
 	expect(handEffects(state('normal', ['freeze', 'freeze']), undefined)).toHaveLength(1);
+});
+
+test('the in-play box shows only the two newest lines', () => {
+	const all = handEffects(state('iron', ['freeze', 'claim']), BOSS_POOL[0]);
+	expect(all.length).toBeGreaterThan(2);
+	const shown = visibleHandEffects(all);
+	expect(shown).toHaveLength(2);
+	expect(shown).toEqual(all.slice(-2));
 });

@@ -1,6 +1,4 @@
 import { PALETTE, toCss } from '../config/palette';
-import type { Sign } from '../logic/truco/table';
-import { UI_FONT } from '../ui/font';
 
 type Ctx = CanvasRenderingContext2D;
 
@@ -263,90 +261,5 @@ export function drawVectorIcon(
 			rr(15, 13, 7, 7, 3.5);
 			break;
 	}
-	ctx.restore();
-}
-
-/**
- * The secret signals (D-35) as one icon each, the same in the picker, the manual and the table:
- * a plain face with only its gesture (SVG paths on a 20×20 face box) and a badge with the card it
- * means, so the table can be learned by heart. `tongue` is filled red, `tooth` filled cream.
- */
-export const SIGNAL_ICON: Record<
-	Sign,
-	{ gesture: string; tongue?: string; tooth?: string; badge: string; red?: boolean }
-> = {
-	zap: {
-		gesture: 'M7 8.6v.1 M11 9.2q2-1.8 4 0 M6.5 12.5q3.5 3 7 0',
-		badge: '♣',
-	},
-	copas: {
-		gesture: 'M7 9.4v.1 M13 9.4v.1 M5.2 6.8h3.4 M11.2 5.6q1.8-2 3.7-.6 M7.5 13.5h5',
-		badge: '♥',
-		red: true,
-	},
-	espadilha: {
-		gesture: 'M7 9v.1 M13 9v.1 M6.5 13.8l3-.2q2.5-.4 4.5-2.2',
-		badge: '♠',
-	},
-	picafumo: {
-		gesture: 'M7 9v.1 M13 9v.1 M6.8 12.6h6.4',
-		tongue: 'M8.4 12.6h3.2v2q-1.6 2-3.2 0z',
-		badge: '♦',
-		red: true,
-	},
-	three: {
-		gesture: 'M7 9v.1 M13 9v.1 M6.8 13.2q3.2-1.6 6.4 0',
-		tooth: 'M8.8 11.9h2.4v2.2h-2.4z',
-		badge: '3',
-	},
-	nothing: {
-		gesture: 'M7 7.6v.1 M13 7.6v.1 M8 13.5h4',
-		badge: '∅',
-	},
-};
-
-/** Draws a signal's icon in the box (0,0)–(s,s): `icon.signal.<sign>` (and the picker's `ui.sign.<sign>`). */
-export function drawSignalIcon(ctx: Ctx, sign: string, s: number): void {
-	const look = SIGNAL_ICON[sign as Sign];
-	if (!look) return;
-	const ink = toCss(PALETTE.textDark);
-	ctx.save();
-	ctx.scale(s / 24, s / 24);
-	ctx.lineCap = 'round';
-	ctx.lineJoin = 'round';
-	ctx.lineWidth = 1.6;
-	ctx.strokeStyle = ink;
-	ctx.beginPath();
-	ctx.arc(10, 10, 8.6, 0, TAU);
-	ctx.fillStyle = toCss(PALETTE.manilha);
-	ctx.fill();
-	ctx.stroke();
-	if (look.tongue) {
-		const tongue = new Path2D(look.tongue);
-		ctx.fillStyle = toCss(PALETTE.suitRed);
-		ctx.fill(tongue);
-		ctx.stroke(tongue);
-	}
-	ctx.lineWidth = 2;
-	ctx.stroke(new Path2D(look.gesture));
-	if (look.tooth) {
-		const tooth = new Path2D(look.tooth);
-		ctx.lineWidth = 1.2;
-		ctx.fillStyle = toCss(PALETTE.cardFace);
-		ctx.fill(tooth);
-		ctx.stroke(tooth);
-	}
-	// The badge: the card the gesture means, on a cream disc at the corner.
-	ctx.lineWidth = 1.2;
-	ctx.beginPath();
-	ctx.arc(18.5, 18.5, 5.3, 0, TAU);
-	ctx.fillStyle = toCss(PALETTE.cardFace);
-	ctx.fill();
-	ctx.stroke();
-	ctx.fillStyle = toCss(look.red ? PALETTE.suitRed : PALETTE.textDark);
-	ctx.font = `700 8px ${UI_FONT}`;
-	ctx.textAlign = 'center';
-	ctx.textBaseline = 'middle';
-	ctx.fillText(look.badge, 18.5, 19);
 	ctx.restore();
 }

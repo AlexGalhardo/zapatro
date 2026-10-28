@@ -4,11 +4,12 @@ import { LOGICAL_H } from '../config/constants';
 import { TRINKETS } from '../config/features';
 import { PALETTE, shade } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS } from '../config/ui';
+import { SIGNAL_EMOJI } from '../data/characters';
 import { type I18nKey, t } from '../i18n';
 import { sentenceLines } from '../logic/sentences';
 import { SIGNS } from '../logic/truco/table';
 import { Button, inkIcon } from '../ui/Button';
-import { TEXT_SHADOW } from '../ui/font';
+import { EMOJI_FONT, TEXT_SHADOW } from '../ui/font';
 import { keyHint } from '../ui/key-hint';
 import { onKey } from '../ui/keys';
 import { drawPanel } from '../ui/panel';
@@ -280,7 +281,12 @@ export class RulesScene extends Phaser.Scene {
 			const x = -BODY_W / 2;
 			const y = 70 + i * 22;
 			c.add([
-				this.add.image(x + 10, y, tex(this, `icon.signal.${sign}`)).setDisplaySize(20, 20),
+				this.add
+					.text(x + 10, y, SIGNAL_EMOJI[sign], {
+						fontFamily: EMOJI_FONT,
+						fontSize: '18px',
+					})
+					.setOrigin(0.5),
 				this.add
 					.text(
 						x + 24,

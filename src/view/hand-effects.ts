@@ -1,6 +1,9 @@
 import { type I18nKey, t } from '../i18n';
 import { jokerEffects, type TableState } from '../logic/truco/table';
 
+/** The in-play box keeps this many lines. A newer one drops the oldest off the top. */
+export const EFFECT_BOX_LIMIT = 2;
+
 /** One line of the table's "in play" box: what changes the rules of the hand being played. */
 export interface HandEffect {
 	icon: 'sparkle' | 'skull' | 'alert';
@@ -38,4 +41,9 @@ export function handEffects(
 			desc: t(`joker.${e}.desc` as I18nKey),
 		});
 	return out;
+}
+
+/** The lines the box actually draws: the newest `EFFECT_BOX_LIMIT`, oldest first among those. */
+export function visibleHandEffects(all: readonly HandEffect[]): HandEffect[] {
+	return all.slice(-EFFECT_BOX_LIMIT);
 }

@@ -5,7 +5,7 @@ import { buttonFill, buttonHover, PALETTE, shade, toCss } from '../config/palett
 import { MOTION, RADIUS, SHADOW } from '../config/ui';
 import { sfx } from '../core/audio';
 import { comfort } from '../view/comfort';
-import { UI_FONT } from './font';
+import { EMOJI_FONT, UI_FONT } from './font';
 import { type HintMode, hintMode, keyHint } from './key-hint';
 import { touchUi, uiPx } from './touch';
 
@@ -46,6 +46,7 @@ export class Button extends Phaser.GameObjects.Container {
 	private readonly left: number | null;
 	private readonly badge: Phaser.GameObjects.Text;
 	private readonly iconImg: Phaser.GameObjects.Image | null = null;
+	private readonly emojiText: Phaser.GameObjects.Text | null = null;
 	private hintFn: (() => string) | undefined;
 	private focusHint = true;
 	private hintInside = false;
@@ -72,6 +73,8 @@ export class Button extends Phaser.GameObjects.Container {
 			/** An icon (`icon.<name>`) in the room `left` leaves; it rises and sinks with the button. */
 			icon?: string;
 			iconScale?: number;
+			/** A color emoji in that same left room (secret signals). */
+			emoji?: string;
 			/** Tapped or clicked while disabled (a price you cannot pay): explain why. */
 			onBlocked?: () => void;
 			/** true: the keycap stays inside however narrow the button is (icon-only buttons). */
@@ -126,6 +129,16 @@ export class Button extends Phaser.GameObjects.Container {
 				opts.icon,
 			);
 			this.add(this.iconImg);
+		}
+		if (opts.emoji) {
+			const px = Math.max(16, this.bh - 4);
+			this.emojiText = scene.add
+				.text(-this.bw / 2 + 14, -1, opts.emoji, {
+					fontFamily: EMOJI_FONT,
+					fontSize: `${px}px`,
+				})
+				.setOrigin(0.5);
+			this.add(this.emojiText);
 		}
 		this.add(this.hit);
 		this.hintFn = opts.hint;
@@ -237,6 +250,7 @@ export class Button extends Phaser.GameObjects.Container {
 		this.label.setAlpha(on ? 1 : 0.6);
 		this.badge.setAlpha(on ? 1 : 0.5);
 		this.iconImg?.setAlpha(on ? 1 : 0.6);
+		this.emojiText?.setAlpha(on ? 1 : 0.6);
 		this.settle();
 		return this;
 	}
@@ -341,6 +355,7 @@ export class Button extends Phaser.GameObjects.Container {
 			.strokeRoundedRect(-w / 2, top, w, h, r);
 		this.label.setY(-1 - lift);
 		this.iconImg?.setY(-1 - lift);
+		this.emojiText?.setY(-1 - lift);
 		if (!this.below) this.badge.setY(-1 - lift);
 	}
 }

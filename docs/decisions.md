@@ -4,6 +4,7 @@ A lista completa (D-01…D-58: design, entrevista e decisões técnicas) está e
 
 | Data | Decisão | Origem |
 |---|---|---|
+| 2026-10-28 | **Sinais em emoji:** um mapa só (`SIGNAL_EMOJI`: 😉 zap, 🤨 copas, 😏 espadilha, 😛 pica-fumo, 🫦 um 3, 🙄 nada). Sai o desenho SVG. O aviso do parceiro antes do truco usa o mesmo emoji | Usuário |
 | 2026-10-28 | **Metas ×2** da base 105 · 135 · … · 560, porque um humano passava fácil demais. A faixa do bot bom na D-39 baixou de propósito de 20–35% para **5–20%** (medido 10,0 · 13,3 · 9,3%). Aleatório e ritmo iguais. Vale para Grande, Chefe, Estacas, Sheila e o infinito | Usuário |
 | 2026-09-30 | Repositório novo `AlexGalhardo/jogo-truco` com o Gridbound importado como template; o Gridbound fica em `tibia-roguelite-game` (`dev` `f4fb29a`) | Usuário |
 | 2026-09-30 | Worktrees paralelas: `assets` (PixelLab + ElevenLabs) desde a FASE 0 e `qa` (balanceamento, simulação, E2E) a partir do BETA (PLAN §12.1) | Usuário |

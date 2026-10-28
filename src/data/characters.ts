@@ -1,3 +1,5 @@
+import type { Sign } from '../logic/truco/table';
+
 /** Table presentation of the cast (the cast itself is in companions.ts). Art keys: `portrait.<id>.<expr>`. */
 
 /** Portrait expressions (the six signals, plus moods). */
@@ -30,6 +32,20 @@ export const SIGN_CATEGORY = {
 
 /** Mark inside the partner's signal bubble, per category. */
 export const SIGN_MARK = { strong: '★', three: '3', nothing: '✗' } as const;
+
+/**
+ * One emoji per secret signal. The picker, the manual, the mark on the table and the partner's
+ * warning before a truco all read this map, so each face means the same thing in both directions.
+ * Wink, raised eyebrow, crooked mouth, tongue, biting a lip, eyes up.
+ */
+export const SIGNAL_EMOJI = {
+	zap: '😉',
+	copas: '🤨',
+	espadilha: '😏',
+	picafumo: '😛',
+	three: '🫦',
+	nothing: '🙄',
+} as const satisfies Record<Sign, string>;
 
 /** Table timings (ms at 1×; divided by the animation speed). */
 export const TABLE_TIMING = {
