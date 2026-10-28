@@ -8,13 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The engine, tooling and CI come from the previous game, Gridbound
 (`AlexGalhardo/tibia-roguelite-game`, branch `dev`, commit `f4fb29a`), whose history lives there.
 
-Since 2026-10-24 the project has 14 releases, numbered in order from 0.1.0 to 0.13.1 (the next ones are 0.13.2 for a small fix and 0.14.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, and 0.13.0 the painted look. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
+Since 2026-10-24 the project has 15 releases, numbered in order from 0.1.0 to 0.14.0 (the next ones are 0.14.1 for a small fix and 0.15.0 for the next step). Up to 0.10.0 the tags and commits live in the private `AlexGalhardo/truco.lekzera.xyz` repository; 0.11.0 is the first in the public `AlexGalhardo/zeta-c`, and 0.12.0 adds LAN multiplayer and the special cards, 0.13.0 the painted look, and 0.14.0 the trinkets. Each merges the CHANGELOG entries of every commit since the previous one, and each entry links its commit. Every release also has a portable Windows executable for local tests.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-27
+
+### Added
+
+- **trinkets:** the shop sells trinkets: 32 of them, each with a bonus and a drawback. Every trinket comes in four rarities (Normal, Rare, Epic, Legendary): higher rarity, stronger bonus and a bigger drawback. Each shop has a 50% chance of a Rare and 25% of an Epic, and after every boss at least one Legendary. Your collection stays in your save between runs, and you equip up to 4 per run (or none). A new Rules page explains them.
+- **art:** painted cards for the Professor and Peter (formerly O Mudo) bosses.
+
+### Changed
+
+- **bosses:** the Professor now doubles the drawbacks of your equipped trinkets; O Mudo is now Peter.
+- **ui:** a cleaner table sidebar: the four trinket slots (details on hover or by holding a finger), Goal and Bet on one line each, and both teams' tentos side by side as glossy green and red beads, with a mark when a team has closed a queda. The Chips × Mult count now plays in the middle of the felt while a hand is scored.
+- **rules:** when your team closes a queda, both teams' tentos go back to zero; the rivals still need two quedas to beat you.
+- **balance:** table goals are 20% lower and the heaviest trinket drawbacks are softer, so a good player wins about a quarter of runs.
+- **tutorial:** on touch screens the cards step tells you to hold a finger on a card.
+
+### Removed
+
+- **Fame:** the honest/bluffer meter is gone, with its effect on the rivals and the bonuses that used it.
+- Simpatias, Lance cards and Boteco upgrades are out of the shop for now.
+
 ### Fixed
 
-- **tutorial:** on touch screens the "Your three cards" step tells you to hold a finger on a card to see its strength (it said to hover with the mouse).
+- A hand's Mult can no longer drop below 1, so a drawback no longer turns a won hand into zero or negative points.
 
 ## [0.13.1] - 2026-10-27
 
@@ -594,7 +614,8 @@ Since 2026-10-24 the project has 14 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.1...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.1...v0.14.0
 [0.13.1]: https://github.com/AlexGalhardo/zeta-c/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.11.0...v0.12.0

@@ -41,7 +41,7 @@ contras aceitar**.
 |---|---|---|---|
 | 1 | Ás na Manga | +20 Fichas por vaza vencida com Ás | K vale −5 Fichas |
 | 2 | Pé de Coelho | +3 Mult por vaza vencida com manilha | Meta da mesa +5% |
-| 3 | Zap de Ouro | ×1,5 Mult se o zap venceu uma vaza | −2 Mult em mão sem zap na sua mão |
+| 3 | Zap de Ouro | ×1,5 Mult se o zap venceu uma vaza | −1 Mult em mão sem zap na sua mão |
 | 4 | Copo Americano | +$1 por mão vencida | Itens da loja +$1 |
 | 5 | Baralho Marcado | +15 Fichas por vaza vencida com ♣ | Cartas de ♥ valem −5 Fichas |
 | 6 | Coração Mole | +2 Mult por vaza vencida com ♥ | Cartas de ♠ valem −5 Fichas |
@@ -51,20 +51,20 @@ contras aceitar**.
 | 10 | Figurão | +12 Fichas por vaza vencida com Q, J ou K | 4 a 7 valem −4 Fichas |
 | 11 | Seu Zé | +15 Fichas por vaza vencida com 4, 5, 6 ou 7 | Q, J e K valem −4 Fichas |
 | 12 | Dupla Dinâmica | +3 Mult por vaza vencida pelo parceiro | −10 Fichas por vaza vencida por você |
-| 13 | Confia em Mim | +15 Fichas por vaza vencida pelo parceiro | Mult base −1 (mínimo 1) |
+| 13 | Confia em Mim | +20 Fichas por vaza vencida pelo parceiro | Mult base −1 (mínimo 1) |
 | 14 | Vaza Limpa | ×1,5 Mult se a dupla venceu as duas primeiras vazas | −$1 por mão perdida |
-| 15 | Virada | +6 Mult se perdeu a 1ª vaza e venceu a 2ª | −3 Mult se venceu a 1ª vaza |
+| 15 | Virada | +6 Mult se perdeu a 1ª vaza e venceu a 2ª | −1 Mult se venceu a 1ª vaza |
 | 16 | Grito de Truco | +4 Mult em mão com truco aceito | −2 Mult em mão sem truco |
 | 17 | Seis Maldito | ×2 Mult em mão que vale 6 ou mais | −20% Fichas em mão que vale 1 |
 | 18 | Cofrinho | Juros: +$1 a cada $5 guardados (máx. +$3) | Prêmio de Rapidez −$2 |
 | 19 | Relógio de Bolso | Prêmio de Rapidez ×2 | Meta da mesa +10% |
-| 20 | Pinga de Abertura | +25 Fichas na primeira mão da mesa | −5 Fichas nas outras mãos |
-| 21 | Saideira | +10 Mult quando falta 20% ou menos da meta | −3 Mult quando falta mais da metade |
+| 20 | Pinga de Abertura | +25 Fichas na primeira mão da mesa | −2 Fichas nas outras mãos |
+| 21 | Saideira | +10 Mult quando falta 20% ou menos da meta | −1 Mult quando falta mais da metade |
 | 22 | Vira Dourada | ×1,5 Mult por vaza vencida com manilha | Manilhas valem −10 Fichas |
 | 23 | Lenda do Boteco | ×1,5 Mult por vaza vencida | −1 tento ao perder uma mão |
 | 24 | Caixa de Fósforo | +$1 por vaza vencida com manilha | Itens da loja +$1 |
 | 25 | Carteado | +2 Fichas por carta comum jogada pela dupla | Cartas especiais valem −10 Fichas |
-| 26 | Mão de Ferro | +8 Mult na mão de 11 e na mão de ferro | −2 Mult nas mãos normais |
+| 26 | Mão de Ferro | +8 Mult na mão de 11 e na mão de ferro | −1 Mult nas mãos normais |
 | 27 | Bicheiro | 1 em 4: dobra o dinheiro ganho na mesa | Meta da mesa +8% |
 | 28 | Cantoria | +5 Fichas por sinal enviado pela dupla | Rivais flagram sinais +10% |
 | 29 | Malandragem | +6 Mult por blefe ganho (truco com mão fraca aceito e vencido) | −3 Mult por blefe pego |
@@ -72,7 +72,7 @@ contras aceitar**.
 | 31 | Rei do Pedaço | +1 Mult base por mesa vencida na run (máx. +5) | Meta da mesa +5% por Campeonato |
 | 32 | Coringa no Bolso | Coringas jogados abertos: +20 Fichas e +2 Mult | Coringas encobertos valem 0 Fichas |
 
-Efeitos que dependem de algo que a lógica ainda não mede podem ser trocados por um equivalente de
+Valores revistos na calibração de 2026-10-27 (os contras de Mult zeravam a mão de aposta 1; Mult nunca fica abaixo de 1). Efeitos que dependem de algo que a lógica ainda não mede podem ser trocados por um equivalente de
 mesmo peso, sem perder a regra "um bônus e um contra diferentes".
 
 ## Loja (layout)
