@@ -433,3 +433,9 @@ Com os trinkets no lugar das Manhas o bot bom caiu para ~10–13% (22,6% com `TR
 A regra "rivais chegam a 12 uma vez" (`QUEDAS_TO_LOSE = 1`) foi testada e descartada: o bot bom ganhava 0% (14% mesmo com metas de 5 pontos), pois uma única mão de truco 9/12 perdida encerra a mesa. Ficou `QUEDAS_TO_LOSE = 2` (decisão do dev); a Queda da nossa dupla zera os tentos das duas duplas.
 
 Gate `bun run balance` (500 runs por seed): bot bom **23,4 · 27,0 · 26,6%**; aleatório 0,0 · 0,2 · 0,2%; 6,35 · 6,14 · 6,19 mãos por mesa. PASS nas 3 seeds.
+
+## Metas ×3 (2026-10-28)
+
+Pedido: passar a mesa por pontos estava fácil demais. `CHAMPIONSHIP_GOALS` foi triplicada para **315 · 405 · 525 · 645 · 840 · 1.050 · 1.320 · 1.680**. Grande (×1,5, arredondado), Chefe (×2), Estacas, o defeito da Sheila e o infinito continuam multiplicando essa base. A partida rápida segue sem meta. A faixa da D-39 (bot bom 20–35%) não foi recalibrada.
+
+`bun scripts/balance.ts --seeds 3 --runs 300`: bot bom **4,7 · 6,7 · 5,0%** (FAIL, abaixo de 20%); aleatório 0%; 9,00 · 8,47 · 8,72 mãos por mesa (ainda dentro de 4–12). Nada além da meta foi compensado.

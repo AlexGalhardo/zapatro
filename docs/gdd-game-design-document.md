@@ -215,17 +215,17 @@ Run **linear**, no formato do Balatro: 8 Campeonatos de 3 mesas. Pequena e Grand
 
 | # | Campeonato (`id`) | Meta Pequena | Grande (×1,5) | Chefe (×2) | Rivais sorteados (`RIVAL_POOLS`) |
 |---|---|---|---|---|---|
-| 1 | Boteco do Bairro (`botecoBairro`) | 220 | 330 | 440 | covarde, novato |
-| 2 | Bar de Estrada (`barDeEstrada`) | 280 | 420 | 560 | covarde, novato, calculista |
-| 3 | Quermesse | 360 | 540 | 720 | novato, calculista, covarde |
-| 4 | Clube | 450 | 675 | 900 | calculista, blefador, novato |
-| 5 | Festa do Peão (`festaDoPeao`) | 580 | 870 | 1.160 | calculista, blefador, valentão |
-| 6 | Regional | 730 | 1.095 | 1.460 | blefador, valentão, profissional |
-| 7 | Estadual | 920 | 1.380 | 1.840 | valentão, profissional, calculista |
-| 8 | Rei do Truco (`reiDoTruco`) | 1.170 | 1.755 | 2.340 | profissional, valentão, blefador |
+| 1 | Boteco do Bairro (`botecoBairro`) | 315 | 473 | 630 | covarde, novato |
+| 2 | Bar de Estrada (`barDeEstrada`) | 405 | 608 | 810 | covarde, novato, calculista |
+| 3 | Quermesse | 525 | 788 | 1.050 | novato, calculista, covarde |
+| 4 | Clube | 645 | 968 | 1.290 | calculista, blefador, novato |
+| 5 | Festa do Peão (`festaDoPeao`) | 840 | 1.260 | 1.680 | calculista, blefador, valentão |
+| 6 | Regional | 1.050 | 1.575 | 2.100 | blefador, valentão, profissional |
+| 7 | Estadual | 1.320 | 1.980 | 2.640 | valentão, profissional, calculista |
+| 8 | Rei do Truco (`reiDoTruco`) | 1.680 | 2.520 | 3.360 | profissional, valentão, blefador |
 | ∞ | Infinito | última meta × **1,4** por Campeonato | | | último pool |
 
-As metas do design original (era 100 · 250 · 600 · 1.500 · 3.500 · 8.000 · 16.000 · 30.000) foram trocadas na calibragem do A5 (D-60): o relógio dos tentos domina, metas menores quase não mudam a taxa de vitória. O multiplicador por mesa (×1 / ×1,5 / ×2) é o original. Em 2026-10-25 o dev pediu o dobro da dificuldade: todas as metas (`CHAMPIONSHIP_GOALS`) foram dobradas, o que vale para as três mesas, todas as Estacas e o infinito (resultado medido em `docs/balancing.md`).
+As metas do design original (era 100 · 250 · 600 · 1.500 · 3.500 · 8.000 · 16.000 · 30.000) foram trocadas na calibragem do A5 (D-60): o relógio dos tentos domina, metas menores quase não mudam a taxa de vitória. O multiplicador por mesa (×1 / ×1,5 / ×2) é o original. Em 2026-10-25 o dev pediu o dobro da dificuldade: todas as metas (`CHAMPIONSHIP_GOALS`) foram dobradas, o que vale para as três mesas, todas as Estacas e o infinito (resultado medido em `docs/balancing.md`). Em 2026-10-28 as metas vigentes (105 · 135 · 175 · 215 · 280 · 350 · 440 · 560) foram triplicadas, de novo na mesma fonte, sem mexer em Estacas nem no corte da demo.
 
 ### 5.2 Vitória, derrota e quedas
 

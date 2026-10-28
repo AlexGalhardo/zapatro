@@ -15,6 +15,7 @@ Since 2026-10-24 the project has 16 releases, numbered in order from 0.1.0 to 0.
 ### Changed
 
 - **shop:** Next table sits at the bottom-right of the screen, off the chalkboard, so the four offer cards can grow taller and fill the board. Equipped trinkets are smaller, with space between the labels and the icons.
+- **balance:** Every table's points goal is three times what it was. Championship 1 now asks for 315 / 473 / 630 (small / big / boss) instead of 105 / 158 / 210. Stakes, partner flaws and endless mode still multiply that base.
 
 ## [0.15.0] - 2026-10-28
 
