@@ -11,7 +11,6 @@ export const BOSS_POOL = [
 	'agiota',
 	'delegado',
 	'professor',
-	'irmaos',
 	'mudo',
 	'sortuda',
 ] as const;

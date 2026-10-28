@@ -172,7 +172,7 @@ export class Match {
 					1,
 					Math.max(
 						0,
-						catchChanceFor(this.boss, i, catchOf(b)) +
+						catchOf(b) +
 							(teamOf(i as Seat) === 'them' ? (opts.rivalCatch ?? 0) / 100 : 0),
 					),
 				),
@@ -391,15 +391,6 @@ export class Match {
 			this.peek = { seat, cardId: this.rng.pick(this.state.hands[seat]).id };
 		}
 	}
-}
-
-/**
- * Signal catching under the boss rules. Os Irmãos: rival signals are never caught by your team
- * and yours are caught twice as often.
- */
-function catchChanceFor(boss: BossId | undefined, seat: number, base: number): number {
-	if (boss !== 'irmaos') return base;
-	return seat === 0 || seat === 2 ? 0 : Math.min(1, base * 2);
 }
 
 /** Manilhas already shown face up in this hand (Contador de Cartas). */

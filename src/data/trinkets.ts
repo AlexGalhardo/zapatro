@@ -374,10 +374,10 @@ export function fxArgs(fx: Fx): { n: number; m: number } {
 export interface EquippedTrinket {
 	id: string;
 	level: TrinketLevel;
-	/** Extra factor on the Flaw (O Professor doubles it). */
+	/** Extra factor on the Flaw (Stuart doubles it). */
 	flawX?: number;
 }
 
-/** O Professor: every equipped Flaw counts double on his table. */
+/** Stuart: every equipped Flaw counts double on his table. */
 export const doubleFlaws = (list: readonly EquippedTrinket[]): EquippedTrinket[] =>
 	list.map((e) => ({ ...e, flawX: 2 }));

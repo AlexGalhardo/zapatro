@@ -116,6 +116,8 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.signalAck': '👍 Entendi: {cat}',
 	'table.partnerTrucoOk': 'OK',
 	'table.partnerTrucoCancel': 'Cancelar',
+	'table.partnerTrucoAsk':
+		'Seu parceiro te mandou um sinal antes de pedir truco. Confirmar truco?',
 	'sign.cat.strong': 'carta forte',
 	'sign.cat.three': 'um 3',
 	'sign.cat.nothing': 'nada bom',
@@ -572,10 +574,8 @@ export const ptBR: Record<I18nKey, string> = {
 	'promise.simpatiaGratis.desc': 'Uma Simpatia grátis na próxima loja',
 	'promise.vidaExtra.name': 'Vida extra',
 	'promise.vidaExtra.desc': 'Na próxima mesa os rivais precisam de 3 quedas',
-	'boss.professor.name': 'O Professor',
+	'boss.professor.name': 'Stuart',
 	'boss.professor.rule': 'Os contras dos seus trinkets equipados contam em dobro',
-	'boss.irmaos.name': 'Os Irmãos',
-	'boss.irmaos.rule': 'Os sinais deles nunca são flagrados; os seus, com o dobro de chance',
 	'boss.mudo.name': 'Peter',
 	'boss.mudo.rule': 'Sem sinais com o parceiro',
 	'boss.sortuda.name': 'A Sortuda',
@@ -791,7 +791,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'feat.valentao.name': 'Sem medo',
 	'feat.valentao.desc': 'Vença O Valentão',
 	'feat.professor.name': 'Lição aprendida',
-	'feat.professor.desc': 'Vença O Professor',
+	'feat.professor.desc': 'Vença Stuart',
 	'feat.sortuda.name': 'Acabou a sorte',
 	'feat.sortuda.desc': 'Vença A Sortuda',
 	'feat.campeonato2.name': 'Pé na estrada',
@@ -1042,7 +1042,7 @@ export const ptBR: Record<I18nKey, string> = {
 		'Manhas são bônus passivos: cada uma tem uma condição e um efeito, e disparam da esquerda para a direita, então a ordem importa. Entre as mesas você passa na loja: compre Manhas, pacotes, modificadores de carta, Simpatias (ajudas de uso único) e níveis de Lance com o dinheiro ($) ganho.\nNa mesa, passe o mouse numa Manha para ler o que ela faz.',
 	'rules.trinkets.title': 'Trinkets',
 	'rules.trinkets.body':
-		'Trinkets são amuletos com um Bônus (verde) e um Contra (vermelho).\nCada um vem em 4 raridades: Normal, Raro, Épico e Lendário.\nQuanto maior a raridade, maior o Bônus (×1, ×1,6, ×2,3, ×3,2) e o Contra (×1, ×1,3, ×1,6, ×2).\nUm trinket custa $4, $7, $10 ou $14 conforme a raridade.\nTodo trinket que você compra entra na sua coleção, que fica salva no seu perfil.\nSe você tem o mesmo trinket duas vezes, vale a maior raridade.\nVocê equipa até 4 trinkets por run, e pode equipar nenhum; só os equipados contam.\nClique num trinket na loja para equipar ou tirar; na mesa, passe o mouse para ler.\nA loja oferece 4 trinkets: depois de um chefe um deles é sempre Lendário, nas outras há 50% de chance de um Raro e 25% de um Épico.\nA loja nunca oferece uma raridade que você já tem, nem o mesmo trinket duas vezes.\nO chefe O Professor dobra os Contras dos seus trinkets equipados.',
+		'Trinkets são amuletos com um Bônus (verde) e um Contra (vermelho).\nCada um vem em 4 raridades: Normal, Raro, Épico e Lendário.\nQuanto maior a raridade, maior o Bônus (×1, ×1,6, ×2,3, ×3,2) e o Contra (×1, ×1,3, ×1,6, ×2).\nUm trinket custa $4, $7, $10 ou $14 conforme a raridade.\nTodo trinket que você compra entra na sua coleção, que fica salva no seu perfil.\nSe você tem o mesmo trinket duas vezes, vale a maior raridade.\nVocê equipa até 4 trinkets por run, e pode equipar nenhum; só os equipados contam.\nClique num trinket na loja para equipar ou tirar; na mesa, passe o mouse para ler.\nA loja oferece 4 trinkets: depois de um chefe um deles é sempre Lendário, nas outras há 50% de chance de um Raro e 25% de um Épico.\nA loja nunca oferece uma raridade que você já tem, nem o mesmo trinket duas vezes.\nO chefe Stuart dobra os Contras dos seus trinkets equipados.',
 	'rules.eleven.title': 'Mão de 11 e Queda',
 	'rules.eleven.body':
 		'Mão de 11: a dupla com 11 tentos vê as cartas uma da outra e escolhe jogar (vale 3) ou correr (o rival ganha 1); ninguém pode pedir truco. Mão de ferro (11 × 11): todos jogam às cegas e quem vencer fecha 12.\nQueda: se a sua dupla fecha 12 antes da meta, você pontua o Lance Queda e as duas duplas voltam a 0 tentos; a mesa continua.',

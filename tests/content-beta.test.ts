@@ -181,20 +181,13 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 });
 
 describe('bosses and partners (B1.3)', () => {
-	test('9 pool bosses + the Rei do Truco', () => {
-		expect(BOSS_POOL).toHaveLength(9);
+	test('8 pool bosses + the Rei do Truco', () => {
+		expect(BOSS_POOL).toHaveLength(8);
 		expect(newRun(1, 'tonhao').bosses[7]).toBe('reiDoTruco');
 	});
 
 	test('O Mudo: no signals between you and your partner', () => {
 		expect(match({ boss: 'mudo' }).rules.signals).toEqual([0, 1, 0, 1]);
-	});
-
-	test('Os Irmãos: rival signals never caught, yours caught twice as often', () => {
-		const base = match().rules.catchChance;
-		const irmaos = match({ boss: 'irmaos' }).rules.catchChance;
-		expect([irmaos[0], irmaos[2]]).toEqual([0, 0]);
-		expect(irmaos[1]).toBeCloseTo(Math.min(1, base[1] * 2));
 	});
 
 	test('A Sortuda: the vira often makes a rival card a manilha', () => {
