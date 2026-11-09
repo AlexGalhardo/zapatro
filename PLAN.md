@@ -190,7 +190,7 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-57 | **Opção de baralho de 4 cores** (acessibilidade) e **velocidade de animação 1×/2×/4×** nas Configurações | Acessibilidade e ritmo |
 | D-59 | Mesa em **melhor de três quedas**: os rivais precisam fechar 12 tentos duas vezes; cada queda zera só os tentos de quem a fechou (como a Queda, D-04) | Com derrota na 1ª queda rival, nenhuma mesa passava de ~80% e a run nunca chegava aos 40–60% da D-39 (A5, 2026-09-30; revisar no playtest) |
 | D-60 | Calibragem do A5: metas ×1,27 por Campeonato (110 → 585), Corrida 15 Fichas × 2 Mult, Delegado = Corrida pela metade, parceiros com coragem 0,2, rivais por Campeonato (`RIVAL_POOLS`) | `bun run balance`: bot bom 45–49%, aleatório < 1%, 4,2 mãos por mesa |
-| D-62 | Repositório **público** `AlexGalhardo/zeta-c` com histórico novo (2026-10-25); branch única `main` (sem `dev`); CI de 3 sistemas em todo push; `deploy.yml` publica o site em `beta.lekzera.xyz` a cada push na `main`; workflows do Claude removidos | Minutos livres do Actions; repo público não deve aceitar disparo de terceiros com o token do Claude |
+| D-62 | Repositório **público** `AlexGalhardo/zeta-c` (renomeado para `AlexGalhardo/zapatro`) com histórico novo (2026-10-25); branch única `main` (sem `dev`); CI de 3 sistemas em todo push; `deploy.yml` publica o site em `beta.lekzera.xyz` a cada push na `main`; workflows do Claude removidos | Minutos livres do Actions; repo público não deve aceitar disparo de terceiros com o token do Claude |
 | D-61 | Estacas mexem no relógio: rivais de pools mais duros e tentos de vantagem (1/2/4/6), além de metas ×1,3, juros com teto $3, sem prêmio na Pequena e preços +25% | Só metas quase não mudavam a taxa (o relógio domina, D-59) |
 | D-58 | Pastas das cascas: `desktop/` (Electron) e `mobile/` (Capacitor); `site/` e `trailer/` também com `package.json` e `bun.lock` próprios | Dependências pesadas fora do jogo |
 
@@ -515,7 +515,7 @@ Scripts herdados (`scripts/lib/pixellab.ts`, `pl-*.ts`, `assets-validate.ts`, `a
 
 ## 11. Git, versões e release
 
-- **Remoto:** `origin` → `https://github.com/AlexGalhardo/zeta-c.git` (público, histórico novo desde 2026-10-25, D-62; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única `main` (sem `dev` desde 2026-10-25, D-62), depois dos gates.
+- **Remoto:** `origin` → `https://github.com/AlexGalhardo/zapatro.git` (público, histórico novo desde 2026-10-25, D-62; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única `main` (sem `dev` desde 2026-10-25, D-62), depois dos gates.
 - **Commits:** Conventional Commits 1.0.0, em inglês, micro-commits. Escopos: `truco`, `score`, `ai`, `run`, `shop`, `meta`, `save`, `table`, `ui`, `hud`, `i18n`, `audio`, `art`, `debug`, `balance`, `tutorial`, `desktop`, `mobile`, `web`, `site`, `trailer`, `ci`, `plan`, `docs`, `skills`, `deps`, `release`.
 - **SemVer 2.0.0** (D-22):
 
