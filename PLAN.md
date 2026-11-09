@@ -122,7 +122,7 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
 - [ ] Sistemas inalcançáveis pelas flags: pular mesa e Promessas (`TABLE_SELECT = false`), pacotes, renovação, Melhorias e baralhos/versos destraváveis (`SHOP_SIMPLE = true`, baralho e estaca fora da UI), Estacas e os feitos que dependem deles.
 - [ ] LAN sem relógio de jogada: um humano conectado que nunca joga trava a mesa ([docs/multiplayer.md](docs/multiplayer.md)).
-- [ ] Build Poki (`VITE_POKI=1`) apaga as vozes de `dist/` mesmo com outro `outDir`: rodar o build normal depois dele, ou separado.
+- [x] Build Poki (`VITE_POKI=1`) apagava as vozes de `dist/` mesmo com outro `outDir`: o corte agora usa o `outDir` resolvido (`scripts/lib/poki-trim.ts`, `tests/poki-trim.test.ts`).
 
 ### 1.5 Fora do escopo até a 1.0
 
