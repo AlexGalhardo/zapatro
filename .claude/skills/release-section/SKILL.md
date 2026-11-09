@@ -5,7 +5,7 @@ description: Use whenever you commit Zapatro (Truco Roguelite) — commits are p
 
 # release-section
 
-Fluxo em **todo commit**: gates, docs e a entrada em `[Unreleased]` do CHANGELOG; **sem bump nem tag**. Releases são marcos: 10 até 2026-10-24 (pedido do usuário), cada um com as notas de todos os commits desde o anterior. Remoto único `origin`: `AlexGalhardo/zeta-c` (público, histórico novo desde 2026-10-25; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única no remoto: `main`.
+Fluxo em **todo commit**: gates, docs e a entrada em `[Unreleased]` do CHANGELOG; **sem bump nem tag**. Releases são marcos: 10 até 2026-10-24 (pedido do usuário), cada um com as notas de todos os commits desde o anterior. Remoto único `origin`: `AlexGalhardo/zapatro` (público, histórico novo desde 2026-10-25; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única no remoto: `main`.
 
 ## 1. Gates (nesta ordem; corrija a causa, nunca `--no-verify`)
 
