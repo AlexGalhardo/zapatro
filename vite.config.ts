@@ -1,5 +1,7 @@
-import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
+import { POKI_SKIP, trimPoki } from './scripts/lib/poki-trim';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8')) as {
 	version: string;
@@ -12,8 +14,6 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
  * do the extra paintings: the menu keeps menu-1 and the table the always-loaded backdrops.
  */
 const POKI = ['1', 'true'].includes(process.env.VITE_POKI ?? '');
-const POKI_SKIP =
-	/(audio\/(sfx|music)\/(amb\.(?!boteco)[^/]+|music\.(king|table\d)[^/]*|vo\.[^/]+)|gfx\/bg\/(menu-[1-9]|bg\d|street|partner)\.webp)$/;
 
 /** Files under public/assets (relative, e.g. "assets/ui/x.png"): Boot loads only what exists. */
 function assetFiles(dir = 'public/assets'): string[] {
@@ -26,6 +26,8 @@ function assetFiles(dir = 'public/assets'): string[] {
 			.filter((f) => !(POKI && POKI_SKIP.test(f)))
 	);
 }
+
+let outDir = 'dist';
 
 export default defineConfig({
 	base: './',
@@ -48,14 +50,11 @@ export default defineConfig({
 			// Vite copies all of public/: drop the files the Poki build leaves out.
 			name: 'poki-trim',
 			apply: 'build',
+			configResolved(config) {
+				outDir = resolve(config.root, config.build.outDir);
+			},
 			closeBundle() {
-				if (!POKI) return;
-				for (const kind of ['audio/sfx', 'audio/music', 'gfx/bg']) {
-					const dir = `dist/assets/${kind}`;
-					if (!existsSync(dir)) continue;
-					for (const f of readdirSync(dir))
-						if (POKI_SKIP.test(`${kind}/${f}`)) rmSync(`${dir}/${f}`);
-				}
+				if (POKI) trimPoki(outDir);
 			},
 		},
 	],

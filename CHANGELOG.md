@@ -16,6 +16,10 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - **repo:** README, license, contributing guide, code of conduct and security policy.
 
+### Fixed
+
+- **build:** the Poki trim uses the resolved `outDir`, so a Poki build with another `outDir` no longer deletes the voices from the normal `dist/` (and still trims its own output).
+
 ## [0.19.0] - 2026-10-28
 
 ### Added
