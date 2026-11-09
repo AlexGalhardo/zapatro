@@ -12,6 +12,10 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Added
+
+- **repo:** README, license, contributing guide, code of conduct and security policy.
+
 ## [0.19.0] - 2026-10-28
 
 ### Added
