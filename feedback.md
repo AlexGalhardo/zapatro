@@ -59,12 +59,7 @@ Ciclo de QA do Estagiário, 2026-10-27. Só leitura da lógica: nenhum arquivo d
 - **Severidade:** alta (é o item que o balance está acusando).
 - **Sugestão:** os contras estão pesando mais que os bônus para o bot. Proposta: (a) reduzir o contra dos trinkets de maior peso (candidatos: `Cartas de ♥/♠/♦ valem −5 Fichas`, `Figurão`, `Seu Zé`, que cortam Fichas em muitas vazas), ou (b) subir o bônus Normal dos trinkets que o bot mais equipa. Medir cada mudança com `bun scripts/qa-trinkets.ts`. Número é do Sênior aplicar.
 
-### B-2 · Alta · `bun run balance` falha na faixa do bot bom
-
-- **Quando:** 2026-10-27 21:40.
-- **Evidência:** `bun run balance` → bot bom **12,6 · 14,2 · 13,8%** (faixa 20–35%, FAIL nas 3 seeds). Aleatório 0,0 · 0,0 · 0,0% (PASS), 7,35 · 7,24 · 7,23 mãos por mesa (PASS).
-- **Severidade:** alta (gate de release).
-- **Sugestão:** é o mesmo problema do B-1 visto pelo gate. Corrigir o B-1 deve bastar; se não bastar, o próximo passo é a meta de pontos (`CHAMPIONSHIP_GOALS`, hoje ×0,6), que já foi reduzida.
+- **Remedido em 2026-11-09** (`main` em `2245345`, `bun scripts/qa-trinkets.ts --runs 1000 --seeds 3`, 3000 partidas, bot bom, mesma seed): **9,0%** com trinkets (Campeonato médio 4,62; 7,71 mãos por mesa) contra **12,0%** sem (flag `TRINKETS = false` em cópia fora do repositório; 5,02; 7,42). Diferença **−3,0 p.p.**: o item **continua aberto**, mas bem menor que os −9,6 p.p. de 2026-10-27, e as duas taxas estão dentro da faixa 5–20%. Ajustar contras ou bônus é decisão do dono; nenhum número foi mexido.
 
 ### B-3 · Média · Efeito de cada trinket isolado não está medido
 
@@ -98,5 +93,6 @@ Ciclo de QA do Estagiário, 2026-10-27. Só leitura da lógica: nenhum arquivo d
 
 ## Resolvido
 
+- B-2 (2026-11-09): `bun run balance --seeds 3` passa. Bot bom 7,4 · 8,6 · 7,0% (faixa 5–20%), aleatório 0,0% nas 3 seeds, 7,68–7,74 mãos por mesa (4–12), sem NaN. A faixa mudou em 2026-10-28 (metas ×2), e o gate fechou.
 - Typecheck e testes da branch: verdes no ciclo 1 (335 testes, 0 falhas). Typecheck verde depois de incluir `scripts/qa-trinkets.ts`.
 - O script `scripts/qa-trinkets.ts` foi recriado depois de sumir (ver X-1).

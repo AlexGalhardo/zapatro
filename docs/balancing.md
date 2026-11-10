@@ -453,3 +453,7 @@ O dev escolheu **×2** da base 105 · 135 · … · 560 (210 · 270 · 350 · 43
 ## Registro: remoção de Os Irmãos (2026-10-28)
 
 Pool de bosses cai de 9 para 8 (sem `irmaos`). `bun run balance --seeds 3`: bot bom 7,4 · 8,6 · 7,0% (faixa 5–20%), bot aleatório 0,0% em todos os seeds, 7,68–7,74 mãos por mesa (4–12), sem NaN. Portão PASS.
+
+## Registro: gate e trinkets remedidos (2026-11-09)
+
+`bun run balance --seeds 3` na `main` (`2245345`): bot bom 7,4 · 8,6 · 7,0% (faixa 5–20%), aleatório 0,0% em todos os seeds, 7,68–7,74 mãos por mesa (4–12), sem NaN. **PASS.** `bun scripts/qa-trinkets.ts --runs 1000 --seeds 3` (3000 partidas, bot bom): **9,0%** com trinkets (Campeonato médio 4,62; 7,71 mãos por mesa) e **12,0%** sem (`TRINKETS = false` numa cópia fora do repositório; 5,02; 7,42). Os trinkets ainda custam 3,0 p.p. ao bot bom (eram 9,6 em 2026-10-27); nenhum número foi alterado.

@@ -16,6 +16,10 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - **repo:** README, license, contributing guide, code of conduct and security policy.
 
+### Changed
+
+- **docs:** balance gate re-measured: `bun run balance` passes (good bot 7.0–8.6%); trinkets still cost the good bot 3.0 p.p. (9.0% vs 12.0%), recorded in `feedback.md` and `docs/balancing.md`.
+
 ### Fixed
 
 - **build:** the Poki trim uses the resolved `outDir`, so a Poki build with another `outDir` no longer deletes the voices from the normal `dist/` (and still trims its own output).
