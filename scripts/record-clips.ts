@@ -44,8 +44,7 @@ const BUILD = `(() => {
 		{ kind: 'manha', id: 'teatro', price: 8, sold: false },
 		{ kind: 'manha', id: 'zapZap', price: 9, sold: false },
 		{ kind: 'consumable', item: { kind: 'lance', id: 'virada' }, price: 3, sold: false },
-	], packs: [{ kind: 'pack', pack: 'baralho', price: 4, sold: false }, { kind: 'pack', pack: 'manha', price: 6, sold: false }],
-	upgrade: null, rerolls: 0, opened: null };
+	], rerolls: 0 };
 	s.draw();
 })()`;
 
@@ -92,7 +91,7 @@ const CLIPS: Record<string, Clip> = {
 		ready: 'window.__GAME__?.scene.keys.Menu?.sys.isActive()',
 		act: (p) => p.waitForTimeout(8_000),
 	},
-	// Next-table panels, then the shop with Manhas and packs.
+	// Next-table panels, then the shop with Manhas.
 	shop: {
 		query: '?run=1&seed=6&qa=1',
 		ready: 'window.__GAME__?.scene.keys.Run?.sys.isActive()',
@@ -103,7 +102,7 @@ const CLIPS: Record<string, Clip> = {
 			await p.waitForTimeout(5_000);
 		},
 	},
-	// The build: the shop with five strong Manhas, then the deck full of modified cards, then a pack.
+	// The build: the shop with five strong Manhas, then the deck full of modified cards.
 	build: {
 		query: '?run=1&seed=7&qa=1',
 		ready: 'window.__GAME__?.scene.keys.Run?.sys.isActive()',
@@ -114,18 +113,6 @@ const CLIPS: Record<string, Clip> = {
 			await p.evaluate(
 				`(() => { const s = window.__GAME__.scene.keys.Run; s.drawDeck(s.run); })()`,
 			);
-			await p.waitForTimeout(3_000);
-			await p.evaluate(`(() => {
-				const s = window.__GAME__.scene.keys.Run;
-				for (const o of [...s.children.list]) if (o.depth === 40) o.destroy();
-				s.run.shop.opened = [
-					{ kind: 'card', card: { id: 'x1', rank: '3', suit: 'clubs', mod: 'vidro' } },
-					{ kind: 'manha', id: 'zapZap' },
-					{ kind: 'card', card: { id: 'x2', rank: 'A', suit: 'hearts', mod: 'hot' } },
-					{ kind: 'consumable', item: { kind: 'lance', id: 'virada' } },
-				];
-				s.draw();
-			})()`);
 			await p.waitForTimeout(3_000);
 		},
 	},

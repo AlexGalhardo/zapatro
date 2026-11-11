@@ -1040,7 +1040,7 @@ type Symbol =
 	| 'arrow'
 	| 'hand';
 
-/** Symbol of an icon id, by the words in it (Manhas, Simpatias, Lances, upgrades, promises). */
+/** Symbol of an icon id, by the words in it (Manhas, Simpatias, Lances). */
 const SYMBOL_WORDS: readonly [Symbol, readonly string[]][] = [
 	['bolt', ['zap', 'raio']],
 	['coin', ['ouro', 'dourad', 'renda', 'dinheiro', 'dez', 'caixa', 'desconto', 'reroll', 'nada']],
@@ -1236,8 +1236,6 @@ function iconColor(kind: string, id: string): number {
 		{
 			simpatia: PALETTE.fame,
 			lance: PALETTE.chips,
-			upgrade: 0x3f86e0,
-			promise: PALETTE.money,
 			trophy: 0xb08d57,
 		}[kind] ?? PALETTE.button
 	);
@@ -1259,31 +1257,6 @@ function drawIcon(ctx: Ctx, kind: string, id: string, w: number, h: number): voi
 	box(ctx, 0, 1.5, w, h - 1.5, w * 0.2, shade(c, -0.45));
 	box(ctx, 0, 0, w, h - 2, w * 0.2, c);
 	symbol(ctx, symbolOf(id), w / 2, h / 2 - 1, w * 0.6, PALETTE.textLight);
-}
-
-/** Booster pack: a card-sized pouch with a crimped top and the pack's symbol. */
-const PACK: Record<string, [number, Symbol]> = {
-	baralho: [PALETTE.chips, 'card'],
-	simpatia: [PALETTE.fame, 'star'],
-	lance: [0x3f86e0, 'arrow'],
-	manha: [PALETTE.cta, 'mask'],
-};
-
-function drawPack(ctx: Ctx, id: string): void {
-	const [c, s] = PACK[id] ?? [PALETTE.button, 'star'];
-	box(ctx, 2, 4, CARD_W - 4, CARD_H - 6, 4, c);
-	for (let x = 2; x < CARD_W - 2; x += 4)
-		poly(
-			ctx,
-			[
-				[x, 6],
-				[x + 2, 1],
-				[x + 4, 6],
-			],
-			shade(c, -0.3),
-		);
-	box(ctx, 2, 10, CARD_W - 4, 3, 0, shade(c, -0.3));
-	symbol(ctx, s, CARD_W / 2, CARD_H / 2 + 4, 26, PALETTE.textLight);
 }
 
 /** Thumbnail of a Championship's room (Rules screen): its colour, a lamp and the felt table. */
@@ -1322,7 +1295,7 @@ function drawRoom(ctx: Ctx, id: string, w: number, h: number): void {
 function sizeOf(key: string): [number, number] {
 	if (key.startsWith('icon.')) return [24, 24];
 	if (key === 'card.back.tile') return [BACK_TILE_W, BACK_TILE_H];
-	if (key.startsWith('card.') || key.startsWith('pack.')) return [CARD_W, CARD_H];
+	if (key.startsWith('card.')) return [CARD_W, CARD_H];
 	if (key.startsWith('portrait.')) return [PORTRAIT, PORTRAIT];
 	if (key.startsWith('charcard.')) return [CHAR_W, CHAR_H];
 	if (key.startsWith('charcover.')) {
@@ -1363,7 +1336,6 @@ function draw(ctx: Ctx, key: string, w: number, h: number): void {
 	else if (kind === 'charcard') drawCharCard(ctx, a, w, h);
 	else if (kind === 'charcover') drawCharCard(ctx, a, w, h, true);
 	else if (kind === 'boss') drawAvatar(ctx, a, 'neutral', w, true);
-	else if (kind === 'pack') drawPack(ctx, a);
 	else if (kind === 'bg') drawRoom(ctx, a, w, h);
 	else if (key.startsWith('ui.suit.')) {
 		// A cream disc keeps the black suits readable on dark panels.

@@ -20,27 +20,12 @@ export const ECONOMY = {
 	consumableSlots: 2,
 	/** The deck never goes below this (4 × 3 cards + the vira must always deal). */
 	deckMin: 20,
-	/** Shop: offers and packs per visit. */
+	/** Shop: offers per visit. */
 	offers: 4,
-	packs: 2,
 	/** Offer kind weights: Manha, Simpatia, Lance card. */
 	offerWeights: { manha: 6, simpatia: 2, lance: 2 },
-	/** Manha rarity weights in shops and packs. */
+	/** Manha rarity weights in shops. */
 	/** Legendary ones only once unlocked (feat "doze"). */
 	rarityWeights: { common: 66, uncommon: 25, rare: 7, legendary: 2 },
 	consumablePrice: 3,
 } as const;
-
-export const PACK_KINDS = ['baralho', 'simpatia', 'lance', 'manha'] as const;
-export type PackKind = (typeof PACK_KINDS)[number];
-
-/** Pack price and how many options it shows (the player takes one). */
-export const PACKS: Record<PackKind, { price: number; options: number }> = {
-	baralho: { price: 4, options: 4 },
-	simpatia: { price: 4, options: 3 },
-	lance: { price: 4, options: 3 },
-	manha: { price: 6, options: 3 },
-};
-
-/** Chance that a card from a deck pack comes with a modifier. */
-export const DECK_PACK_MOD_CHANCE = 0.4;

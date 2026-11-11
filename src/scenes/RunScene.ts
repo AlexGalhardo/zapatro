@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import { CARD_W, COVER_H, COVER_W, cardArt, tex } from '../art/flat';
 import { LOGICAL_H } from '../config/constants';
-import { IS_DEMO, SHOP_SIMPLE, TABLE_SELECT, TRINKETS } from '../config/features';
-import { inkOn, PALETTE, SHOP_RARITY_COLOR, shade, toCss } from '../config/palette';
+import { IS_DEMO, SHOP_SIMPLE, TRINKETS } from '../config/features';
+import { PALETTE, SHOP_RARITY_COLOR, shade, toCss } from '../config/palette';
 import { BUTTON_H, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
@@ -10,7 +10,6 @@ import { playAmbience, playMusic } from '../core/music';
 import { openStore } from '../core/platform';
 import { getView } from '../core/viewport';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
-import { TABLE_SIZES } from '../data/championships';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import type { Consumable } from '../data/consumables';
 import type { DeckId } from '../data/decks';
@@ -19,29 +18,22 @@ import { isManhaId, MANHA_BY_ID, type Rarity } from '../data/manhas';
 import { rarityOfPrice } from '../data/rarity';
 import { MAX_STAKE } from '../data/stakes';
 import { isTrinketId, TRINKET_BY_ID, TRINKET_IDS } from '../data/trinkets';
-import { UPGRADES } from '../data/upgrades';
 import { botShop } from '../game/run-sim';
 import { getLang, type I18nKey, t } from '../i18n';
-import { flawText, perkText } from '../i18n/companion';
 import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
 import { isUnlocked, recordRunState } from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
 import { drawCandidates } from '../logic/run/draw';
 import {
 	buy,
-	canSkip,
-	championshipBoss,
-	choosePack,
 	continueEndless,
 	discardConsumable,
-	goalOf,
 	leaveShop,
 	moveManha,
 	needsTarget,
 	newRun,
 	type Offer,
 	offerPrice,
-	type PackOption,
 	parseRun,
 	type RunState,
 	reroll,
@@ -50,7 +42,6 @@ import {
 	type ShopState,
 	sellManha,
 	sellPrice,
-	skipTable,
 	startTable,
 	useConsumable,
 } from '../logic/run/run';
@@ -87,9 +78,9 @@ const CHAMP_H = 63;
 const SLOT = 22;
 
 /**
- * The run between tables (PLAN A4): partner choice, next table (play or skip), shop, packs,
- * consumables and the end of the run. One screen that redraws from the saved `RunState`.
- * Layouts follow references/concept-art/zapatro (screen-partner, -select, -shop, -pack) on the
+ * The run between tables (PLAN A4): partner choice, shop, consumables and the end of the run.
+ * One screen that redraws from the saved `RunState`.
+ * Layouts follow references/concept-art/zapatro (screen-partner, -shop) on the
  * 640×360 stage: `L` is the stage's left edge when the view is wider than 16:9.
  */
 export class RunScene extends Phaser.Scene {
@@ -224,17 +215,15 @@ export class RunScene extends Phaser.Scene {
 			this.drawEnd(run);
 			return;
 		}
-		// Without the table-choice screen the next table starts at once (a saved run mid-Championship too).
-		if (run.phase === 'select' && !TABLE_SELECT) {
+		// The next table starts at once (a saved run mid-Championship too).
+		if (run.phase === 'select') {
 			this.play();
 			return;
 		}
 		// The main area first: its button is the first one, so it starts focused.
-		if (run.phase === 'select') this.drawSelect(run);
-		else this.drawShop(run);
-		// Opening a pack takes the whole screen (screen-pack.png).
-		if (SHOP_SIMPLE && run.phase === 'shop') return;
-		if (!run.shop?.opened || run.phase !== 'shop') this.drawSidebar(run);
+		this.drawShop(run);
+		if (SHOP_SIMPLE) return;
+		this.drawSidebar(run);
 	}
 
 	// --- Drawing helpers -----------------------------------------------------------------
@@ -604,7 +593,7 @@ export class RunScene extends Phaser.Scene {
 		}
 		if (TRINKETS && Object.keys(this.run.collection).length) {
 			this.run.phase = 'shop';
-			this.run.shop = { offers: [], packs: [], upgrade: null, rerolls: 0, opened: null };
+			this.run.shop = { offers: [], rerolls: 0 };
 		}
 		meta.stats.runs++;
 		this.save();
@@ -1100,187 +1089,6 @@ export class RunScene extends Phaser.Scene {
 
 	// --- Next table ----------------------------------------------------------------------
 
-	/**
-	 * screen-select.png: the Championship's three tables side by side, each a coloured card
-	 * (small green, big gold, boss red) with who sits there, the goal, the prize and "Jogar".
-	 */
-	private drawSelect(run: RunState): void {
-		const { L } = this;
-		const boss = championshipBoss(run);
-		const KIND = [PALETTE.good, PALETTE.manilha, PALETTE.truco];
-		// The three cards share the room right of the sidebar, a card gap apart, inside the stage.
-		const left = L + SIDEBAR.x + SIDEBAR.w + GAP.panel;
-		const room = L + 640 - SAFE.stage - left;
-		const w = Math.floor((room - 2 * GAP.card) / 3);
-		const start = left + Math.round((room - 3 * w - 2 * GAP.card) / 2);
-		const r = RADIUS.frame;
-		TABLE_SIZES.forEach((size, i) => {
-			const x0 = start + i * (w + GAP.card);
-			const y0 = 50;
-			const h = 267;
-			const now = i === run.table;
-			const color = KIND[i] ?? PALETTE.panelBorder;
-			const g = this.add.graphics();
-			g.fillStyle(PALETTE.shadow, 0.6).fillRoundedRect(x0, y0 + SHADOW.panel, w, h, r);
-			g.fillStyle(shade(color, -0.68), 1).fillRoundedRect(x0, y0, w, h, r);
-			g.fillStyle(color, 1).fillRoundedRect(x0, y0, w, 37, { tl: r, tr: r, bl: 0, br: 0 });
-			g.fillStyle(shade(color, -0.55), 1).fillRect(x0 + 3, y0 + 37, w - 6, 115);
-			g.lineStyle(2.5, color, 1).strokeRoundedRect(x0, y0, w, h, r);
-			if (now)
-				g.lineStyle(2, PALETTE.textLight, 0.9).strokeRoundedRect(
-					x0 - 2,
-					y0 - 2,
-					w + 4,
-					h + 4,
-					r,
-				);
-			const panel = this.add.container(0, 0, [g]);
-			this.body.add(panel);
-			const add = (...o: Phaser.GameObjects.GameObject[]): void => {
-				panel.add(o);
-			};
-			const cx = x0 + w / 2;
-			const txt = (
-				x: number,
-				y: number,
-				s: string,
-				px: number,
-				c: number,
-				o: [number, number] = [0.5, 0.5],
-				wrap?: number,
-			) =>
-				this.add
-					.text(x, y, s, {
-						fontFamily: UI_FONT,
-						fontSize: `${uiPx(px)}px`,
-						fontStyle: '700',
-						color: toCss(c),
-						align: o[0] === 0 ? 'left' : o[0] === 1 ? 'right' : 'center',
-						wordWrap: wrap ? { width: wrap } : undefined,
-						shadow:
-							inkOn(color) === PALETTE.textDark && c === inkOn(color)
-								? undefined
-								: TEXT_SHADOW,
-					})
-					.setOrigin(o[0], o[1]);
-			add(txt(cx, y0 + 19, t(`run.table.${size}` as I18nKey), 15, inkOn(color)));
-			if (i < run.table) {
-				add(
-					txt(cx, y0 + 95, '✓', 34, PALETTE.good),
-					txt(cx, y0 + 130, t('run.table.done'), 11, PALETTE.good),
-				);
-				panel.setAlpha(0.6);
-				return;
-			}
-			if (size === 'boss' && boss) {
-				add(
-					this.add
-						.image(cx, y0 + 92, tex(this, `charcard.${boss}`))
-						.setDisplaySize(60, 80),
-					txt(cx, y0 + 138, t(`boss.${boss}.name` as I18nKey), 8, PALETTE.textLight),
-				);
-				add(
-					txt(
-						cx,
-						y0 + 147,
-						t(`boss.${boss}.rule` as I18nKey),
-						6,
-						PALETTE.textDim,
-						[0.5, 0],
-						w - 18,
-					).setY(y0 + 142),
-				);
-			} else if (now) {
-				run.rivals.chars.forEach((id, k) => {
-					const face = this.add
-						.image(cx + (k ? 33 : -33), y0 + 100, tex(this, `charcard.${id}`))
-						.setDisplaySize(44, 58)
-						.setInteractive();
-					if (isCompanion(id))
-						face.on('pointerover', () =>
-							this.say(`${this.charName(id)}: ${perkText(id)} · ${flawText(id)}`),
-						);
-					add(face);
-				});
-				add(
-					txt(
-						cx,
-						y0 + 137,
-						t('run.rivals', {
-							a: this.charName(run.rivals.chars[0]),
-							b: this.charName(run.rivals.chars[1]),
-						}),
-						7,
-						PALETTE.textLight,
-						[0.5, 0],
-						w - 14,
-					),
-				);
-			} else add(txt(cx, y0 + 100, '?', 34, PALETTE.textDim));
-			// Goal and prize rows.
-			const rows = this.add.graphics();
-			// Label at the left, value at the right edge, in both rows (Goal and prize).
-			const inX = x0 + PAD.card;
-			const inW = w - 2 * PAD.card;
-			const textL = x0 + 2 * PAD.card;
-			const textR = x0 + w - 2 * PAD.card;
-			rows.fillStyle(PALETTE.panelDark, 1)
-				.fillRoundedRect(inX, y0 + 159, inW, 27, RADIUS.button)
-				.fillRoundedRect(inX, y0 + 190, inW, 27, RADIUS.button);
-			add(rows);
-			add(
-				txt(textL, y0 + 172.5, t('table.side.goal'), 10, PALETTE.textLight, [0, 0.5]),
-				txt(
-					textR,
-					y0 + 172.5,
-					formatPoints(goalOf(run, size), getLang()),
-					17,
-					PALETTE.manilha,
-					[1, 0.5],
-				),
-				this.add
-					.image(textL, y0 + 203.5, tex(this, 'icon.coin'))
-					.setScale(0.8)
-					.setOrigin(0, 0.5),
-				txt(textR, y0 + 203.5, `$${ECONOMY.prize[size]}`, 15, PALETTE.manilha, [1, 0.5]),
-			);
-			if (!now) {
-				panel.setAlpha(0.72);
-				return;
-			}
-			const skip = canSkip(run);
-			// Play takes what Skip leaves; Skip is wide enough for its label at the 7 px floor.
-			const skipW = 67;
-			const playW = skip ? inW - GAP.list - skipW : inW;
-			add(
-				new Button(this, t('run.play'), () => this.play(), {
-					w: playW,
-					h: BUTTON_H.primary,
-					size: 12,
-					color,
-					...(skip ? {} : { left: 30 }),
-				}).setPosition(inX + playW / 2, y0 + 239),
-			);
-			if (skip)
-				add(
-					new Button(
-						this,
-						t('run.skip'),
-						() => {
-							const p = skipTable(run);
-							if (p)
-								this.say(
-									t('run.promise', { p: t(`promise.${p}.name` as I18nKey) }),
-								);
-							this.save();
-							this.draw();
-						},
-						{ w: skipW, h: BUTTON_H.primary, size: TYPE.small },
-					).setPosition(inX + inW - skipW / 2, y0 + 239),
-				);
-		});
-	}
-
 	private charName(id: string): string {
 		return t((isBossId(id) ? `boss.${id}.name` : `char.${id}`) as I18nKey);
 	}
@@ -1299,9 +1107,7 @@ export class RunScene extends Phaser.Scene {
 	private offerName(o: Offer): string {
 		if (o.kind === 'trinket') return trinketName(o.id);
 		if (o.kind === 'manha') return t(`manha.${o.id}.name` as I18nKey);
-		if (o.kind === 'consumable') return this.consumableName(o.item);
-		if (o.kind === 'upgrade') return t(`upgrade.${o.id}.name` as I18nKey);
-		return t(`pack.${o.pack}` as I18nKey);
+		return this.consumableName(o.item);
 	}
 
 	private offerDesc(o: Offer): string {
@@ -1310,35 +1116,26 @@ export class RunScene extends Phaser.Scene {
 			return `${x.perk}\n${x.flaw}`;
 		}
 		if (o.kind === 'manha') return t(`manha.${o.id}.desc` as I18nKey);
-		if (o.kind === 'consumable') return this.consumableDesc(o.item);
-		if (o.kind === 'upgrade') return t(`upgrade.${o.id}.desc` as I18nKey);
-		return t('pack.desc');
+		return this.consumableDesc(o.item);
 	}
 
 	private offerArt(o: Offer): string {
 		if (o.kind === 'trinket') return `icon.${TRINKET_BY_ID.get(o.id)?.icon ?? 'star'}`;
 		if (o.kind === 'manha') return `manha.${o.id}`;
-		if (o.kind === 'consumable')
-			return o.item.kind === 'simpatia' ? `simpatia.${o.item.id}` : `lance.${o.item.id}`;
-		if (o.kind === 'upgrade') return `upgrade.${o.id}`;
-		return `pack.${o.pack}`;
+		return o.item.kind === 'simpatia' ? `simpatia.${o.item.id}` : `lance.${o.item.id}`;
 	}
 
 	/** Kind label and colour on top of an item card (Manhas show their rarity). */
-	private offerTag(o: Offer | PackOption): { tag: string; color: number } {
+	private offerTag(o: Offer): { tag: string; color: number } {
 		if (o.kind === 'trinket') return { tag: t('trinket.kind'), color: levelColor(o.level) };
 		if (o.kind === 'manha') {
 			const r = MANHA_BY_ID.get(o.id)?.rarity ?? 'common';
 			return { tag: t(`rarity.${r}` as I18nKey), color: RARITY_COLOR[r] };
 		}
-		if (o.kind === 'consumable')
-			return {
-				tag: t(o.item.kind === 'simpatia' ? 'kind.simpatia' : 'kind.lance'),
-				color: PALETTE.cta,
-			};
-		if (o.kind === 'upgrade') return { tag: t('kind.upgrade'), color: PALETTE.chips };
-		if (o.kind === 'card') return { tag: t('kind.card'), color: PALETTE.cardFace };
-		return { tag: t('kind.pack'), color: PALETTE.fame };
+		return {
+			tag: t(o.item.kind === 'simpatia' ? 'kind.simpatia' : 'kind.lance'),
+			color: PALETTE.cta,
+		};
 	}
 
 	/** Rarity of an offer: a Manha's own, else the one its base price falls in (src/data/rarity.ts). */
@@ -1346,7 +1143,6 @@ export class RunScene extends Phaser.Scene {
 		if (o.kind === 'trinket')
 			return (['common', 'uncommon', 'rare', 'legendary'] as const)[o.level - 1] ?? 'common';
 		if (o.kind === 'manha') return MANHA_BY_ID.get(o.id)?.rarity ?? 'common';
-		if (o.kind === 'upgrade') return rarityOfPrice(UPGRADES[o.id].price);
 		return rarityOfPrice(ECONOMY.consumablePrice);
 	}
 
@@ -1396,7 +1192,7 @@ export class RunScene extends Phaser.Scene {
 		for (const [k, o] of items.entries()) {
 			if (o.kind !== 'trinket') continue;
 			const buyIt = (): void => {
-				if (!this.err(buy(run, 'offers', k))) return;
+				if (!this.err(buy(run, k))) return;
 				sfx(this, 'sfx.shop.buy');
 				this.syncCollection(run);
 				this.draw();
@@ -1601,7 +1397,7 @@ export class RunScene extends Phaser.Scene {
 		for (const [k, o] of items.entries()) {
 			const rarity = this.offerRarity(o);
 			const tryBuy = (): void => {
-				if (!this.err(buy(run, 'offers', k))) return;
+				if (!this.err(buy(run, k))) return;
 				sfx(this, 'sfx.shop.buy');
 				this.save();
 				this.draw();
@@ -1648,18 +1444,14 @@ export class RunScene extends Phaser.Scene {
 		);
 	}
 
-	/** screen-shop.png: the counter with items on top, packs below, "Renovar" and "Próxima mesa". */
+	/** screen-shop.png: the counter with the items on top, "Renovar" and "Próxima mesa". */
 	private drawShop(run: RunState): void {
 		const shop = run.shop;
 		if (!shop) return;
 		const { L } = this;
-		if (shop.opened) {
-			this.drawPack(run, shop.opened);
-			return;
-		}
 		// Everything sits on the painted chalkboard (its place follows the backdrop's cover fit):
-		// title on top, the offers in a row, the packs as slim buttons under them; Renew and Next
-		// table go right under the board, on the counter.
+		// title on top, the offers in a row; Renew and Next table go right under the board, on the
+		// counter.
 		// On windows that are not 16:9 the board can reach under the sidebar or off the stage: the
 		// UI keeps to the part of it that is inside the stage, with room for the buttons below.
 		const raw = shopSlate(getView(this));
@@ -1683,28 +1475,22 @@ export class RunScene extends Phaser.Scene {
 			return;
 		}
 		const pad = 6;
-		const inL = slate.x + pad;
 		const inW = slate.w - 2 * pad;
 		const mid = slate.x + slate.w / 2;
 		this.screenTitle(mid, t('run.shop'), 'cart', slate.y + 13);
-		const items = [
-			...shop.offers.map((o, i) => ({ o, where: 'offers' as const, i })),
-			...(shop.upgrade ? [{ o: shop.upgrade, where: 'upgrade' as const, i: 0 }] : []),
-		];
-		const packs = shop.packs.map((o, i) => ({ o, where: 'packs' as const, i }));
-		type Entry = (typeof items)[number] | (typeof packs)[number];
+		const items = shop.offers.map((o, i) => ({ o, i }));
+		type Entry = (typeof items)[number];
 		const buyer = (e: Entry) => (): void => {
-			if (!this.err(buy(run, e.where, e.i))) return;
+			if (!this.err(buy(run, e.i))) return;
 			sfx(this, 'sfx.shop.buy');
 			this.save();
 			this.draw();
-			this.focusNextBuy(`${e.where}:${e.i}`);
+			this.focusNextBuy(`offers:${e.i}`);
 		};
 		const titleH = 31;
-		const packH = 22;
 		const gap = 4;
 		const offersTop = slate.y + titleH;
-		const cardH = slate.h - titleH - packH - 2 * gap - pad;
+		const cardH = slate.h - titleH - gap - pad;
 		const cardW = Math.min(
 			118,
 			Math.floor((inW - (Math.max(items.length, 1) - 1) * gap) / Math.max(items.length, 1)),
@@ -1736,32 +1522,9 @@ export class RunScene extends Phaser.Scene {
 						mid - rowW / 2 + cardW / 2 + k * (cardW + gap),
 						offersTop + cardH / 2,
 					)
-					// Which offer the card sells (QA picks the pack by this, not by its price).
-					.setData('offer', `${e.where}:${e.i}`),
+					// Which offer the card sells (QA picks it by this, not by its price).
+					.setData('offer', `offers:${e.i}`),
 			);
-		}
-		const packW = Math.floor(
-			(inW - (Math.max(packs.length, 1) - 1) * gap) / Math.max(packs.length, 1),
-		);
-		for (const [k, e] of packs.entries()) {
-			const tryBuy = buyer(e);
-			const holder = this.add
-				.container(inL + packW / 2 + k * (packW + gap), slate.y + slate.h - pad - packH / 2)
-				.setData('offer', `${e.where}:${e.i}`);
-			const b = new Button(
-				this,
-				`${this.offerName(e.o)} · ${e.o.sold ? t('run.sold') : `$${e.o.price}`}`,
-				tryBuy,
-				{
-					w: packW,
-					h: packH,
-					size: 8,
-					color: PALETTE.buttonLight,
-					...(e.o.sold ? {} : { onBlocked: tryBuy }),
-				},
-			).setEnabled(!e.o.sold && run.money >= e.o.price);
-			holder.add(b);
-			this.body.add(holder);
 		}
 		// "Próxima mesa" first: Enter never buys by accident.
 		const btnY = slate.y + slate.h + 8 + BUTTON_H.primary / 2;
@@ -1809,12 +1572,8 @@ export class RunScene extends Phaser.Scene {
 	private focusNextBuy(from: string): void {
 		const run = this.run;
 		const shop = run?.shop;
-		if (!run || !shop || shop.opened) return;
-		const all = [
-			...shop.offers.map((o, i) => ({ o, id: `offers:${i}` })),
-			...(shop.upgrade ? [{ o: shop.upgrade, id: 'upgrade:0' }] : []),
-			...shop.packs.map((o, i) => ({ o, id: `packs:${i}` })),
-		];
+		if (!run || !shop) return;
+		const all = shop.offers.map((o, i) => ({ o, id: `offers:${i}` }));
 		const k = Math.max(
 			0,
 			all.findIndex((e) => e.id === from),
@@ -1823,75 +1582,6 @@ export class RunScene extends Phaser.Scene {
 			(e) => !e.o.sold && e.o.price <= run.money,
 		);
 		if (next) this.nav?.prefer((b) => b.parentContainer?.getData('offer') === next.id);
-	}
-
-	/** screen-pack.png: "Escolha 1" with the options as three cards and "Pular". */
-	private drawPack(run: RunState, options: PackOption[]): void {
-		const { cx } = this;
-		sfx(this, 'sfx.pack.open');
-		this.screenTitle(cx, t('run.packPick'), 'cards');
-		// Four options at the three-option width (4 × 166) overflow the 640 stage.
-		const w = options.length > 3 ? 144 : 166;
-		const step = w + GAP.card;
-		options.forEach((opt, i) => {
-			const { tag, color } = this.offerTag(opt);
-			const card =
-				opt.kind === 'card'
-					? {
-							art: tex(this, cardArt(opt.card)),
-							title: `${opt.card.rank} ${t(`suit.${opt.card.suit}` as I18nKey)}`,
-							desc: opt.card.mod
-								? `${t(`mod.${opt.card.mod}.name` as I18nKey)}: ${t(`mod.${opt.card.mod}.desc` as I18nKey)}`
-								: t('run.cardPlain'),
-						}
-					: opt.kind === 'manha'
-						? {
-								art: tex(this, `manha.${opt.id}`),
-								title: t(`manha.${opt.id}.name` as I18nKey),
-								desc: t(`manha.${opt.id}.desc` as I18nKey),
-							}
-						: {
-								art: tex(
-									this,
-									opt.item.kind === 'simpatia'
-										? `simpatia.${opt.item.id}`
-										: `lance.${opt.item.id}`,
-								),
-								title: this.consumableName(opt.item),
-								desc: this.consumableDesc(opt.item),
-							};
-			this.body.add(
-				itemCard(this, {
-					...card,
-					tag,
-					color: opt.kind === 'card' && opt.card.mod ? PALETTE.money : color,
-					w,
-					h: 200,
-					artScale: 1.3,
-					button: {
-						label: t('run.take'),
-						onClick: () => {
-							if (!this.err(choosePack(run, i))) return;
-							this.save();
-							this.draw();
-						},
-					},
-				}).setPosition(cx + (i - (options.length - 1) / 2) * step, 172),
-			);
-		});
-		this.button(
-			cx,
-			310,
-			t('run.skipPack'),
-			() => {
-				choosePack(run, -1);
-				this.save();
-				this.draw();
-			},
-			166,
-			undefined,
-			{ h: BUTTON_H.primary, size: 12, hint: backHint },
-		);
 	}
 
 	// --- End -----------------------------------------------------------------------------

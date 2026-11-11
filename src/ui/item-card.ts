@@ -46,7 +46,7 @@ const font = (
 });
 
 /**
- * Shop/pack item drawn as in screen-shop.png: a dark card with its name on top, a darker box
+ * Shop item drawn as in screen-shop.png: a dark card with its name on top, a darker box
  * with the art and the effect text, and the button (price or "Escolher") at the bottom.
  * Lifts a little on hover so the row reads as something to pick. Centred on (0, 0).
  */

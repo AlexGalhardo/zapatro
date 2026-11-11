@@ -1,8 +1,7 @@
 /**
  * Headless runs (PLAN §10.2): win rate, Championship reached, hands per table and favourite Manhas.
  *   bun scripts/sim.ts [--runs 500] [--bot good|random] [--seed 1] [--champ 8] [--stake 1]
- *     [--partner bruto|cida|jhony|nino] [--skip none|small|both]
- * `--skip`: tables the good bot skips for a Promise; only meaningful with `TABLE_SELECT` on (src/config/features.ts), else nobody can skip.
+ *     [--partner bruto|cida|jhony|nino]
  * `--stake` has no effect until the Estacas exist (B2); the bot already carries it.
  *
  * 1v1 quick matches (mano a mano, plain Truco to 12), invariants checked on every hand:
@@ -12,7 +11,7 @@
 import { AI_PROFILES } from '../src/data/ai-profiles';
 import type { CompanionId } from '../src/data/companions';
 import type { SeatBrain } from '../src/game/match';
-import { HABITS, type RunBot, simulateRun } from '../src/game/run-sim';
+import { type RunBot, simulateRun } from '../src/game/run-sim';
 import { playHeadsUp } from './lib/heads-up';
 
 const args = process.argv.slice(2);
@@ -61,8 +60,6 @@ const seed = Number(opt('seed', '1'));
 const champ = Number(opt('champ', '8'));
 const stake = Number(opt('stake', '1'));
 const partner = (opt('partner', '') || undefined) as CompanionId | undefined;
-const skip = opt('skip', 'none');
-HABITS.skip = { small: skip !== 'none', big: skip === 'both' };
 
 const t0 = performance.now();
 const out = Array.from({ length: runs }, (_, i) =>
@@ -81,7 +78,6 @@ console.log(
 			bot,
 			stake,
 			partner: partner ?? 'bruto|cida',
-			skip,
 			runs,
 			seed,
 			winRate: Number((wins / runs).toFixed(3)),
