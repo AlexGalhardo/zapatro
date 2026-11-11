@@ -12,9 +12,10 @@ export const en = {
 	'boot.tip.6': 'Your points are Chips × Mult: a truco that pays off multiplies your score.',
 	'boot.tip.7':
 		'Before your first card you can send your partner a secret signal, but the rivals may catch it.',
-	'boot.tip.8': 'Manhas trigger from left to right, so the order you place them in matters.',
+	'boot.tip.8':
+		'Every trinket has a perk and a flaw: read both before filling one of your 4 slots.',
 	'boot.tip.9':
-		'Between tables, spend the money you won in the shop on Manhas, packs and Lance levels.',
+		'Between tables the shop sells trinkets: spend the money you won at the table there.',
 	'boot.tip.10':
 		"At 11 tentos you see your partner's hand and choose to play or run; nobody may call truco.",
 	'menu.newRun': 'New run',

@@ -15,9 +15,9 @@ export const ptBR: Record<I18nKey, string> = {
 	'boot.tip.7':
 		'Antes da sua primeira carta você pode mandar um sinal secreto ao parceiro, mas os rivais podem captar.',
 	'boot.tip.8':
-		'As Manhas disparam da esquerda para a direita, então a ordem em que você as coloca importa.',
+		'Todo trinket traz uma vantagem e um defeito: leia os dois antes de ocupar um dos seus 4 espaços.',
 	'boot.tip.9':
-		'Entre as mesas, gaste na loja o dinheiro que ganhou em Manhas, pacotes e níveis de Lance.',
+		'Entre as mesas a loja vende trinkets: gaste nela o dinheiro que você ganhou na mesa.',
 	'boot.tip.10':
 		'Com 11 tentos você vê a mão do parceiro e escolhe jogar ou correr; ninguém pode pedir truco.',
 	'menu.newRun': 'Nova run',
