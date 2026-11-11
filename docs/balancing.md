@@ -60,7 +60,7 @@ Modificadores: gold (Dourada) +$1 · heavy (Pesada) +20 Fichas · hot (Quente) +
 
 - Metas (Pequena; Grande ×1,5; Chefe ×2): 220 · 280 · 360 · 450 · 580 · 730 · 920 · 1.170 (dobradas em 2026-10-25; antes 110 → 585); infinito ×1,4 por Campeonato.
 - Mesa em melhor de três quedas (D-59). Corrida 15 Fichas × 2 Mult. Delegado: Corrida ×0,5.
-- Dinheiro: início $4; prêmio $3/$4/$5; rapidez +$1 por tento que faltava ao rival (teto $5); juros +$1 a cada $5 (teto $5); reroll $5 +$1; venda pela metade; Simpatia/Lance $3; pacotes $4 ($6 Manha).
+- Dinheiro: início $4; prêmio $3/$4/$5; rapidez +$1 por tento que faltava ao rival (teto $5); juros +$1 a cada $5 (teto $5); reroll $5 +$1; venda pela metade; Simpatia/Lance $3; pacotes $4 ($6 Manha; removidos em 2026-11-11, D-82).
 - Rivais por Campeonato: C1 covarde/novato … C8 profissional/valentão/blefador (`RIVAL_POOLS`). Parceiros: Bruto (valentão, coragem 0,2, agressividade 0,6), Cida (calculista, coragem 0,2); erro ×1/×0,7/×0,4 por nível.
 - Bot bom (`GOOD_BOT`): perfil profissional com coragem 0,2, agressividade 0,2, blefe 0,02; compra por raridade + tags em comum; guarda $10 para juros a partir de 3 Manhas. Hábitos do B0.2 em `HABITS` (`src/game/run-sim.ts`): Manhas de ×Mult à direita; com os espaços cheios vende a mais fraca quando a nova vale ao menos 2 a mais (raridade + tags); Espelho copia carta modificada, Benzedeira nunca tira carta modificada, Figa só com Mão Leve; **não pula mesa** (ver abaixo).
 
@@ -457,3 +457,17 @@ Pool de bosses cai de 9 para 8 (sem `irmaos`). `bun run balance --seeds 3`: bot 
 ## Registro: gate e trinkets remedidos (2026-11-09)
 
 `bun run balance --seeds 3` na `main` (`2245345`): bot bom 7,4 · 8,6 · 7,0% (faixa 5–20%), aleatório 0,0% em todos os seeds, 7,68–7,74 mãos por mesa (4–12), sem NaN. **PASS.** `bun scripts/qa-trinkets.ts --runs 1000 --seeds 3` (3000 partidas, bot bom): **9,0%** com trinkets (Campeonato médio 4,62; 7,71 mãos por mesa) e **12,0%** sem (`TRINKETS = false` numa cópia fora do repositório; 5,02; 7,42). Os trinkets ainda custam 3,0 p.p. ao bot bom (eram 9,6 em 2026-10-27); nenhum número foi alterado.
+
+## Registro: remoção de pacotes, Melhorias e pular mesa (2026-11-11, D-82)
+
+Pacotes, Melhorias do Boteco e pular mesa (com as Promessas e `TABLE_SELECT`) saíram do código. O bot do gate já não usava nenhum deles (`TRINKETS` e `SHOP_SIMPLE` ligados, `TABLE_SELECT` desligado, `HABITS.skip` sempre `none`), então o gate não deve mexer: o resultado é idêntico, mesas e runs, antes e depois, na mesma máquina. `bun scripts/sim.ts` e `--skip` perderam a opção `--skip` (as seções acima que a citam, de 2026-10-25 a 2026-10-28, ficam como registro).
+
+| Medida | Antes (`2245345`, `main`) | Depois (`refactor(run)!` sobre `7e8cd0c`) |
+|---|---|---|
+| `bun run balance --seeds 3`, bot bom | 7,4 · 8,6 · 7,0% (faixa 5–20%) | 7,4 · 8,6 · 7,0% |
+| Bot aleatório | 0,0% nas 3 seeds | 0,0% nas 3 seeds |
+| Mãos por mesa | 7,74 · 7,74 · 7,68 (4–12) | 7,74 · 7,74 · 7,68 |
+| Gate | PASS | **PASS** |
+| `bun scripts/sim.ts` (500 runs, seed 1, bot bom) | vitória 7,4%, Campeonato médio 4,53, 7,74 mãos por mesa, `endedAtChamp` `[48,69,65,73,71,54,47,73,0]` | idêntico |
+
+Nenhum número de gameplay foi retocado.

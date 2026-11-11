@@ -7,10 +7,10 @@ Stack: TypeScript strict · Vite 8 · **Phaser 4.2.x** (WebGL, antialias, sem `r
 ```text
 src/data/     números e conteúdo: teclas, resoluções, sfx, perfis de IA, personagens, fichas por carta
               (cards), Lances (lances), metas (championships), Manhas (manhas), modificadores (card-mods)
-src/logic/    funções puras: save (schema v1), keybinds, rng, viewport/display, touch, fps-guard,
+src/logic/    funções puras: save (schema v3, migração em cadeia), keybinds, rng, viewport/display, touch, fps-guard,
               voice-limiter; truco/ (regras), ai/ (decisão, Fama), score/ (scoreHand com steps, manhas.ts: condições e efeitos das Manhas/modificadores,
-              Lances, meta, Queda, formatPoints); run/ (RunState: Campeonatos, loja, pacotes,
-              Promessas, consumíveis, save por mão; `skipTable` pula Pequena/Grande e rende uma Promessa, que a loja só resgata se a mesa seguinte for vencida, P-08); meta.ts (feitos, destraves, Almanaque, estatísticas)
+              Lances, meta, Queda, formatPoints); run/ (RunState: Campeonatos, loja,
+              consumíveis, save por mão; pacotes, Melhorias do Boteco, pular mesa e Promessas saíram em 2026-11-11, D-82, e a migração 2→3 do save os descarta); meta.ts (feitos, destraves, Almanaque, estatísticas)
 src/game/     match.ts: partida/mesa (IA, Fama, pontos, meta, quedas, chefes, parceiro, Manhas de regra, traços dos companheiros);
               traits.ts: traços por assento;
               run-table.ts: Match da mesa atual da run; run-sim.ts: bot de run (sim/balance/?auto)
@@ -27,7 +27,7 @@ src/core/     plataforma: storage (localStorage + .bak + quarentena), context (r
               display/viewport (zoom inteiro), audio (buses + limitador), music, gamepad, virtual-keys, hotkeys,
               errors (overlay de erro, overlay de GPU travada `error.gpu*`, log), platform (Electron/Capacitor),
               steam (conquistas), poki (SDK), feel
-src/ui/       MenuList (teclado + mouse + toque), Button (9-slice), item-card (item da loja/pacote como carta), nav (foco por setas/gamepad), toast (feitos), screen, panel, key-hint (selo de atalho), version-footer, fontes, texto nítido, touch, keys
+src/ui/       MenuList (teclado + mouse + toque), Button (9-slice), item-card (item da loja como carta), nav (foco por setas/gamepad), toast (feitos), screen, panel, key-hint (selo de atalho), version-footer, fontes, texto nítido, touch, keys
 src/i18n/     en.ts (fonte do tipo I18nKey) + pt-BR.ts (mesmas chaves, obrigatório pelo tipo)
 src/config/   constants (LOGICAL_H, velocidades), ui (tokens de interface: RADIUS, SHADOW, DEPTH, MOTION),
               palette (boteco), features (VITE_DEMO, VITE_POKI), game-config (lista de cenas, Phaser 4 com

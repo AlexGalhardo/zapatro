@@ -95,6 +95,6 @@ Sem saída de som na sessão, a mixagem foi medida em vez de ouvida (`ffmpeg` `e
 
 - Resolvido: `sfx.score.xmult` agora é o tinido sustentado de duas garrafas (bruto −10 LUFS; o tilintar curto de copos media −40). `amb.reiDoTruco` refeita (a versão "silenciosa" media −46 LUFS).
 
-- Tier 2 da revisão do diretor no catálogo (`scripts/el-catalog.ts`), ainda não gerados: `sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider` (aparar para 0,15 s e 0,08 s depois de normalizar), `sfx.promise`, `music.shop`, `amb.decisive`. Gerar com `bun scripts/el-sfx.ts --tier 2 <prefixo>` e `bun scripts/el-music.ts`.
+- Tier 2 da revisão do diretor no catálogo (`scripts/el-catalog.ts`), ainda não gerados: `sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider` (aparar para 0,15 s e 0,08 s depois de normalizar), `music.shop`, `amb.decisive`. Gerar com `bun scripts/el-sfx.ts --tier 2 <prefixo>` e `bun scripts/el-music.ts`.
 - O `el-sfx.ts` acrescenta "no music" ao prompt: prompts com instrumento melódico (xilofone, sino) saem como clique e ruído; descreva como foley (blocos de madeira, taça).
 - `sfx.ui.error` bruto a −26 LUFS (ok depois de normalizado).
