@@ -24,6 +24,8 @@ const SEAT_AT = [
 	[320, 82],
 	[156, 160],
 ] as const;
+/** The join form's base font: follows the screen height like the canvas UI, never under 16 px (phones). */
+const FORM_FONT = 'clamp(16px,2.6vh,56px)';
 const SEAT_W = 132;
 const SEAT_H = 40;
 
@@ -273,27 +275,27 @@ export class LanScene extends Phaser.Scene {
 		const field = (label: string, value: string, max: number): HTMLInputElement => {
 			const input = el(
 				'input',
-				`font:inherit;padding:8px 10px;border-radius:8px;border:2px solid ${toCss(PALETTE.panelLight)};background:${toCss(PALETTE.bgNeutral)};color:${ink};`,
+				`font:inherit;padding:.5em .625em;border-radius:.5em;border:.125em solid ${toCss(PALETTE.panelLight)};background:${toCss(PALETTE.bgNeutral)};color:${ink};`,
 			);
 			input.value = value;
 			input.maxLength = max;
 			input.autocomplete = 'off';
 			input.addEventListener('keydown', (e) => e.stopPropagation());
-			wrap.append(el('label', 'font-size:13px;', label), input);
+			wrap.append(el('label', 'font-size:.8125em;', label), input);
 			return input;
 		};
 		const root = el(
 			'div',
-			`position:fixed;inset:0;z-index:20;display:grid;place-items:center;font-family:${UI_FONT};color:${ink};background:rgba(20,20,20,.55);`,
+			`position:fixed;inset:0;z-index:20;display:grid;place-items:center;font-size:${FORM_FONT};font-family:${UI_FONT};color:${ink};background:rgba(20,20,20,.55);`,
 		);
 		const wrap = el(
 			'div',
-			`display:flex;flex-direction:column;gap:8px;width:min(92vw,380px);padding:18px;border-radius:14px;background:${toCss(PALETTE.panel)};box-shadow:0 5px 0 ${toCss(PALETTE.shadow)};`,
+			`display:flex;flex-direction:column;gap:.5em;width:min(92vw,23.75em);padding:1.125em;border-radius:.875em;background:${toCss(PALETTE.panel)};box-shadow:0 .3em 0 ${toCss(PALETTE.shadow)};`,
 		);
 		wrap.append(
 			el(
 				'div',
-				`font-size:20px;font-weight:700;color:${toCss(PALETTE.manilha)};`,
+				`font-size:1.25em;font-weight:700;color:${toCss(PALETTE.manilha)};`,
 				t('lan.title'),
 			),
 		);
@@ -301,14 +303,14 @@ export class LanScene extends Phaser.Scene {
 		const addr = field(t('lan.address'), remember('addr'), 60);
 		const status = el(
 			'div',
-			`min-height:2.6em;font-size:13px;color:${toCss(PALETTE.bad)};`,
+			`min-height:2.6em;font-size:.8125em;color:${toCss(PALETTE.bad)};`,
 			error,
 		);
-		const row = el('div', 'display:flex;gap:8px;flex-wrap:wrap;');
+		const row = el('div', 'display:flex;gap:.5em;flex-wrap:wrap;');
 		const btn = (label: string, color: number, fn: () => void): HTMLButtonElement => {
 			const b = el(
 				'button',
-				`flex:1;font:inherit;font-weight:700;padding:9px 12px;border:0;border-radius:8px;cursor:pointer;background:${toCss(color)};color:${toCss(PALETTE.textDark)};box-shadow:0 3px 0 ${toCss(PALETTE.shadow)};`,
+				`flex:1;font:inherit;font-weight:700;padding:.5625em .75em;border:0;border-radius:.5em;cursor:pointer;background:${toCss(color)};color:${toCss(PALETTE.textDark)};box-shadow:0 .19em 0 ${toCss(PALETTE.shadow)};`,
 				label,
 			);
 			b.addEventListener('click', fn);
