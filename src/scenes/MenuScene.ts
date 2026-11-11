@@ -7,6 +7,7 @@ import { isElectron, lanAvailable } from '../core/platform';
 import { trackZoom } from '../core/viewport';
 import { getLang, type I18nKey, t } from '../i18n';
 import { parseRun } from '../logic/run/run';
+import type { QuickMode } from '../logic/save';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { onKey, onSceneEvent } from '../ui/keys';
@@ -76,7 +77,12 @@ export class MenuScene extends Phaser.Scene {
 				label: 'menu.quick',
 				icon: 'cards',
 				color: PALETTE.calm,
-				onSelect: () => fadeTo(this, 'Table', { run: false }),
+				onSelect: () => {
+					this.scene.pause();
+					this.scene.launch('Mode', {
+						onPick: (mode: QuickMode) => fadeTo(this, 'Table', { run: false, mode }),
+					});
+				},
 			},
 			...(lanAvailable()
 				? [

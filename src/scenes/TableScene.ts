@@ -35,11 +35,11 @@ import { DUCK, VO_JOKE, type VoJoke, type VoLine } from '../data/sfx';
 import { SPECIAL_CARDS, specialOf } from '../data/specials';
 import { TRINKET_SLOTS } from '../data/trinkets';
 import { TUTORIAL_DEAL, type TutorialAnchor, type TutorialTrigger } from '../data/tutorial';
-import { Match, manilhasSeen, type SeatBrain } from '../game/match';
+import { Match, type MatchOptions, manilhasSeen, type SeatBrain } from '../game/match';
 import { RemoteMatch } from '../game/remote-match';
 import { GOOD_BOT } from '../game/run-sim';
 import { rivalBrain, tableMatch } from '../game/run-table';
-import { getLang, type I18nKey, t } from '../i18n';
+import { getLang, type I18nKey, t, tDuel } from '../i18n';
 import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
 import { continueWithoutTruco, honestSign } from '../logic/ai/decide';
 import { actionFor } from '../logic/keybinds';
@@ -53,6 +53,7 @@ import {
 	type RunState,
 	tableSize,
 } from '../logic/run/run';
+import type { QuickMode } from '../logic/save';
 import { formatPoints } from '../logic/score/format';
 import { type ScoreStep, tableGoal, totals } from '../logic/score/score';
 import { TOUCH_TEXT_MIN } from '../logic/touch';
@@ -431,6 +432,13 @@ const END_GAP = GAP.inline;
 const END_TITLE_H = 24;
 const END_INNER = END_W - 2 * END_PAD;
 
+/** Keys that have a `<key>.duel` sibling: the wording of a two-seat table (no pair, no partner). */
+type Duelable<K extends string = I18nKey> = K extends string
+	? `${K}.duel` extends I18nKey
+		? K
+		: never
+	: never;
+
 interface SeatView {
 	/** Pointer of the speech bubble towards the avatar. */
 	tail: Phaser.GameObjects.Triangle;
@@ -555,6 +563,25 @@ export class TableScene extends Phaser.Scene {
 	private hudGfx!: Phaser.GameObjects.Graphics;
 	private betNote!: Phaser.GameObjects.Text;
 	private manhaRow!: Phaser.GameObjects.Container;
+	/** Two seats (mano a mano): the rival sits on top, no side seats, no partner, no signals. */
+	private get duel(): boolean {
+		return this.match.seats === 2;
+	}
+	/** The seats other than yours that sit at this table. */
+	private get others(): readonly Seat[] {
+		return this.duel ? [1] : [1, 2, 3];
+	}
+	/** A seat's slot: the lone rival of a two-seat table takes the top (the partner's) one. */
+	private slot(seat: Exclude<Seat, 0>): Exclude<Seat, 0> {
+		return this.duel ? 2 : seat;
+	}
+	private seatUi(seat: Exclude<Seat, 0>): (typeof SEAT_UI)[Exclude<Seat, 0>] {
+		return SEAT_UI[this.slot(seat)];
+	}
+	/** `key`, or its `.duel` wording at a two-seat table. */
+	private tx(key: Duelable, vars?: Record<string, string | number>): string {
+		return tDuel(key, this.duel, vars);
+	}
 	/** Trinket slots drawn in the HUD block (always four, the unusable ones dimmed). */
 	private get slots(): number {
 		return TRINKET_SLOTS;
@@ -581,6 +608,8 @@ export class TableScene extends Phaser.Scene {
 	create(data: {
 		run?: boolean;
 		tutorial?: boolean;
+		/** Quick match format; without it `?mode=` decides (2×2 when absent). */
+		mode?: QuickMode;
 		net?: { client: NetClient; start: TableStart; snap: TableSnapshot };
 	}): void {
 		const params = getParams(this);
@@ -657,18 +686,21 @@ export class TableScene extends Phaser.Scene {
 		}
 		const deal = this.tutorial ? TUTORIAL_DEAL : null;
 		const rng = new Rng(deal?.seed ?? params.seed ?? randomSeed());
+		const duel = !this.tutorial && (data?.mode ?? params.mode) === '1v1';
 		const partner: CompanionId = isCompanion(params.partner) ? params.partner : 'bruto';
-		const rivals = rng.shuffle(COMPANION_IDS.filter((id) => id !== partner)).slice(0, 2) as [
-			CompanionId,
-			CompanionId,
-		];
-		const rivalProfiles = [rng.pick(AI_PROFILE_IDS), rng.pick(AI_PROFILE_IDS)] as AiProfileId[];
+		// Mano a mano draws one rival from the whole cast (there is no partner to leave out).
+		const rivals: CompanionId[] = duel
+			? [rng.pick(COMPANION_IDS)]
+			: rng.shuffle(COMPANION_IDS.filter((id) => id !== partner)).slice(0, 2);
+		const rivalProfiles: AiProfileId[] = rivals.map(() => rng.pick(AI_PROFILE_IDS));
 		const ai = (id: AiProfileId): SeatBrain => ({ kind: 'ai', profile: AI_PROFILES[id] });
+		const rival = rivals[0] as CompanionId;
 		const chars: Record<Seat, string> = {
 			0: 'player',
-			1: params.boss && isBoss(params.boss) ? params.boss : rivals[0],
-			2: partner,
-			3: rivals[1],
+			1: params.boss && isBoss(params.boss) ? params.boss : rival,
+			// Seats 2 and 3 are never drawn at a two-seat table.
+			2: duel ? rival : partner,
+			3: rivals[1] ?? rival,
 		};
 		const viraText = deal?.vira ?? params.vira;
 		const vira = viraText ? parseCard(viraText) : null;
@@ -676,22 +708,27 @@ export class TableScene extends Phaser.Scene {
 		const hand0 = (deal?.hand ?? params.hand)
 			?.map((x) => parseCard(x))
 			.filter((c): c is Card => c !== null);
+		const me: SeatBrain = this.auto ? ai('pro') : { kind: 'human' };
+		const rivalBrain1 = rivalBrain(rivalProfiles[0] as AiProfileId, chars[1]);
+		const brains: MatchOptions['brains'] = duel
+			? [me, rivalBrain1]
+			: [
+					me,
+					rivalBrain1,
+					{ kind: 'ai', profile: COMPANIONS[partner].profile },
+					rivalBrain(rivalProfiles[1] as AiProfileId, chars[3]),
+				];
 		this.match = new Match({
 			rng,
 			// The tutorial's scripted deal stays predictable: no joker there.
 			...(this.tutorial ? { deck: standardDeck() } : {}),
-			brains: [
-				this.auto ? ai('pro') : { kind: 'human' },
-				rivalBrain(rivalProfiles[0] as AiProfileId, chars[1]),
-				{ kind: 'ai', profile: COMPANIONS[partner].profile },
-				rivalBrain(rivalProfiles[1] as AiProfileId, chars[3]),
-			],
+			brains,
 			...(params.score ? { score: params.score } : {}),
 			...(quickBoss ? { boss: quickBoss } : {}),
 			// Quick match is plain Truco to 12 (GDD §11); the tutorial teaches the points goal.
 			...(this.tutorial
 				? { goal: tableGoal(1, 'small') }
-				: params.goal
+				: params.goal && !duel
 					? { goal: params.goal }
 					: {}),
 			manhas: (deal?.manhas ?? params.manhas ?? []).filter(isManhaId),
@@ -753,7 +790,7 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 			const m = CLOCK_BAR.mine;
 			return { x: m.x - m.w / 2, y: m.y, w: m.w };
 		}
-		const [ax, ay] = SEAT_UI[seat].avatar;
+		const [ax, ay] = this.seatUi(seat).avatar;
 		return { x: ax - 4, y: ay - 8, w: CLOCK_BAR.w };
 	}
 
@@ -796,6 +833,7 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 	/** State snapshot for the smoke test and QA (`window.__GAME__`). */
 	probe(): Record<string, unknown> {
 		return {
+			seats: this.match.seats,
 			hands: this.match.hands,
 			score: this.match.score,
 			winner: this.match.winner,
@@ -908,11 +946,11 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 	}
 
 	private playPos(seat: Seat): [number, number] {
-		return SEAT_POS[seat].play;
+		return SEAT_POS[seat === 0 ? 0 : this.slot(seat)].play;
 	}
 
 	private portraitPos(seat: Seat): [number, number] {
-		return SEAT_POS[seat].portrait;
+		return SEAT_POS[seat === 0 ? 0 : this.slot(seat)].portrait;
 	}
 
 	/** Sidebar text with real depth: cream letters, a dark outline and a solid drop shadow. */
@@ -984,9 +1022,9 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 
 	private buildLayout(chars: Record<Seat, string>): void {
 		this.drawTable();
-		for (const seat of [1, 2, 3] as const) {
+		for (const seat of this.others as readonly Exclude<Seat, 0>[]) {
 			const id = chars[seat];
-			const ui = SEAT_UI[seat];
+			const ui = this.seatUi(seat);
 			const [ax, ay] = ui.avatar;
 			const portrait = this.add
 				.image(ax + SEAT_CARD.w / 2, ay + SEAT_CARD.h / 2, tex(this, `charcard.${id}`))
@@ -1293,7 +1331,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			.text(0, -38, t('table.eleven.title'), this.text(12, PALETTE.manilha))
 			.setOrigin(0.5, 0);
 		const body = this.add
-			.text(0, -18, t('table.eleven.body'), {
+			.text(0, -18, this.tx('table.eleven.body'), {
 				...this.text(7),
 				wordWrap: { width: 236 - 2 * PAD.panel },
 			})
@@ -1310,7 +1348,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		);
 		const fold = new Button(
 			this,
-			t('table.eleven.fold'),
+			this.tx('table.eleven.fold'),
 			() => this.human({ kind: 'eleven', seat: 0, play: false }),
 			{
 				w: 100,
@@ -1458,7 +1496,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			atChamp(CHAMP.y + SIDE_LABEL, t('menu.quick'), this.bold(10))
 				.setOrigin(0.5, 0)
 				.setX(CHAMP.x + CHAMP.w / 2);
-			fit(atChamp(CHAMP.y + 25, t('table.side.quickSub'), small));
+			fit(atChamp(CHAMP.y + 25, this.tx('table.side.quickSub'), small));
 		} else {
 			const table = this.match.boss ? 'boss' : size;
 			atChamp(CHAMP.y + SIDE_LABEL, t('run.champ', { n: champ }), this.bold(10))
@@ -1506,8 +1544,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const goalLine = SIDE.goal[0] + 19;
 		at(
 			goalLine,
-			t(
-				this.match.goal === undefined ? 'table.side.tentos' : 'table.side.goal',
+			(this.match.goal === undefined
+				? this.tx('table.side.tentos')
+				: t('table.side.goal')
 			).toLocaleUpperCase(),
 			small,
 		).setOrigin(0, 0.5);
@@ -1566,7 +1605,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		for (const [i, key] of (['table.side.us', 'table.side.them'] as const).entries()) {
 			const cx = lx + i * TENTOS.half + TENTOS.half / 2;
 			this.add
-				.text(cx, SIDE.theirs[0] + 15, t(key).toLocaleUpperCase(), small)
+				.text(cx, SIDE.theirs[0] + 15, this.tx(key).toLocaleUpperCase(), small)
 				.setOrigin(0.5);
 			// A mark appears here once the pair has closed a queda; hovering it explains it.
 			const zone = this.add
@@ -1845,7 +1884,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 					(m.peek?.seat === seat && m.peek.cardId === card.id) ||
 					s.known.some((k) => k.to === 'us' && k.seat === seat && k.cardId === card.id);
 				const face = this.reveal || peeked || jokerEffects(s).includes('showdown');
-				const ui = SEAT_UI[seat as Exclude<Seat, 0>];
+				const ui = this.seatUi(seat as Exclude<Seat, 0>);
 				const img = this.add
 					.image(
 						i * ui.step[0],
@@ -2082,10 +2121,12 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			this.showBanner(t('table.eleven.title'), 1200);
 		// After the banner: the side at 11 talks (your partner, or the rival on the right).
 		const s = this.match.state;
-		if (k === 'iron') this.time.delayedCall(this.dur(1600), () => this.chat(2, 'say.iron', 2));
+		const talker: Seat = this.duel ? 1 : 2;
+		if (k === 'iron')
+			this.time.delayedCall(this.dur(1600), () => this.chat(talker, 'say.iron', 2));
 		if (k === 'eleven')
 			this.time.delayedCall(this.dur(1200), () =>
-				this.chat(s.elevenTeam === 'them' ? 1 : 2, 'say.eleven', 3),
+				this.chat(s.elevenTeam === 'them' ? 1 : talker, 'say.eleven', 3),
 			);
 		// Vignette for the mão de 11 and the iron hand (B6.1).
 		this.tweens.add({
@@ -2104,7 +2145,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	private tellJoke(): void {
 		if (this.net || voiceBusy()) return;
 		for (const v of this.seats.values()) if (v.bubble.visible) return;
-		const seat = ([1, 2, 3] as const)[this.chatter.int(0, 2)] ?? 1;
+		const seat = this.others[this.chatter.int(0, this.others.length - 1)] ?? 1;
 		const char = this.charOf(seat);
 		const joke = nextJoke(this.lastJoke.get(char), this.chatter.next());
 		if (!voice(this, char, joke)) return;
@@ -2242,7 +2283,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	private speak(seat: Seat, text: string, color: number, ms: number = TABLE_TIMING.speech): void {
 		const v = this.seats.get(seat);
 		if (!v || seat === 0) return;
-		const ui = SEAT_UI[seat];
+		const ui = this.seatUi(seat);
 		const [bx, by] = ui.bubble;
 		v.bubble.setText(text).setColor(toCss(color)).setPosition(bx, by).setVisible(true);
 		// Kept inside the felt; the tail still points at the avatar.
@@ -2388,12 +2429,17 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	 */
 	private trickChat(winner: Seat | undefined): void {
 		if (winner === undefined) {
-			this.chat(this.chatter.pick([1, 2, 3] as const), 'say.tie', 3, 0.35);
+			this.chat(this.chatter.pick(this.others), 'say.tie', 3, 0.35);
 			return;
 		}
-		const seat: Seat = winner !== 0 ? winner : this.chatter.pick([1, 2, 3] as const);
+		const seat: Seat = winner !== 0 ? winner : this.chatter.pick(this.others);
 		const won = teamOf(seat) === teamOf(winner);
-		this.chat(seat, won ? 'say.trick.us' : 'say.trick.them', 3, 0.35);
+		this.chat(
+			seat,
+			won ? (this.duel ? 'say.trick.duel' : 'say.trick.us') : 'say.trick.them',
+			3,
+			0.35,
+		);
 	}
 
 	/** One line of a set of variants (seeded, so replays match). */
@@ -2624,7 +2670,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 					);
 				else this.trickChat(e.winner);
 				this.status.setText(
-					e.result === 'tie' ? t('table.trick.tie') : t(`table.trick.${e.result}`),
+					e.result === 'tie' ? t('table.trick.tie') : this.tx(`table.trick.${e.result}`),
 				);
 				this.cue('trick');
 				await this.wait(TABLE_TIMING.trickHold);
@@ -2728,7 +2774,10 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			}
 			case 'eleven':
 				this.eleven.setVisible(false);
-				this.showBanner(t(e.play ? 'table.eleven.played' : 'table.eleven.folded'), 900);
+				this.showBanner(
+					this.tx(e.play ? 'table.eleven.played' : 'table.eleven.folded'),
+					900,
+				);
 				await this.wait(500);
 				break;
 			case 'handOver': {
@@ -2737,7 +2786,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 				if (winner === 'them') sfx(this, 'sfx.hand.lose');
 				this.showBanner(
 					winner
-						? t(winner === 'us' ? 'table.hand.us' : 'table.hand.them', { n: tentos })
+						? this.tx(winner === 'us' ? 'table.hand.us' : 'table.hand.them', {
+								n: tentos,
+							})
 						: t('table.hand.none'),
 					TABLE_TIMING.handEnd,
 				);
@@ -2793,7 +2844,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		sfx(this, 'sfx.pack.open');
 		this.showBanner(name(effect), 1500);
 		this.popup
-			.setText(t(`joker.${effect}.desc` as I18nKey))
+			.setText(tDuel(`joker.${effect}.desc` as I18nKey, this.duel))
 			.setColor(toCss(PALETTE.textLight))
 			.setVisible(true);
 		await this.wait(1300);
@@ -3088,15 +3139,14 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		const { winner, reward } = this.ended;
 		this.endPanel.removeAll(true);
 		const box = this.add.graphics();
-		const label = t(
+		const label =
 			winner === 'us'
 				? this.match.goal === undefined
-					? 'table.matchWin'
-					: 'table.goalWin'
+					? this.tx('table.matchWin')
+					: t('table.goalWin')
 				: this.runState
-					? 'table.goalLose'
-					: 'table.matchLose',
-		);
+					? t('table.goalLose')
+					: this.tx('table.matchLose');
 		// The screen-title look, shrunk until it fits the content width.
 		const color = winner === 'us' ? PALETTE.good : PALETTE.bad;
 		let size = 16;
@@ -3146,7 +3196,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			this,
 			t(net ? 'net.backToLobby' : 'table.again'),
 			() => {
-				if (!net) return this.scene.restart();
+				if (!net) return this.scene.restart({ mode: this.duel ? '1v1' : '2v2' });
 				this.net = null;
 				net.client.listen(null);
 				fadeTo(this, 'Lan', { client: net.client });
@@ -3185,7 +3235,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		const rows = answering ? ACTIONS.answer : ACTIONS.normal;
 		const order = answering
 			? [b.accept, b.fold, b.raise]
-			: [b.truco, b.signal, b.fold, b.cover];
+			: this.duel
+				? [b.truco, b.fold, b.cover]
+				: [b.truco, b.signal, b.fold, b.cover];
 		for (const btn of [b.truco, b.signal, b.cover, b.accept, b.raise, b.fold])
 			btn.setVisible(order.includes(btn));
 		order.forEach((btn, i) => {
@@ -3309,7 +3361,7 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 			else if (a === 'truco') this.btn.truco.click();
 			else if (a === 'accept') this.btn.accept.click();
 			else if (a === 'fold') this.btn.fold.click();
-			else if (a === 'signal') this.btn.signal.click();
+			else if (a === 'signal' && !this.duel) this.btn.signal.click();
 			else if (a === 'cover') this.btn.cover.click();
 		});
 		// Android back button / Esc.
@@ -3324,6 +3376,9 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 	private openPause(overlay: 'Pause' | 'Settings' | 'Rules' = 'Pause'): void {
 		if (!this.sys.isActive() || this.endPanel.visible) return;
 		this.scene.pause();
-		this.scene.launch(overlay, { returnTo: 'Table' });
+		this.scene.launch(overlay, {
+			returnTo: 'Table',
+			...(overlay === 'Rules' && this.duel ? { page: 'duel' } : {}),
+		});
 	}
 }

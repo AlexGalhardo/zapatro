@@ -1,4 +1,4 @@
-import { type I18nKey, t } from '../i18n';
+import { type I18nKey, t, tDuel } from '../i18n';
 import { jokerEffects, type TableState } from '../logic/truco/table';
 
 /** The in-play box keeps this many lines. A newer one drops the oldest off the top. */
@@ -38,7 +38,7 @@ export function handEffects(
 		out.push({
 			icon: 'sparkle',
 			name: t(`joker.${e}.name` as I18nKey),
-			desc: t(`joker.${e}.desc` as I18nKey),
+			desc: tDuel(`joker.${e}.desc` as I18nKey, s.seats === 2),
 		});
 	return out;
 }

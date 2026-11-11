@@ -27,5 +27,11 @@ export function t(key: I18nKey, vars?: Record<string, string | number>): string 
 	return text.replace(/\{(\w+)\}/g, (m, name: string) => (name in vars ? String(vars[name]) : m));
 }
 
+/** `key`'s mano a mano wording (`<key>.duel`) when `duel` is set and one exists, else `key`. */
+export function tDuel(key: I18nKey, duel: boolean, vars?: Record<string, string | number>): string {
+	const alt = `${key}.duel` as I18nKey;
+	return t(duel && alt in TABLES[current] ? alt : key, vars);
+}
+
 export type { I18nKey };
 export const TABLES_FOR_TEST = TABLES;

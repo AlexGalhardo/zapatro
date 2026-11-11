@@ -37,7 +37,7 @@ src/debug/    params.ts (URL de debug)
 
 ## Mesa de 2 ou 4 assentos
 
-`TableState.seats` (2 ou 4, padrão 4) decide a distribuição, o fechamento da vaza, a ordem de jogo e o rodízio do dador. `Seat` continua `0|1|2|3` e as tuplas de 4 (`hands`, `signalsLeft`) não mudaram: em dois assentos os índices 2 e 3 ficam vazios. Use `nextSeat(s, seats)`, `rivalsOf(s, seats)` e `partnerSeat(s, seats)` (que devolve `null` em dois assentos); `partnerOf` só aceita mesa de 4, por tipo. `Match` recebe 2 ou 4 `brains` e expõe `seats`. A cena, a pontuação da run e a LAN ainda são só 4 assentos (ROADMAP R2, R3 e R4.2).
+`TableState.seats` (2 ou 4, padrão 4) decide a distribuição, o fechamento da vaza, a ordem de jogo e o rodízio do dador. `Seat` continua `0|1|2|3` e as tuplas de 4 (`hands`, `signalsLeft`) não mudaram: em dois assentos os índices 2 e 3 ficam vazios. Use `nextSeat(s, seats)`, `rivalsOf(s, seats)` e `partnerSeat(s, seats)` (que devolve `null` em dois assentos); `partnerOf` só aceita mesa de 4, por tipo. `Match` recebe 2 ou 4 `brains` e expõe `seats`. A `TableScene` decide o layout por `match.seats`, nunca por ser partida rápida (a LAN reaproveitará): com 2 assentos só existe o assento 1 (o rival), que ocupa o slot do alto (`seatUi`/`slot` usam a geometria do assento 2), sem parceiro, sem botão nem fluxo de sinal e sem balões de quem não existe; os textos trocam para a variante `<chave>.duel` (`tx`, `tDuel`), sem "dupla", "nós" ou "parceiro". A escolha de formato da Partida rápida é a `ModeScene` (guarda `settings.quickMode`, campo opcional do save; ausente = 2×2) e `?skipMenu=1&mode=1v1` pula o menu. A pontuação da run e a LAN ainda são só 4 assentos (ROADMAP R3 e R4.2).
 
 ## Multiplayer LAN
 

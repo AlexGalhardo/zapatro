@@ -7,11 +7,12 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 | Parâmetro | Valores | Efeito |
 | --- | --- | --- |
 | `skipMenu=1` | | Abre direto a partida rápida (Truco puro até 12, sem meta de pontos) |
+| `mode=1v1` | `1v1` · `2v2` | Com `skipMenu=1`, abre a partida rápida **mano a mano** (você e um rival sorteado do elenco, mesa de dois assentos, sem parceiro nem sinais). `partner=` e `goal=` são ignorados; `score=11-4` e `boss=` valem. Sem `mode`, `skipMenu=1` abre o 2×2 (a escolha lembrada no save só vale pelo menu) |
 | `goal=N` | inteiro ≥ 1 | Liga a pontuação roguelite na partida rápida, com meta de N pontos (Fichas × Mult, Quedas), como uma mesa da run. Sem ele, a partida rápida é Truco puro até 12 |
 | `seed=N` | inteiro ≥ 0 | Embaralhamento, vira e sorteios repetíveis (partida rápida e run nova) |
 | `vira=3c` | posto + naipe (`c` paus, `h` copas, `s` espadas, `d` ouros) | Vira da primeira mão |
 | `hand=3c,2h,4d` | 3 cartas; `JK`/`JK2` = coringa, `TV`/`OL`/`RA` = cartas especiais | Sua primeira mão |
-| `score=11-4` | `nós-eles`, cada um < 12 | Placar inicial: `11-x` mão de onze, `11-11` mão de ferro |
+| `score=11-4` | `nós-eles` (no 1×1, `você-rival`), cada um < 12 | Placar inicial: `11-x` mão de onze, `11-11` mão de ferro |
 | `reveal=1` | | Mostra as mãos dos rivais |
 | `boss=<id>` | `valentao` `cartomante` `juiz` `agiota` `tony` `stuart` `peter` `sortuda` `reiDoTruco` | Partida rápida contra esse chefe, com a regra dele na lateral. Continua sem meta, a não ser que `goal=N` também esteja na URL |
 | `partner=<id>` | `bruto` `cida` `jhony` `nino` `ze` `mia` `chico` `beti` `ayla` `sheila` | Parceiro (partida rápida); na run nova força o id entre os 3 candidatos, se destravado |

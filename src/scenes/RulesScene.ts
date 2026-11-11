@@ -29,6 +29,7 @@ const FONT = { body: 9, list: 10, nav: 11, page: 30 } as const;
 /** The pages, in order: text only (one sentence per line); Signals also lists the gestures. */
 const PAGES = [
 	'teams',
+	'duel',
 	'strength',
 	'manilha',
 	'joker',
@@ -50,6 +51,8 @@ export class RulesScene extends Phaser.Scene {
 	private page = 0;
 	/** Scene to resume when the manual was opened over it (the table); else back to the menu. */
 	private returnTo: string | null = null;
+	/** Page to open on (the table of a mano a mano match opens the manual on its own page). */
+	private startOn: (typeof PAGES)[number] | null = null;
 	private art!: Phaser.GameObjects.Container;
 	private ui!: Phaser.GameObjects.Container;
 	/** Rebuilds the page list (the current page is highlighted). */
@@ -67,12 +70,16 @@ export class RulesScene extends Phaser.Scene {
 		super('Rules');
 	}
 
-	init(data: { returnTo?: string }): void {
+	init(data: { returnTo?: string; page?: (typeof PAGES)[number] }): void {
 		this.returnTo = data?.returnTo ?? null;
+		this.startOn = data?.page ?? null;
 	}
 
 	create(): void {
-		this.page = 0;
+		this.page = Math.max(
+			0,
+			PAGES.findIndex((p) => p === this.startOn),
+		);
 		this.ui = this.add.container(0, 0);
 		this.art = this.add.container(0, 0);
 		this.subtitle = this.add
