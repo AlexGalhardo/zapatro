@@ -4,15 +4,57 @@
  *     [--partner bruto|cida|jhony|nino] [--skip none|small|both]
  * `--skip`: tables the good bot skips for a Promise; only meaningful with `TABLE_SELECT` on (src/config/features.ts), else nobody can skip.
  * `--stake` has no effect until the Estacas exist (B2); the bot already carries it.
+ *
+ * 1v1 quick matches (mano a mano, plain Truco to 12), invariants checked on every hand:
+ *   bun scripts/sim.ts --mode 1v1 [--matches 2000] [--seed 1] [--bot good|random]
+ * `--bot good` seats the `pro` AI against the random bot; `random` seats random against random.
  */
+import { AI_PROFILES } from '../src/data/ai-profiles';
 import type { CompanionId } from '../src/data/companions';
+import type { SeatBrain } from '../src/game/match';
 import { HABITS, type RunBot, simulateRun } from '../src/game/run-sim';
+import { playHeadsUp } from './lib/heads-up';
 
 const args = process.argv.slice(2);
 const opt = (name: string, d: string): string => {
 	const i = args.indexOf(`--${name}`);
 	return i >= 0 ? (args[i + 1] ?? d) : d;
 };
+
+if (opt('mode', 'run') === '1v1') {
+	const matches = Number(opt('matches', '2000'));
+	const seed = Number(opt('seed', '1'));
+	const random: SeatBrain = { kind: 'random' };
+	const us: SeatBrain =
+		opt('bot', 'good') === 'random' ? random : { kind: 'ai', profile: AI_PROFILES.pro };
+	const t0 = performance.now();
+	let wins = 0;
+	let hands = 0;
+	let aiMs = 0;
+	let aiDecisions = 0;
+	for (let i = 0; i < matches; i++) {
+		const r = playHeadsUp(seed * 100_000 + i, [us, random]);
+		if (r.winner === 'us') wins++;
+		hands += r.hands;
+		aiMs += r.aiMs;
+		aiDecisions += r.aiDecisions;
+	}
+	console.log(
+		JSON.stringify({
+			mode: '1v1',
+			bot: opt('bot', 'good'),
+			matches,
+			seed,
+			winRate: Number((wins / matches).toFixed(3)),
+			handsPerMatch: Number((hands / matches).toFixed(2)),
+			aiDecisions,
+			aiMsPerDecision: Number((aiMs / Math.max(1, aiDecisions)).toFixed(3)),
+			ms: Math.round(performance.now() - t0),
+		}),
+	);
+	process.exit(0);
+}
+
 const runs = Number(opt('runs', '500'));
 const bot = opt('bot', 'good') as RunBot;
 const seed = Number(opt('seed', '1'));
