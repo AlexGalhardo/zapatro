@@ -38,6 +38,7 @@
 		// Local files kept out of git (.gitignore and .git/info/exclude).
 		"TODO.md",
 		"plans/**",
+		".claude/worktrees/**",
 		"docs/claude-code.md",
 		"docs/improve-game-development-research.md"
 	]
