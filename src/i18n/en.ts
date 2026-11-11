@@ -1,6 +1,22 @@
 export const en = {
 	'game.title': 'Zapatro',
 	'boot.loading': 'Loading…',
+	'boot.tipLabel': 'Tip',
+	'boot.tip.1': 'Each hand has up to 3 tricks: win 2 of them and the hand is yours.',
+	'boot.tip.2':
+		'The vira is the card turned face up after the deal. The rank right above it is the manilha.',
+	'boot.tip.3': 'The four manilhas beat every other card, and the ZAP is the strongest of all.',
+	'boot.tip.4':
+		'Calling TRUCO makes the hand worth 3 tentos, and the bet is also the base Mult of the hand.',
+	'boot.tip.5': 'Calls go 3, 6, 9, 12, and the same team cannot raise twice in a row.',
+	'boot.tip.6': 'Your points are Chips × Mult: a truco that pays off multiplies your score.',
+	'boot.tip.7':
+		'Before your first card you can send your partner a secret signal, but the rivals may catch it.',
+	'boot.tip.8': 'Manhas trigger from left to right, so the order you place them in matters.',
+	'boot.tip.9':
+		'Between tables, spend the money you won in the shop on Manhas, packs and Lance levels.',
+	'boot.tip.10':
+		"At 11 tentos you see your partner's hand and choose to play or run; nobody may call truco.",
 	'menu.newRun': 'New run',
 	'menu.settings': 'Settings',
 	'menu.back': 'Back',
