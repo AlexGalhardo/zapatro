@@ -15,6 +15,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 ### Added
 
 - **repo:** README, license, contributing guide, code of conduct and security policy.
+- **docs:** `ROADMAP.md`, the delivery plan for 1.0 (demo at Steam Next Fest February 2027): work groups R0 to R13 with auditable acceptance checks, a calendar of milestones and the open decisions; `AGENTS.md` and `PLAN.md` point to it. The decisions of the 2026-11-11 interview (D-76 to D-87: 1.0 on 2027-03-16, 1v1 in quick match, LAN and its own run with the cast as rivals, LAN with special cards and a 30 s turn clock, Android hosting, stakes, decks and reroll back, packs, upgrades and table skipping removed) are recorded in `PLAN.md` §2.4, `docs/decisions.md` and `docs/multiplayer.md`; the rules and the release skill describe the delivery flow until 1.0 and turn the caveman chat style off.
 
 ### Changed
 
@@ -22,6 +23,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Fixed
 
+- **lan:** the join form scales with the screen height instead of using fixed CSS pixels, so its text is no longer tiny at 1920×1080 and 2560×1440 next to the rest of the UI.
 - **build:** the Poki trim uses the resolved `outDir`, so a Poki build with another `outDir` no longer deletes the voices from the normal `dist/` (and still trims its own output).
 
 ## [0.19.0] - 2026-10-28

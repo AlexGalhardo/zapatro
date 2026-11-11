@@ -4,7 +4,7 @@
 > Design completo: **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (GDD; citações antigas "design §N" resolvem pela tabela "Mapa de seções antigas" no topo) (este plano não repete o design; ele o transforma em trabalho verificável).
 > Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.4**, arte pintada (`art-src/gta/`) e vetor por código (PixelLab só nos retratos legados), áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Next.js 16 SSG + Tailwind v4**) na **Vercel**, trailer em **Remotion**.
 > Legenda: `[ ]` pendente · `[x]` feito · `[~]` incompleto/bloqueado (motivo em uma linha) · `(D-xx)` decisão · `(Q-xx)` pergunta aberta · **Pronto quando:** critério objetivo de conclusão.
-> **Estado atual:** PA2 concluído (`0.0.3`): regras + IA (Monte Carlo com perfis, sinais, Fame) em lógica pura. Worktree `assets` gerando arte e áudio. Próximo: PA3 (mesa jogável em placeholder).
+> **Estado atual (2026-11-11):** `0.19.0`, BETA jogável do menu ao Rei do Truco, com LAN 2×2 na Partida Rápida. O caminho até a 1.0 (modo 1×1, multiplayer local completo, game feel, lojas e Next Fest de fevereiro de 2027) está em **[ROADMAP.md](ROADMAP.md)**.
 
 ## Sumário
 
@@ -110,6 +110,8 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 
 ### 1.4.4 Pendências para a 1.0
 
+O plano de entrega da 1.0, com grupos, aceite e calendário, está em [ROADMAP.md](ROADMAP.md); cada pendência aberta abaixo tem um item lá (arte e marcas em R7.4, material de loja em R12.1, sistemas escondidos em R0.4 e R7, relógio da LAN em R4.3).
+
 - [x] UI em tela curta (2026-10-28): no toque, a escolha de parceiro cabe no cartão (título mais alto, cartão mais alto); tentos em 4 fileiras de 3 com folga no meio; ofertas da loja dentro da lousa, raridade só pela cor.
 - [x] Loja (2026-10-28): "Próxima mesa" no canto inferior direito, fora da lousa; as 4 ofertas ocupam a altura da lousa; ícones equipados menores, com folga entre rótulos e fileiras.
 - [x] Áudio final 1.0 (2026-10-28, [docs/audio-final-game.md](docs/audio-final-game.md)): 836 takes de voz `vo.<lang>.<char>.<linha>` (19 personagens, PT e EN, 11 falas com `ver`, `sacanagem` e 3 piadas) e `music.table2`–`4` integrados; a voz segue o idioma das Configurações e só o idioma ativo baixa (tardio; trocar de idioma baixa o outro); a mesa normal sorteia a música sem repetir; `caiu`/`oloco` e as vozes sem idioma saíram; `bun scripts/audio-check.ts` aprova os 845 takes; primeiro download 6,12 MB.
@@ -126,7 +128,7 @@ Visual em [docs/visual.md](docs/visual.md) §0; decisões D-63 a D-75 em [docs/d
 
 ### 1.5 Fora do escopo até a 1.0
 
-iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a **LAN com até 4 pessoas na Partida Rápida** entrou em 2026-10-27, [docs/multiplayer.md](docs/multiplayer.md)) · backend, contas, telemetria · newsletter · mapa estilo Slay the Spire · relíquias, dívida, superstições, confiança do parceiro, tilt, pressão global, desafios diários, contratos (lista completa em GDD §18.3) · executável Bun de arquivo único.
+iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a **LAN com até 4 pessoas na Partida Rápida** entrou em 2026-10-27, [docs/multiplayer.md](docs/multiplayer.md); o 1×1 e o Android criando mesa entram na 1.0, D-77 e D-80) · backend, contas, telemetria · newsletter · mapa estilo Slay the Spire · relíquias, dívida, superstições, confiança do parceiro, tilt, pressão global, desafios diários, contratos (lista completa em GDD §18.3) · executável Bun de arquivo único.
 
 ---
 
@@ -175,6 +177,23 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-40 | Arte: **placeholders por código** na pré-alpha; **PixelLab** a partir do ALPHA | Contrato de chaves + placeholder do template |
 | D-41 | Desktop **só Electron** (`desktop/`); remove o executável Bun de arquivo único | Menos um launcher no CI |
 | D-42 | Repositório **privado** | CI de 3 sistemas só em `main` e tags (minutos do Actions) |
+
+### 2.4 Entrevista de 2026-11-11 (escopo da 1.0; plano de entrega em [ROADMAP.md](ROADMAP.md))
+
+| ID | Decisão | Consequência |
+|---|---|---|
+| D-76 | Demo no Steam Next Fest de fevereiro de 2027 (22/02 a 01/03); **1.0 paga em 2027-03-16** na Steam e no Google Play | O festival exige jogo não lançado e aceita cada título uma vez; inscrição até 10/01/2027 |
+| D-77 | **1×1 (mano a mano)** na Partida Rápida, na rede local e como run roguelite própria | O motor passa a aceitar 2 ou 4 assentos (ROADMAP R1 a R3) |
+| D-78 | Na run 1×1 o jogador joga **sozinho**; os companheiros viram os **rivais** das mesas (rosto, voz, perfil de IA); regra especial só nos chefões | Sem escolha de parceiro nem traço de companheiro no 1×1 |
+| D-79 | Rede local: Truco até 12 **com coringas e cartas especiais**, 2×2 e 1×1, qualquer formação, revanche e placar da sessão | Revê a decisão de 2026-10-27 (LAN sem especiais); a visão mascarada precisa cobrir o Olho. Sem pontuação roguelite nem run cooperativa |
+| D-80 | **Android também cria mesa** | Servidor dentro do app; dependência nativa a aprovar (ROADMAP Q-13) |
+| D-81 | Relógio de jogada de 30 s na rede local; estouro = jogada do bot; dois estouros = piloto automático; anfitrião escolhe desligado, 15, 30 ou 60 s | Fecha a pendência "LAN sem relógio de jogada" da §1.4.4 |
+| D-82 | **Voltam** Estacas, baralhos iniciais e renovação da loja; **saem do código** pacotes, Melhorias e pular mesa (com as Promessas) | Revê D-05 (pular mesa), D-09 (Melhorias), D-69 e D-72 |
+| D-83 | Acabamento prioritário: **arte e visual**; o agente lista e escreve os prompts, o dev gera e aprova, o agente integra | [docs/art-requests-1.0.md](docs/art-requests-1.0.md) |
+| D-84 | Até 5.000 créditos do ElevenLabs sem perguntar | Gasto registrado em docs/audio.md |
+| D-85 | Demo: Campeonato 1 nas runs 2×2 e 1×1 e Partida Rápida nos dois modos; rede local só no jogo pago | Revê D-33 |
+| D-86 | Até a 1.0: commit por item, agentes em paralelo e worktrees liberados, push na branch de trabalho; por marco, PR, merge por rebase na `main` com CI verde e release, sem pedir de novo | Autorização permanente desta entrega; fora dela vale a regra antiga (push e release só com pedido) |
+| D-87 | Chat em prosa normal neste projeto (sem caveman) | `.claude/rules/caveman.md` |
 
 ### 2.3 Técnicas propostas neste plano (valem até alguém contestar)
 

@@ -7,6 +7,8 @@ description: Use whenever you commit Zapatro (Truco Roguelite) — commits are p
 
 Fluxo em **todo commit**: gates, docs e a entrada em `[Unreleased]` do CHANGELOG; **sem bump nem tag**. Releases são marcos: 10 até 2026-10-24 (pedido do usuário), cada um com as notas de todos os commits desde o anterior. Remoto único `origin`: `AlexGalhardo/zapatro` (público, histórico novo desde 2026-10-25; o anterior fica no privado `AlexGalhardo/truco.lekzera.xyz`). Branch única no remoto: `main`.
 
+> **Até a 1.0 (D-86, 2026-11-11):** o trabalho do `ROADMAP.md` vai por commit por item e push na branch `improve/2026-11-next`. Um marco (M1 a M7) fecha assim: PR para a `main`, CI verde, merge por rebase, depois o release desta skill (seção de versão, bump, tag, `bun run graph`, `bun run release`, `.exe`), sem pedir confirmação de novo. Push direto na `main` e release fora de marco continuam só com pedido.
+
 ## 1. Gates (nesta ordem; corrija a causa, nunca `--no-verify`)
 
 ```bash

@@ -2,13 +2,13 @@
 
 ## Protocolo de sessão
 
-1. Ler `AGENTS.md` (o `CLAUDE.md` só o importa) → **`PLAN.md`** (fase atual e próxima tarefa `[ ]`) → `docs/README.md` → o doc do assunto.
+1. Ler `AGENTS.md` (o `CLAUDE.md` só o importa) → **`ROADMAP.md`** (o item `[ ]` do marco atual e o aceite dele) → **`PLAN.md`** (regras e decisões) → `docs/README.md` → o doc do assunto.
 2. Pegar **uma** tarefa (ou um grupo pequeno e coeso) da fase atual, na ordem das dependências (PLAN §12).
 3. Implementar respeitando as camadas de [architecture.md](architecture.md): regra em `src/logic`/`src/game`, números em `src/data`, render em `src/view`/`src/scenes`.
 4. Verificar: `bun run check`, `bun run typecheck`, `bun test`; mudança visível → `bun run dev` e testar no Chrome (`?skipMenu=1&seed=1&debug=1`).
 5. **Atualizar a documentação no mesmo lote** (pedido do usuário): PLAN.md (`[x]`/`[~]` com motivo), CHANGELOG.md (`[Unreleased]`), o doc de `docs/` afetado (arquitetura, GDD, balancing, art, audio, decisions). O objetivo é que o próximo agente entenda o estado real só lendo os docs.
 6. **Skills:** se o fluxo for repetitivo ou você esbarrou numa armadilha (API, Phaser 4, pipeline), crie ou atualize uma skill em `.claude/skills/<nome>/SKILL.md` e liste-a no AGENTS.md.
-7. Commit (Conventional Commits, com escopo) e, só quando o dev pedir, push. A entrada vai em `[Unreleased]` do CHANGELOG; releases são marcos (skill `release-section`).
+7. Commit (Conventional Commits, com escopo). Até a 1.0 (D-86): push na branch de trabalho a cada item e, por marco do ROADMAP, PR, merge por rebase na `main` e release; fora disso, push só quando o dev pedir. A entrada vai em `[Unreleased]` do CHANGELOG; releases são marcos (skill `release-section`).
 
 ## Convenções de código
 
