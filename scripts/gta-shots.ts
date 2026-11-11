@@ -35,7 +35,7 @@ await shop.evaluate(`(() => { const g = window.__GAME__; const r = g.scene.keys.
 	Object.assign(r, { phase: 'shop', money: 23, manhas: ['seuZe', 'peQuente', 'cangaceiro'] });
 	r.shop = { offers: [ { kind: 'manha', id: 'malandro', price: 6, sold: false }, { kind: 'manha', id: 'zapZap', price: 7, sold: false },
 		{ kind: 'consumable', item: { kind: 'lance', id: 'limpa' }, price: 3, sold: false } ],
-		packs: [{ kind: 'pack', pack: 'baralho', price: 4, sold: false }], upgrade: null, rerolls: 0, opened: null };
+		rerolls: 0 };
 	g.scene.keys.Run.draw(); })()`);
 await shop.waitForTimeout(900);
 await shot(shop, '03-shop');

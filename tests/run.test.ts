@@ -1,11 +1,8 @@
 import { describe, expect, test } from 'bun:test';
-import { TRINKETS } from '../src/config/features';
 import { CHAMPIONSHIP_GOALS } from '../src/data/championships';
 import { ECONOMY } from '../src/data/economy';
 import {
 	buy,
-	canSkip,
-	choosePack,
 	continueEndless,
 	currentBoss,
 	currentGoal,
@@ -18,7 +15,6 @@ import {
 	reroll,
 	rerollCost,
 	sellManha,
-	skipTable,
 	startTable,
 	type TableResult,
 	useConsumable,
@@ -105,7 +101,6 @@ describe('run (A4)', () => {
 		const run = newRun(3, 'cida');
 		reach(run, 1, 2);
 		expect(currentBoss(run)).toBe(run.bosses[0]);
-		expect(canSkip(run)).toBe(false);
 		finishTable(run, win());
 		leaveShop(run);
 		reach(run, 8, 2);
@@ -116,50 +111,6 @@ describe('run (A4)', () => {
 		expect(run.champ).toBe(9);
 		expect(run.phase).toBe('shop');
 		expect(currentGoal(run)).toBeGreaterThan(CHAMPIONSHIP_GOALS[7]);
-	});
-
-	test.skipIf(TRINKETS)('skipping gives a Promise that is cashed at the next shop (A4.4)', () => {
-		const run = newRun(5, 'bruto');
-		const p = skipTable(run);
-		expect(p).not.toBeNull();
-		expect(run.table).toBe(1);
-		const money = run.money;
-		const offers = run.promises.includes('manhaRara');
-		const packs = run.promises.includes('pacoteGratis');
-		finishTable(run, win({ rivalTentos: 12 }));
-		expect(run.promises).toHaveLength(0);
-		if (p === 'dezReais') expect(run.money).toBeGreaterThanOrEqual(money + 10);
-		if (offers) expect(run.shop?.offers.some((o) => o.price === 0)).toBe(true);
-		if (packs) expect(run.shop?.packs.some((o) => o.price === 0)).toBe(true);
-	});
-
-	test.skipIf(TRINKETS)(
-		'a Promise is only cashed if the next table is won (P-08, GD-020)',
-		() => {
-			const lost = newRun(5, 'bruto');
-			const won = newRun(5, 'bruto');
-			for (const run of [lost, won]) {
-				skipTable(run);
-				run.promises = ['dezReais'];
-			}
-			const money = lost.money;
-			finishTable(lost, win({ won: false, money: 0 }));
-			expect(lost.phase).toBe('lost');
-			expect(lost.shop).toBeNull();
-			expect(lost.money).toBe(money);
-			finishTable(won, win({ money: 0, rivalTentos: 12 }));
-			expect(won.phase).toBe('shop');
-			expect(won.money).toBeGreaterThanOrEqual(money + 10);
-			expect(won.promises).toHaveLength(0);
-		},
-	);
-
-	test('skipping the next table too forfeits the Promise still waiting (P-08)', () => {
-		const run = newRun(5, 'bruto');
-		skipTable(run);
-		const second = skipTable(run);
-		expect(run.table).toBe(2);
-		expect(run.promises).toEqual(second ? [second] : []);
 	});
 });
 
@@ -179,9 +130,9 @@ describe('shop (A4.3)', () => {
 			{ kind: 'manha', id: 'seuZe', price: 5, sold: false },
 			{ kind: 'manha', id: 'malandro', price: 4, sold: false },
 		];
-		expect(buy(run, 'offers', 0)).toBeNull();
-		expect(buy(run, 'offers', 0)).toBe('sold');
-		expect(buy(run, 'offers', 1)).toBeNull();
+		expect(buy(run, 0)).toBeNull();
+		expect(buy(run, 0)).toBe('sold');
+		expect(buy(run, 1)).toBeNull();
 		expect(run.manhas).toEqual(['seuZe', 'malandro']);
 		expect(run.money).toBe(91);
 		moveManha(run, 1, 0);
@@ -197,10 +148,10 @@ describe('shop (A4.3)', () => {
 		if (!shop) throw new Error('no shop');
 		run.money = 1;
 		shop.offers = [{ kind: 'manha', id: 'teatro', price: 8, sold: false }];
-		expect(buy(run, 'offers', 0)).toBe('money');
+		expect(buy(run, 0)).toBe('money');
 		run.money = 50;
 		run.manhas = ['malandro', 'seuZe', 'maoLeve', 'cangaceiro', 'peQuente'];
-		expect(buy(run, 'offers', 0)).toBe('slots');
+		expect(buy(run, 0)).toBe('slots');
 	});
 
 	test('reroll costs more each time in the same shop', () => {
@@ -209,32 +160,6 @@ describe('shop (A4.3)', () => {
 		expect(reroll(run)).toBeNull();
 		expect(rerollCost(run)).toBe(first + ECONOMY.rerollStep);
 		expect(run.money).toBe(100 - first);
-	});
-
-	test('a deck pack adds the chosen card to the shared deck', () => {
-		const run = shopRun();
-		const shop = run.shop;
-		if (!shop) throw new Error('no shop');
-		shop.packs = [{ kind: 'pack', pack: 'baralho', price: 4, sold: false }];
-		expect(buy(run, 'packs', 0)).toBeNull();
-		expect(shop.opened?.length).toBe(4);
-		expect(choosePack(run, 0)).toBeNull();
-		expect(run.deck).toHaveLength(46);
-		expect(new Set(run.deck.map((c) => c.id)).size).toBe(46);
-		expect(shop.opened).toBeNull();
-	});
-
-	test('the upgrade: one per Championship, applied at once', () => {
-		const run = shopRun();
-		const shop = run.shop;
-		if (!shop) throw new Error('no shop');
-		shop.upgrade = { kind: 'upgrade', id: 'maisManha', price: 10, sold: false };
-		expect(buy(run, 'upgrade')).toBeNull();
-		expect(run.manhaSlots).toBe(ECONOMY.manhaSlots + 1);
-		leaveShop(run);
-		startTable(run);
-		finishTable(run, win());
-		expect(run.shop?.upgrade).toBeNull();
 	});
 });
 

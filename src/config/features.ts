@@ -9,13 +9,6 @@ const flag = (v: string | undefined): boolean => v === '1' || v?.trim().toLowerC
 export const IS_DEMO: boolean = flag(import.meta.env.VITE_DEMO);
 export const IS_POKI: boolean = flag(import.meta.env.VITE_POKI);
 
-/**
- * The Championship's table-choice screen (Small, Big and Boss table, with Skip and Promises).
- * false: choosing the partner or leaving the shop goes straight to the next table, in order
- * (Small, Big, Boss), with no skipping. The screen and its rules are kept, only not shown.
- */
-export const TABLE_SELECT = false;
-
 /** The table's "Manilha / ZAP" box (bottom left of the felt): hidden to clear the table (dev test). */
 export const SHOW_MANILHA_BOX = false;
 
@@ -26,8 +19,8 @@ export const SHOW_MONEY_PANEL = false;
 export const SHOW_SCORE_PANEL = false;
 
 /**
- * The shop reduced to what buys: no sidebar, no packs, no reroll, no Melhoria; the offers
- * on the chalkboard (`ECONOMY.offers`) and "Next table". false: the full shop as it was.
+ * The shop reduced to what buys: no sidebar and no reroll; the offers on the chalkboard
+ * (`ECONOMY.offers`) and "Next table". false: the full shop (sidebar, "Refresh") as it was.
  */
 export const SHOP_SIMPLE = true;
 

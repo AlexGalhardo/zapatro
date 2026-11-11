@@ -4,7 +4,7 @@
  * on any console error. Needs `bun run dev` (or `vite preview`; the suite adds `?qa=1`).
  *   bun scripts/qa.ts [--url http://localhost:5191] [--only table,eleven]
  * Groups: menu, settings, rules, pause, table, eleven, iron, score, manhas, run, newrun, shop,
- * pack, skip, boss, continue, save, end, runend, touch, tutorial, deck.
+ * boss, continue, save, end, runend, touch, tutorial, deck.
  */
 import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
 
@@ -383,10 +383,7 @@ const SHOP = `(g) => {
 			{ kind: 'manha', id: 'malandro', price: 4, sold: false },
 			{ kind: 'consumable', item: { kind: 'lance', id: 'limpa' }, price: 3, sold: false },
 		],
-		packs: [{ kind: 'pack', pack: 'baralho', price: 4, sold: false }],
-		upgrade: null,
 		rerolls: 0,
-		opened: null,
 	};
 	g.scene.keys.Run.draw();
 }`;
@@ -507,56 +504,6 @@ await group(browser, 'shop', async (t) => {
 	);
 	await t.click(textIn('Run', /Next table|Próxima mesa/));
 	t.check('Next table leaves the shop', await t.eval<boolean>(runWith('r.phase === "select"')));
-});
-
-await group(browser, 'pack', async (t) => {
-	await newRunIn(t, 6);
-	await t.eval(SHOP);
-	// The pack card's buy button, found by the offer it sells (its label is just the price).
-	await t.click(`(g) => {
-		const card = g.scene.keys.Run.body.list.find((o) => o.getData?.('offer') === 'packs:0');
-		return card?.list.find((o) => typeof o.click === 'function' && typeof o.setLabel === 'function');
-	}`);
-	t.check(
-		'buying a pack opens its options',
-		await t.eval<boolean>(runWith('r.shop.opened?.length === 4')),
-	);
-	t.check('the pick screen shows', await t.eval<boolean>(hasText('Run', /Pick 1|Escolha 1/)));
-	// GD-001: four option cards must fit the 640-wide stage (each card holds one Choose button).
-	const fit = await t.eval<string>(`(g) => {
-		const run = g.scene.keys.Run;
-		const L = run.cx - 320;
-		const cards = [];
-		const walk = (list) => {
-			for (const o of list) {
-				if (o.type === 'Text' && /^(Choose|Escolher)$/.test(o.text)) cards.push(o.parentContainer.parentContainer);
-				else if (o.list) walk(o.list);
-			}
-		};
-		walk(run.children.list);
-		return cards.map((c) => { const b = c.getBounds(); return b.left >= L && b.right <= L + 640 ? 'ok' : Math.round(b.left) + '..' + Math.round(b.right); }).join(',');
-	}`);
-	t.check('all 4 pack options fit the stage', fit === 'ok,ok,ok,ok', fit);
-	await t.click(textIn('Run', /^(Choose|Escolher)$/));
-	t.check(
-		'taking a card adds it to the deck and closes the pack',
-		await t.eval<boolean>(runWith('r.deck.length === 42 && r.shop.opened === null')),
-	);
-});
-
-await group(browser, 'skip', async (t) => {
-	await newRunIn(t, 7);
-	await t.click(textIn('Run', /Skip|Pular/));
-	t.check(
-		'skipping the small table gives a Promise and goes to the big one',
-		await t.eval<boolean>(runWith('r.table === 1 && r.promises.length === 1')),
-	);
-	t.check('the Promise is shown', await t.eval<boolean>(hasText('Run', /Promise|Promessa/)));
-	await t.eval('(g) => { g.scene.keys.Run.run.table = 2; g.scene.keys.Run.draw(); }');
-	t.check(
-		'the boss table cannot be skipped',
-		!(await t.eval<boolean>(hasText('Run', /Skip|Pular/))),
-	);
 });
 
 await group(browser, 'boss', async (t) => {

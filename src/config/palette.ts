@@ -21,7 +21,7 @@ export const PALETTE = {
 	panelLight: 0x433730,
 	panelDark: 0x231c17,
 	panelBorder: 0xf0c75e,
-	// Dark wood behind items without an accent (packs, item kinds in flat.ts).
+	// Dark wood behind items without an accent (item kinds in flat.ts).
 	button: 0x52443a,
 	buttonHover: 0x6a5a4e,
 	disabled: 0x6f6a64,
