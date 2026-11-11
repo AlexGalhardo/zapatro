@@ -16,6 +16,18 @@ Até 4 pessoas jogam **Truco puro até 12** (a Partida Rápida) na mesma rede, e
 | Queda | Mesa espera 30 s pela volta do jogador (o SDK reconecta sozinho); depois um bot (perfil `pro`) assume o assento |
 | Plataformas | Desktop (Electron) cria ou entra; Android entra; navegador só em `http://` (dev). O site `https://` não oferece o menu: o navegador bloqueia `ws://` de outro computador numa página `https` |
 
+## Decisões para a 1.0 (entrevista de 2026-11-11, ainda não implementadas)
+
+Plano e aceite em [ROADMAP.md](../ROADMAP.md), grupo R4.
+
+| Tema | Decisão |
+|---|---|
+| Modos | Mesa 2×2 ou 1×1 (mano a mano), escolhida pelo anfitrião; qualquer formação de humanos e NPCs (D-77, D-79) |
+| Baralho | Coringas e cartas especiais (Trevo, Olho, Raio) entram; a visão mascarada passa a esconder o que o Olho revela (D-79) |
+| Relógio | 30 s por jogada; no estouro o servidor faz a jogada do bot; dois estouros seguidos ligam o piloto automático; o anfitrião escolhe desligado, 15, 30 ou 60 s (D-81) |
+| Android | Também cria mesa: o servidor roda dentro do app (D-80; dependência nativa em avaliação) |
+| Fora | Pontuação roguelite na mesa da rede e run cooperativa (D-79) |
+
 ## Como funciona
 
 ```text

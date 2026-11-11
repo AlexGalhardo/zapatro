@@ -24,8 +24,8 @@ Personagens, fundos, versos e cartas especiais são **pinturas** (WebP); cartas 
 
 ## Comece aqui (toda sessão)
 
-1. **Carregue as skills `karpathy-guidelines` e `ponytail`** e siga-as até o fim da sessão. A skill `svg-concept-art` só vale na branch `pixel-art` (o pipeline de concept saiu daqui). A skill `caveman` (`.claude/skills/caveman`, nível `full`) economiza tokens no chat; código, commits e docs seguem em prosa normal.
-2. **[PLAN.md §1.4.4](PLAN.md#144-pendências-para-a-10)** é o foco até a 1.0.0 comercial: as pendências abertas (arte, sistemas escondidos, LAN, build). O antigo BUGS.md foi removido em 2026-10-27.
+1. **Carregue as skills `karpathy-guidelines` e `ponytail`** e siga-as até o fim da sessão. A skill `svg-concept-art` só vale na branch `pixel-art` (o pipeline de concept saiu daqui). O chat com o dev é em **prosa normal em pt-BR** (D-87, 2026-11-11): não use o modo caveman neste projeto, mesmo que um hook de sessão o anuncie.
+2. **[ROADMAP.md](ROADMAP.md)** é o plano de entrega da 1.0.0 comercial (demo no Steam Next Fest de fevereiro de 2027): grupos R0 a R13 com aceite auditável e as decisões abertas `Q-xx`. As pendências antigas seguem em [PLAN.md §1.4.4](PLAN.md#144-pendências-para-a-10) e cada uma tem um item no roadmap. O antigo BUGS.md foi removido em 2026-10-27.
 3. **Grafo primeiro:** `uvx --from graphifyy==0.9.71 graphify query "<pergunta>"` (skill `graphify`); sem `graphify-out/`, gere com `bun run graph`.
 4. **[PLAN.md](PLAN.md)** é a fonte da verdade (decisões, regras exatas do Truco §5, arquitetura §4, fases e checklists).
 5. **[docs/agent-workflow.md](docs/agent-workflow.md)** (como trabalhar), **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (design), **[docs/README.md](docs/README.md)** (índice), **[docs/architecture.md](docs/architecture.md)** (mapa do código).
@@ -42,7 +42,7 @@ Em **toda** tarefa de programação (código, scripts, CI, revisão, refatoraç�
 | [code-architecture.md](.claude/rules/code-architecture.md) | Phaser 4, `onKey`, lógica pura por turnos sem Phaser, eventos de domínio, onde ficam números/textos/cores, estilo |
 | [content-and-assets.md](.claude/rules/content-and-assets.md) | Balanceamento, conteúdo data-driven, assets, concept art, sons, chaves no `.env` |
 | [git-release-docs.md](.claude/rules/git-release-docs.md) | Docs no mesmo lote, Conventional Commits/SemVer, gates, **releases são marcos (18 até agora), não commits**, graphify, QA, CI/CD, remoto, worktrees (encerradas), site |
-| [caveman.md](.claude/rules/caveman.md) | Estilo terso do chat (só o chat; arquivos em prosa normal) |
+| [caveman.md](.claude/rules/caveman.md) | Chat em prosa normal: o modo caveman está desligado neste projeto (D-87) |
 | [platform.md](.claude/rules/platform.md) | Electron (Steam) e Capacitor (Android), versão, origem do save, segredos |
 
 Resumo mínimo:
@@ -50,7 +50,7 @@ Resumo mínimo:
 1. Lógica pura (`src/logic`, `src/game`) sem Phaser e por turnos (`legalActions`/`apply`); números em `src/data`; textos em `src/i18n` (EN + PT-BR juntos); cores em `src/config/palette.ts`.
 2. Gates antes de commitar: `bun run check`, `bun run typecheck`, `bun test`; `bun run build` e smoke antes de push. Nunca `--no-verify`.
 3. Toda mudança atualiza PLAN.md, CHANGELOG.md (`[Unreleased]`) e o doc afetado no mesmo lote.
-4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0`, `v0.10.0`, `v0.11.0`, `v0.12.0`, `v0.13.0`, `v0.13.1`, `v0.14.0`, `v0.15.0`, `v0.16.0` e `v0.17.0`, depois patches pequenos `0.17.1` e minors `0.18.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Push na `main` e `bun run release` só quando o usuário pedir explicitamente.** Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
+4. **Releases são poucos e em ordem** (`v0.1.0`, `v0.2.0`, `v0.3.0`, `v0.4.0`, `v0.5.0`, `v0.6.0`, `v0.7.0`, `v0.8.0`, `v0.9.0`, `v0.10.0`, `v0.11.0`, `v0.12.0`, `v0.13.0`, `v0.13.1`, `v0.14.0`, `v0.15.0`, `v0.16.0` e `v0.17.0`, depois patches pequenos `0.17.1` e minors `0.18.0`): cada commit atualiza `[Unreleased]` no CHANGELOG (escopo na mensagem: `feat(ui): …`); só o dev pede um release (seção `## [versão]` com as entradas juntas, bump do `package.json`, tag `v<versão>`). **Todo release gera o `.exe` do Windows na raiz do projeto** (`Zapatro-<versão>-win-x64.exe`, gitignored, `bun run exe`) para o dev testar. **Até a 1.0 vale a D-86:** push na branch de trabalho liberado e, a cada marco do [ROADMAP.md](ROADMAP.md), PR, merge por rebase na `main` com o CI verde e `bun run release`, sem pedir de novo; push direto na `main` e release fora de marco continuam só com pedido explícito. Fluxo na skill `release-section` e em [docs/git-and-versioning.md](docs/git-and-versioning.md).
 5. Estilo visual: princípios do Balatro (legibilidade, "juice") com identidade de boteco do interior paulista; nunca copiar arte, logo ou layout de terceiros.
 6. Cascas nativas (`desktop/`, `mobile/`): o jogo não importa Electron/Capacitor; não mudar a origem do save (`app://truco-roguelite`); keystore e login Steam nunca no repo; `.env` nunca no git.
 
@@ -99,8 +99,8 @@ Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pod
 ## Worktrees (PLAN §12.1)
 
 - As worktrees `../jogo-truco-assets` (branch `assets`) e `../jogo-truco-qa` (branch `qa`) foram encerradas: todo o trabalho delas está na `main` e as branches foram apagadas (conferido em 2026-10-25). Hoje há só o repositório principal.
-- Não crie worktree nova sem pedido explícito do dev. Se uma for criada, ela só mexe nos arquivos de que é dona e o fio principal integra com merge na `main` depois dos gates.
+- **Até a 1.0 (D-86, 2026-11-11):** agentes em paralelo e worktrees estão liberados para os itens do [ROADMAP.md](ROADMAP.md). Cada worktree mexe só nos arquivos do item dela e **não edita** `ROADMAP.md`, `PLAN.md`, `CHANGELOG.md` nem `AGENTS.md` (o fio principal integra, revisa o diff, roda os gates e escreve os docs). Fora dessa entrega, worktree nova só com pedido explícito do dev.
 
 ## Skills do projeto
 
-`karpathy-guidelines` e `ponytail` (+ `-review`/`-audit`/`-debt`): sempre em código · `add-game-content`: Manha, Simpatia, Lance, chefe, parceiro, perfil de IA, coringa · `game-art-assets` / `game-audio-assets`: arte (pintada e por código) e ElevenLabs · `svg-concept-art`: só na branch `pixel-art` · `caveman`: estilo terso do chat (`full`) · `platform-builds`: Electron/Steam e Capacitor/Google Play · `release-section`: gates, docs, versão, commit, push e release a cada commit · `qa-global`: QA funcional · `graphify`: contexto do código · `art-of-game-design` e `pixel-logic`: livros de design e pixel art aplicados ao jogo. Também: Phaser 4 (`scenes`, `tweens`, …), `gd-*`/`gc-*`/`ccgs-*` ([docs/tooling.md](docs/tooling.md)).
+`karpathy-guidelines` e `ponytail` (+ `-review`/`-audit`/`-debt`): sempre em código · `add-game-content`: Manha, Simpatia, Lance, chefe, parceiro, perfil de IA, coringa · `game-art-assets` / `game-audio-assets`: arte (pintada e por código) e ElevenLabs · `svg-concept-art`: só na branch `pixel-art` · `platform-builds`: Electron/Steam e Capacitor/Google Play · `release-section`: gates, docs, versão, commit, push e release a cada commit · `qa-global`: QA funcional · `graphify`: contexto do código · `art-of-game-design` e `pixel-logic`: livros de design e pixel art aplicados ao jogo. Também: Phaser 4 (`scenes`, `tweens`, …), `gd-*`/`gc-*`/`ccgs-*` ([docs/tooling.md](docs/tooling.md)).
