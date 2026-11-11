@@ -134,6 +134,22 @@ Estado desta entrada: o roteiro foi escrito a partir do código. Nenhuma rodada 
 
 Implementação e pendências do review do game director: [game-director-implementation.md](game-director-implementation.md).
 
+### 2026-11-11 · linha de base do ROADMAP (R0.1)
+
+Commit `3783613` (branch `improve/2026-11-next`, versão `0.19.0`), Windows 11, Bun 1.4.4.
+
+| Comando | Resultado |
+|---|---|
+| `bun run check` | sem erros, 22 avisos (266 arquivos) |
+| `bun run lint:md` | 0 problemas em 60 arquivos |
+| `bun run typecheck` | sem erros de tipo em 212 arquivos |
+| `bun test` | 340 passam, 4 pulados, 0 falhas (344 testes em 47 arquivos, 56 s) |
+| `bun run build` | concluído (`dist/` gerado) |
+| `bun scripts/smoke.ts --url http://localhost:5191` | partida rápida até o fim com o bot, `no console errors` |
+| `bun run balance` | PASS nas 3 seeds: bot bom 7,4 · 8,6 · 7,0% (faixa 5 a 20%), bot aleatório 0,0%, 7,74 · 7,74 · 7,68 mãos por mesa |
+
+Armadilha encontrada: com worktrees de agentes em `.claude/worktrees/`, o servidor de dev do diretório principal recarregava a página a cada edição delas e o smoke estourava o tempo. `vite.config.ts` passou a ignorar essa pasta (`server.watch.ignored`); o `markdownlint` também a ignora.
+
 ### Modelo para as próximas entradas
 
 ```text
