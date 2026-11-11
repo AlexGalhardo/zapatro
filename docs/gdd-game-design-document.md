@@ -623,6 +623,31 @@ Gatilhos já ligados (`TableScene`, evento `handOver`): `caiu` toca quando a dup
 
 ---
 
+## 14.1 Mano a mano (1×1): regras e efeitos em dois assentos
+
+Decisões D-77 e D-78 (2026-11-11). O motor é o mesmo do 2×2: `TableState.seats` vale 2 ou 4 (`src/logic/truco/table.ts`). Em dois assentos jogam o 0 (você) e o 1 (rival); os assentos 2 e 3 ficam com a mão vazia e nunca agem. Cobertura em `tests/heads-up.test.ts`.
+
+| Regra ou efeito | No 2×2 | No 1×1 |
+|---|---|---|
+| Distribuição e vaza | 4 mãos de 3 cartas; a vaza fecha com 4 cartas | 2 mãos de 3 cartas; a vaza fecha com 2 cartas |
+| Quem abre e quem dá | À direita de quem deu; o dador roda entre os 4 | Quem não deu abre; o dador alterna |
+| Truco, seis, nove, doze | Responde a dupla adversária (pela sua dupla, só você) | Responde o único adversário |
+| Mão de 11 | Você vê a mão do parceiro e a dupla decide | Você vê só a sua mão e decide jogar (vale 3) ou correr |
+| Mão de ferro (11×11) | Às cegas, vale 1, sem truco nem encoberta | Igual |
+| Sinais | Até o limite da mesa, com risco de flagra | Não existem (nenhuma ação de sinal é oferecida) |
+| Carta encoberta | A partir da 2ª vaza | Igual |
+| Olho: espiar | Mostra uma carta de um dos dois rivais | Mostra uma carta do único rival |
+| Olho: trocar | Mistura a sua mão com a do parceiro | Mistura a sua mão com a do rival; as cartas espiadas que mudaram de mão deixam de ser conhecidas. **Rever no playtest:** pode sair do sorteio do 1×1 |
+| Olho: nova mão, Trevo, Raio, coringa | Por dupla ou globais | Sem mudança; o desfecho do coringa mostra as duas mãos |
+| Manha Bisbilhoteiro | Espia um dos dois rivais | Espia o rival |
+| Chefe A Sortuda | Os rivais recebem manilha com mais frequência | Vale para o rival |
+| Chefe O Valentão | Um rival pede truco na primeira vez | O rival pede truco na primeira vez |
+| Chefe Rei do Truco | A aposta começa em 3 | Igual |
+| Chefe O Mudo | Sem sinais com o parceiro | Sem efeito (não há sinais): precisa de regra própria no 1×1 (ROADMAP R3.4) |
+| Juiz, Cartomante, Agiota, Tony, Stuart | Não citam assentos na mesa | Sem mudança na mesa; os de pontuação são conferidos em R3 |
+
+A IA do 1×1 amostra uma única mão escondida e não tem conhecimento de parceiro. Medido em 2026-11-11: o perfil `pro` vence o bot aleatório em 954 de 1.000 partidas, a 0,26 ms por decisão; `bun scripts/sim.ts --mode 1v1 --matches 2000` roda sem exceção conferindo, a cada mão, que toda carta está contabilizada, que os tentos não diminuem e que a partida acaba em 12.
+
 ## 15. Regras técnicas que o design impõe
 
 | Regra | Por quê | Ref. |

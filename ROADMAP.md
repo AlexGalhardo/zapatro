@@ -115,21 +115,21 @@ Abertas:
 
 Objetivo: a mesma máquina de regras joga com 2 ou 4 assentos. Nada de Phaser aqui.
 
-- [ ] **R1.1 Mesa com número de assentos.** `TableState` ganha a quantidade de assentos (2 ou 4); `nextSeat`, `partnerOf`, distribuição e fechamento de vaza passam a depender dela. Em 1×1 os assentos são 0 (você) e 1 (rival).
+- [x] **R1.1 Mesa com número de assentos.** `TableState` ganha a quantidade de assentos (2 ou 4); `nextSeat`, `partnerOf`, distribuição e fechamento de vaza passam a depender dela. Em 1×1 os assentos são 0 (você) e 1 (rival).
   **Aceite:** `tests/heads-up.test.ts`: 2 mãos de 3 cartas mais a vira; a vaza fecha com 2 cartas; a vez alterna; quem não deu abre a mão; o dador alterna; `partnerOf` não existe em 1×1 (o tipo impede o uso).
-- [ ] **R1.2 Aposta no mano a mano.** Truco, seis, nove e doze respondidos pelo único adversário; correr, aceitar e aumentar com as regras de hoje.
+- [x] **R1.2 Aposta no mano a mano.** Truco, seis, nove e doze respondidos pelo único adversário; correr, aceitar e aumentar com as regras de hoje.
   **Aceite:** testes cobrem a cadeia 1 → 3 → 6 → 9 → 12, correr em cada degrau e a proibição de aumentar o próprio pedido.
-- [ ] **R1.3 Mão de 11 e mão de ferro.** Com 11, o jogador vê as próprias cartas e decide jogar (vale 3) ou correr; em 11×11 vale a regra atual da mão de ferro.
+- [x] **R1.3 Mão de 11 e mão de ferro.** Com 11, o jogador vê as próprias cartas e decide jogar (vale 3) ou correr; em 11×11 vale a regra atual da mão de ferro.
   **Aceite:** testes de `score=11-4`, `4-11` e `11-11` em 1×1, incluindo truco pedido na mão de 11 (D-54).
-- [ ] **R1.4 Sem sinais.** Em 1×1 `legalActions` nunca oferece `signal`; a carta encoberta continua valendo.
+- [x] **R1.4 Sem sinais.** Em 1×1 `legalActions` nunca oferece `signal`; a carta encoberta continua valendo.
   **Aceite:** teste de propriedade: em 500 mãos 1×1 nenhuma ação `signal` aparece.
-- [ ] **R1.5 Coringa, cartas especiais e chefes em 2 assentos.** Revisar cada efeito que cita rivais, parceiro ou assento fixo (`match.ts:390` sorteia entre `[1,3]`).
+- [x] **R1.5 Coringa, cartas especiais e chefes em 2 assentos** (tabela no GDD §14.1; fica para o playtest decidir se o Olho de troca continua no 1×1, e o chefe O Mudo precisa de regra própria em R3.4). Revisar cada efeito que cita rivais, parceiro ou assento fixo (`match.ts:390` sorteia entre `[1,3]`).
   **Aceite:** tabela em [docs/gdd-game-design-document.md](docs/gdd-game-design-document.md) com o comportamento de cada efeito em 1×1; um teste por efeito alterado.
-- [ ] **R1.6 IA para 1×1.** `observe` e o Monte Carlo amostram uma mão escondida, sem conhecimento de parceiro; o blefe pesa mais.
+- [~] **R1.6 IA para 1×1** (feito: amostra uma mão, sem parceiro; `pro` vence o aleatório em 95,4% a 0,26 ms por decisão. Falta: perfis que blefem mais no mano a mano, junto com os rivais de R3.2). `observe` e o Monte Carlo amostram uma mão escondida, sem conhecimento de parceiro; o blefe pesa mais.
   **Aceite:** em 1.000 partidas com seed, o perfil `pro` vence o aleatório em ≥ 75%; decisão média ≤ 20 ms (medida no teste).
-- [ ] **R1.7 Robustez.** Simulação em massa do 1×1.
+- [x] **R1.7 Robustez.** Simulação em massa do 1×1.
   **Aceite:** `bun scripts/sim.ts --mode 1v1 --matches 2000` termina sem exceção; invariantes conferidas a cada mão (toda carta do baralho contabilizada, tentos nunca diminuem, a partida acaba em 12).
-- [ ] **R1.8 Zero regressão no 2×2.**
+- [x] **R1.8 Zero regressão no 2×2** (2026-11-11: nenhum teste existente editado; `bun scripts/sim.ts --runs 40 --seed 3 --bot good` idêntico antes e depois; `bun run balance` conferido no fechamento do lote).
   **Aceite:** `git diff --stat tests/` do grupo mostra só arquivos novos ou ajustes de tipo; `bun run balance` no 2×2 dá o mesmo resultado de R0.1 para as mesmas seeds.
 
 ## R2 — 1×1 jogável na Partida Rápida
@@ -210,7 +210,7 @@ Princípio: todo evento de regra tem resposta visual e sonora proporcional ao pe
 
 Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam na frente de R5.
 
-- [ ] **R6.1 Carregamento com identidade.** Arte do menu, logo, barra de progresso e uma dica por carregamento.
+- [~] **R6.1 Carregamento com identidade.** Arte do menu, logo, barra de progresso e uma dica por carregamento. Feito em 2026-11-11: título, barra com porcentagem e uma de 10 dicas (EN e PT-BR) sobre um degradê de entardecer que o `index.html` já pinta antes do JavaScript; primeiro quadro em cerca de 0,9 a 1,1 s no build de produção; primeiro download 7,48 MiB. Falta: trocar o degradê pela arte-chave quando ela existir (pedido F em docs/art-requests-1.0.md) e ver a barra andando numa conexão lenta de verdade.
   **Aceite:** primeiro quadro pintado em ≤ 1 s no build de produção; primeiro download web segue < 8 MB (GD-017).
 - [ ] **R6.2 Loja com vendedor.** Pintura do Seu Zé atrás do balcão (🧑 arte), falas dele ao comprar e ao sair sem comprar, renovação da oferta (D-82).
   **Aceite:** capturas nas quatro resoluções; toda oferta mostra raridade, efeito e preço sem abreviar.
@@ -231,7 +231,7 @@ Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam 
 
 ## R7 — Conteúdo e profundidade
 
-- [ ] **R7.0 Lista de pinturas e prompts (D-83).** [docs/art-requests-1.0.md](docs/art-requests-1.0.md): cada pintura que falta, com arquivo de destino, tamanho, enquadramento, prompt no estilo de `art-src/gta/` e o que não pode aparecer (texto, marcas reais).
+- [x] **R7.0 Lista de pinturas e prompts (D-83)** (2026-11-11: 25 pinturas e 32 ícones de trinket pedidos, 5 deles bloqueando loja; 🧑 agora é com o dev gerar e aprovar). [docs/art-requests-1.0.md](docs/art-requests-1.0.md): cada pintura que falta, com arquivo de destino, tamanho, enquadramento, prompt no estilo de `art-src/gta/` e o que não pode aparecer (texto, marcas reais).
   **Aceite:** a lista cobre R6.1, R6.2, R6.8 e R7.4; cada linha tem prioridade (bloqueia loja, festival ou 1.0) e status (pedido, gerado, aprovado, integrado).
 
 - [ ] **R7.1 Estacas de volta (D-82).** Seleção de Estaca na nova run, com a curva recalibrada ([docs/pending-decisions.md](docs/pending-decisions.md) §2 e §3).
