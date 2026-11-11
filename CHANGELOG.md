@@ -26,7 +26,14 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **save:** schema 3; saves from 0.19.0 and earlier lose the removed run systems (`upgrades`, `promises`, shop packs and an open pack) on load and keep playing.
+- **run:** `buy()` takes only the offer index.
 - **docs:** balance gate re-measured: `bun run balance` passes (good bot 7.0–8.6%); trinkets still cost the good bot 3.0 p.p. (9.0% vs 12.0%), recorded in `feedback.md` and `docs/balancing.md`.
+
+### Removed
+
+- **run:** card packs and their pick screen, Melhorias do Boteco, skipping a table with its Promessas and the table-choice screen (`TABLE_SELECT`) are gone from the data, the run logic, the headless bot, the Run screen, the i18n tables and the tests (D-82). Stakes, starting decks, the shop reroll, trinkets, Manhas and consumables stay.
+- **scripts:** `bun scripts/sim.ts --skip` and the `pack` and `skip` QA groups are removed.
 
 ### Fixed
 
