@@ -3,6 +3,23 @@ import type { I18nKey } from './en';
 export const ptBR: Record<I18nKey, string> = {
 	'game.title': 'Zapatro',
 	'boot.loading': 'Carregando…',
+	'boot.tipLabel': 'Dica',
+	'boot.tip.1': 'Cada mão tem até 3 vazas: ganhe 2 delas e a mão é sua.',
+	'boot.tip.2':
+		'A vira é a carta virada para cima depois da distribuição. O valor logo acima dela é a manilha.',
+	'boot.tip.3':
+		'As quatro manilhas ganham de todas as outras cartas, e o ZAP é a mais forte de todas.',
+	'boot.tip.4': 'Pedir TRUCO eleva a mão para 3 tentos, e a aposta também é o Mult base da mão.',
+	'boot.tip.5': 'Os pedidos vão 3, 6, 9, 12, e a mesma dupla não aumenta duas vezes seguidas.',
+	'boot.tip.6': 'Seus pontos são Fichas × Mult: um truco bem pedido multiplica sua pontuação.',
+	'boot.tip.7':
+		'Antes da sua primeira carta você pode mandar um sinal secreto ao parceiro, mas os rivais podem captar.',
+	'boot.tip.8':
+		'As Manhas disparam da esquerda para a direita, então a ordem em que você as coloca importa.',
+	'boot.tip.9':
+		'Entre as mesas, gaste na loja o dinheiro que ganhou em Manhas, pacotes e níveis de Lance.',
+	'boot.tip.10':
+		'Com 11 tentos você vê a mão do parceiro e escolhe jogar ou correr; ninguém pode pedir truco.',
 	'menu.newRun': 'Nova run',
 	'menu.settings': 'Configurações',
 	'menu.back': 'Voltar',

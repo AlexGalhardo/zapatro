@@ -9,6 +9,9 @@ export const PALETTE = {
 	night: 0x16211c,
 	// Neutral screen background of the hybrid look (docs/visual.md).
 	bgNeutral: 0x2b2b2b,
+	// The loading screen's dusk sky, top to bottom (mirrored by the CSS gradient in index.html).
+	duskTop: 0x1a1228,
+	duskBottom: 0x6b2c2a,
 	shadow: 0x0a0806,
 	textLight: 0xf6eedc,
 	textDim: 0xb2a78f,
