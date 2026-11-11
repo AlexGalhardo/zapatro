@@ -20,7 +20,7 @@ export function lanAddresses(): string[] {
 /** Starts the LAN table: one Colyseus room (`truco`) that lives as long as the server. */
 export async function startLanServer(
 	port = LAN_PORT,
-	pauses: { botMs?: number; gapMs?: number } = {},
+	pauses: { botMs?: number; gapMs?: number; clockMs?: number } = {},
 ): Promise<LanServer> {
 	const server = new Server({ transport: new WebSocketTransport() });
 	server.define(ROOM_NAME, TrucoRoom);

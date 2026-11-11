@@ -7,6 +7,7 @@ import { Rng, randomSeed } from '../src/logic/rng';
 import { jokerCard, standardDeck } from '../src/logic/truco/cards';
 import { type Action, IllegalAction, type Seat, type TableEvent } from '../src/logic/truco/table';
 import {
+	AUTOPILOT_AFTER,
 	type ClientMessage,
 	type LobbyPlayer,
 	type LobbyState,
@@ -14,8 +15,10 @@ import {
 	RECONNECT_S,
 	type ServerMessage,
 	type TableSnapshot,
+	TURN_CLOCK_CHOICES_S,
+	TURN_CLOCK_DEFAULT_S,
 } from '../src/net/protocol';
-import { realAction, viewEvent, viewState } from '../src/net/view';
+import { realAction, toView, viewEvent, viewState } from '../src/net/view';
 
 /** A bot thinks this long before it plays; the next hand is dealt this long after a count. */
 const BOT_MS = 800;
@@ -35,7 +38,10 @@ export function isMessage(m: unknown): m is ClientMessage {
 			return str(o.name) && str(o.char);
 		case 'sit':
 			return SEATS.some((s) => s === o.seat);
+		case 'clock':
+			return TURN_CLOCK_CHOICES_S.some((c) => c === o.seconds);
 		case 'start':
+		case 'back':
 		case 'resync':
 			return true;
 		case 'action': {
@@ -76,10 +82,19 @@ export class TrucoRoom extends Room {
 	/** Pauses in ms; the tests shorten them. */
 	private botMs = BOT_MS;
 	private gapMs = HAND_GAP_MS;
+	/** Turn clock in seconds (0 = off); the tests inject fractions through `clockMs`. */
+	private clockS: number = TURN_CLOCK_DEFAULT_S;
+	/** Per real seat: consecutive timeouts, and whether the server plays the seat for it. */
+	private timeouts = [0, 0, 0, 0];
+	private auto = [false, false, false, false];
+	/** The human decision being timed and when its clock ends (ms epoch). */
+	private timed: Seat | null = null;
+	private deadline = 0;
 
-	override onCreate(options: { botMs?: number; gapMs?: number } = {}): void {
+	override onCreate(options: { botMs?: number; gapMs?: number; clockMs?: number } = {}): void {
 		this.botMs = options.botMs ?? BOT_MS;
 		this.gapMs = options.gapMs ?? HAND_GAP_MS;
+		if (options.clockMs !== undefined) this.clockS = options.clockMs / 1000;
 		this.onMessage('m', (client, msg: unknown) => {
 			// Anything on the network may be garbage: a bad message is dropped, never a crash.
 			if (!isMessage(msg)) return;
@@ -116,12 +131,14 @@ export class TrucoRoom extends Room {
 
 	override onReconnect(client: Client): void {
 		this.sendStart(client.sessionId);
+		this.sendTimer();
 	}
 
 	override onLeave(client: Client): void {
 		const seat = this.seatOf(client.sessionId);
 		if (seat === -1) return;
 		this.seats[seat] = null;
+		this.auto[seat] = false;
 		if (this.host === client.sessionId)
 			this.host = this.seats.find((s) => s !== null)?.id ?? '';
 		const m = this.match;
@@ -164,7 +181,12 @@ export class TrucoRoom extends Room {
 	}
 
 	private lobby(): LobbyState {
-		return { seats: this.seats, host: this.host, playing: this.match !== null };
+		return {
+			seats: this.seats,
+			host: this.host,
+			playing: this.match !== null,
+			clockS: this.clockS,
+		};
 	}
 
 	private sendLobby(): void {
@@ -190,8 +212,24 @@ export class TrucoRoom extends Room {
 			case 'start':
 				if (!this.match && client.sessionId === this.host) this.startMatch();
 				break;
+			case 'clock':
+				if (!this.match && client.sessionId === this.host) {
+					this.clockS = msg.seconds;
+					this.sendLobby();
+				}
+				break;
+			case 'back':
+				this.timeouts[seat] = 0;
+				if (this.auto[seat]) {
+					this.auto[seat] = false;
+					// Its own turn restarts on the human clock; otherwise others' clocks run on.
+					if (this.match?.actor() === seat) this.tick();
+					else this.sendTimer();
+				}
+				break;
 			case 'resync':
 				this.sendStart(client.sessionId);
+				this.sendTimer();
 				break;
 			case 'action':
 				this.onAction(client, seat as Seat, msg.action);
@@ -207,6 +245,8 @@ export class TrucoRoom extends Room {
 		const free = rng.shuffle(COMPANION_IDS.filter((c) => !taken.has(c)));
 		this.chars = [];
 		this.names = [];
+		this.timeouts = [0, 0, 0, 0];
+		this.auto = [false, false, false, false];
 		const brains = SEATS.map((seat): SeatBrain => {
 			const p = this.seats[seat];
 			this.chars[seat] = p?.char ?? (free.pop() as string);
@@ -286,13 +326,31 @@ export class TrucoRoom extends Room {
 			if (e instanceof IllegalAction) return void client.send('m', { type: 'rejected' });
 			throw e;
 		}
+		this.timeouts[seat] = 0;
+		this.auto[seat] = false;
 		this.sendStep(events);
 		this.tick();
 	}
 
-	/** Moves the match on: bots play after a pause, the next hand is dealt, humans are awaited. */
+	/** Tells each client whose decision is timed, the ms left and who is on autopilot. */
+	private sendTimer(): void {
+		const left = Math.max(0, this.deadline - Date.now());
+		this.each((_c, me) => ({
+			type: 'timer',
+			seat: this.timed === null ? null : toView(this.timed, me),
+			ms: left,
+			auto: SEATS.filter((s) => this.auto[s]).map((s) => toView(s, me)),
+		}));
+	}
+
+	/**
+	 * Moves the match on: bots play after a pause, the next hand is dealt, humans are awaited
+	 * against the turn clock (a timeout plays the bot's action for them; `AUTOPILOT_AFTER` in a
+	 * row put the seat on autopilot, played like a bot until its player acts or says `back`).
+	 */
 	private tick(): void {
 		clearTimeout(this.timer);
+		this.timed = null;
 		const m = this.match;
 		if (!m) return;
 		const actor = m.actor();
@@ -306,12 +364,29 @@ export class TrucoRoom extends Room {
 				this.each((_c, seat) => ({ type: 'deal', snap: this.snapshot(seat) }));
 				this.tick();
 			}, this.gapMs);
+			this.sendTimer();
 			return;
 		}
-		if (m.brains[actor].kind === 'human') return;
+		const human = m.brains[actor].kind === 'human' && !this.auto[actor];
+		const clockMs = this.clockS * 1000;
+		if (human && clockMs <= 0) {
+			this.sendTimer();
+			return;
+		}
+		const ms = human ? clockMs : this.botMs;
+		if (human) {
+			this.timed = actor;
+			this.deadline = Date.now() + ms;
+		}
 		this.timer = setTimeout(() => {
+			if (human) {
+				const n = (this.timeouts[actor] ?? 0) + 1;
+				this.timeouts[actor] = n;
+				if (n >= AUTOPILOT_AFTER) this.auto[actor] = true;
+			}
 			this.sendStep(m.act(m.aiAction(actor)));
 			this.tick();
-		}, this.botMs);
+		}, ms);
+		this.sendTimer();
 	}
 }
