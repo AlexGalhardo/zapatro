@@ -35,7 +35,9 @@ import {
 	legalActions,
 	matchWinner,
 	nextDealer,
+	rivalsOf,
 	type Seat,
+	type Seats,
 	type TableEvent,
 	type TableRules,
 	type TableState,
@@ -48,7 +50,8 @@ export type SeatBrain = { kind: 'human' } | { kind: 'ai'; profile: AiProfile } |
 
 export interface MatchOptions {
 	rng: Rng;
-	brains: [SeatBrain, SeatBrain, SeatBrain, SeatBrain];
+	/** Four seats (two pairs) or two (mano a mano: seat 0 = you, seat 1 = rival). */
+	brains: [SeatBrain, SeatBrain, SeatBrain, SeatBrain] | [SeatBrain, SeatBrain];
 	deck?: Card[];
 	dealer?: Seat;
 	score?: Record<Team, number>;
@@ -96,7 +99,9 @@ export interface MatchOptions {
  */
 export class Match {
 	readonly rng: Rng;
-	readonly brains: MatchOptions['brains'];
+	/** Always four entries: the seats of a two-seat table beyond 1 hold an idle filler. */
+	readonly brains: [SeatBrain, SeatBrain, SeatBrain, SeatBrain];
+	readonly seats: Seats;
 	readonly deck: Card[];
 	readonly rules: TableRules;
 	dealer: Seat;
@@ -144,7 +149,11 @@ export class Match {
 	constructor(opts: MatchOptions) {
 		const r = opts.resume;
 		this.rng = r ? new Rng(r.rng) : opts.rng;
-		this.brains = opts.brains;
+		this.seats = opts.brains.length as Seats;
+		this.brains =
+			opts.brains.length === 4
+				? opts.brains
+				: [...opts.brains, { kind: 'random' }, { kind: 'random' }];
 		this.deck = opts.deck ?? fullDeck();
 		this.goal = opts.goal;
 		this.levels = opts.levels ?? {};
@@ -167,7 +176,7 @@ export class Match {
 			signals: (this.boss === 'peter'
 				? [0, 1, 0, 1]
 				: [1 + (opts.extraSignals ?? 0), 1, 1, 1]) as TableRules['signals'],
-			catchChance: opts.brains.map((b, i) =>
+			catchChance: this.brains.map((b, i) =>
 				Math.min(
 					1,
 					Math.max(
@@ -182,9 +191,9 @@ export class Match {
 				: {}),
 			// The partner never answers a rival's truco: the seat-0 player (or its bot) does. With a
 			// human at seat 2 (LAN) each human answers for themselves.
-			...(opts.brains[2].kind === 'human' ? {} : { humanAnswers: true }),
+			...(this.seats === 2 || this.brains[2].kind === 'human' ? {} : { humanAnswers: true }),
 		};
-		this.dealer = r?.dealer ?? opts.dealer ?? 3;
+		this.dealer = r?.dealer ?? opts.dealer ?? (this.seats === 2 ? 1 : 3);
 		this.points = r?.points ?? 0;
 		this.money = r?.money ?? opts.startMoney ?? 0;
 		this.quedas = r?.quedas ?? 0;
@@ -341,7 +350,7 @@ export class Match {
 
 	/** Deals the next hand (the dealer rotates). */
 	nextHand(): void {
-		this.dealer = nextDealer(this.dealer);
+		this.dealer = nextDealer(this.dealer, this.seats);
 		let score = this.state.score;
 		if (this.outcome === 'queda') {
 			score = afterQueda(score, 'us');
@@ -374,6 +383,7 @@ export class Match {
 				? { ...this.rules, bonusStep: 'us' }
 				: this.rules;
 		const dealt = deal(this.deck, this.dealer, score, this.rng, {
+			seats: this.seats,
 			rules,
 			...(this.has('rigVira') ? { rigVira: RIG_VIRA_CHANCE } : {}),
 			...(this.boss === 'sortuda' ? { rigViraRivals: SORTUDA_CHANCE } : {}),
@@ -387,7 +397,7 @@ export class Match {
 			this.pileCard = out.length ? this.rng.pick(out) : null;
 		}
 		if (this.has('peek')) {
-			const seat = this.rng.pick([1, 3] as const);
+			const seat = this.rng.pick(rivalsOf(0, this.seats));
 			this.peek = { seat, cardId: this.rng.pick(this.state.hands[seat]).id };
 		}
 	}

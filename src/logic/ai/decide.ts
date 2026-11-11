@@ -8,7 +8,8 @@ import {
 	handWinner,
 	MATCH_POINTS,
 	nextSeat,
-	partnerOf,
+	partnerSeat,
+	SEATS,
 	type Seat,
 	type Sign,
 	type Team,
@@ -70,7 +71,7 @@ function trickResult(plays: SimPlay[]): { result: TrickResult; winner: Seat | nu
 /** Plays the rest of the hand greedily from a full deal of strengths. */
 function playout(obs: Observation, hands: number[][]): Team | null {
 	const results: TrickResult[] = [];
-	let opener: Seat = obs.tricks[0]?.opener ?? nextSeat(obs.dealer);
+	let opener: Seat = obs.tricks[0]?.opener ?? nextSeat(obs.dealer, obs.seats);
 	let current: SimPlay[] = [];
 	for (const t of obs.tricks) {
 		if (t.result) {
@@ -88,14 +89,14 @@ function playout(obs: Observation, hands: number[][]): Team | null {
 		const w = handWinner(results);
 		if (w !== undefined) return w;
 		let seat = current.length
-			? nextSeat((current[current.length - 1] as SimPlay).seat)
+			? nextSeat((current[current.length - 1] as SimPlay).seat, obs.seats)
 			: opener;
-		while (current.length < 4) {
+		while (current.length < obs.seats) {
 			const h = hands[seat] as number[];
 			const i = greedyIndex(h, current, seat);
 			current.push({ seat, s: h[i] as number });
 			h.splice(i, 1);
-			seat = nextSeat(seat);
+			seat = nextSeat(seat, obs.seats);
 		}
 		const r = trickResult(current);
 		results.push(r.result);
@@ -135,13 +136,14 @@ export function winChance(
 	// Face-down cards of others are gone from the pool too, but we do not know which.
 	const hidden = obs.tricks.reduce((n, t) => n + t.plays.filter((p) => !p.card).length, 0);
 	const pool = deck.filter((c) => !known.has(c.id));
-	const partner = partnerOf(obs.seat);
+	const partner = partnerSeat(obs.seat, obs.seats);
+	const seated = SEATS.slice(0, obs.seats);
 	let wins = 0;
 	let ties = 0;
 	for (let n = 0; n < samples; n++) {
 		const cards = rng.shuffle(pool).slice(hidden);
 		const hands: Card[][] = [[], [], [], []];
-		for (const seat of [0, 1, 2, 3] as Seat[]) {
+		for (const seat of seated) {
 			const shown = obs.shownHands?.[seat];
 			if (shown) hands[seat] = [...shown];
 			else if (seat === obs.seat && obs.hand) hands[seat] = [...obs.hand];
@@ -162,7 +164,7 @@ export function winChance(
 			if (want >= 0 && rng.chance(0.75))
 				hands[g.seat]?.push(cards.splice(want, 1)[0] as Card);
 		}
-		for (const seat of [0, 1, 2, 3] as Seat[]) {
+		for (const seat of seated) {
 			const h = hands[seat] as Card[];
 			while (h.length < obs.handSizes[seat]) h.push(cards.pop() as Card);
 		}
