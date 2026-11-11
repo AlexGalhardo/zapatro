@@ -69,3 +69,5 @@ game-director-review.md
 
 # Portable Windows build for local tests (bun run exe), one per release
 /Zapatro-*-win-x64.exe
+
+TODO.md
