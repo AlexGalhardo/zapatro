@@ -169,7 +169,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.side.us.duel': 'Você',
 	'table.side.them.duel': 'Rival',
 	'table.side.tentos.duel': 'Você × rival',
-	'table.side.quickSub.duel': 'Mano a mano até 12 tentos',
+	'table.side.quickSub.duel': 'Mano a mano até 12',
 	'table.matchWin.duel': 'Você fez 12!',
 	'table.matchLose.duel': 'O rival fez 12.',
 	'joker.shield.desc.duel': 'Se quem jogou esta carta correr, perde só 1 tento',

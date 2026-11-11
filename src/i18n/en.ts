@@ -164,7 +164,7 @@ export const en = {
 	'table.side.us.duel': 'You',
 	'table.side.them.duel': 'Rival',
 	'table.side.tentos.duel': 'You × rival',
-	'table.side.quickSub.duel': 'Mano a mano to 12 tentos',
+	'table.side.quickSub.duel': 'Mano a mano to 12',
 	'table.matchWin.duel': 'You made 12!',
 	'table.matchLose.duel': 'The rival made 12.',
 	'joker.shield.desc.duel': 'If the player of this card runs, they lose only 1 tento',
