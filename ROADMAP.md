@@ -108,7 +108,7 @@ Abertas:
   **Aceite:** cada captura nomeada confere a cena ativa (`scene.isActive`) e a fase da run antes de fotografar; o script sai com código ≠ 0 se a tela esperada não apareceu; a captura `03-shop` mostra a loja.
 - [ ] **R0.3 Cabeçalho do PLAN em dia.** O "Estado atual" do PLAN ainda diz "PA2 concluído (`0.0.3`)".
   **Aceite:** o cabeçalho cita a versão corrente e aponta para este roadmap; `AGENTS.md` ("Comece aqui") cita o `ROADMAP.md` como foco até a 1.0.
-- [ ] **R0.4 Flags sem dono (D-82).** Pacotes, Melhorias, pular mesa e Promessas saem do código (dados, lógica, cena, i18n, testes, feitos, save com migração); Estacas, baralhos e renovação voltam em R7.
+- [x] **R0.4 Flags sem dono (D-82)** (2026-11-11: −1.002 linhas; save no schema 3 com migração e fixture da `0.19.0`; balanceamento idêntico; sobrou código morto pequeno em `match.ts` e `TableScene.ts`, `peekPile` e `pileCard`, para limpar junto com R2). Pacotes, Melhorias, pular mesa e Promessas saem do código (dados, lógica, cena, i18n, testes, feitos, save com migração); Estacas, baralhos e renovação voltam em R7.
   **Aceite:** nenhum sistema inalcançável pelo jogador permanece no build; teste novo falha se um feito (`src/data/feats.ts`) depender de sistema desligado.
 
 ## R1 — Motor 1×1 (lógica pura)
