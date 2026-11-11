@@ -41,6 +41,8 @@ export default defineConfig({
 		__HAS_ATLAS__: JSON.stringify(existsSync('public/assets/atlas')),
 		__ASSET_FILES__: JSON.stringify(assetFiles()),
 	},
+	// Agent worktrees live inside the repo: without this, every edit there reloads this dev server.
+	server: { watch: { ignored: ['**/.claude/worktrees/**'] } },
 	build: {
 		target: 'es2022',
 		chunkSizeWarningLimit: 2000,

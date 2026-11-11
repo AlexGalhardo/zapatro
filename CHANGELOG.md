@@ -23,6 +23,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Fixed
 
+- **tooling:** the dev server and markdownlint ignore the agent worktrees under `.claude/worktrees/`, which were reloading the page of the main dev server and failing the smoke test.
 - **lan:** the join form scales with the screen height instead of using fixed CSS pixels, so its text is no longer tiny at 1920×1080 and 2560×1440 next to the rest of the UI.
 - **build:** the Poki trim uses the resolved `outDir`, so a Poki build with another `outDir` no longer deletes the voices from the normal `dist/` (and still trims its own output).
 

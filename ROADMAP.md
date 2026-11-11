@@ -102,7 +102,7 @@ Abertas:
 
 ## R0 — Base e higiene
 
-- [ ] **R0.1 Linha de base dos gates.** Rodar `bun run check`, `bun run lint:md`, `bun run typecheck`, `bun test`, `bun run build`, `bun scripts/smoke.ts` e `bun run balance` no commit de partida.
+- [x] **R0.1 Linha de base dos gates** (2026-11-11, commit `3783613`: tudo verde, números no doc de QA). Rodar `bun run check`, `bun run lint:md`, `bun run typecheck`, `bun test`, `bun run build`, `bun scripts/smoke.ts` e `bun run balance` no commit de partida.
   **Aceite:** resultado de cada comando registrado em [docs/quality-assurance-functional-systems-global-test.md](docs/quality-assurance-functional-systems-global-test.md) com a data e o hash.
 - [ ] **R0.2 Scripts de captura confiáveis.** `scripts/shot.ts`, `scripts/gta-shots.ts` e `scripts/store-shots.ts` esperam a cena certa em vez de tempo fixo e teclas cegas.
   **Aceite:** cada captura nomeada confere a cena ativa (`scene.isActive`) e a fase da run antes de fotografar; o script sai com código ≠ 0 se a tela esperada não apareceu; a captura `03-shop` mostra a loja.
