@@ -17,7 +17,7 @@ Até 4 pessoas jogam **Truco puro até 12** (a Partida Rápida) na mesma rede, e
 | Queda | Mesa espera 30 s pela volta do jogador (o SDK reconecta sozinho); depois um bot (perfil `pro`) assume o assento |
 | Plataformas | Desktop (Electron) cria ou entra; Android entra; navegador só em `http://` (dev). O site `https://` não oferece o menu: o navegador bloqueia `ws://` de outro computador numa página `https` |
 
-## Decisões para a 1.0 (entrevista de 2026-11-11, ainda não implementadas)
+## Decisões para a 1.0 (entrevista de 2026-11-11; só o relógio já está implementado)
 
 Plano e aceite em [ROADMAP.md](../ROADMAP.md), grupo R4.
 

@@ -17,6 +17,9 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 - **repo:** README, license, contributing guide, code of conduct and security policy.
 - **docs:** `ROADMAP.md`, the delivery plan for 1.0 (demo at Steam Next Fest February 2027): work groups R0 to R13 with auditable acceptance checks, a calendar of milestones and the open decisions; `AGENTS.md` and `PLAN.md` point to it. The decisions of the 2026-11-11 interview (D-76 to D-87: 1.0 on 2027-03-16, 1v1 in quick match, LAN and its own run with the cast as rivals, LAN with special cards and a 30 s turn clock, Android hosting, stakes, decks and reroll back, packs, upgrades and table skipping removed) are recorded in `PLAN.md` §2.4, `docs/decisions.md` and `docs/multiplayer.md`; the rules and the release skill describe the delivery flow until 1.0 and turn the caveman chat style off.
 
+- **lan:** turn clock for human decisions (30 s by default; the host picks off, 15, 30 or 60 s in the lobby); on timeout the server plays the bot's action for that seat, so an idle player no longer blocks the table.
+- **lan:** two consecutive timeouts put a seat on autopilot (played like a bot) until its player acts or taps "I'm back"; the table shows a countdown bar on the timed seat, ticks in the last 5 s of your turn and tags autopilot seats.
+
 ### Changed
 
 - **docs:** balance gate re-measured: `bun run balance` passes (good bot 7.0–8.6%); trinkets still cost the good bot 3.0 p.p. (9.0% vs 12.0%), recorded in `feedback.md` and `docs/balancing.md`.
