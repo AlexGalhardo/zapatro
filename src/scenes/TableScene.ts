@@ -82,7 +82,12 @@ import {
 import type { ViewSize } from '../logic/viewport';
 import { acceptLine, foldLine, jokeDue, nextJoke } from '../logic/voice-lines';
 import type { NetClient } from '../net/client';
-import type { ServerMessage, TableSnapshot, TableStart } from '../net/protocol';
+import {
+	type ServerMessage,
+	type TableSnapshot,
+	type TableStart,
+	TURN_CLOCK_WARN_S,
+} from '../net/protocol';
 import { Button } from '../ui/Button';
 import { EMOJI_FONT, TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { actionHint, hintMode, keyHint } from '../ui/key-hint';
@@ -387,6 +392,9 @@ const HAND = { x: 390, y: 305, step: 51, tilt: 8, drop: 4, scale: 1.12 };
 /** The action column (bottom right of the felt): x, width, height and the rows' centres. */
 const ACTIONS = { x: 580, w: 96, h: 24, normal: [250, 278, 306, 334], answer: [274, 304, 334] };
 
+/** Where each seat's turn-clock bar sits: above its avatar card; yours under your hand. */
+const CLOCK_BAR = { w: SEAT_CARD.w + 8, h: 5, mine: { x: 390, y: 351, w: 120 } };
+
 const VIRA = { x: 190, y: 46, scale: 0.78 };
 
 /**
@@ -510,6 +518,11 @@ export class TableScene extends Phaser.Scene {
 	private beads: Phaser.GameObjects.Image[][] = [[], []];
 	private beadsLit = [0, 0];
 	private banner!: Phaser.GameObjects.Text;
+	/** LAN turn clock: the timed seat (as I see it), its deadline on this machine's clock, the seats on autopilot. */
+	private netClock = { seat: null as Seat | null, end: 0, total: 0, auto: [] as Seat[], tick: 0 };
+	private clockGfx!: Phaser.GameObjects.Graphics;
+	private autoLabels: Phaser.GameObjects.Text[] = [];
+	private autoBox!: Phaser.GameObjects.Container;
 	private pointsText!: Phaser.GameObjects.Text;
 	private scoreBox!: Phaser.GameObjects.Container;
 	private scoreTitle!: Phaser.GameObjects.Text;
@@ -611,6 +624,8 @@ export class TableScene extends Phaser.Scene {
 			remote.load(snap);
 			this.match = remote;
 			this.startTable(start.chars);
+			this.netClock = { seat: null, end: 0, total: 0, auto: [], tick: 0 };
+			this.buildClock(client);
 			client.listen((m) => this.onNet(m));
 			// Back from an overlay: `pump` skipped while paused, so ask for the turn again.
 			onSceneEvent(this, 'resume', () => this.pump());
@@ -719,6 +734,7 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 	}
 
 	override update(): void {
+		this.drawClock();
 		// The status bar grows with the line, up to its slot; long lines wrap and it grows taller.
 		const w = this.status.text ? Math.min(STATUS.w, Math.ceil(this.status.width) + 20) : 0;
 		const h = Math.max(18, Math.ceil(this.status.height) + 6);
@@ -729,6 +745,52 @@ ${t(`boss.${boss}.rule` as I18nKey)}`,
 			this.statusBar
 				.fillStyle(PALETTE.panelDark, 0.92)
 				.fillRoundedRect(this.status.x - w / 2, this.status.y - h / 2, w, h, 9);
+	}
+
+	/** Top-left and width of a seat's clock bar. */
+	private clockBar(seat: Seat): { x: number; y: number; w: number } {
+		if (seat === 0) {
+			const m = CLOCK_BAR.mine;
+			return { x: m.x - m.w / 2, y: m.y, w: m.w };
+		}
+		const [ax, ay] = SEAT_UI[seat].avatar;
+		return { x: ax - 4, y: ay - 8, w: CLOCK_BAR.w };
+	}
+
+	/** The turn clock of a LAN table: a bar on the timed seat that drains, and a tick at the end. */
+	private drawClock(): void {
+		if (!this.net) return;
+		const c = this.netClock;
+		const g = this.clockGfx.clear();
+		this.autoBox.setVisible(c.auto.includes(0));
+		for (const seat of [0, 1, 2, 3] as const) {
+			const label = this.autoLabels[seat];
+			if (!label) continue;
+			const on = c.auto.includes(seat) && seat !== 0;
+			label.setVisible(on);
+			if (on) {
+				const b = this.clockBar(seat);
+				label.setPosition(b.x + b.w / 2, b.y + CLOCK_BAR.h / 2);
+			}
+		}
+		if (c.seat === null) return;
+		const ms = Math.max(0, c.end - this.time.now);
+		const frac = c.total > 0 ? Math.min(1, ms / c.total) : 0;
+		const b = this.clockBar(c.seat);
+		const color = frac > 0.5 ? PALETTE.good : frac > 0.2 ? PALETTE.manilha : PALETTE.bad;
+		g.fillStyle(PALETTE.panelDark, 0.9).fillRoundedRect(
+			b.x - 1,
+			b.y - 1,
+			b.w + 2,
+			CLOCK_BAR.h + 2,
+			3,
+		);
+		g.fillStyle(color, 1).fillRoundedRect(b.x, b.y, b.w * frac, CLOCK_BAR.h, 2);
+		const secs = Math.ceil(ms / 1000);
+		if (c.seat === 0 && secs > 0 && secs <= TURN_CLOCK_WARN_S && secs !== c.tick) {
+			c.tick = secs;
+			sfx(this, 'sfx.ui.move');
+		}
 	}
 
 	/** State snapshot for the smoke test and QA (`window.__GAME__`). */
@@ -1270,6 +1332,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.popup.setPosition(cx, cy - 72);
 		this.scoreBox.setPosition(cx, cy - 20);
 		this.banner.setPosition(cx, cy - 40);
+		this.autoBox?.setPosition(cx, cy + 30);
 		this.signPicker.setPosition(ACTIONS.x - ACTIONS.w / 2 - 148, 126);
 		this.eleven.setPosition(cx, cy + 14);
 		this.endPanel.setPosition(cx, cy - 10);
@@ -2373,6 +2436,47 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		});
 	}
 
+	/** The clock's bar, the "auto" tags on other seats and my "I'm back" panel (hidden until needed). */
+	private buildClock(client: NetClient): void {
+		this.clockGfx = this.add.graphics().setDepth(DEPTH.signal);
+		this.autoLabels = ([0, 1, 2, 3] as const).map(() =>
+			this.add
+				.text(0, 0, t('net.auto.seat'), this.bold(5, PALETTE.textLight))
+				.setOrigin(0.5)
+				.setDepth(DEPTH.signal)
+				.setVisible(false),
+		);
+		const panel = this.add.graphics();
+		drawPanel(panel, -120, -34, 240, 68, {
+			shadow: 3,
+			fill: PALETTE.panelDark,
+			radius: RADIUS.panel,
+		});
+		const label = this.add
+			.text(0, -16, t('net.auto.you'), {
+				...this.text(9, PALETTE.manilha),
+				align: 'center',
+				wordWrap: { width: 220 },
+			})
+			.setOrigin(0.5);
+		const back = new Button(this, t('net.auto.back'), () => this.takeBack(client), {
+			w: 120,
+			h: 20,
+			size: 10,
+			color: PALETTE.good,
+		}).setPosition(0, 18);
+		this.autoBox = this.add
+			.container(0, 0, [panel, label, back])
+			.setDepth(DEPTH.eleven)
+			.setVisible(false);
+		this.autoBox.setPosition(this.cx, this.cy + 30);
+	}
+
+	private takeBack(client: NetClient): void {
+		client.send({ type: 'back' });
+		this.netClock.auto = this.netClock.auto.filter((s) => s !== 0);
+	}
+
 	/** A message from the LAN server: steps and deals queue up and play one after the other. */
 	private onNet(m: ServerMessage): void {
 		// A new `start` while the table is open (the host began another match): portraits and
@@ -2386,6 +2490,13 @@ ${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
 		} else if (m.type === 'step' || m.type === 'deal' || m.type === 'start') {
 			this.netQueue.push(m);
 			void this.drain();
+		} else if (m.type === 'timer') {
+			const c = this.netClock;
+			c.seat = m.seat;
+			c.end = this.time.now + m.ms;
+			c.total = Math.max(m.ms, (this.net?.client.lobby?.clockS ?? 0) * 1000);
+			c.auto = m.auto;
+			c.tick = 0;
 		} else if (m.type === 'rejected') {
 			sfx(this, 'sfx.ui.error');
 			this.busy = false;

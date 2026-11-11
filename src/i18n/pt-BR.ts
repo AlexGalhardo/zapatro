@@ -1100,6 +1100,11 @@ export const ptBR: Record<I18nKey, string> = {
 	'lan.hint':
 		'Escolha um lugar. Quem senta de frente é parceiro. Lugares vazios são jogados por bots.',
 	'lan.host.tag': 'anfitrião',
+	'lan.clock.off': 'Relógio: desligado',
+	'lan.clock': 'Relógio: {s} s',
+	'net.auto.you': 'Você está no piloto automático: um bot joga no seu lugar.',
+	'net.auto.back': 'Voltei',
+	'net.auto.seat': 'AUTO',
 	'net.closed': 'A mesa foi fechada.',
 	'net.backToLobby': 'Salão',
 	'table.strength.special': 'Carta especial · um efeito aleatório ao jogar virada para cima',
