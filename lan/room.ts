@@ -1,24 +1,34 @@
 import { type Client, Room } from '@colyseus/core';
 import { AI_PROFILE_IDS, AI_PROFILES } from '../src/data/ai-profiles';
 import { COMPANION_IDS } from '../src/data/companions';
-import { Match, type SeatBrain } from '../src/game/match';
+import { Match, type MatchOptions, type SeatBrain } from '../src/game/match';
 import { rivalBrain } from '../src/game/run-table';
 import { Rng, randomSeed } from '../src/logic/rng';
-import { jokerCard, standardDeck } from '../src/logic/truco/cards';
-import { type Action, IllegalAction, type Seat, type TableEvent } from '../src/logic/truco/table';
+import { fullDeck } from '../src/logic/truco/cards';
+import {
+	type Action,
+	IllegalAction,
+	type Seat,
+	type TableEvent,
+	type Seats as TableSeats,
+} from '../src/logic/truco/table';
 import {
 	AUTOPILOT_AFTER,
 	type ClientMessage,
 	type LobbyPlayer,
 	type LobbyState,
 	MAX_NAME,
+	MODE_SEATS,
 	RECONNECT_S,
 	type ServerMessage,
+	TABLE_MODE_DEFAULT,
+	TABLE_MODES,
+	type TableMode,
 	type TableSnapshot,
 	TURN_CLOCK_CHOICES_S,
 	TURN_CLOCK_DEFAULT_S,
 } from '../src/net/protocol';
-import { realAction, toView, viewEvent, viewState } from '../src/net/view';
+import { fromView, realAction, toView, viewEvent, viewState } from '../src/net/view';
 
 /** A bot thinks this long before it plays; the next hand is dealt this long after a count. */
 const BOT_MS = 800;
@@ -40,6 +50,8 @@ export function isMessage(m: unknown): m is ClientMessage {
 			return SEATS.some((s) => s === o.seat);
 		case 'clock':
 			return TURN_CLOCK_CHOICES_S.some((c) => c === o.seconds);
+		case 'mode':
+			return TABLE_MODES.some((m) => m === o.mode);
 		case 'start':
 		case 'back':
 		case 'resync':
@@ -62,10 +74,11 @@ export function isMessage(m: unknown): m is ClientMessage {
 const wire = (m: ServerMessage): ServerMessage => JSON.parse(JSON.stringify(m));
 
 /**
- * The one table of a LAN server: a lobby where people pick a seat (0/2 against 1/3), then a
- * Truco match to 12 that the server plays: it holds the real `Match`, validates every action
- * and sends each player its own masked view (`src/net/view.ts`). Empty seats are bots; a player
- * who drops has `RECONNECT_S` seconds to come back before a bot takes the seat.
+ * The one table of a LAN server: a lobby where people pick a seat (0/2 against 1/3, or 0 against
+ * 1 in the 1v1 mode the host picks), then a Truco match to 12 with the jokers and the special
+ * cards that the server plays: it holds the real `Match`, validates every action and sends each
+ * player its own masked view (`src/net/view.ts`). Empty seats are bots; a player who drops has
+ * `RECONNECT_S` seconds to come back before a bot takes the seat.
  */
 export class TrucoRoom extends Room {
 	override maxClients = 4;
@@ -73,6 +86,7 @@ export class TrucoRoom extends Room {
 
 	private seats: Seats = [null, null, null, null];
 	private host = '';
+	private mode: TableMode = TABLE_MODE_DEFAULT;
 	private match: Match | null = null;
 	/** Chars and names the clients draw, by real seat (bots have an empty name). */
 	private chars: string[] = [];
@@ -108,7 +122,9 @@ export class TrucoRoom extends Room {
 	}
 
 	override onJoin(client: Client, options: { name?: string; char?: string } = {}): void {
-		const seat = this.seats.indexOf(null) as Seat;
+		const seat = this.seats.slice(0, this.seatCount).indexOf(null);
+		// The room locks when full, but a seat can vanish between the check and the join.
+		if (seat === -1) throw new Error('table full');
 		if (!this.host) this.host = client.sessionId;
 		this.seats[seat] = {
 			id: client.sessionId,
@@ -156,6 +172,10 @@ export class TrucoRoom extends Room {
 
 	// --- Lobby ------------------------------------------------------------------------------
 
+	private get seatCount(): TableSeats {
+		return MODE_SEATS[this.mode];
+	}
+
 	private seatOf(id: string): number {
 		return this.seats.findIndex((s) => s?.id === id);
 	}
@@ -184,6 +204,7 @@ export class TrucoRoom extends Room {
 		return {
 			seats: this.seats,
 			host: this.host,
+			mode: this.mode,
 			playing: this.match !== null,
 			clockS: this.clockS,
 		};
@@ -203,7 +224,7 @@ export class TrucoRoom extends Room {
 				break;
 			case 'sit': {
 				const to = msg.seat;
-				if (this.match || !SEATS.includes(to) || this.seats[to]) break;
+				if (this.match || to >= this.seatCount || this.seats[to]) break;
 				this.seats[to] = this.seats[seat] as LobbyPlayer;
 				this.seats[seat] = null;
 				this.sendLobby();
@@ -218,6 +239,21 @@ export class TrucoRoom extends Room {
 					this.sendLobby();
 				}
 				break;
+			case 'mode': {
+				// Refused (not moved, not dropped) while somebody sits in a seat the 1v1 lacks.
+				const n = MODE_SEATS[msg.mode];
+				if (
+					this.match ||
+					client.sessionId !== this.host ||
+					this.seats.slice(n).some(Boolean)
+				)
+					break;
+				this.mode = msg.mode;
+				// Colyseus locks the room when full and unlocks it when it is not.
+				this.maxClients = n;
+				this.sendLobby();
+				break;
+			}
 			case 'back':
 				this.timeouts[seat] = 0;
 				if (this.auto[seat]) {
@@ -247,20 +283,15 @@ export class TrucoRoom extends Room {
 		this.names = [];
 		this.timeouts = [0, 0, 0, 0];
 		this.auto = [false, false, false, false];
-		const brains = SEATS.map((seat): SeatBrain => {
+		const brains = SEATS.slice(0, this.seatCount).map((seat): SeatBrain => {
 			const p = this.seats[seat];
 			this.chars[seat] = p?.char ?? (free.pop() as string);
 			this.names[seat] = p?.name ?? '';
 			return p
 				? { kind: 'human' }
 				: rivalBrain(rng.pick(AI_PROFILE_IDS), this.chars[seat] as string);
-		}) as [SeatBrain, SeatBrain, SeatBrain, SeatBrain];
-		// LAN decks have the two jokers but not the special cards (their views are not masked for them).
-		this.match = new Match({
-			rng,
-			brains,
-			deck: [...standardDeck(), jokerCard(), jokerCard(2)],
-		});
+		}) as MatchOptions['brains'];
+		this.match = new Match({ rng, brains, deck: fullDeck() });
 		void this.lock();
 		for (const c of this.clients) this.sendStart(c.sessionId);
 		this.sendLobby();
@@ -284,16 +315,16 @@ export class TrucoRoom extends Room {
 		const me = this.seatOf(id);
 		const m = this.match;
 		if (me === -1 || !m) return;
+		const n = m.seats;
 		const at = (list: string[]): Record<Seat, string> =>
-			Object.fromEntries(SEATS.map((v) => [v, list[(v + me) % 4] as string])) as Record<
-				Seat,
-				string
-			>;
+			Object.fromEntries(
+				SEATS.map((v) => [v, v < n ? (list[fromView(v, me as Seat, n)] as string) : '']),
+			) as Record<Seat, string>;
 		this.clients.getById(id)?.send(
 			'm',
 			wire({
 				type: 'start',
-				start: { seat: me as Seat, chars: at(this.chars), names: at(this.names) },
+				start: { seat: me as Seat, seats: n, chars: at(this.chars), names: at(this.names) },
 				snap: this.snapshot(me as Seat),
 			}),
 		);
@@ -309,14 +340,14 @@ export class TrucoRoom extends Room {
 	private sendStep(events: TableEvent[]): void {
 		this.each((_c, seat) => ({
 			type: 'step',
-			events: events.map((e) => viewEvent(e, seat)),
+			events: events.map((e) => viewEvent(e, seat, (this.match as Match).seats)),
 			snap: this.snapshot(seat),
 		}));
 	}
 
 	private onAction(client: Client, seat: Seat, view: Action): void {
 		const m = this.match;
-		const action = realAction(view, seat);
+		const action = realAction(view, seat, m?.seats);
 		if (!m || m.actor() !== seat || action.seat !== seat || m.brains[seat].kind !== 'human')
 			return void client.send('m', { type: 'rejected' });
 		let events: TableEvent[];
@@ -335,11 +366,12 @@ export class TrucoRoom extends Room {
 	/** Tells each client whose decision is timed, the ms left and who is on autopilot. */
 	private sendTimer(): void {
 		const left = Math.max(0, this.deadline - Date.now());
+		const n = this.match?.seats ?? 4;
 		this.each((_c, me) => ({
 			type: 'timer',
-			seat: this.timed === null ? null : toView(this.timed, me),
+			seat: this.timed === null ? null : toView(this.timed, me, n),
 			ms: left,
-			auto: SEATS.filter((s) => this.auto[s]).map((s) => toView(s, me)),
+			auto: SEATS.filter((s) => this.auto[s]).map((s) => toView(s, me, n)),
 		}));
 	}
 
