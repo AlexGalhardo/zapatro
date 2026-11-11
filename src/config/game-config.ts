@@ -5,6 +5,7 @@ import { BootScene } from '../scenes/BootScene';
 import { KeybindsScene } from '../scenes/KeybindsScene';
 import { LanScene } from '../scenes/LanScene';
 import { MenuScene } from '../scenes/MenuScene';
+import { ModeScene } from '../scenes/ModeScene';
 import { PauseScene } from '../scenes/PauseScene';
 import { RulesScene } from '../scenes/RulesScene';
 import { RunScene } from '../scenes/RunScene';
@@ -35,6 +36,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
 		TableScene,
 		TutorialScene,
 		PauseScene,
+		ModeScene,
 		RulesScene,
 		AlmanacScene,
 		SettingsScene,
