@@ -3,12 +3,14 @@ import { Client } from '@colyseus/sdk';
 import { isMessage } from '../lan/room';
 import { startLanServer } from '../lan/server';
 import { RemoteMatch } from '../src/game/remote-match';
-import { teamOf } from '../src/logic/truco/table';
+import { otherTeam, type Seat, type Team, teamOf } from '../src/logic/truco/table';
 import { NetClient } from '../src/net/client';
 import {
 	type LobbyState,
 	ROOM_NAME,
 	type ServerMessage,
+	TABLE_MODE_DEFAULT,
+	type TableMode,
 	TURN_CLOCK_DEFAULT_S,
 } from '../src/net/protocol';
 
@@ -291,5 +293,286 @@ describe('LAN turn clock', () => {
 		const gaps = stamps.slice(1).map((at, i) => at - (stamps[i] ?? at));
 		expect(Math.max(...gaps)).toBeLessThan(100 + 1000);
 		net.leave();
+	});
+});
+
+type Human = ReturnType<typeof player>;
+
+/** The real winning team, from what one player's own view says (an odd seat sees "us" as "them"). */
+const realWinner = (p: Human): Team | null => {
+	const me = teamOf(p.seat() as Seat);
+	return p.match.winner === null ? null : p.match.winner === 'us' ? me : otherTeam(me);
+};
+
+/**
+ * A lobby with the people in `sit` order: the host first (seat 0), each guest then moves to its
+ * seat. `mode` is the host's choice before anybody else joins the 1v1.
+ */
+async function lobby(
+	sit: Seat[],
+	mode: TableMode = '2v2',
+): Promise<{ url: string; nets: NetClient[]; players: Human[] }> {
+	const url = await serve();
+	const nets: NetClient[] = [];
+	for (const [i, name] of ['A', 'B', 'C', 'D'].slice(0, sit.length).entries()) {
+		nets.push(await NetClient.connect(url, name, ''));
+		if (i === 0 && mode !== '2v2') {
+			nets[0]?.send({ type: 'mode', mode });
+			await until(() => nets[0]?.lobby?.mode === mode);
+		}
+	}
+	const players = nets.map(player);
+	await until(() => nets.every((n) => n.lobby?.seats.filter(Boolean).length === sit.length));
+	for (const [i, seat] of sit.entries()) {
+		const net = nets[i] as NetClient;
+		if (net.lobby?.seats[seat]?.id !== net.id) net.send({ type: 'sit', seat });
+	}
+	await until(() =>
+		nets.every((n) => sit.every((seat, i) => n.lobby?.seats[seat]?.id === nets[i]?.id)),
+	);
+	return { url, nets, players };
+}
+
+/** Starts the match from the host and plays it out: everybody ends with the same real winner. */
+async function playOut(nets: NetClient[], players: Human[], seats: 2 | 4): Promise<void> {
+	nets[0]?.send({ type: 'start' });
+	await until(() => players.every((p) => p.match.winner !== null), 40000);
+	expect(new Set(players.map(realWinner)).size).toBe(1);
+	for (const p of players) {
+		expect(p.match.seats).toBe(seats);
+		const start = p.seen.find((m) => m.type === 'start');
+		if (start?.type !== 'start') throw new Error('no start');
+		expect(start.start.seats).toBe(seats);
+		expect(start.snap.state.seats).toBe(seats);
+		// The other seats' cards stay hidden at the deal, in either mode.
+		for (const seat of [1, 2, 3] as const)
+			expect(start.snap.state.hands[seat].every((c) => c.id === 'hidden')).toBe(true);
+	}
+	for (const n of nets) n.leave();
+}
+
+describe('LAN line-ups (jokers and special cards in the deck)', () => {
+	test('2v2: two humans as partners against two bots', async () => {
+		const { nets, players } = await lobby([0, 2]);
+		expect(nets[0]?.lobby?.seats[1]).toBeNull();
+		expect(nets[0]?.lobby?.seats[3]).toBeNull();
+		await playOut(nets, players, 4);
+	});
+
+	test('2v2: two humans as opponents, each with a bot partner', async () => {
+		const { nets, players } = await lobby([0, 1]);
+		expect(nets[0]?.lobby?.seats[2]).toBeNull();
+		await playOut(nets, players, 4);
+	});
+
+	test('2v2: three humans and one bot', async () => {
+		const { nets, players } = await lobby([0, 1, 2]);
+		await playOut(nets, players, 4);
+	});
+
+	test('2v2: four humans', async () => {
+		const { nets, players } = await lobby([0, 1, 2, 3]);
+		await playOut(nets, players, 4);
+	});
+
+	test('1v1: human against human', async () => {
+		const { nets, players } = await lobby([0, 1], '1v1');
+		expect(nets[1]?.lobby?.mode).toBe('1v1');
+		await playOut(nets, players, 2);
+	});
+
+	test('1v1: human against a bot', async () => {
+		const { nets, players } = await lobby([0], '1v1');
+		expect(nets[0]?.lobby?.seats[1]).toBeNull();
+		await playOut(nets, players, 2);
+		// The bot got a portrait and a name slot of its own at seat 1.
+		const start = players[0]?.seen.find((m) => m.type === 'start');
+		if (start?.type !== 'start') throw new Error('no start');
+		expect(start.start.chars[1]).not.toBe('');
+		expect(start.start.chars[2]).toBe('');
+	});
+
+	test('1v1: the guest at seat 1 sees itself at the bottom and the host as the rival', async () => {
+		const { nets, players } = await lobby([0, 1], '1v1');
+		nets[0]?.send({ type: 'start' });
+		await until(() => players.every((p) => p.seat() >= 0));
+		const guest = players[1]?.seen.find((m) => m.type === 'start');
+		if (guest?.type !== 'start') throw new Error('no start');
+		expect(guest.start.seat).toBe(1);
+		expect(guest.start.names[0]).toBe('B');
+		expect(guest.start.names[1]).toBe('A');
+		for (const n of nets) n.leave();
+	});
+});
+
+describe('LAN table mode', () => {
+	test('the host picks the mode; the lobby carries it; a guest cannot; nothing else is accepted', async () => {
+		const url = await serve();
+		const a = await NetClient.connect(url, 'Ana', '');
+		const b = await NetClient.connect(url, 'Beto', '');
+		await until(() => b.lobby?.seats[1] != null);
+		expect(a.lobby?.mode).toBe(TABLE_MODE_DEFAULT);
+		b.send({ type: 'mode', mode: '1v1' });
+		await Bun.sleep(50);
+		expect(a.lobby?.mode).toBe('2v2');
+		a.send({ type: 'mode', mode: '1v1' });
+		await until(() => b.lobby?.mode === '1v1');
+		a.send({ type: 'mode', mode: '2v2' });
+		await until(() => b.lobby?.mode === '2v2');
+		expect(isMessage({ type: 'mode', mode: '1v1' })).toBe(true);
+		for (const mode of ['3v3', 1, null, undefined])
+			expect(isMessage({ type: 'mode', mode })).toBe(false);
+		a.leave();
+		b.leave();
+	});
+
+	test('the switch to 1v1 is refused while somebody sits in seat 2 or 3: nobody is moved', async () => {
+		const { nets } = await lobby([0, 1, 2]);
+		const [a, b, c] = nets as [NetClient, NetClient, NetClient];
+		a.send({ type: 'mode', mode: '1v1' });
+		await Bun.sleep(80);
+		expect(a.lobby?.mode).toBe('2v2');
+		expect(a.lobby?.seats[2]?.id).toBe(c.id);
+		// Moving from seat 2 to seat 3 is no way out either; only leaving the two seats is.
+		c.send({ type: 'sit', seat: 3 });
+		await until(() => a.lobby?.seats[3]?.id === c.id);
+		a.send({ type: 'mode', mode: '1v1' });
+		await Bun.sleep(80);
+		expect(a.lobby?.mode).toBe('2v2');
+		c.leave();
+		await until(() => a.lobby?.seats[3] === null);
+		a.send({ type: 'mode', mode: '1v1' });
+		await until(() => b.lobby?.mode === '1v1');
+		expect(b.lobby?.seats[1]?.id).toBe(b.id);
+		a.leave();
+		b.leave();
+	});
+
+	test('in the 1v1 only seats 0 and 1 exist: no sitting past them, no third player', async () => {
+		const { url, nets } = await lobby([0, 1], '1v1');
+		const [a, b] = nets as [NetClient, NetClient];
+		b.send({ type: 'sit', seat: 2 });
+		await Bun.sleep(80);
+		expect(b.lobby?.seats[1]?.id).toBe(b.id);
+		expect(b.lobby?.seats[2]).toBeNull();
+		await expect(NetClient.connect(url, 'C', '')).rejects.toBeDefined();
+		// Back to 2v2 the table has room again.
+		a.send({ type: 'mode', mode: '2v2' });
+		await until(() => b.lobby?.mode === '2v2');
+		const c = await NetClient.connect(url, 'C', '');
+		await until(() => c.lobby?.seats[2]?.name === 'C');
+		for (const n of [a, b, c]) n.leave();
+	});
+
+	test('a match in progress keeps its mode: the switch is refused', async () => {
+		const { nets, players } = await lobby([0, 1]);
+		const [a] = nets as [NetClient];
+		a.send({ type: 'start' });
+		await until(() => players.every((p) => p.seat() >= 0));
+		a.send({ type: 'mode', mode: '1v1' });
+		await Bun.sleep(80);
+		expect(a.lobby?.mode).toBe('2v2');
+		for (const n of nets) n.leave();
+	});
+});
+
+describe('LAN host leaving', () => {
+	test('in the lobby the next seated player becomes host and gets the host controls', async () => {
+		const url = await serve();
+		const a = await NetClient.connect(url, 'Ana', '');
+		const b = await NetClient.connect(url, 'Beto', '');
+		const c = await NetClient.connect(url, 'Cris', '');
+		const pb = player(b);
+		const pc = player(c);
+		await until(() => c.lobby?.seats[2] != null);
+		expect(c.lobby?.host).toBe(a.id);
+		a.leave();
+		await until(() => b.lobby?.host === b.id && c.lobby?.host === b.id);
+		// The old host's seat is free; nobody got a dead screen.
+		expect(b.lobby?.seats[0]).toBeNull();
+		expect(b.closed || c.closed).toBe(false);
+		// Host controls work for the new host and only for it.
+		c.send({ type: 'clock', seconds: 60 });
+		await Bun.sleep(60);
+		expect(b.lobby?.clockS).toBe(0);
+		b.send({ type: 'clock', seconds: 60 });
+		await until(() => c.lobby?.clockS === 60);
+		c.send({ type: 'sit', seat: 3 });
+		await until(() => b.lobby?.seats[3]?.id === c.id);
+		b.send({ type: 'start' });
+		await until(() => pb.match.winner !== null && pc.match.winner !== null, 40000);
+		expect(realWinner(pb)).toBe(realWinner(pc));
+		b.leave();
+		c.leave();
+	});
+
+	test('the last human of the lobby leaving makes the next one to join the host', async () => {
+		const url = await serve();
+		const a = await NetClient.connect(url, 'Ana', '');
+		await until(() => a.lobby !== null);
+		a.leave();
+		await Bun.sleep(80);
+		const b = await NetClient.connect(url, 'Beto', '');
+		await until(() => b.lobby !== null);
+		expect(b.lobby?.host).toBe(b.id);
+		expect(b.lobby?.seats[0]?.id).toBe(b.id);
+		b.leave();
+	});
+
+	test('the host leaving in lobby can be followed by the new host picking the 1v1 and playing it', async () => {
+		const url = await serve();
+		const a = await NetClient.connect(url, 'Ana', '');
+		const b = await NetClient.connect(url, 'Beto', '');
+		const pb = player(b);
+		await until(() => b.lobby?.seats[1] != null);
+		a.leave();
+		await until(() => b.lobby?.host === b.id);
+		b.send({ type: 'mode', mode: '1v1' });
+		await until(() => b.lobby?.mode === '1v1');
+		b.send({ type: 'start' });
+		await until(() => pb.match.winner !== null, 40000);
+		expect(pb.match.seats).toBe(2);
+		b.leave();
+	});
+
+	test('the host leaving mid-match: a bot takes the seat, the match ends, the lobby has a new host', async () => {
+		const { nets, players } = await lobby([0, 1, 2]);
+		const [a, b, c] = nets as [NetClient, NetClient, NetClient];
+		const [, pb, pc] = players as [Human, Human, Human];
+		a.send({ type: 'start' });
+		await until(() => pb.seat() >= 0 && pc.seat() >= 0);
+		a.leave();
+		await until(() => pb.match.winner !== null && pc.match.winner !== null, 40000);
+		expect(realWinner(pb)).toBe(realWinner(pc));
+		// The table closed for nobody: both are back to a lobby whose host is the first seated one.
+		await until(() => b.lobby?.playing === false && c.lobby?.playing === false);
+		expect(b.closed || c.closed).toBe(false);
+		expect(b.lobby?.host).toBe(b.id);
+		expect(c.lobby?.host).toBe(b.id);
+		expect(b.lobby?.seats[0]).toBeNull();
+		// The new host runs the next match, now as a 1v1 once the seat 2 guest steps aside.
+		c.send({ type: 'sit', seat: 0 });
+		await until(() => b.lobby?.seats[0]?.id === c.id);
+		b.send({ type: 'mode', mode: '1v1' });
+		await until(() => c.lobby?.mode === '1v1');
+		b.send({ type: 'start' });
+		await until(() => pb.match.seats === 2 && pb.match.winner === null);
+		await until(() => pb.match.winner !== null && pc.match.winner !== null, 40000);
+		expect(realWinner(pb)).toBe(realWinner(pc));
+		b.leave();
+		c.leave();
+	});
+
+	test('everybody leaving mid-match ends it and reopens a clean lobby', async () => {
+		const { url, nets, players } = await lobby([0, 1]);
+		nets[0]?.send({ type: 'start' });
+		await until(() => players.every((p) => p.seat() >= 0));
+		for (const n of nets) n.leave();
+		await Bun.sleep(100);
+		const d = await NetClient.connect(url, 'Dani', '');
+		await until(() => d.lobby !== null);
+		expect(d.lobby?.playing).toBe(false);
+		expect(d.lobby?.host).toBe(d.id);
+		d.leave();
 	});
 });
