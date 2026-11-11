@@ -13,6 +13,7 @@ Até 4 pessoas jogam **Truco puro até 12** (a Partida Rápida) na mesma rede, e
 | Baralho | A LAN joga com os 40 comuns e os 2 coringas, sem as cartas especiais (a visão mascarada ainda não esconde o `Olho`) |
 | Vazios | Viram bots (perfis de IA e retratos do elenco); dá para começar com 1 pessoa. Só o anfitrião (o primeiro a entrar) começa |
 | Autoridade | O servidor roda a lógica pura (`Match`) e valida cada `Action`. Cada cliente recebe só a sua visão |
+| Relógio de jogada | 30 s por padrão; o anfitrião escolhe no lobby: desligado, 15, 30 ou 60 s. Vale para toda decisão que o servidor espera de um humano (carta, resposta ao truco, mão de 11). No fim do relógio o servidor joga a ação que o bot (perfil `pro`) escolheria. Dois estouros seguidos do mesmo assento ligam o piloto automático: o servidor joga os turnos dele como bot (com a pausa normal) até o jogador agir ou tocar em "Voltei". Agir no tempo zera a contagem |
 | Queda | Mesa espera 30 s pela volta do jogador (o SDK reconecta sozinho); depois um bot (perfil `pro`) assume o assento |
 | Plataformas | Desktop (Electron) cria ou entra; Android entra; navegador só em `http://` (dev). O site `https://` não oferece o menu: o navegador bloqueia `ws://` de outro computador numa página `https` |
 
@@ -44,6 +45,7 @@ src/scenes/LanScene.ts  formulário (DOM) e lobby; src/scenes/TableScene.ts em m
 - **Mensagens:** uma só chave Colyseus (`m`) com um objeto tipado (`ClientMessage` e `ServerMessage`), em JSON para que `undefined` não vire `null`. Sem Schema: um estado sincronizado vazaria as mãos. O servidor confere o formato de cada mensagem (`isMessage` em `lan/room.ts`) e descarta o que não for `ClientMessage`; um erro ao tratar uma mensagem devolve `rejected` e nunca derruba a sala.
 - **Visão girada:** a cena sempre desenha "você" embaixo, então o servidor manda `viewState` e `viewEvent` girados. `legalActions` sobre a visão dá as mesmas ações do servidor com o assento girado, e `realAction` desfaz a rotação. Cartas viradas dos outros, sinais não flagrados e as mãos dos outros nunca saem do servidor (a mão do parceiro só na mão de 11 da dupla; todas, após o `showdown` do coringa).
 - **Mesa:** `TableScene` ganha `net`. `pump` não decide pelas IAs (o servidor joga os bots, com 800 ms de pausa) nem dá a mão seguinte; cada `step` ou `deal` entra numa fila e anima com as mesmas animações da partida local. O botão do fim volta ao lobby. Se o anfitrião já começou a partida seguinte enquanto alguém olhava o painel do fim, esse jogador volta ao lobby e a `LanScene` pede a mesa de novo (`resync`): o servidor reenvia o `start` e ele entra na partida em andamento.
+- **Relógio:** `tick` em `lan/room.ts` reaproveita o mesmo temporizador dos bots: num turno humano ele espera `clockS` (opção `clockMs` da sala nos testes) e, ao estourar, aplica `aiAction` pelo mesmo `act` de qualquer ação. Constantes (`TURN_CLOCK_CHOICES_S`, `TURN_CLOCK_DEFAULT_S`, `AUTOPILOT_AFTER`, `TURN_CLOCK_WARN_S`) em `src/net/protocol.ts`. Mensagens: `lobby.clockS`; cliente → servidor `{ type: 'clock', seconds }` (só o anfitrião, no lobby, valores da lista) e `{ type: 'back' }`; servidor → cliente `{ type: 'timer', seat, ms, auto }` após cada passo, com o assento cronometrado já girado para a visão do cliente, os ms restantes (duração, não horário) e os assentos em piloto automático. A mesa desenha uma barra que esvazia sobre o assento cronometrado, um tique nos últimos 5 s do seu turno e, em piloto automático, um painel com o botão "Voltei"; os outros assentos em piloto mostram "AUTO".
 - **Queda:** `onDrop` segura o assento por `RECONNECT_S`; sem volta, `onLeave` coloca um bot. Se sobra ninguém, a partida acaba e o lobby reabre.
 
 ## Testar
@@ -66,4 +68,4 @@ bun test tests/lan.test.ts tests/net-view.test.ts
 
 ## Fora desta versão
 
-Run co-op, descoberta automática de salas, relógio de jogada, chat, espectadores, mais de uma mesa por servidor, jogar pela internet.
+Run co-op, descoberta automática de salas, chat, espectadores, mais de uma mesa por servidor, jogar pela internet.

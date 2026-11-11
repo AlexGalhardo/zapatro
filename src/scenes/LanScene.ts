@@ -8,7 +8,7 @@ import { canHostLan, hostLan } from '../core/platform';
 import { COMPANION_IDS } from '../data/companions';
 import { t } from '../i18n';
 import { NetClient } from '../net/client';
-import { MAX_NAME, type ServerMessage } from '../net/protocol';
+import { MAX_NAME, type ServerMessage, TURN_CLOCK_CHOICES_S } from '../net/protocol';
 import { Button } from '../ui/Button';
 import { UI_FONT } from '../ui/font';
 import { onKey } from '../ui/keys';
@@ -232,7 +232,29 @@ export class LanScene extends Phaser.Scene {
 			{ w: 100, h: BUTTON_H.action, size: 9, color: PALETTE.calm },
 		).setPosition(L + 320, y);
 		this.ui.add([leave, portrait]);
-		if (lobby.host === client.id)
+		const clock = lobby.clockS > 0 ? t('lan.clock', { s: lobby.clockS }) : t('lan.clock.off');
+		const isHost = lobby.host === client.id;
+		const next = (): void => {
+			const i = TURN_CLOCK_CHOICES_S.findIndex((c) => c === lobby.clockS);
+			const seconds = TURN_CLOCK_CHOICES_S[(i + 1) % TURN_CLOCK_CHOICES_S.length] as number;
+			client.send({ type: 'clock', seconds });
+		};
+		if (isHost)
+			this.ui.add(
+				new Button(this, clock, next, {
+					w: 150,
+					h: BUTTON_H.action,
+					size: 9,
+					color: PALETTE.calm,
+				}).setPosition(L + 440, y - BUTTON_H.action - 6),
+			);
+		else
+			this.ui.add(
+				this.add
+					.text(L + 440, y - BUTTON_H.action - 6, clock, text(7, PALETTE.textLight, 150))
+					.setOrigin(0.5),
+			);
+		if (isHost)
 			this.ui.add(
 				new Button(this, t('lan.start'), () => client.send({ type: 'start' }), {
 					w: 120,

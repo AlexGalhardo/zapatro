@@ -1095,6 +1095,11 @@ export const en = {
 	'lan.hint':
 		'Pick a seat. Players across from each other are partners. Empty seats are played by bots.',
 	'lan.host.tag': 'host',
+	'lan.clock.off': 'Clock: off',
+	'lan.clock': 'Clock: {s} s',
+	'net.auto.you': 'You are on autopilot: a bot is playing your seat.',
+	'net.auto.back': "I'm back",
+	'net.auto.seat': 'AUTO',
 	'net.closed': 'The table was closed.',
 	'net.backToLobby': 'Lobby',
 	'table.strength.special': 'Special card · a random effect when played face up',
