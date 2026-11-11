@@ -49,10 +49,11 @@ Cada marco é um release (`bun run release`, só com pedido do dev), com `.exe` 
 | Marco | Data-alvo | Versão | Entrega | Grupos |
 |---|---|---|---|---|
 | M0 | 2026-11-15 | — | Roadmap aprovado e decisões fechadas (feito em 2026-11-11); 🧑 contas da Steam e do Play abertas; lista de pinturas entregue ao dev | R0, R7.0, §4 |
-| M1 | 2026-11-29 | `0.20.0` | Motor 1×1 e Partida Rápida 1×1 | R1, R2 |
-| M2 | 2026-12-13 | `0.21.0` | Multiplayer local completo: 2×2 e 1×1, qualquer combinação de humanos e NPCs, relógio de jogada | R4 |
-| M3 | 2026-12-27 | `0.22.0` | Run 1×1 balanceada e sistemas de profundidade decididos e ligados | R3, R7 |
-| M4 | 2027-01-10 | `0.23.0` | Game feel e interface; arte final sem marcas; congelamento de conteúdo. **Inscrição no Next Fest** | R5, R6, R7.4, R9 |
+| Teste | 2026-11-11 | `0.20.0` | Release de teste pedido pelo dev, antes do M1: motor 1×1 (ainda sem tela), relógio de jogada na rede local, tela de carregamento, remoção de pacotes, Melhorias e pular mesa, formulário da LAN legível | R0.1, R0.4, R1, R4.3, R6.1, R7.0 |
+| M1 | 2026-11-29 | `0.21.0` | Partida Rápida 1×1 jogável | R2 |
+| M2 | 2026-12-13 | `0.22.0` | Multiplayer local completo: 2×2 e 1×1, qualquer combinação de humanos e NPCs, relógio de jogada | R4 |
+| M3 | 2026-12-27 | `0.23.0` | Run 1×1 balanceada e sistemas de profundidade decididos e ligados | R3, R7 |
+| M4 | 2027-01-10 | `0.24.0` | Game feel e interface; arte final sem marcas; congelamento de conteúdo. **Inscrição no Next Fest** | R5, R6, R7.4, R9 |
 | M5 | 2027-01-18 | `1.0.0-rc.1` | Demo e página da Steam enviadas para revisão (entra no Press Preview); trailer e capturas novos; **início do teste fechado do Play** | R10, R11, R12 |
 | M6 | 2027-02-01 | `1.0.0-rc.2` | Todos os itens do Next Fest aprovados; bug bash fechado | R13 |
 | Fest | 2027-02-22 a 03-01 | demo | Demo ao vivo, transmissões, coleta de feedback | R12.6 |
