@@ -241,6 +241,8 @@ Consequência de design: os tentos rivais são o **relógio** da mesa. Correr é
 
 ### 5.3 Pular mesa
 
+> **Removido em 2026-11-11 (D-82).** Pular mesa, as Promessas e a tela de escolha de mesa (`TABLE_SELECT`) saíram do código; o texto abaixo é histórico. A `vidaExtra` de 5.2 não tem mais quem a conceda: `extraLife` fica no `RunState` e no `Match`, mas nada o liga.
+
 - Pequena e Grande podem ser puladas (botão "Pular (Promessa)"); o Chefe, nunca.
 - Pular dá uma **Promessa** (GDD 7.7, o equivalente às Tags do Balatro), resgatada na loja seguinte **só se a mesa seguinte for vencida** (P-08, 2026-10-25): perder encerra a run antes da loja, e pular a mesa seguinte também perde a Promessa que esperava (pular Pequena e Grande rende só a Promessa da Grande). Custa ainda o prêmio, a loja e o avanço da build que a mesa daria.
 - ⚠ Medido em 2026-10-25 (`bun scripts/sim.ts --skip`, 1000 runs, seeds 1 e 2; `docs/balancing.md`): pular Pequenas **+4,5 a +4,7 p.p.** (dentro do aceite de +5); pular Pequenas e Grandes **+12 a +15,5 p.p.**, ainda dominante, porque a vantagem é jogar menos mesas. Meta +15% após o pulo (testada, não aplicada) deixa +9 a +10 p.p. Próximo custo é decisão do dev (ex.: um pulo por Campeonato).
@@ -268,6 +270,8 @@ Pago no fim de cada mesa vencida: prêmio + rapidez + juros. **Princípio** (Pes
 ## 7. Loja e conteúdo
 
 ### 7.1 Loja ⚖
+
+> **Removido em 2026-11-11 (D-82).** Os **pacotes** e a **Melhoria do Boteco** (linhas abaixo e 7.6) saíram do código; a renovação ("Renovar") volta na R7.
 
 | Elemento | Regra |
 |---|---|
@@ -351,6 +355,8 @@ Consumível que sobe 1 nível de um Lance (+Fichas e +Mult, GDD 4.4): o equivale
 
 ### 7.6 Melhorias do Boteco — 6 ⚖
 
+> **Removido em 2026-11-11 (D-82).** Seção histórica: `src/data/upgrades.ts` foi apagado.
+
 | Id | Nome | Preço | Efeito |
 |---|---|---|---|
 | `maisManha` | Banqueta extra | $10 | +1 espaço de Manha |
@@ -361,6 +367,8 @@ Consumível que sobe 1 nível de um Lance (+Fichas e +Mult, GDD 4.4): o equivale
 | `espiarMonte` | Espiar o monte | $6 | mostra uma carta fora do jogo (era "a 1ª carta do monte") |
 
 ### 7.7 Promessas — 8 (ganhas ao pular mesa; resgatadas na próxima loja)
+
+> **Removido em 2026-11-11 (D-82).** Seção histórica: `src/data/promises.ts` foi apagado.
 
 Promessa rara (Manha rara grátis) · Promessa de dinheiro (+$10) · Promessa de pacote (pacote grátis) · Ficha extra · Mult extra · Carta nova · Simpatia grátis · Vida extra (3 quedas na próxima mesa).
 
