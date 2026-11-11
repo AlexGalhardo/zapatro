@@ -1,4 +1,4 @@
-import type { Action, Seat, TableEvent, TableState } from '../logic/truco/table';
+import type { Action, Seat, Seats, TableEvent, TableState } from '../logic/truco/table';
 
 /**
  * LAN multiplayer protocol (Colyseus room `truco`). Plain messages, no Schema: each client gets
@@ -18,6 +18,12 @@ export const TURN_CLOCK_DEFAULT_S = 30;
 export const AUTOPILOT_AFTER = 2;
 /** The last seconds of a clock tick out loud. */
 export const TURN_CLOCK_WARN_S = 5;
+/** Table modes the host picks in the lobby: two pairs, or mano a mano. */
+export const TABLE_MODES = ['2v2', '1v1'] as const;
+export type TableMode = (typeof TABLE_MODES)[number];
+export const TABLE_MODE_DEFAULT: TableMode = '2v2';
+/** Seats a mode plays with (the first ones: 0 and 1 in the 1v1). */
+export const MODE_SEATS: Record<TableMode, Seats> = { '2v2': 4, '1v1': 2 };
 
 /** One person in the lobby; the id is the Colyseus session id. */
 export interface LobbyPlayer {
@@ -28,9 +34,10 @@ export interface LobbyPlayer {
 }
 
 export interface LobbyState {
-	/** Seats 0 and 2 are one pair, 1 and 3 the other; null = a bot sits there. */
+	/** Seats 0 and 2 are one pair, 1 and 3 the other; null = a bot sits there. In the 1v1 only 0 and 1 are used. */
 	seats: [LobbyPlayer | null, LobbyPlayer | null, LobbyPlayer | null, LobbyPlayer | null];
 	host: string;
+	mode: TableMode;
 	/** A match is running: nobody new can join, the lobby shows it only to those who left. */
 	playing: boolean;
 	/** Turn clock in seconds, 0 = off (one of `TURN_CLOCK_CHOICES_S`). */
@@ -44,6 +51,11 @@ export type ClientMessage =
 	| { type: 'start' }
 	/** Host only, in the lobby: the turn clock in seconds (one of `TURN_CLOCK_CHOICES_S`). */
 	| { type: 'clock'; seconds: number }
+	/**
+	 * Host only, in the lobby: the table mode. Switching to the 1v1 is refused while somebody
+	 * sits in seat 2 or 3 (nobody is moved or dropped silently: they sit elsewhere first).
+	 */
+	| { type: 'mode'; mode: TableMode }
 	/** I am back: the server stops playing my seat for me. */
 	| { type: 'back' }
 	/** Back in the lobby while my match runs (I missed its `start`): send me the table again. */
@@ -54,6 +66,8 @@ export type ClientMessage =
 export interface TableStart {
 	/** Real seat of this client (the server knows it; the client only uses it for the lobby). */
 	seat: Seat;
+	/** The table's seats (also in `snap.state.seats`); at 2, chars and names of seats 2 and 3 are empty. */
+	seats: Seats;
 	chars: Record<Seat, string>;
 	names: Record<Seat, string>;
 }

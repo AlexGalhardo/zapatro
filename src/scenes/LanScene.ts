@@ -8,7 +8,14 @@ import { canHostLan, hostLan } from '../core/platform';
 import { COMPANION_IDS } from '../data/companions';
 import { t } from '../i18n';
 import { NetClient } from '../net/client';
-import { MAX_NAME, type ServerMessage, TURN_CLOCK_CHOICES_S } from '../net/protocol';
+import {
+	MAX_NAME,
+	MODE_SEATS,
+	type ServerMessage,
+	TABLE_MODES,
+	type TableMode,
+	TURN_CLOCK_CHOICES_S,
+} from '../net/protocol';
 import { Button } from '../ui/Button';
 import { UI_FONT } from '../ui/font';
 import { onKey } from '../ui/keys';
@@ -24,6 +31,8 @@ const SEAT_AT = [
 	[320, 82],
 	[156, 160],
 ] as const;
+/** Where the two seats of the 1v1 sit: across the table from each other. */
+const SEAT_AT_1V1 = [SEAT_AT[0], SEAT_AT[2]] as const;
 /** The join form's base font: follows the screen height like the canvas UI, never under 16 px (phones). */
 const FORM_FONT = 'clamp(16px,2.6vh,56px)';
 const SEAT_W = 132;
@@ -42,7 +51,8 @@ const remember = (key: string, value?: string): string => {
 /**
  * LAN multiplayer: first a form to join a table (or host one, in the desktop app), then the
  * lobby where each person picks a seat. Across the table are partners: the bottom and top seats
- * against the left and right ones. The match starts when the host says so; empty seats are bots.
+ * against the left and right ones, or in the 1v1 mode two seats face to face. The host picks the
+ * mode and starts the match; empty seats are bots.
  */
 export class LanScene extends Phaser.Scene {
 	private client: NetClient | null = null;
@@ -50,6 +60,8 @@ export class LanScene extends Phaser.Scene {
 	private form: HTMLElement | null = null;
 	private stageLeft = 0;
 	private leaving = false;
+	/** A short reason shown in the table's felt in place of the hint. */
+	private notice = '';
 
 	constructor() {
 		super('Lan');
@@ -58,6 +70,7 @@ export class LanScene extends Phaser.Scene {
 	create(data: { client?: NetClient }): void {
 		this.client = data?.client ?? null;
 		this.leaving = false;
+		this.notice = '';
 		this.form = null;
 		this.ui = this.add.container(0, 0);
 		const back = () => this.leave();
@@ -82,6 +95,16 @@ export class LanScene extends Phaser.Scene {
 		this.client?.leave();
 		this.client = null;
 		fadeTo(this, 'Menu');
+	}
+
+	private warn(message: string): void {
+		this.notice = message;
+		this.draw();
+		this.time.delayedCall(3000, () => {
+			if (this.notice !== message) return;
+			this.notice = '';
+			this.draw();
+		});
 	}
 
 	private attach(client: NetClient): void {
@@ -149,14 +172,20 @@ export class LanScene extends Phaser.Scene {
 				})
 				.setOrigin(0.5),
 		);
+		const duel = lobby.mode === '1v1';
 		this.ui.add(
 			this.add
-				.text(L + 320, 184, t('lan.hint'), text(6, PALETTE.textDim, 200))
+				.text(
+					L + 320,
+					184,
+					this.notice || t(duel ? 'lan.hint.1v1' : 'lan.hint'),
+					text(6, this.notice ? PALETTE.textLight : PALETTE.textDim, 200),
+				)
 				.setOrigin(0.5),
 		);
 		const seatOf = lobby.seats.findIndex((s) => s?.id === client.id);
-		lobby.seats.forEach((p, seat) => {
-			const [x, y] = SEAT_AT[seat] as readonly [number, number];
+		lobby.seats.slice(0, MODE_SEATS[lobby.mode]).forEach((p, seat) => {
+			const [x, y] = (duel ? SEAT_AT_1V1 : SEAT_AT)[seat] as readonly [number, number];
 			const mine = seat === seatOf;
 			const pair = seat % 2 === 0 ? PALETTE.calm : PALETTE.truco;
 			const label = p
@@ -188,18 +217,19 @@ export class LanScene extends Phaser.Scene {
 						.image(L + x - SEAT_W / 2 + 20, y, tex(this, `portrait.${p.char}.neutral`))
 						.setDisplaySize(32, 32),
 				);
-			this.ui.add(
-				this.add
-					.text(
-						L + x,
-						y + (seat === 0 ? 30 : -30),
-						t(seat % 2 === 0 ? 'lan.teamA' : 'lan.teamB'),
-						{
-							...text(6, pair),
-						},
-					)
-					.setOrigin(0.5),
-			);
+			if (!duel)
+				this.ui.add(
+					this.add
+						.text(
+							L + x,
+							y + (seat === 0 ? 30 : -30),
+							t(seat % 2 === 0 ? 'lan.teamA' : 'lan.teamB'),
+							{
+								...text(6, pair),
+							},
+						)
+						.setOrigin(0.5),
+				);
 		});
 		this.drawBar(client, seatOf);
 	}
@@ -239,6 +269,35 @@ export class LanScene extends Phaser.Scene {
 			const seconds = TURN_CLOCK_CHOICES_S[(i + 1) % TURN_CLOCK_CHOICES_S.length] as number;
 			client.send({ type: 'clock', seconds });
 		};
+		const mode = t(`lan.mode.${lobby.mode}`);
+		const sideTaken = lobby.seats.slice(2).some(Boolean);
+		const swap = (): void => {
+			// The server refuses the 1v1 while the top or left seat is taken; say why instead.
+			if (sideTaken && lobby.mode === '2v2') {
+				this.warn(t('lan.mode.busy'));
+				return;
+			}
+			const i = TABLE_MODES.indexOf(lobby.mode);
+			client.send({
+				type: 'mode',
+				mode: TABLE_MODES[(i + 1) % TABLE_MODES.length] as TableMode,
+			});
+		};
+		if (isHost)
+			this.ui.add(
+				new Button(this, mode, swap, {
+					w: 150,
+					h: BUTTON_H.action,
+					size: 9,
+					color: PALETTE.calm,
+				}).setPosition(L + 200, y - BUTTON_H.action - 6),
+			);
+		else
+			this.ui.add(
+				this.add
+					.text(L + 200, y - BUTTON_H.action - 6, mode, text(7, PALETTE.textLight, 150))
+					.setOrigin(0.5),
+			);
 		if (isHost)
 			this.ui.add(
 				new Button(this, clock, next, {
