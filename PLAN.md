@@ -122,7 +122,7 @@ O plano de entrega da 1.0, com grupos, aceite e calendário, está em [ROADMAP.m
 - [ ] 1 chefe ainda em pixel 128×128 (`juiz`; `valentao`, `cartomante` e `tony` ganharam pintura em 2026-10-28, `irmaos` saiu do jogo) e o vendedor da loja sem arte.
 - [ ] "JOKER" em inglês dentro da face pintada do coringa.
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
-- [ ] Sistemas inalcançáveis pelas flags: pular mesa e Promessas (`TABLE_SELECT = false`), pacotes, renovação, Melhorias e baralhos/versos destraváveis (`SHOP_SIMPLE = true`, baralho e estaca fora da UI), Estacas e os feitos que dependem deles.
+- [~] Sistemas inalcançáveis pelas flags: pular mesa, Promessas, pacotes e Melhorias **saíram do código** em 2026-11-11 (D-82, ROADMAP R0.4). Faltam voltar à interface a renovação da loja, os baralhos e versos destraváveis e as Estacas (ROADMAP R7.1, R7.2 e R6.2).
 - [x] LAN sem relógio de jogada: resolvido em 2026-11-11 com o relógio de 30 s, a jogada do bot no estouro e o piloto automático (D-81, ROADMAP R4.3, [docs/multiplayer.md](docs/multiplayer.md)).
 - [x] Build Poki (`VITE_POKI=1`) apagava as vozes de `dist/` mesmo com outro `outDir`: o corte agora usa o `outDir` resolvido (`scripts/lib/poki-trim.ts`, `tests/poki-trim.test.ts`).
 
