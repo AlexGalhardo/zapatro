@@ -3,8 +3,8 @@
  * PASS/FAIL checklist. Each group runs in a fresh browser context (clean localStorage) and fails
  * on any console error. Needs `bun run dev` (or `vite preview`; the suite adds `?qa=1`).
  *   bun scripts/qa.ts [--url http://localhost:5191] [--only table,eleven]
- * Groups: menu, settings, rules, pause, table, eleven, iron, score, manhas, run, newrun, shop,
- * boss, continue, save, end, runend, touch, tutorial, deck.
+ * Groups: menu, modechoice, settings, rules, pause, table, eleven, iron, duel, score, manhas, run,
+ * newrun, shop, boss, continue, save, end, runend, touch, tutorial, deck.
  */
 import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
 
@@ -269,6 +269,49 @@ await group(browser, 'iron', async (t) => {
 	);
 	await t.until('your turn', humanTurn);
 	t.check('no truco in the iron hand', await t.eval<boolean>('(g, t) => !t.btn.truco.isEnabled'));
+});
+
+await group(browser, 'duel', async (t) => {
+	// Mano a mano: two seats, one rival on top, no partner and no signals.
+	await t.open('?skipMenu=1&mode=1v1&seed=3&speed=4');
+	t.check(
+		'the match starts with two seats',
+		await t.eval<boolean>('(g, t) => t.match.seats === 2'),
+	);
+	t.check(
+		'only the rival has a seat view',
+		await t.eval<boolean>('(g, t) => t.seats.size === 1 && t.seats.has(1)'),
+	);
+	if (!(await t.until('your turn', humanTurn))) return;
+	t.check('no signal button', await t.eval<boolean>('(g, t) => !t.btn.signal.visible'));
+	await t.press('KeyS');
+	t.check('S opens no signal picker', await t.eval<boolean>('(g, t) => !t.signPicker.visible'));
+	// The bot plays both seats to the end: the match closes at 12.
+	await t.open('?skipMenu=1&mode=1v1&seed=2&auto=1&speed=4');
+	t.check(
+		'the match ends at 12 tentos',
+		await t.until(
+			'match ends',
+			'(g, t) => t.match.winner !== null && Math.max(t.match.score.us, t.match.score.them) >= 12',
+			90000,
+		),
+	);
+});
+
+await group(browser, 'modechoice', async (t) => {
+	await t.open('?seed=1');
+	await t.click(textIn('Menu', /^(Quick match|Partida rápida)$/));
+	t.check('Quick match asks for the format', await t.until('mode choice', active('Mode'), 3000));
+	// Down moves to Mano a mano; Enter starts it and the choice is remembered in the save.
+	await t.press('ArrowDown', 'Enter');
+	t.check(
+		'Mano a mano opens a two-seat table',
+		await t.until('table', '(g, t) => g.scene.isActive("Table") && t.match?.seats === 2', 8000),
+	);
+	t.check(
+		'the choice is saved',
+		await t.eval<boolean>('(g) => g.registry.get("save").settings.quickMode === "1v1"'),
+	);
 });
 
 await group(browser, 'score', async (t) => {
