@@ -22,7 +22,8 @@ import {
  * One hand of Truco Paulista as a turn-based state machine (PLAN §4.2, §5). Every decision is an
  * `Action` from `legalActions`; `apply` returns the next state and the domain events the scene
  * animates. Seats go counter-clockwise: 0 = you (bottom), 1 = right rival, 2 = partner (top),
- * 3 = left rival.
+ * 3 = left rival. A two-seat table ("mano a mano", `TableState.seats` = 2) uses seats 0 and 1 only:
+ * seats 2 and 3 keep an empty hand and never act.
  */
 
 export type Seat = 0 | 1 | 2 | 3;
@@ -31,8 +32,18 @@ export const SEATS: readonly Seat[] = [0, 1, 2, 3];
 
 export const teamOf = (s: Seat): Team => (s % 2 === 0 ? 'us' : 'them');
 export const otherTeam = (t: Team): Team => (t === 'us' ? 'them' : 'us');
-export const nextSeat = (s: Seat): Seat => ((s + 1) % 4) as Seat;
-export const partnerOf = (s: Seat): Seat => ((s + 2) % 4) as Seat;
+
+/** Seats at the table: 4 (two pairs) or 2 (mano a mano). */
+export type Seats = 2 | 4;
+
+export const nextSeat = (s: Seat, seats: Seats = 4): Seat => ((s + 1) % seats) as Seat;
+/** Only a four-seat table has partners: the literal `4` keeps a two-seat count from compiling. */
+export const partnerOf = (s: Seat, _seats: 4 = 4): Seat => ((s + 2) % 4) as Seat;
+export const partnerSeat = (s: Seat, seats: Seats = 4): Seat | null =>
+	seats === 4 ? partnerOf(s, seats) : null;
+/** The seats of the other team, in playing order after `s`. */
+export const rivalsOf = (s: Seat, seats: Seats = 4): Seat[] =>
+	seats === 4 ? [nextSeat(s), nextSeat(partnerOf(s, seats))] : [nextSeat(s, seats)];
 
 export const BETS = [1, 3, 6, 9, 12] as const;
 export type Bet = (typeof BETS)[number];
@@ -126,9 +137,11 @@ export const DEFAULT_RULES: TableRules = {
 
 export interface TableState {
 	rules: TableRules;
+	seats: Seats;
 	/** Tentos before this hand ends (updated when it does). */
 	score: Record<Team, number>;
 	dealer: Seat;
+	/** Seats 2 and 3 are empty at a two-seat table. */
 	hands: [Card[], Card[], Card[], Card[]];
 	vira: Card;
 	manilha: Rank;
@@ -174,9 +187,11 @@ export type TableEvent =
 export class IllegalAction extends Error {}
 
 /** First seat to play: right of the dealer (counter-clockwise, D-53). */
-export const handStarter = (dealer: Seat): Seat => nextSeat(dealer);
+export const handStarter = (dealer: Seat, seats: Seats = 4): Seat => nextSeat(dealer, seats);
 
 export interface DealOptions {
+	/** Seats at the table (default 4). */
+	seats?: Seats;
 	rules?: TableRules;
 	/** Cards to force (debug, tests): the vira and seat 0's hand. */
 	vira?: Card;
@@ -202,16 +217,17 @@ export function deal(
 	opts: DealOptions = {},
 ): TableState {
 	if (deck.length < CARDS_PER_HAND) throw new Error('deal: deck too small');
+	const seats = opts.seats ?? 4;
 	const forced = [...(opts.hand0 ?? []), ...(opts.vira ? [opts.vira] : [])];
 	const pile = rng.shuffle(deck.filter((c) => !forced.some((f) => f.id === c.id)));
 	const hands: [Card[], Card[], Card[], Card[]] = [[], [], [], []];
 	if (opts.hand0) hands[0] = opts.hand0.slice(0, 3);
-	let seat = handStarter(dealer);
+	let seat = handStarter(dealer, seats);
 	for (let round = 0; round < 3; round++)
-		for (let i = 0; i < 4; i++) {
+		for (let i = 0; i < seats; i++) {
 			const h = hands[seat];
 			if (h.length < 3) h.push(pile.pop() as Card);
-			seat = nextSeat(seat);
+			seat = nextSeat(seat, seats);
 		}
 	let vira = opts.vira ?? turnVira(pile);
 	if (!opts.vira && opts.rigVira && rng.chance(opts.rigVira)) {
@@ -229,6 +245,7 @@ export function deal(
 	const rules = opts.rules ?? DEFAULT_RULES;
 	return {
 		rules,
+		seats,
 		score: { ...score },
 		dealer,
 		hands,
@@ -238,12 +255,12 @@ export function deal(
 		kind,
 		elevenTeam: kind === 'eleven' ? (eleven[0] ?? null) : null,
 		elevenDecided: kind !== 'eleven',
-		tricks: [{ opener: handStarter(dealer), plays: [] }],
-		turn: handStarter(dealer),
+		tricks: [{ opener: handStarter(dealer, seats), plays: [] }],
+		turn: handStarter(dealer, seats),
 		bet: kind === 'normal' ? (rules.startBet ?? 1) : 1,
 		lastRaiser: null,
 		pending: null,
-		signalsLeft: kind === 'iron' ? [0, 0, 0, 0] : [...rules.signals],
+		signalsLeft: kind === 'iron' || seats === 2 ? [0, 0, 0, 0] : [...rules.signals],
 		signals: [],
 		shield: null,
 		bonus: null,
@@ -270,8 +287,8 @@ function turnVira(pile: Card[]): Card {
 /** The seat that decides a mão de 11: the first of that team in playing order. */
 export function elevenDecider(s: TableState): Seat | null {
 	if (s.kind !== 'eleven' || s.elevenDecided || !s.elevenTeam) return null;
-	let seat = handStarter(s.dealer);
-	while (teamOf(seat) !== s.elevenTeam) seat = nextSeat(seat);
+	let seat = handStarter(s.dealer, s.seats);
+	while (teamOf(seat) !== s.elevenTeam) seat = nextSeat(seat, s.seats);
 	return seat;
 }
 
@@ -404,8 +421,7 @@ export function drawEffect(s: TableState, card: Card, seat: Seat, rng: Rng): Pla
 		: SPECIAL_CARDS[card.rank as keyof typeof SPECIAL_CARDS];
 	const canTurn = s.stock.some((c) => !isSpecial(c));
 	const canCopy = currentTrick(s).plays.some((p) => !p.faceDown);
-	const rivals = [nextSeat(seat), nextSeat(partnerOf(seat))];
-	const canPeek = rivals.some((r) => s.hands[r].length > 0);
+	const canPeek = rivalsOf(seat, s.seats).some((r) => s.hands[r].length > 0);
 	return rng.pick(
 		pool.filter(
 			(e) =>
@@ -444,17 +460,24 @@ function applyEffect(
 	if (effect === 'freeze') s.frozen = true;
 	if (effect === 'reversed') s.reversed = true;
 	if (effect === 'peek')
-		for (const r of [nextSeat(seat), nextSeat(partnerOf(seat))]) {
+		for (const r of rivalsOf(seat, s.seats)) {
 			const hand = s.hands[r];
 			if (hand.length) s.known.push({ seat: r, cardId: rng.pick(hand).id, to: team });
 		}
 	if (effect === 'swap') {
+		// With a partner the hands trade inside the pair; mano a mano there is only the rival.
+		const mate = partnerSeat(seat, s.seats) ?? (rivalsOf(seat, s.seats)[0] as Seat);
 		// As many cards as both hands have, so nobody runs out of cards before the hand ends.
 		const mine = rng.shuffle(s.hands[seat]);
-		const theirs = rng.shuffle(s.hands[partnerOf(seat)]);
+		const theirs = rng.shuffle(s.hands[mate]);
 		const k = Math.min(mine.length, theirs.length);
 		s.hands[seat] = [...theirs.slice(0, k), ...mine.slice(k)];
-		s.hands[partnerOf(seat)] = [...mine.slice(0, k), ...theirs.slice(k)];
+		s.hands[mate] = [...mine.slice(0, k), ...theirs.slice(k)];
+		// A card the Olho peeked at that changed hands is no longer a rival's known card.
+		if (s.seats === 2) {
+			const moved = new Set([...mine.slice(0, k), ...theirs.slice(0, k)].map((c) => c.id));
+			s.known = s.known.filter((n) => !moved.has(n.cardId));
+		}
 	}
 	if (effect === 'redraw') {
 		const hand = s.hands[seat];
@@ -510,7 +533,7 @@ export function apply(
 		}
 		case 'signal': {
 			s.signalsLeft[action.seat]--;
-			const caughtBy = [nextSeat(action.seat), nextSeat(partnerOf(action.seat))].filter((r) =>
+			const caughtBy = rivalsOf(action.seat, s.seats).filter((r) =>
 				rng.chance(s.rules.catchChance[r]),
 			);
 			s.signals.push({
@@ -537,7 +560,7 @@ export function apply(
 				s.pending = {
 					by: action.seat,
 					to: nextBet(s.bet),
-					responder: answerer(s, nextSeat(action.seat)),
+					responder: answerer(s, nextSeat(action.seat, s.seats)),
 					resume: action.seat,
 				};
 			events.push({ type: 'truco', seat: action.seat, to: s.pending.to });
@@ -585,8 +608,8 @@ export function apply(
 				events.push({ type: 'joker', seat: action.seat, effect });
 				applyEffect(s, effect, action.seat, rng, events);
 			}
-			if (trick.plays.length < 4) {
-				s.turn = nextSeat(action.seat);
+			if (trick.plays.length < s.seats) {
+				s.turn = nextSeat(action.seat, s.seats);
 				break;
 			}
 			resolveTrick(trick, s.manilha, s.reversed);
@@ -618,7 +641,7 @@ export function apply(
 }
 
 /** Next dealer after a hand (counter-clockwise rotation). */
-export const nextDealer = (dealer: Seat): Seat => nextSeat(dealer);
+export const nextDealer = (dealer: Seat, seats: Seats = 4): Seat => nextSeat(dealer, seats);
 
 /** Match winner, if any team reached MATCH_POINTS. */
 export function matchWinner(score: Record<Team, number>): Team | null {

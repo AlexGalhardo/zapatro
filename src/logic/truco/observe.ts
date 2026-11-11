@@ -3,10 +3,11 @@ import {
 	type Bet,
 	type HandKind,
 	jokerEffects,
-	nextSeat,
 	type Pending,
-	partnerOf,
+	partnerSeat,
+	rivalsOf,
 	type Seat,
+	type Seats,
 	type Sign,
 	type TableState,
 	type Team,
@@ -39,10 +40,12 @@ export interface KnownSignal {
  */
 export interface Observation {
 	seat: Seat;
+	seats: Seats;
 	team: Team;
 	/** Own cards; null in the iron hand (played blind). */
 	hand: Card[] | null;
 	handSize: number;
+	/** Null mano a mano (no partner) and outside a mão de 11. */
 	partnerHand: Card[] | null;
 	/** Cards of the partner this seat knows anyway (Marcada modifier). */
 	partnerMarked: Card[];
@@ -65,17 +68,22 @@ export interface Observation {
 
 export function observe(s: TableState, seat: Seat): Observation {
 	const team = teamOf(seat);
-	const partner = partnerOf(seat);
-	const rivals = [nextSeat(seat), nextSeat(partner)];
+	const partner = partnerSeat(seat, s.seats);
+	const rivals = rivalsOf(seat, s.seats);
 	return {
 		seat,
+		seats: s.seats,
 		team,
 		hand: s.kind === 'iron' ? null : [...s.hands[seat]],
 		handSize: s.hands[seat].length,
-		partnerHand: s.kind === 'eleven' && s.elevenTeam === team ? [...s.hands[partner]] : null,
-		partnerMarked: s.hands[partner].filter(
-			(c) => c.mod === 'marcada' && teamOf(partner) === 'us',
-		),
+		partnerHand:
+			partner !== null && s.kind === 'eleven' && s.elevenTeam === team
+				? [...s.hands[partner]]
+				: null,
+		partnerMarked:
+			partner === null
+				? []
+				: s.hands[partner].filter((c) => c.mod === 'marcada' && teamOf(partner) === 'us'),
 		vira: s.vira,
 		manilha: s.manilha,
 		kind: s.kind,

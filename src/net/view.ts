@@ -55,6 +55,7 @@ export function viewState(s: TableState, me: Seat): TableState {
 		...(t.winner !== undefined ? { winner: toView(t.winner, me) } : {}),
 	});
 	return {
+		seats: s.seats,
 		rules: {
 			signals: turn(s.rules.signals, me) as TableState['rules']['signals'],
 			catchChance: turn(s.rules.catchChance, me) as TableState['rules']['catchChance'],
