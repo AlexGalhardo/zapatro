@@ -12,6 +12,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-11-11
+
 ### Added
 
 - **repo:** README, license, contributing guide, code of conduct and security policy.
@@ -713,7 +715,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zeta-c/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zapatro/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/AlexGalhardo/zapatro/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.16.0...v0.17.0

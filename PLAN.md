@@ -4,7 +4,7 @@
 > Design completo: **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (GDD; citações antigas "design §N" resolvem pela tabela "Mapa de seções antigas" no topo) (este plano não repete o design; ele o transforma em trabalho verificável).
 > Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.4**, arte pintada (`art-src/gta/`) e vetor por código (PixelLab só nos retratos legados), áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Next.js 16 SSG + Tailwind v4**) na **Vercel**, trailer em **Remotion**.
 > Legenda: `[ ]` pendente · `[x]` feito · `[~]` incompleto/bloqueado (motivo em uma linha) · `(D-xx)` decisão · `(Q-xx)` pergunta aberta · **Pronto quando:** critério objetivo de conclusão.
-> **Estado atual (2026-11-11):** `0.19.0`, BETA jogável do menu ao Rei do Truco, com LAN 2×2 na Partida Rápida. O caminho até a 1.0 (modo 1×1, multiplayer local completo, game feel, lojas e Next Fest de fevereiro de 2027) está em **[ROADMAP.md](ROADMAP.md)**.
+> **Estado atual (2026-11-11):** `0.20.0`, BETA jogável do menu ao Rei do Truco, com LAN 2×2 na Partida Rápida. O caminho até a 1.0 (modo 1×1, multiplayer local completo, game feel, lojas e Next Fest de fevereiro de 2027) está em **[ROADMAP.md](ROADMAP.md)**.
 
 ## Sumário
 
