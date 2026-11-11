@@ -9,7 +9,7 @@ import { defaultKeys, parseKeys } from './keybinds';
  * Local save (PLAN §4.5): one JSON document with schema version and checksum.
  * Bump SAVE_VERSION and add a step to MIGRATIONS whenever the payload shape changes.
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const SAVE_KEY = 'truco-roguelite.save';
 
 export const PAD_DEADZONES = ['low', 'normal', 'high'] as const;
@@ -272,6 +272,7 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
  */
 export const MIGRATIONS: Record<number, (payload: Obj) => Obj> = {
 	1: (payload) => renameIds(payload) as Obj,
+	2: dropRemovedRunSystems,
 };
 
 /** v1 → v2: characters (and the feats named after them) go by their real names, not nicknames. */
@@ -305,6 +306,26 @@ function renameIds(v: unknown): unknown {
 	if (isObj(v))
 		return Object.fromEntries(Object.entries(v).map(([k, x]) => [fix(k), renameIds(x)]));
 	return v;
+}
+
+const without = (o: Obj, keys: readonly string[]): Obj =>
+	Object.fromEntries(Object.entries(o).filter(([k]) => !keys.includes(k)));
+
+/**
+ * v2 → v3 (D-82): the run snapshot loses the Melhorias, the Promessas and the shop's packs and
+ * open pack, so a run saved in a shop that sold them, or waiting on the table-choice phase,
+ * loads and plays on. The profile holds no id of these systems.
+ */
+function dropRemovedRunSystems(payload: Obj): Obj {
+	const run = payload.run;
+	if (!isObj(run)) return payload;
+	const clean = without(run, ['upgrades', 'upgradeChamp', 'promises']);
+	return {
+		...payload,
+		run: isObj(run.shop)
+			? { ...clean, shop: without(run.shop, ['packs', 'upgrade', 'opened']) }
+			: clean,
+	};
 }
 
 export function migrate(payload: Obj, from: number): Obj {
