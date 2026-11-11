@@ -1,21 +1,13 @@
 import { describe, expect, test } from 'bun:test';
-import { TRINKETS } from '../src/config/features';
 import { AI_PROFILES } from '../src/data/ai-profiles';
 import { BOSS_POOL } from '../src/data/bosses';
 import { COMPANION_IDS } from '../src/data/companions';
-import { PROMISES } from '../src/data/promises';
 import { TRINKET_BY_ID, trinketValues } from '../src/data/trinkets';
 import { Match, type MatchOptions, type SeatBrain } from '../src/game/match';
+import { tableMatch } from '../src/game/run-table';
 import { decide } from '../src/logic/ai/decide';
 import { Rng } from '../src/logic/rng';
-import {
-	finishTable,
-	leaveShop,
-	newRun,
-	type RunState,
-	type TableResult,
-	useConsumable,
-} from '../src/logic/run/run';
+import { finishTable, newRun, type TableResult, useConsumable } from '../src/logic/run/run';
 import { scoreHand } from '../src/logic/score/score';
 import { type Card, parseCard, standardDeck } from '../src/logic/truco/cards';
 import { observe } from '../src/logic/truco/observe';
@@ -126,7 +118,7 @@ describe('card modifiers (B1.2)', () => {
 	});
 });
 
-describe('Simpatias, upgrades and Promises (B1.2)', () => {
+describe('Simpatias (B1.2)', () => {
 	test('the new Simpatias apply their modifier', () => {
 		for (const [id, mod] of [
 			['aguaBenta', 'heavy'],
@@ -141,42 +133,11 @@ describe('Simpatias, upgrades and Promises (B1.2)', () => {
 		}
 	});
 
-	test.skipIf(TRINKETS)('8 Promises, each cashed at the next shop', () => {
-		expect(PROMISES).toHaveLength(8);
-		const after = (p: (typeof PROMISES)[number]): RunState => {
-			const run = newRun(3, 'bruto');
-			run.promises = [p];
-			finishTable(run, win());
-			return run;
-		};
-		expect(
-			after('cartaNova').shop?.packs.some(
-				(o) => o.kind === 'pack' && o.pack === 'baralho' && o.price === 0,
-			),
-		).toBe(true);
-		expect(
-			after('fichaExtra').shop?.offers.some(
-				(o) => o.kind === 'consumable' && o.item.kind === 'lance' && o.price === 0,
-			),
-		).toBe(true);
-		expect(
-			after('simpatiaGratis').shop?.offers.some(
-				(o) => o.kind === 'consumable' && o.item.kind === 'simpatia' && o.price === 0,
-			),
-		).toBe(true);
-		expect(Object.values(after('multExtra').levels)).toEqual([2]);
-		const life = after('vidaExtra');
-		expect(life.extraLife).toBe(true);
-		leaveShop(life);
-		expect(match({ extraRivalQuedas: life.extraLife ? 1 : 0 }).rivalQuedasNeeded).toBe(3);
-	});
-
-	test('Espiar o monte shows a card that nobody holds', () => {
-		const m = match({ peekPile: true });
-		const inPlay = [...m.state.hands.flat(), m.state.vira].map((x) => x.id);
-		expect(m.pileCard).not.toBeNull();
-		expect(inPlay).not.toContain(m.pileCard?.id);
-		expect(match().pileCard).toBeNull();
+	test('a run flagged extraLife makes the rivals need one more queda', () => {
+		const run = newRun(3, 'bruto');
+		expect(tableMatch(run, { kind: 'random' }).rivalQuedasNeeded).toBe(2);
+		run.extraLife = true;
+		expect(tableMatch(run, { kind: 'random' }).rivalQuedasNeeded).toBe(3);
 	});
 });
 

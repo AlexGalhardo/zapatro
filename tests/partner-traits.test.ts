@@ -193,12 +193,12 @@ describe('Beti (beti)', () => {
 			throw new Error('the shop has fewer than two trinkets for this seed');
 		expect(offerPrice(run, first)).toBe(first.price - 1);
 		const before = run.money;
-		expect(buy(run, 'offers', (run.shop?.offers ?? []).indexOf(first))).toBeNull();
+		expect(buy(run, (run.shop?.offers ?? []).indexOf(first))).toBeNull();
 		expect(before - run.money).toBe(first.price - 1);
 		expect(offerPrice(run, second)).toBe(second.price);
 		const other = newRun(1, 'bruto');
 		expect(priceOf(run, 5, 'trinket')).toBe(priceOf(other, 5, 'trinket') + 1);
-		expect(priceOf(run, 5, 'pack')).toBe(priceOf(other, 5, 'pack'));
+		expect(priceOf(run, 5, 'consumable')).toBe(priceOf(other, 5, 'consumable'));
 	});
 });
 

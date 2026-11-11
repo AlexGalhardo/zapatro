@@ -483,7 +483,6 @@ export const AUDIO: AudioSpec[] = [
 			// The API minimum is 0.5 s: trim toggle (0.15 s) and slider (0.08 s) after normalizing.
 			['sfx.ui.toggle', 'Tiny plastic switch click, very short, mono', 0.5],
 			['sfx.ui.slider', 'Very short soft tick, wooden, mono', 0.5],
-			['sfx.promise', 'Paper note being folded and tucked into a pocket, short, mono', 0.6],
 		] as const
 	).map(
 		([key, prompt, seconds]): AudioSpec => ({

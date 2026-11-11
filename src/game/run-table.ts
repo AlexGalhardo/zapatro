@@ -56,10 +56,8 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		loseTento: totals.loseTento,
 		rivalCatch: totals.rivalCatch,
 		boss,
-		extraSignals:
-			(run.upgrades.includes('maisSinal') ? 1 : 0) + (DECKS[run.startDeck].extraSignals ?? 0),
+		extraSignals: DECKS[run.startDeck].extraSignals ?? 0,
 		doubleChipRanks: DECKS[run.startDeck].doubleChipRanks,
-		peekPile: run.upgrades.includes('espiarMonte'),
 		extraRivalQuedas: run.extraLife ? 1 : 0,
 		score: { us: 0, them: stakeRules(run.stake).rivalHeadStart },
 		...(run.tableSave ? { resume: run.tableSave } : {}),

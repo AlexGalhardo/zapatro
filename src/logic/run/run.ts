@@ -1,24 +1,15 @@
 import { TRINKETS } from '../../config/features';
 import { AI_PROFILE_IDS, type AiProfileId } from '../../data/ai-profiles';
 import { BOSS_POOL, type BossId, FINAL_BOSS } from '../../data/bosses';
-import { CARD_MODS, type CardModId } from '../../data/card-mods';
 import { CHAMPIONSHIPS, RIVAL_POOLS, TABLE_SIZES, type TableSize } from '../../data/championships';
 import { COMPANION_IDS, type CompanionId, PARTNER_TRAITS } from '../../data/companions';
 import { type Consumable, SIMPATIA_IDS, SIMPATIAS } from '../../data/consumables';
 import { DECKS, type DeckId } from '../../data/decks';
-import {
-	DECK_PACK_MOD_CHANCE,
-	ECONOMY,
-	PACK_KINDS,
-	PACKS,
-	type PackKind,
-} from '../../data/economy';
+import { ECONOMY } from '../../data/economy';
 import { LANCE_IDS } from '../../data/lances';
-import { MANHA_BY_ID, MANHAS, type ManhaId, type Rarity } from '../../data/manhas';
-import { PROMISE_MONEY, PROMISES, type PromiseId } from '../../data/promises';
+import { MANHA_BY_ID, MANHAS, type ManhaId } from '../../data/manhas';
 import { stakeRules } from '../../data/stakes';
-import { type EquippedTrinket, TRINKET_SLOTS } from '../../data/trinkets';
-import { CHEAP_REROLL, DISCOUNT, UPGRADE_IDS, UPGRADES, type UpgradeId } from '../../data/upgrades';
+import type { EquippedTrinket } from '../../data/trinkets';
 import { Rng } from '../rng';
 import { type LanceLevels, tableGoal } from '../score/score';
 import {
@@ -44,7 +35,7 @@ import {
 } from './trinkets';
 
 /**
- * The run (PLAN A4, design §3): Championships of three tables, shop, Promises, bosses, partner
+ * The run (PLAN A4, design §3): Championships of three tables, shop, bosses, partner
  * and the shared deck. Pure and serializable: the scenes keep one `RunState`, call these
  * functions (they mutate it) and save it after every change (D-32).
  */
@@ -59,24 +50,13 @@ export interface RivalPair {
 export type Offer =
 	| { kind: 'manha'; id: ManhaId; price: number; sold: boolean }
 	| { kind: 'consumable'; item: Consumable; price: number; sold: boolean }
-	| { kind: 'upgrade'; id: UpgradeId; price: number; sold: boolean }
-	| { kind: 'pack'; pack: PackKind; price: number; sold: boolean }
 	| TrinketOffer;
-
-export type PackOption =
-	| { kind: 'card'; card: Card }
-	| { kind: 'consumable'; item: Consumable }
-	| { kind: 'manha'; id: ManhaId };
 
 export interface ShopState {
 	offers: Offer[];
-	packs: Offer[];
-	upgrade: Offer | null;
 	rerolls: number;
 	/** Beti's discount on the first Manha bought in this shop was used. */
 	firstManhaBought?: boolean;
-	/** Options of the pack being opened. */
-	opened: PackOption[] | null;
 }
 
 export interface TableResult {
@@ -124,11 +104,11 @@ export interface RunState {
 	/** Starting deck and Stake (B2). */
 	startDeck: DeckId;
 	stake: number;
-	/** Legendary Manhas show up in shops and packs (unlocked by the feat "doze"). */
+	/** Legendary Manhas show up in shops (unlocked by the feat "doze"). */
 	legendary: boolean;
 	/** Web demo (D-33): the run ends after Championship DEMO_LAST_CHAMP. */
 	demo: boolean;
-	/** Position of the run's rng (shops, packs, rivals, skips). */
+	/** Position of the run's rng (shops, rivals). */
 	rng: number;
 	champ: number;
 	/** 0 small, 1 big, 2 boss. */
@@ -150,11 +130,7 @@ export interface RunState {
 	levels: LanceLevels;
 	partner: CompanionId;
 	partnerLevel: number;
-	upgrades: UpgradeId[];
-	/** Championship of the last upgrade bought (one per Championship). */
-	upgradeChamp: number;
-	promises: PromiseId[];
-	/** Promise "vida extra" waiting for the next table. */
+	/** The rivals need one more queda at the next table (kept in saves; nothing sets it since D-82). */
 	extraLife: boolean;
 	rivals: RivalPair;
 	phase: Phase;
@@ -225,9 +201,6 @@ export function newRun(
 		levels: {},
 		partner,
 		partnerLevel: partner === 'nino' ? 0 : 1,
-		upgrades: [],
-		upgradeChamp: 0,
-		promises: [],
 		extraLife: false,
 		rivals: { chars: ['ze', 'mia'], profiles: ['rookie', 'rookie'] },
 		phase: 'select',
@@ -275,8 +248,6 @@ export const equippedOf = (run: RunState): EquippedTrinket[] =>
 	equippedList(run.trinkets, run.collection);
 
 export const currentGoal = (run: RunState): number => goalOf(run, tableSize(run));
-
-export const canSkip = (run: RunState): boolean => run.phase === 'select' && run.table !== 2;
 
 function rollRivals(run: RunState): void {
 	const shift = stakeRules(run.stake).rivalShift;
@@ -420,25 +391,11 @@ export function continueEndless(run: RunState): void {
 	openShop(run, true);
 }
 
-/**
- * Skips a small or big table for a Promise (design §3.3). The Promise is only kept if the next
- * table is won (P-08, GD-020): a loss ends the run before the shop, and skipping the next table
- * too forfeits the Promise still waiting (shops clear `promises`, so any left came from a skip).
- */
-export function skipTable(run: RunState): PromiseId | null {
-	if (!canSkip(run)) return null;
-	const p = roll(run, (rng) => rng.pick(PROMISES));
-	run.promises = [p];
-	advance(run);
-	rollRivals(run);
-	return p;
-}
-
 // --- Shop ----------------------------------------------------------------------------------
 
-export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'pack'): number {
+export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'consumable'): number {
 	const p = base * stakeRules(run.stake).priceMult;
-	const own = Math.round(run.upgrades.includes('desconto') ? p * DISCOUNT : p);
+	const own = Math.round(p);
 	// Cida's flaw: everything costs more; Beti's: Manhas do.
 	const up =
 		(run.partner === 'cida' ? PARTNER_TRAITS.cida.priceUp : 0) +
@@ -450,17 +407,14 @@ export function priceOf(run: RunState, base: number, kind: Offer['kind'] = 'pack
 }
 
 export function rerollCost(run: RunState): number {
-	const cheap = run.upgrades.includes('rerollBarato') ? CHEAP_REROLL : 0;
-	return Math.max(0, ECONOMY.rerollBase + (run.shop?.rerolls ?? 0) * ECONOMY.rerollStep - cheap);
+	return Math.max(0, ECONOMY.rerollBase + (run.shop?.rerolls ?? 0) * ECONOMY.rerollStep);
 }
 
-function pickManha(run: RunState, rng: Rng, rarity?: Rarity): ManhaId | null {
+function pickManha(run: RunState, rng: Rng): ManhaId | null {
 	const w = ECONOMY.rarityWeights;
-	const want =
-		rarity ??
-		(['common', 'uncommon', 'rare', 'legendary'] as const)[
-			rng.weightedIndex([w.common, w.uncommon, w.rare, w.legendary])
-		];
+	const want = (['common', 'uncommon', 'rare', 'legendary'] as const)[
+		rng.weightedIndex([w.common, w.uncommon, w.rare, w.legendary])
+	];
 	const free = MANHAS.filter(
 		(m) => !run.manhas.includes(m.id) && (run.legendary || m.rarity !== 'legendary'),
 	);
@@ -528,7 +482,7 @@ function openTrinketShop(run: RunState, afterBoss: boolean): void {
 			const cheapest = offers.filter((o) => o.price > 0).sort((a, b) => a.price - b.price)[0];
 			if (cheapest) cheapest.price = 0;
 		}
-		return { offers, packs: [], upgrade: null, rerolls: 0, opened: null };
+		return { offers, rerolls: 0 };
 	});
 }
 
@@ -540,61 +494,12 @@ function openShop(run: RunState, afterBoss = false): void {
 	run.phase = 'shop';
 	run.shop = roll(run, (rng) => {
 		const offers = makeOffers(run, rng);
-		const packs: Offer[] = Array.from({ length: ECONOMY.packs }, () => {
-			const pack = rng.pick(PACK_KINDS);
-			return { kind: 'pack', pack, price: priceOf(run, PACKS[pack].price), sold: false };
-		});
-		const left = UPGRADE_IDS.filter((u) => !run.upgrades.includes(u));
-		const upgrade: Offer | null =
-			run.upgradeChamp < run.champ && left.length
-				? (() => {
-						const id = rng.pick(left);
-						return {
-							kind: 'upgrade',
-							id,
-							price: priceOf(run, UPGRADES[id].price),
-							sold: false,
-						};
-					})()
-				: null;
-		// Promises are cashed at the next shop.
-		for (const p of run.promises) {
-			if (p === 'dezReais') run.money += PROMISE_MONEY;
-			if (p === 'manhaRara') {
-				const id = pickManha(run, rng, 'rare');
-				if (id) offers.push({ kind: 'manha', id, price: 0, sold: false });
-			}
-			if (p === 'pacoteGratis')
-				packs.push({ kind: 'pack', pack: rng.pick(PACK_KINDS), price: 0, sold: false });
-			if (p === 'cartaNova')
-				packs.push({ kind: 'pack', pack: 'baralho', price: 0, sold: false });
-			if (p === 'fichaExtra')
-				offers.push({
-					kind: 'consumable',
-					item: pickConsumable(rng, 'lance'),
-					price: 0,
-					sold: false,
-				});
-			if (p === 'simpatiaGratis')
-				offers.push({
-					kind: 'consumable',
-					item: pickConsumable(rng, 'simpatia'),
-					price: 0,
-					sold: false,
-				});
-			if (p === 'multExtra') {
-				const id = rng.pick(LANCE_IDS);
-				run.levels[id] = (run.levels[id] ?? 1) + 1;
-			}
-			if (p === 'vidaExtra') run.extraLife = true;
-		}
-		run.promises = [];
 		// Zé: in the first shop of each Championship the cheapest offer is free.
 		if (run.partner === 'ze' && run.table === 1) {
 			const cheapest = offers.filter((o) => o.price > 0).sort((a, b) => a.price - b.price)[0];
 			if (cheapest) cheapest.price = 0;
 		}
-		return { offers, packs, upgrade, rerolls: 0, opened: null };
+		return { offers, rerolls: 0 };
 	});
 }
 
@@ -607,7 +512,6 @@ const hasRoom = (run: RunState, o: Offer): boolean =>
 			? run.consumables.length < run.consumableSlots
 			: true;
 
-/** Buys an offer (`where`: offers, packs or the upgrade). A pack opens its options. */
 /** What `o` costs the player now: Beti's first Manha of each shop is $1 cheaper. */
 export function offerPrice(run: RunState, o: Offer): number {
 	const first =
@@ -617,14 +521,11 @@ export function offerPrice(run: RunState, o: Offer): number {
 	return Math.max(0, o.price - (first ? PARTNER_TRAITS.beti.firstManhaOff : 0));
 }
 
-export function buy(
-	run: RunState,
-	where: 'offers' | 'packs' | 'upgrade',
-	index = 0,
-): ShopError | null {
+/** Buys the offer at `index` of the shop. */
+export function buy(run: RunState, index = 0): ShopError | null {
 	const shop = run.shop;
 	if (!shop) return 'none';
-	const o = where === 'upgrade' ? shop.upgrade : shop[where][index];
+	const o = shop.offers[index];
 	if (!o) return 'none';
 	if (o.sold) return 'sold';
 	const price = offerPrice(run, o);
@@ -639,19 +540,7 @@ export function buy(
 	}
 	if (o.kind === 'manha') run.manhas.push(o.id);
 	if (o.kind === 'consumable') run.consumables.push(o.item);
-	if (o.kind === 'upgrade') applyUpgrade(run, o.id);
-	if (o.kind === 'pack') shop.opened = roll(run, (rng) => packOptions(run, o.pack, rng));
 	return null;
-}
-
-function applyUpgrade(run: RunState, id: UpgradeId): void {
-	run.upgrades.push(id);
-	run.upgradeChamp = run.champ;
-	if (id === 'maisManha') {
-		run.manhaSlots++;
-		run.trinketSlots = Math.min(TRINKET_SLOTS, run.trinketSlots + 1);
-	}
-	if (id === 'maisConsumivel') run.consumableSlots++;
 }
 
 function newCard(run: RunState, rank: Card['rank'], suit: Card['suit'], mod?: string): Card {
@@ -663,51 +552,6 @@ function newCard(run: RunState, rank: Card['rank'], suit: Card['suit'], mod?: st
 				? cardId(rank as Rank, suit)
 				: 'SP';
 	return { id: `${base}#${run.cardSerial}`, rank, suit, ...(mod ? { mod } : {}) };
-}
-
-function packOptions(run: RunState, pack: PackKind, rng: Rng): PackOption[] {
-	const n = PACKS[pack].options;
-	const out: PackOption[] = [];
-	for (let i = 0; i < n; i++) {
-		if (pack === 'baralho') {
-			const mods = Object.keys(CARD_MODS) as CardModId[];
-			const mod = rng.chance(DECK_PACK_MOD_CHANCE) ? rng.pick(mods) : undefined;
-			// Pack cards get their final id when taken (newCard); this one is only a preview.
-			out.push({
-				kind: 'card',
-				card: {
-					id: `pack${i}`,
-					rank: rng.pick(RANKS),
-					suit: rng.pick(SUITS),
-					...(mod ? { mod } : {}),
-				},
-			});
-		} else if (pack === 'manha') {
-			const id = pickManha(run, rng);
-			if (id && !out.some((o) => o.kind === 'manha' && o.id === id))
-				out.push({ kind: 'manha', id });
-		} else out.push({ kind: 'consumable', item: pickConsumable(rng, pack) });
-	}
-	return out;
-}
-
-/** Takes one option of the opened pack (or none with `index` = -1). */
-export function choosePack(run: RunState, index: number): ShopError | null {
-	const shop = run.shop;
-	const opt = shop?.opened?.[index];
-	if (!shop?.opened) return 'none';
-	if (index < 0 || !opt) {
-		shop.opened = null;
-		return null;
-	}
-	if (opt.kind === 'manha' && run.manhas.length >= run.manhaSlots) return 'slots';
-	if (opt.kind === 'consumable' && run.consumables.length >= run.consumableSlots) return 'slots';
-	if (opt.kind === 'card')
-		run.deck.push(newCard(run, opt.card.rank, opt.card.suit, opt.card.mod));
-	if (opt.kind === 'manha') run.manhas.push(opt.id);
-	if (opt.kind === 'consumable') run.consumables.push(opt.item);
-	shop.opened = null;
-	return null;
 }
 
 export function reroll(run: RunState): ShopError | null {

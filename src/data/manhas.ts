@@ -601,5 +601,5 @@ export const MANHA_BY_ID: ReadonlyMap<string, ManhaDef> = new Map(MANHAS.map((m)
 
 export const isManhaId = (id: string): id is ManhaId => MANHA_BY_ID.has(id);
 
-/** Manha slots at the start of a run (design §4.2; Boteco upgrades add more). */
+/** Manha slots at the start of a run (design §4.2). */
 export const MANHA_SLOTS = 5;
