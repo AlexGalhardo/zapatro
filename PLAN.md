@@ -123,7 +123,7 @@ O plano de entrega da 1.0, com grupos, aceite e calendário, está em [ROADMAP.m
 - [ ] "JOKER" em inglês dentro da face pintada do coringa.
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
 - [ ] Sistemas inalcançáveis pelas flags: pular mesa e Promessas (`TABLE_SELECT = false`), pacotes, renovação, Melhorias e baralhos/versos destraváveis (`SHOP_SIMPLE = true`, baralho e estaca fora da UI), Estacas e os feitos que dependem deles.
-- [ ] LAN sem relógio de jogada: um humano conectado que nunca joga trava a mesa ([docs/multiplayer.md](docs/multiplayer.md)).
+- [x] LAN sem relógio de jogada: resolvido em 2026-11-11 com o relógio de 30 s, a jogada do bot no estouro e o piloto automático (D-81, ROADMAP R4.3, [docs/multiplayer.md](docs/multiplayer.md)).
 - [x] Build Poki (`VITE_POKI=1`) apagava as vozes de `dist/` mesmo com outro `outDir`: o corte agora usa o `outDir` resolvido (`scripts/lib/poki-trim.ts`, `tests/poki-trim.test.ts`).
 
 ### 1.5 Fora do escopo até a 1.0
