@@ -154,3 +154,28 @@ As duas medições divergem em mais de 5 p.p. em alguns degraus, por causa do er
 ## 9. Trailer v1 em PT e v2 em EN (resolvida)
 
 **Resolvida em 2026-10-25.** `trailer/src/Root.tsx` monta EN e PT com o mesmo `Trailer` (roteiro único em `trailer/src/script.ts`) e o mesmo `Teaser`; a `TrailerV2` saiu. O render das duas línguas está em `trailer/out/` (GD-012).
+
+## 10. Android como anfitrião da mesa LAN (ROADMAP Q-13, D-80)
+
+**Contexto.** A D-80 pede que um celular Android crie mesa para outros celulares na mesma rede, sem PC. Hoje o servidor é Colyseus 0.18 sobre Node (Bun no PC, Electron no desktop) e o Android só entra. Pesquisa de 2026-11-11 (fontes ao lado de cada fato; nada foi instalado nem testado em aparelho).
+
+**Opções.**
+
+- A. **Node embutido no app** (`@capawesome/capacitor-nodejs` 0.2.0, MIT, Capacitor ≥ 8, [registro](https://registry.npmjs.org/@capawesome/capacitor-nodejs)). Prós: o servidor atual roda igual e o desktop não muda. Contras: o runtime é Node 18.20 e o `@colyseus/core` 0.18 pede Node ≥ 22 ([registro](https://registry.npmjs.org/@colyseus/core/latest)), então pode não rodar; dezenas de MB a mais por arquitetura no APK ([docs](https://capawesome.io/docs/sdks/capacitor/nodejs/)). Esforço grande, risco alto.
+- B. **Plugin nativo fino só para o socket** (plugin local em `mobile/` com a biblioteca Java-WebSocket) e a lógica da sala, que já é TypeScript puro, rodando na WebView. Prós: sem runtime extra, APK quase igual. Contras: o anfitrião Android não fala o protocolo do Colyseus, então a LAN ganha um transporte JSON próprio que o desktop também precisa falar; a WebView pausa em segundo plano, o que pede um serviço em primeiro plano com notificação enquanto o celular hospeda ([tipos de serviço](https://developer.android.com/guide/components/fg-service-types)). Esforço médio a grande.
+- C. **WebRTC entre WebViews com sinalização por QR.** Prós: nenhuma dependência nativa. Contras: duas leituras de QR por jogador, ruim para quem entra pelo desktop; comportamento do mDNS na WebView não verificado. Esforço grande, risco alto.
+- D. **Nearby Connections ou Wi-Fi Direct.** Não atende: o desktop não consegue entrar numa mesa dessas.
+- E. **Celular como hotspot**, por cima de A ou B, para quem não tem roteador. Esforço pequeno, mas o comportamento varia por aparelho (não verificado).
+
+**Restrições que valem para todas.** Com `targetSdk` 37 o Android passa a exigir a permissão de rede local em tempo de execução ([doc](https://developer.android.com/privacy-and-security/local-network-permission)); hoje o projeto mira 36 e o `INTERNET` basta. Código nativo novo precisa ser compatível com páginas de 16 KB ([doc](https://developer.android.com/guide/practices/page-sizes)).
+
+**Recomendação.** B, com E como complemento se o dev quiser hotspot. A só depois de uma prova de conceito mostrar que o Colyseus 0.18 roda no Node 18 do plugin.
+
+**Perguntas para o dev antes de instalar qualquer coisa.**
+
+1. Aceita trocar o transporte da LAN por um JSON próprio também no desktop (o Colyseus sai da LAN)?
+2. Aceita uma notificação permanente enquanto o celular hospeda (serviço em primeiro plano)?
+3. Hotspot (E) entra no escopo ou só rede com roteador?
+4. Autoriza a dependência Java nova no Gradle (`org.java-websocket:Java-WebSocket`, versão estável a confirmar no Maven Central)?
+
+**O que muda no código.** B: `src/net/` ganha uma interface de transporte com duas implementações (a atual e a JSON), `lan/room.ts` deixa de depender das classes do Colyseus para a lógica da sala, `mobile/` ganha o plugin local e as permissões no manifesto; `docs/multiplayer.md` e `docs/mobile.md` descrevem o anfitrião Android.

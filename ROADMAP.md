@@ -97,7 +97,7 @@ Abertas:
 | ID | Decisão | Recomendação | Trava |
 |---|---|---|---|
 | Q-12 | Preço e classificação etária pretendida (álcool, cigarro do Bruto, figurino da Sheila e da Beti) | Decidir antes de M5: os questionários da Steam e do IARC pedem | R10, R11 |
-| Q-13 | Qual servidor nativo o app Android embute para criar mesa (D-80) | Pesquisa em andamento; opções e custo antes de instalar | R4.12 |
+| Q-13 | Como o app Android cria mesa (D-80): opções, custos e perguntas em [docs/pending-decisions.md](docs/pending-decisions.md) §10 | Plugin nativo fino só para o socket, com a lógica da sala na WebView e um transporte JSON que o desktop também fala | R4.12 |
 | Q-14 | Desafio do dia (R7.5) entra na 1.0? | Só se sobrar prazo depois de M4 | R7.5 |
 
 ## R0 — Base e higiene
