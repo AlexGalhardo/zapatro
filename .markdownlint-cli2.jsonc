@@ -35,6 +35,9 @@
 		".claude/skills/**/references/**",
 		// Raw dumps kept as history (brainstorm keeps its own style; see docs/README.md).
 		"docs/brainstorm.md",
+		// Local files kept out of git (.gitignore and .git/info/exclude).
+		"TODO.md",
+		"plans/**",
 		"docs/claude-code.md",
 		"docs/improve-game-development-research.md"
 	]
