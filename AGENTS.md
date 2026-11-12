@@ -88,6 +88,7 @@ Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pod
 | Arte (Art Bible v3: personagens e fundos pintados, UI e cartas por código em `src/art/flat.ts`) | [docs/visual.md](docs/visual.md) |
 | Design de jogo (lenses) e pesquisa de mercado | [docs/books/](docs/books/) + skill `art-of-game-design`; [docs/card-games-research.md](docs/card-games-research.md) |
 | Sons | [docs/audio.md](docs/audio.md) + skill `game-audio-assets` |
+| Game feel (resposta a cada evento, durações, conforto) | [docs/game-feel.md](docs/game-feel.md) |
 | Decisões | [docs/decisions.md](docs/decisions.md) e PLAN §2 |
 | Commits, versões, push, release | [docs/git-and-versioning.md](docs/git-and-versioning.md) + skill `release-section` |
 | Build Steam / Android | [docs/desktop.md](docs/desktop.md), [docs/mobile.md](docs/mobile.md) + skill `platform-builds` |
