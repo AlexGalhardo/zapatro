@@ -23,3 +23,6 @@ export const DECKS: Record<DeckId, DeckDef> = {
 	dinheiro: { back: 'dinheiro', money: 10, manhaSlots: -1 },
 	viciado: { back: 'viciado', extraSuit: 'clubs' },
 };
+
+/** The Bluff deck's extra signal is one a partner reads: the 1×1 run has none. */
+export const deckNeedsPartner = (id: DeckId): boolean => (DECKS[id].extraSignals ?? 0) > 0;

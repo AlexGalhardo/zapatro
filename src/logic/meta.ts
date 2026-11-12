@@ -1,4 +1,5 @@
-import { DECKS } from '../data/decks';
+import type { RunMode } from '../data/championships';
+import { DECKS, type DeckId, deckNeedsPartner } from '../data/decks';
 import { DEFAULT_UNLOCKS, FEATS, type FeatRule } from '../data/feats';
 import { MANHA_BY_ID } from '../data/manhas';
 import { MAX_STAKE } from '../data/stakes';
@@ -19,6 +20,8 @@ export interface HandInfo {
 	called: boolean;
 	/** Won after you called truco without a manilha. */
 	bluff: boolean;
+	/** The hand was the iron one (11 × 11). Winning it is always a Queda, so `lance` never says it. */
+	iron?: boolean;
 }
 
 export interface TableInfo {
@@ -29,6 +32,17 @@ export interface TableInfo {
 
 export const isUnlocked = (meta: MetaSave, key: string): boolean =>
 	(DEFAULT_UNLOCKS as readonly string[]).includes(key) || meta.unlocked.includes(key);
+
+/** The feat whose rule unlocks `key` (`deck:<id>`), for the lock text. */
+export const unlockFeat = (key: string): string | undefined =>
+	FEATS.find((f) => f.unlocks === key)?.id;
+
+/** A new run can start with this deck at this Stake in this mode (all three open). */
+export const canStartRun = (meta: MetaSave, mode: RunMode, deck: DeckId, stake: number): boolean =>
+	isUnlocked(meta, `deck:${deck}`) &&
+	stake >= 1 &&
+	stake <= maxStake(meta, deck) &&
+	!(mode === '1v1' && deckNeedsPartner(deck));
 
 /** Highest Stake playable with a deck: one above the best won (design §6). */
 export const maxStake = (meta: MetaSave, deck: string): number =>
@@ -78,7 +92,7 @@ export function recordHand(meta: MetaSave, h: HandInfo): string[] {
 			case 'bet12':
 				return h.bet >= 12;
 			case 'iron':
-				return h.lance === 'ferro';
+				return h.iron === true;
 			case 'weakWin':
 				return h.weak;
 			case 'bluffWin':

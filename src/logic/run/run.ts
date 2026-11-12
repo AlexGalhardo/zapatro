@@ -72,6 +72,8 @@ export interface ShopState {
 	rerolls: number;
 	/** Beti's discount on the first Manha bought in this shop was used. */
 	firstManhaBought?: boolean;
+	/** The shop follows a won Championship (one level-4 offer); a reroll keeps that. */
+	afterBoss?: boolean;
 }
 
 export interface TableResult {
@@ -525,24 +527,29 @@ function makeOffers(run: RunState, rng: Rng): Offer[] {
 	return out;
 }
 
-/** The shop of trinkets (docs/trinkets.md): four offers, nothing else. */
-function openTrinketShop(run: RunState, afterBoss: boolean): void {
-	run.phase = 'shop';
-	run.shop = roll(run, (rng) => {
-		const offers: Offer[] = trinketOffers(
+/** The four offers of the trinket shop (docs/trinkets.md), priced for this run. */
+function rollTrinketOffers(run: RunState, afterBoss: boolean): Offer[] {
+	return roll(run, (rng) =>
+		trinketOffers(
 			rng,
 			run.collection,
 			afterBoss,
 			(base) => priceOf(run, base, 'trinket'),
 			run.mode === '1v1' ? TRINKET_IDS_1V1 : undefined,
-		);
-		// Zé: in the first shop of each Championship the cheapest offer is free.
-		if (run.partner === 'ze' && run.table === 1) {
-			const cheapest = offers.filter((o) => o.price > 0).sort((a, b) => a.price - b.price)[0];
-			if (cheapest) cheapest.price = 0;
-		}
-		return { offers, rerolls: 0 };
-	});
+		),
+	);
+}
+
+/** The shop of trinkets (docs/trinkets.md): four offers, nothing else. */
+function openTrinketShop(run: RunState, afterBoss: boolean): void {
+	run.phase = 'shop';
+	const offers = rollTrinketOffers(run, afterBoss);
+	// Zé: in the first shop of each Championship the cheapest offer is free.
+	if (run.partner === 'ze' && run.table === 1) {
+		const cheapest = offers.filter((o) => o.price > 0).sort((a, b) => a.price - b.price)[0];
+		if (cheapest) cheapest.price = 0;
+	}
+	run.shop = { offers, rerolls: 0, ...(afterBoss ? { afterBoss } : {}) };
 }
 
 function openShop(run: RunState, afterBoss = false): void {
@@ -620,7 +627,9 @@ export function reroll(run: RunState): ShopError | null {
 	if (run.money < cost) return 'money';
 	run.money -= cost;
 	shop.rerolls++;
-	shop.offers = roll(run, (rng) => makeOffers(run, rng));
+	shop.offers = TRINKETS
+		? rollTrinketOffers(run, shop.afterBoss === true)
+		: roll(run, (rng) => makeOffers(run, rng));
 	return null;
 }
 

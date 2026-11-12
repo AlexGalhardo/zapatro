@@ -127,12 +127,10 @@ describe('feats, unlocks, almanac and stats (B2.3–B2.4)', () => {
 		expect(new Set(FEATS.map((f) => f.id)).size).toBe(FEATS.length);
 	});
 
-	test('a hand at 12 unlocks the legendary Manhas; the iron hand unlocks Viciado', () => {
+	test('a hand at 12 is a feat; the iron hand unlocks Viciado (it scores as a Queda)', () => {
 		const m = meta();
-		expect(isUnlocked(m, 'legendary')).toBe(false);
 		expect(recordHand(m, hand({ bet: 12 }))).toContain('doze');
-		expect(isUnlocked(m, 'legendary')).toBe(true);
-		recordHand(m, hand({ lance: 'ferro' }));
+		recordHand(m, hand({ lance: 'queda', iron: true }));
 		expect(unlockedDecks(m)).toEqual(['normal', 'viciado']);
 		// Achieved once only.
 		expect(recordHand(m, hand({ bet: 12 }))).not.toContain('doze');

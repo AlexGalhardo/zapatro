@@ -3,6 +3,7 @@ import { AI_PROFILES, type AiProfile } from '../data/ai-profiles';
 import type { RunMode } from '../data/championships';
 import { COMPANION_IDS, type CompanionId } from '../data/companions';
 import type { Consumable } from '../data/consumables';
+import type { DeckId } from '../data/decks';
 import { ECONOMY } from '../data/economy';
 import { DEFAULT_UNLOCKS } from '../data/feats';
 import { MANHA_BY_ID, type ManhaId } from '../data/manhas';
@@ -253,11 +254,12 @@ export function simulateRun(
 	stake = 1,
 	partner?: CompanionId,
 	mode: RunMode = '2v2',
+	deck: DeckId = 'normal',
 ): RunSummary {
 	const rng = new Rng(seed ^ 0x5bd1e995);
 	// The bot takes the first partner on offer to a fresh save.
 	const drawn = drawCandidates(seed, DEFAULT_COMPANIONS)[0] ?? 'bruto';
-	const run = newRun(seed, partner ?? drawn, 'normal', stake, false, false, mode);
+	const run = newRun(seed, partner ?? drawn, deck, stake, false, false, mode);
 	const seat0: SeatBrain =
 		bot === 'good' ? { kind: 'ai', profile: GOOD_BOT } : { kind: 'random' };
 	const perTable: number[] = [];

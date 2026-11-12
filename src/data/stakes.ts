@@ -24,12 +24,33 @@ export interface StakeRules {
 /** Rules of a Stake (cumulative). */
 export function stakeRules(stake: number): StakeRules {
 	return {
-		goalMult: [1, 1.15, 1.25, 1.3, 1.45, 1.5, 1.7, 1.8][stake - 1] ?? 1.8,
+		goalMult: [1, 1.1, 1.18, 1.25, 1.3, 1.38, 1.45, 1.55][stake - 1] ?? 1.55,
 		interestCap: stake >= 3 ? 3 : 5,
 		smallPrize: stake < 4,
 		startMoney: null,
-		rivalShift: stake >= 7 ? 2 : stake >= 4 ? 1 : 0,
-		rivalHeadStart: [0, 0, 3, 3, 4, 6, 6, 7][stake - 1] ?? 7,
+		rivalShift: stake >= 8 ? 2 : stake >= 4 ? 1 : 0,
+		rivalHeadStart: [0, 0, 1, 1, 2, 2, 3, 3][stake - 1] ?? 3,
 		priceMult: stake >= 8 ? 1.25 : 1,
 	};
+}
+
+export type StakeChange =
+	| { k: 'goals' | 'head' | 'interest' | 'price'; n: number }
+	| { k: 'prize' | 'rivals' };
+
+/** What a Stake adds to the one below it, read off `stakeRules` so the screen never drifts from it. */
+export function stakeChanges(stake: number): StakeChange[] {
+	if (stake <= 1) return [];
+	const now = stakeRules(stake);
+	const was = stakeRules(stake - 1);
+	const out: StakeChange[] = [];
+	if (now.goalMult !== was.goalMult)
+		out.push({ k: 'goals', n: Math.round((now.goalMult - 1) * 100) });
+	if (now.rivalHeadStart !== was.rivalHeadStart) out.push({ k: 'head', n: now.rivalHeadStart });
+	if (now.interestCap !== was.interestCap) out.push({ k: 'interest', n: now.interestCap });
+	if (now.smallPrize !== was.smallPrize) out.push({ k: 'prize' });
+	if (now.rivalShift !== was.rivalShift) out.push({ k: 'rivals' });
+	if (now.priceMult !== was.priceMult)
+		out.push({ k: 'price', n: Math.round((now.priceMult - 1) * 100) });
+	return out;
 }

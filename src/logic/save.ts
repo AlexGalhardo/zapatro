@@ -1,7 +1,9 @@
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { RUN_MODES, type RunMode } from '../data/championships';
+import { DECK_IDS, type DeckId } from '../data/decks';
 import { RESOLUTION_IDS, type ResolutionId } from '../data/display';
 import type { KeyBindings } from '../data/keybinds';
+import { MAX_STAKE } from '../data/stakes';
 import { isTrinketId } from '../data/trinkets';
 import { LANGS, type Lang } from '../i18n';
 import { defaultKeys, parseKeys } from './keybinds';
@@ -46,6 +48,14 @@ export interface Settings {
 	gameSpeed: GameSpeed;
 	/** Last quick match format picked; a save without it plays 2×2. */
 	quickMode?: RunMode;
+	/** The last New run choices (mode, Stake, starting deck); a save without them starts the defaults. */
+	runSetup?: RunSetup;
+}
+
+export interface RunSetup {
+	mode: RunMode;
+	stake: number;
+	deck: DeckId;
 }
 
 export type RunEnd = 'won' | 'lost' | 'quit';
@@ -202,6 +212,17 @@ const oneOf = <T extends string | number>(v: unknown, list: readonly T[], d: T):
 const strings = (v: unknown): string[] =>
 	Array.isArray(v) ? [...new Set(v.filter((x): x is string => typeof x === 'string'))] : [];
 
+function parseRunSetup(v: unknown): { runSetup?: RunSetup } {
+	if (!isObj(v)) return {};
+	return {
+		runSetup: {
+			mode: oneOf(v.mode, RUN_MODES, '2v2'),
+			stake: int(v.stake, 1, 1, MAX_STAKE),
+			deck: oneOf(v.deck, DECK_IDS, 'normal'),
+		},
+	};
+}
+
 function parseRecord(v: unknown): RunRecord | null {
 	if (!isObj(v)) return null;
 	return {
@@ -254,6 +275,7 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
 			...(RUN_MODES.includes(s.quickMode as RunMode)
 				? { quickMode: s.quickMode as RunMode }
 				: {}),
+			...parseRunSetup(s.runSetup),
 		},
 		meta: {
 			tutorialDone: bool(m.tutorialDone, false),
