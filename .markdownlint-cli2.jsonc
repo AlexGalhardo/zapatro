@@ -27,7 +27,7 @@
 		"**/node_modules/**",
 		"dist/**",
 		"site/out/**",
-		"site/.next/**",
+		"site/.astro/**",
 		"desktop/release/**",
 		"graphify-out/**",
 		"references/**",
