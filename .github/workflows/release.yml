@@ -32,7 +32,7 @@ jobs:
           echo "poki build: ${size} KB"
           test "$size" -lt 8192
           cd dist && zip -qr ../truco-roguelite-web-poki.zip .
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: truco-roguelite-web
           path: truco-roguelite-web*.zip
@@ -74,7 +74,7 @@ jobs:
         run: bun scripts/build-electron.ts --skip-web --exe
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         if: runner.os == 'Windows'
         with:
           name: zapatro-windows-exe
@@ -86,7 +86,7 @@ jobs:
         run: |
           if [ "$RUNNER_OS" = Windows ]; then 7z a -tzip "$GITHUB_WORKSPACE/${{ matrix.asset }}" . > /dev/null
           else zip -qry "$GITHUB_WORKSPACE/${{ matrix.asset }}" .; fi
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: ${{ matrix.asset }}
           path: ${{ matrix.asset }}
@@ -129,7 +129,7 @@ jobs:
             bun scripts/build-android.ts --skip-web --debug
             cp "$out"/apk/debug/app-debug.apk truco-roguelite-android-debug.apk
           fi
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: truco-roguelite-android
           path: truco-roguelite-android*
