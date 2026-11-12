@@ -27,7 +27,7 @@ export function handEffects(
 		out.push({
 			icon: 'skull',
 			name: t(`boss.${boss}.name` as I18nKey),
-			desc: t(`boss.${boss}.rule` as I18nKey),
+			desc: tDuel(`boss.${boss}.rule` as I18nKey, s.seats === 2),
 		});
 	if (s.kind === 'iron') {
 		const [name = '', desc = ''] = t('table.iron').split(' · ');

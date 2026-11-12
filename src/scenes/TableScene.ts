@@ -24,7 +24,7 @@ import { pokiGameplay } from '../core/poki';
 import { trackZoom } from '../core/viewport';
 import { AI_PROFILE_IDS, AI_PROFILES, type AiProfileId } from '../data/ai-profiles';
 import { BOSS_POOL, type BossId, FINAL_BOSS } from '../data/bosses';
-import { CHAMPIONSHIPS, type ChampionshipId } from '../data/championships';
+import { CHAMPIONSHIPS, type ChampionshipId, type RunMode } from '../data/championships';
 import { type Expression, SIGN_CATEGORY, SIGNAL_EMOJI, TABLE_TIMING } from '../data/characters';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import { JOKER_EFFECTS } from '../data/jokers';
@@ -53,7 +53,6 @@ import {
 	type RunState,
 	tableSize,
 } from '../logic/run/run';
-import type { QuickMode } from '../logic/save';
 import { formatPoints } from '../logic/score/format';
 import { type ScoreStep, tableGoal, totals } from '../logic/score/score';
 import { TOUCH_TEXT_MIN } from '../logic/touch';
@@ -609,7 +608,7 @@ export class TableScene extends Phaser.Scene {
 		run?: boolean;
 		tutorial?: boolean;
 		/** Quick match format; without it `?mode=` decides (2×2 when absent). */
-		mode?: QuickMode;
+		mode?: RunMode;
 		net?: { client: NetClient; start: TableStart; snap: TableSnapshot };
 	}): void {
 		const params = getParams(this);
@@ -761,7 +760,7 @@ export class TableScene extends Phaser.Scene {
 			this.time.delayedCall(this.dur(500), () =>
 				this.showBanner(
 					`${t(`boss.${boss}.name` as I18nKey)}
-${t(`boss.${boss}.rule` as I18nKey)}`,
+${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 					3200,
 				),
 			);

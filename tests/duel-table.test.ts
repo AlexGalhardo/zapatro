@@ -28,7 +28,7 @@ describe('mano a mano wording (R2.3)', () => {
 	test('the Mano a mano rules page and the mode names exist in both languages', () => {
 		for (const lang of ['en', 'pt-BR'] as const) {
 			const table = TABLES_FOR_TEST[lang] as Record<string, string>;
-			for (const k of ['rules.duel.title', 'rules.duel.body', 'mode.duo', 'mode.duel'])
+			for (const k of ['rules.duel.title', 'rules.duel.body', 'run.mode.2v2', 'run.mode.1v1'])
 				expect(table[k]?.length).toBeGreaterThan(0);
 		}
 	});

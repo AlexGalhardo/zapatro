@@ -20,9 +20,6 @@ export type TouchMode = (typeof TOUCH_MODES)[number];
 /** 0 = auto (largest integer zoom that keeps LOGICAL_H visible), else a fixed zoom. */
 export const UI_SCALES = [0, 1, 2, 3, 4] as const;
 export type UiScale = (typeof UI_SCALES)[number];
-/** Quick match formats: two pairs (2×2) or mano a mano (1×1). */
-export const QUICK_MODES = ['2v2', '1v1'] as const;
-export type QuickMode = (typeof QUICK_MODES)[number];
 /** Most recent runs kept in the lifetime history. */
 export const HISTORY_MAX = 20;
 
@@ -48,7 +45,7 @@ export interface Settings {
 	/** Animation speed (D-57). */
 	gameSpeed: GameSpeed;
 	/** Last quick match format picked; a save without it plays 2×2. */
-	quickMode?: QuickMode;
+	quickMode?: RunMode;
 }
 
 export type RunEnd = 'won' | 'lost' | 'quit';
@@ -254,8 +251,8 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
 			padDeadzone: oneOf(s.padDeadzone, PAD_DEADZONES, 'normal'),
 			touchControls: oneOf(s.touchControls, TOUCH_MODES, 'auto'),
 			gameSpeed: oneOf(s.gameSpeed, GAME_SPEEDS, 1),
-			...(QUICK_MODES.includes(s.quickMode as QuickMode)
-				? { quickMode: s.quickMode as QuickMode }
+			...(RUN_MODES.includes(s.quickMode as RunMode)
+				? { quickMode: s.quickMode as RunMode }
 				: {}),
 		},
 		meta: {
