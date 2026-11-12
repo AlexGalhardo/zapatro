@@ -1,5 +1,5 @@
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
-import { QUICK_MODES, type QuickMode } from '../logic/save';
+import { RUN_MODES, type RunMode } from '../data/championships';
 
 /**
  * Debug/test options from the URL (PLAN §10.4), e.g.
@@ -31,8 +31,11 @@ export interface DebugParams {
 	/** Start the run holding these trinkets: `id` or `id:level` (1-4), comma separated. */
 	trinkets?: string[];
 	partner?: string;
-	/** Quick match format: `1v1` (mano a mano) or `2v2`; `?skipMenu=1` without it plays 2×2. */
-	mode?: QuickMode;
+	/**
+	 * `1v1` (mano a mano) or `2v2`: the format of the quick match (`?skipMenu=1` without it plays
+	 * 2×2) and, with `?run=1`, of a new run (`1v1` skips the mode and partner choices).
+	 */
+	mode?: RunMode;
 	/** Quick match against this boss (and in its room, when it has concept art). */
 	boss?: string;
 	/** Quick match with a roguelite points goal (Fichas × Mult) instead of plain Truco to 12. */
@@ -80,7 +83,7 @@ export function parseDebugParams(search: string): DebugParams {
 		manhas: list(p.get('manhas')),
 		trinkets: list(p.get('trinkets')),
 		partner: p.get('partner') ?? undefined,
-		mode: QUICK_MODES.find((m) => m === p.get('mode')),
+		mode: RUN_MODES.find((m) => m === p.get('mode')),
 		boss: p.get('boss') ?? undefined,
 		goal: int(p.get('goal'), 1),
 		stake: int(p.get('stake'), 1),

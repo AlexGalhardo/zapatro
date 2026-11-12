@@ -1,7 +1,25 @@
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { buy, leaveShop, parseRun, projectedReward } from '../src/logic/run/run';
-import { checksum, parseSave, SAVE_VERSION } from '../src/logic/save';
+import { GOOD_BOT } from '../src/game/run-sim';
+import { tableMatch } from '../src/game/run-table';
+import {
+	buy,
+	finishTable,
+	leaveShop,
+	newRun,
+	parseRun,
+	projectedReward,
+	type RunState,
+	startTable,
+} from '../src/logic/run/run';
+import {
+	checksum,
+	defaultSave,
+	emptyStats,
+	parseSave,
+	SAVE_VERSION,
+	serializeSave,
+} from '../src/logic/save';
 
 /**
  * Saves written by released builds must keep loading (RC1.3). Each fixture was produced by the
@@ -56,6 +74,12 @@ describe('save compatibility (RC1.3)', () => {
 			for (const k of REMOVED_SHOP_KEYS) expect(raw.shop ?? {}).not.toHaveProperty(k);
 			const run = parseRun(res.save.run);
 			expect(run?.partner).toBe(partner);
+			// Every run so far was 2×2, and so were the lifetime counts.
+			expect(run?.mode).toBe('2v2');
+			expect(res.save.meta.stats.byMode).toEqual({
+				'2v2': { runs: 3, wins: res.save.meta.stats.wins },
+				'1v1': { runs: 0, wins: 0 },
+			});
 			expect(run?.stake).toBe(2);
 			expect(run?.money).toBe(17);
 			expect(run?.manhas).toEqual(['seuZe', 'malandro']);
@@ -110,7 +134,7 @@ describe('removed run systems (D-82, schema 3)', () => {
 	};
 
 	test('the schema is bumped and a shop with a pack, an upgrade and an open pack loads', () => {
-		expect(SAVE_VERSION).toBe(3);
+		expect(SAVE_VERSION).toBeGreaterThanOrEqual(3);
 		const offers = [{ kind: 'manha' as const, id: 'seuZe' as const, price: 5, sold: false }];
 		const res = parseSave(
 			v2Save({
@@ -154,5 +178,100 @@ describe('removed run systems (D-82, schema 3)', () => {
 		const res = parseSave(v2Save(null), 'en');
 		expect(res.ok).toBe(true);
 		if (res.ok) expect(res.save.run).toBeNull();
+	});
+});
+
+describe('run mode and stats per mode (D-77, schema 4)', () => {
+	const run = (): Record<string, unknown> => JSON.parse(JSON.stringify(newRun(5, 'cida')));
+	/** A schema-3 save: the run has no `mode`, the stats no `byMode`, the history no `mode`. */
+	const v3Save = (r: Record<string, unknown> | null): string => {
+		const stats = {
+			runs: 7,
+			wins: 2,
+			history: [{ at: 1, reason: 'won', championship: 8, bestHand: 90, deck: 'normal' }],
+		};
+		const payload = JSON.stringify({ meta: { stats }, run: r });
+		return JSON.stringify({ schemaVersion: 3, checksum: checksum(payload), payload });
+	};
+
+	test('the schema is 4', () => {
+		expect(SAVE_VERSION).toBe(4);
+	});
+
+	test('a schema-3 run becomes 2v2, the stats start from the totals', () => {
+		const raw = run();
+		delete raw.mode;
+		const res = parseSave(v3Save(raw), 'en');
+		expect(res.ok).toBe(true);
+		if (!res.ok) return;
+		expect(parseRun(res.save.run)?.mode).toBe('2v2');
+		const st = res.save.meta.stats;
+		expect(st.byMode).toEqual({ '2v2': { runs: 7, wins: 2 }, '1v1': { runs: 0, wins: 0 } });
+		expect(st.history[0]?.mode).toBe('2v2');
+	});
+
+	test('a save with no run or no stats still loads', () => {
+		const res = parseSave(v3Save(null), 'en');
+		expect(res.ok && res.save.run).toBeNull();
+		expect(emptyStats().byMode).toEqual({
+			'2v2': { runs: 0, wins: 0 },
+			'1v1': { runs: 0, wins: 0 },
+		});
+	});
+
+	/** Writes the run into a save, reads it back and parses the run, as the game does. */
+	const roundTrip = (r: RunState): RunState => {
+		const save = defaultSave('en');
+		save.run = r;
+		const res = parseSave(serializeSave(save), 'en');
+		if (!res.ok) throw new Error(res.reason);
+		const back = parseRun(res.save.run);
+		if (!back) throw new Error('the run did not load');
+		return back;
+	};
+	const duel = (): RunState => newRun(21, undefined, 'normal', 1, false, false, '1v1');
+
+	test('a 1v1 run saved in the middle of a table loads and continues', () => {
+		const r = duel();
+		startTable(r);
+		const m = tableMatch(r, { kind: 'ai', profile: GOOD_BOT });
+		for (let hand = 0; hand < 2; hand++) {
+			for (let seat = m.actor(); seat !== null; seat = m.actor()) m.act(m.aiAction(seat));
+			m.nextHand();
+		}
+		r.tableSave = m.progress;
+		const back = roundTrip(r);
+		expect(back.mode).toBe('1v1');
+		expect(back.partner).toBeUndefined();
+		expect(back.rivals).toEqual(r.rivals);
+		expect(back.tableSave).toEqual(m.progress);
+		// The saved hand is dealt again as it was.
+		const again = tableMatch(back, { kind: 'ai', profile: GOOD_BOT });
+		expect(again.seats).toBe(2);
+		expect(again.state.hands).toEqual(m.state.hands);
+		expect(again.state.vira).toEqual(m.state.vira);
+		expect(again.hands).toBe(m.hands);
+		for (;;) {
+			for (let seat = again.actor(); seat !== null; seat = again.actor())
+				again.act(again.aiAction(seat));
+			if (again.winner || again.hands >= 80) break;
+			again.nextHand();
+		}
+		expect(again.hands).toBeGreaterThan(m.hands);
+	});
+
+	test('a 1v1 run saved in the shop loads, buys and goes on to the next table', () => {
+		const r = duel();
+		startTable(r);
+		finishTable(r, { won: true, rivalTentos: 4, money: 0, hands: 5, bestHand: 40 });
+		expect(r.phase).toBe('shop');
+		const back = roundTrip(r);
+		expect(back.mode).toBe('1v1');
+		expect(back.shop).toEqual(r.shop);
+		expect(buy(back, 0)).toBeNull();
+		leaveShop(back);
+		expect(back.phase).toBe('select');
+		expect(back.table).toBe(1);
+		expect(back.rivals.chars[0]).not.toBe(r.rivals.chars[0]);
 	});
 });
