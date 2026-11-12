@@ -44,7 +44,7 @@ export const SCORE_COUNT = {
 		inMs: 240,
 		holdMs: 900,
 		outMs: 220,
-		textPx: 24,
+		textPx: 20,
 		shake: { ms: 260, intensity: 0.008 },
 		zoom: 0.06,
 		sparks: 26,
