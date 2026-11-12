@@ -22,7 +22,8 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 
 | Parâmetro | Valores | Efeito |
 | --- | --- | --- |
-| `run=1` | | Começa uma run nova direto na escolha de parceiro |
+| `run=1` | | Começa uma run nova na escolha do modo (Dupla 2×2 ou Mano a mano 1×1) e depois do parceiro |
+| `mode=1v1` | `1v1` | Com `run=1`, cria direto uma run mano a mano (sem escolha de modo nem de parceiro; os traços de parceiro não existem). Outro valor é ignorado: sem `mode`, a tela pergunta |
 | `money=N` | inteiro ≥ 0 | Dinheiro inicial da run nova (`RunScene`) |
 | `manhas=a,b` | ids de `src/data/manhas.ts` | Manhas iniciais da run nova: ids inválidos são ignorados e a lista é cortada nos slots disponíveis. Na partida rápida, começa com as mesmas Manhas |
 | `stake=N` | 1–8 | Estaca preselecionada da run nova, mesmo que ainda esteja bloqueada (limitada à Estaca máxima do jogo) |
@@ -54,6 +55,7 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 | Build de Manhas na partida rápida | `?skipMenu=1&goal=110&manhas=zapZap,zapDeOuro,malandro` |
 | Fim da demo (vencer o primeiro chefe) | `?run=1&demo=1&auto=1&speed=4` |
 | Run inteira assistindo o bot | `?run=1&auto=1&speed=4` |
+| Run mano a mano 1×1 assistindo o bot | `?run=1&mode=1v1&auto=1&speed=4` |
 | Estaca máxima | `?run=1&stake=8` |
 | Mesma partida duas vezes | `?skipMenu=1&seed=1234` |
 | Ver tudo dos rivais | `?skipMenu=1&reveal=1` |
