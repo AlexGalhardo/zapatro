@@ -181,7 +181,9 @@ await group('flow', async (t) => {
 	);
 	// Winning a whole table takes minutes: force the win (as qa.ts does for the loss).
 	await t.ev(`(g, t) => t.showEnd('us')`);
-	await t.page.waitForTimeout(1200);
+	// The end panel comes in with an entrance: a key during it skips the entrance, not the button.
+	await t.until('end panel settled', '(g, t) => t.skipCall === null', 8000);
+	await t.page.waitForTimeout(300);
 	await t.press('Enter');
 	t.check(
 		'table won → Continue → run in shop',

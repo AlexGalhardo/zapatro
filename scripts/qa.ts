@@ -349,7 +349,8 @@ await group(browser, 'manhas', async (t) => {
 		'a Manha fires with a popup',
 		await t.until(
 			'manha popup',
-			'(g, t) => t.popup.visible && t.popup.text.startsWith("[")',
+			// At 4× a step's popup shows for less than one poll: its text stays after it hides.
+			'(g, t) => t.popup.text.startsWith("[")',
 			60000,
 		),
 	);
@@ -601,6 +602,8 @@ await group(browser, 'runend', async (t) => {
 	// Losing a whole table takes minutes even at 4×: the end of the table is forced as a loss.
 	await t.eval('(g, t) => t.showEnd("them")');
 	t.check('a lost table ends the run', await t.eval<boolean>(runWith('r.phase === "lost"')));
+	// The end panel comes in with an entrance: a click during it skips the entrance, not the button.
+	await t.until('end panel settled', '(g, t) => t.skipCall === null', 8000);
 	await t.click(textIn('Table', /^(Continue|Continuar)$/));
 	t.check(
 		'the run summary shows',
