@@ -14,6 +14,8 @@ const base = arg('url', 'http://localhost:5173').replace(/\/?(\?.*)?$/, '');
 const seconds = Number(arg('seconds', '40'));
 const shot = arg('shot', '');
 const duel = arg('mode', '2v2') === '1v1';
+// A whole match ends by itself: give a slow machine room instead of a fixed 40 s.
+const limit = duel ? Math.max(seconds, 180) : seconds;
 
 const browser = await chromium.launch({
 	headless: true,
@@ -67,7 +69,7 @@ if (!menu?.scenes.includes('Menu')) {
 if (menu?.hasTable) {
 	await page.goto(`${base}/?skipMenu=1&seed=1&auto=1&speed=4&qa=1${duel ? '&mode=1v1' : ''}`);
 	let last: Probe | null = null;
-	for (let t = 0; t < seconds; t += 5) {
+	for (let t = 0; t < limit; t += 5) {
 		await page.waitForTimeout(5000);
 		last = await probe();
 		console.log(`t=${t + 5}s`, JSON.stringify(last));
