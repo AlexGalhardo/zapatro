@@ -2,6 +2,7 @@
  * Good-bot win rate per Stake and per starting deck (R7.1, R7.2), one process per column in
  * parallel. Same seeds as `bun run balance` (100 000 + i).
  *   bun scripts/stakes.ts [--runs 300] [--mode 2v2|1v1]   the Stake curve (must fall monotonically)
+ *   bun scripts/stakes.ts --stakes 7,8                     only some Stakes (to tune one step)
  *   bun scripts/stakes.ts --decks [--stake 1]              each deck against the normal one (±5 p.p.)
  */
 
@@ -43,7 +44,7 @@ if (opt('one') !== undefined) {
 } else {
 	const keys: string[] = decks
 		? [...DECK_IDS]
-		: Array.from({ length: MAX_STAKE }, (_, i) => String(i + 1));
+		: (opt('stakes')?.split(',') ?? Array.from({ length: MAX_STAKE }, (_, i) => String(i + 1)));
 	const cols = await Promise.all(
 		keys.map(async (key) => {
 			const parts = await Promise.all(
@@ -90,7 +91,7 @@ if (opt('one') !== undefined) {
 		);
 		process.exit(ok ? 0 : 1);
 	}
-	console.log(`win %: ${rates.map((r, i) => `${i + 1}:${r}`).join('  ')}`);
+	console.log(`win %: ${rates.map((r, i) => `${keys[i]}:${r}`).join('  ')}`);
 	const steps = rates.slice(1).map((r, i) => (rates[i] ?? 0) - r);
 	console.log(`drop p.p.: ${steps.map((d) => d.toFixed(1)).join('  ')}`);
 	const ok = steps.every((d) => d >= 0);

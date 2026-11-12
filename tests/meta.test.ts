@@ -95,11 +95,11 @@ describe('stakes (B2.2)', () => {
 			smallPrize: true,
 		});
 		expect(stakeRules(8)).toMatchObject({
-			goalMult: 1.8,
+			goalMult: 1.9,
 			interestCap: 3,
 			smallPrize: false,
 			rivalShift: 2,
-			rivalHeadStart: 7,
+			rivalHeadStart: 4,
 			priceMult: 1.25,
 		});
 	});
@@ -107,11 +107,11 @@ describe('stakes (B2.2)', () => {
 	test('higher stakes: bigger goals, no small-table prize, rivals start ahead', () => {
 		const a = newRun(1, 'bruto', 'normal', 1);
 		const b = newRun(1, 'bruto', 'normal', 8);
-		expect(currentGoal(b)).toBe(Math.round(currentGoal(a) * 1.8));
-		expect(tableMatch(b, { kind: 'random' }).state.score.them).toBe(7);
+		expect(currentGoal(b)).toBe(Math.round(currentGoal(a) * stakeRules(8).goalMult));
+		expect(tableMatch(b, { kind: 'random' }).state.score.them).toBe(4);
 		const r = finishTable(b, {
 			won: true,
-			rivalTentos: 7,
+			rivalTentos: 4,
 			money: 0,
 			hands: 4,
 			bestHand: 10,
