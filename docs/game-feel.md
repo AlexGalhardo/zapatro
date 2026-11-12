@@ -69,11 +69,60 @@ Três peças no feltro, desenhadas por `src/view/fx/felt-center.ts` (recebe a ce
 
 ## 5. Cartas com peso (R5.2)
 
-A preencher: arco, amassado, poeira, rastro de manilha, entrada do ZAP, som por força.
+Módulos: `src/view/fx/card-fx.ts` (voo, aterrissagem, recolher), `src/view/fx/card-weight.ts` (peso), números em `src/config/feel-cards.ts`. O peso sai da própria ordem de força do jogo (`strength` em `src/logic/truco/cards.ts`): encoberta, comum (4 a K), forte (A, 2, 3), manilha (por naipe: o naipe mais forte pesa até 25% mais) e ZAP. Coringa e cartas especiais contam como 3 (fortes), como na regra.
+
+| Peso | Arco | Amassado | Poeira | Som (`sfx.card.play`) | Extra |
+|---|---|---|---|---|---|
+| Encoberta | 5 px | 5% / 110 ms | nenhuma | volume 0,5, tom normal (`sfx.card.cover`) | aterrissa quieta |
+| Comum | 12 px | 12% / 140 ms | 3 | tom normal | |
+| Forte (A, 2, 3) | 16 px | 17% / 170 ms | 5 | -200 cents | |
+| Manilha | 22 px | 22% a 27% / 190 ms | 7 a 9 | -400 cents | rastro de cópias no voo |
+| ZAP | 30 px | 30% a 37% / 260 ms | 10 a 12 | -700 cents | antecipação, anel no feltro, tremor |
+
+- **Voo:** a carta sobe (cresce até 18%), segue uma curva com inclinação e chega reta; o tempo esperado é `TABLE_TIMING.play` (220 ms) para qualquer peso. O ZAP espera 160 ms antes: a carta sobe 14 px e cresce 12% antes de voar (único tempo extra, abaixo do teto de 250 ms).
+- **Aterrissagem** (sem `await`): amassado largo e baixo que volta com `Back.easeOut`, poeira para os dois lados, e o som sai nesse instante. O ZAP ainda solta um anel dourado achatado no feltro (460 ms) e um `shake` curto (só com "Tremor de tela").
+- **Recolher a vaza:** depois do `trickHold` as cartas se juntam num monte (90 ms, cada uma gira 7° para um lado) e varrem para o lado de quem levou (170 ms, encolhem a 60% e somem no fim): 260 ms no total, o mesmo de `TABLE_TIMING.collect`. **Empate:** durante a espera as cartas "batem" uma na outra (190 ms, giram 5° e voltam, sem `await`) e depois se juntam no centro.
+- **Conforto:** com "Reduzir piscadas" o rastro perde o brilho aditivo (cópias normais, mais fracas) e a poeira fica mais fraca; o anel e a varredura seguem como movimento.
+- **Som:** o ajuste de tom é o `detune` de `sfx()` (quarto argumento, em cents).
+- **Medida:** `bun scripts/feel-table.ts fps` mede o quadro a quadro de vazas inteiras no build local (GPU, 1920×1080); `shots` salva as sequências de quadros.
 
 ## 6. Personagens reagem (R5.6)
 
-As pinturas têm uma imagem por personagem: a reação é movimento, cor e um selo de emoção, não troca de rosto. A preencher com a tabela evento → reação.
+As pinturas têm uma imagem por personagem: a reação é movimento, cor e um selo de emoção, não troca de rosto. Módulos: `src/view/fx/seat-react.ts` (um escritor por retrato: pose de repouso + respiração + reação) e `src/view/fx/seat-pose.ts` (as funções puras de pose); números em `src/config/feel-seats.ts`. A `TableScene` chama `face(seat, expr)` com a `Expression` de sempre; `REACTION_OF` traduz cada uma:
+
+| Expression | Reação | Movimento | Selo | Cor |
+|---|---|---|---|---|
+| `neutral` | settle | afunda 2% e volta | nenhum | nenhuma |
+| `happy` | bounce | pula 1,5 vez | estrela | dourado |
+| `angry` | shake | balança de lado | raiva | vermelho |
+| `sweat` | sink | abaixa e encolhe | gota | azul |
+| `wink` | lean | inclina 5° | coração | nenhuma |
+| `eyebrow` | tilt | inclina para trás, sobe 1 px | interrogação | nenhuma |
+| `mouth` | hop | pulinho, cresce 4% | exclamação | nenhuma |
+| `tongue` | wobble | balança a cabeça | estrela | nenhuma |
+| `lip` | sink | abaixa | gota | azul |
+| `up` | rise | sobe 3 px | reticências | nenhuma |
+
+Evento da mesa → reação (`reactTo` em `TableScene`, chamado no começo de `animate`; `truco` e `folded` chamam `face` no próprio caso):
+
+| Evento | Quem | Expressão |
+|---|---|---|
+| Vaza decidida | dupla que levou / dupla que perdeu | `happy` / `sweat` |
+| Vaza empatada | todos | `eyebrow` |
+| Truco, seis, nove, doze de um rival ou do parceiro | quem pediu | `angry` |
+| Aceitou | quem aceitou | `eyebrow` |
+| Correu | quem correu | `sweat` |
+| Sinal do parceiro | parceiro | `wink` |
+| Rival pego blefando com sinal (você pegou) | o rival | `mouth` |
+| Seu sinal pego pelos rivais | quem pegou | `tongue` |
+| Fim de mão | dupla que levou / dupla que perdeu | `happy` / `sweat` |
+| Queda fechada (nossa ou deles) | idem, 1,5× mais forte e 1,3× mais longa | `happy` / `sweat` |
+
+- **Repouso:** o retrato respira devagar (0,8%, 3,6 s); o assento da vez respira mais (1,6%, 1,7 s) e sobe 0,8 px. Quem tem a vez é `match.actor()`.
+- **Selo:** um disco pequeno (16 px) desenhado por código no canto superior esquerdo do próprio card, entra com um leve estouro, flutua 2 px e some no fim. Fica dentro do card: não cobre balão de fala, plaquinha de nome, barra de relógio da LAN nem as costas das cartas, que ficam fora dele. O emoji do sinal secreto fica no canto direito.
+- **Falas:** a reação não toca voz nem abre balão; `speak` e `chat` continuam com as regras que já tinham (`voiceBusy()`, balão visível).
+- **Dois assentos e LAN:** usa `seatUi()` e `this.seats`; o único rival do 1×1 reage no slot de cima. Na LAN os mesmos eventos chegam por `animate`.
+- **Conforto:** com "Reduzir piscadas" a cor sobe e desce devagar (sem troca brusca) e o selo não estoura, só aparece.
 
 ## 7. Avisos (R5.5)
 
