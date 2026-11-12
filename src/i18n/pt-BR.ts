@@ -718,7 +718,6 @@ export const ptBR: Record<I18nKey, string> = {
 	'partner.style.cautious': 'Joga com cautela: só pede com mão forte e nunca blefa',
 	'partner.style.bluffer': 'Blefa: pede truco com muita mão fraca',
 	'partner.style.fearless': 'Sem medo: pede truco com mão razoável',
-	'table.pile': 'Fora do jogo: {c}',
 	'table.broken': 'Carta de vidro quebrou: {c}',
 	'almanac.title': 'Almanaque',
 	'menu.almanac': 'Almanaque',

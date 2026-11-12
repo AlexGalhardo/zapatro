@@ -713,7 +713,6 @@ export const en = {
 	'partner.style.cautious': 'Cautious: calls only with strong hands, never bluffs',
 	'partner.style.bluffer': 'Bluffer: calls truco with many weak hands',
 	'partner.style.fearless': 'Fearless: calls truco with fair hands',
-	'table.pile': 'Out of play: {c}',
 	'table.broken': 'Glass card broke: {c}',
 	'almanac.title': 'Almanac',
 	'menu.almanac': 'Almanac',
