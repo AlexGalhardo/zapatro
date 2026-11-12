@@ -142,6 +142,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.youWereCaught': 'Seu sinal foi flagrado!',
 	'table.hand.us': 'Nós +{n}',
 	'table.hand.them': 'Eles +{n}',
+	'table.count.beat': 'Mesa ganha numa mão só!',
 	'table.hand.none': 'Ninguém pontua',
 	'table.iron': 'MÃO DE FERRO · às cegas, ninguém truca',
 	'table.eleven.title': 'Mão de 11',

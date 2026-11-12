@@ -137,6 +137,7 @@ export const en = {
 	'table.youWereCaught': 'Your signal was caught!',
 	'table.hand.us': 'Our team +{n}',
 	'table.hand.them': 'Their team +{n}',
+	'table.count.beat': 'Table won in one hand!',
 	'table.hand.none': 'Nobody scores',
 	'table.iron': 'IRON HAND · blind, nobody calls',
 	'table.eleven.title': 'Hand of 11',
