@@ -77,6 +77,15 @@ export const PALETTE = {
 	rarityLegendary: 0xb072e0,
 } as const;
 
+/** The felt's bet chips by bet step (1, 3, 6, 9, 12): cream, red, orange, purple, gold. */
+export const BET_CHIP_COLOR: readonly number[] = [
+	0xf1e6cc,
+	PALETTE.truco,
+	PALETTE.cta,
+	PALETTE.fame,
+	PALETTE.manilha,
+];
+
 export type PaletteKey = keyof typeof PALETTE;
 
 export const toCss = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
