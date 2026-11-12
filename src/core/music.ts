@@ -53,13 +53,24 @@ export function duckMusic(scene: Phaser.Scene, gain: number, ms: number): void {
 	});
 }
 
-/** Loops `key`, crossfading from whatever is playing (the sound manager is global). */
-export function playMusic(scene: Phaser.Scene, key: MusicKey): void {
+/**
+ * Loops `key`, crossfading from whatever is playing (the sound manager is global). `once` plays a
+ * vignette (`music.win`, `music.lose`) a single time and then crossfades into `after`.
+ */
+export function playMusic(
+	scene: Phaser.Scene,
+	key: MusicKey,
+	opts: { once?: boolean; after?: MusicKey } = {},
+): void {
 	if (import.meta.env.SOUND_MUTED === 'true') return;
 	if (current?.key === key && current.sound.isPlaying) return;
 	if (!scene.cache.audio.exists(key)) return;
 	stopMusic(scene);
-	const sound = scene.sound.add(key, { loop: true, volume: 0 });
+	const sound = scene.sound.add(key, { loop: !opts.once, volume: 0 });
+	if (opts.once)
+		sound.once('complete', () => {
+			if (current?.sound === sound && opts.after) playMusic(scene, opts.after);
+		});
 	sound.play();
 	scene.tweens.add({ targets: sound, volume: targetVolume(scene), duration: FADE_MS });
 	current = { key, sound };
