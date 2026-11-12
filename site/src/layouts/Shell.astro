@@ -1,0 +1,132 @@
+---
+import { Font } from 'astro:assets';
+import LangMenu from '@/components/LangMenu.astro';
+import StoreBadge from '@/components/StoreBadge.astro';
+import { type Key, type Lang, TEXTS } from '@/i18n';
+import { abs, LINKS, type PagePath, url } from '@/links';
+import { POSTER_SIZES, posterSrcset, trailerPoster, trailerVideo } from '@/trailer';
+import '@/styles/global.css';
+
+interface Props {
+	lang: Lang;
+	/** A page heading key (the home uses the site title). */
+	title?: Key;
+	path?: PagePath;
+}
+
+const { lang, title, path = '' } = Astro.props;
+const t = TEXTS[lang];
+const base = lang === 'en' ? url('') : url('pt/');
+const pageTitle = title ? `${t[title]} · Zapatro` : t['meta.title'];
+const canonical = abs(`${lang === 'en' ? '' : 'pt/'}${path}`);
+const image = abs('img/og.jpg');
+const poster = trailerPoster(lang);
+const locale = lang === 'en' ? 'en_US' : 'pt_BR';
+---
+
+<html
+	lang={lang}
+	style={`--bg-640:url(${url('img/bg-640.webp')});--bg-1280:url(${url('img/bg-1280.webp')});--bg-1920:url(${url('img/bg-1920.webp')})`}
+>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{pageTitle}</title>
+		<meta name="description" content={t['meta.desc']} />
+		<meta name="theme-color" content="#2B2B2B" />
+		<link rel="canonical" href={canonical} />
+		<link rel="alternate" hreflang="en" href={abs(path)} />
+		<link rel="alternate" hreflang="pt-BR" href={abs(`pt/${path}`)} />
+		<link rel="alternate" hreflang="x-default" href={abs(path)} />
+		<link rel="icon" href={url('favicon.ico')} sizes="32x32 48x48" />
+		<link rel="icon" href={url('img/favicon.svg')} type="image/svg+xml" />
+		<link rel="icon" href={url('img/icon-64.png')} type="image/png" sizes="64x64" />
+		<link rel="apple-touch-icon" href={url('img/apple-touch-icon.png')} sizes="180x180" />
+		<link rel="manifest" href={url('manifest.webmanifest')} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Zapatro" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={t['meta.desc']} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content={locale} />
+		<meta property="og:image" content={image} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={t['meta.og.alt']} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={t['meta.desc']} />
+		<meta name="twitter:image" content={image} />
+		<meta name="twitter:image:alt" content={t['meta.og.alt']} />
+		<Font cssVariable="--font-rubik" />
+		{
+			/* The poster is the mobile LCP of the home: fetch it early. */
+			poster && !trailerVideo(lang) && !title && (
+				<link
+					rel="preload"
+					as="image"
+					fetchpriority="high"
+					imagesrcset={posterSrcset(poster)}
+					imagesizes={POSTER_SIZES}
+				/>
+			)
+		}
+	</head>
+	<body class="flex min-h-dvh flex-col">
+		<a
+			href="#main"
+			class="btn absolute top-2 left-2 z-50 -translate-y-24 focus:translate-y-0"
+		>
+			{t.skip}
+		</a>
+		<header class="relative z-20 h-14 border-b-2 border-panel-dark bg-panel">
+			<div class="mx-auto flex h-full w-11/12 items-center justify-between gap-4 md:w-10/12">
+				<a
+					href={base}
+					class="flex min-h-11 items-center gap-2 text-2xl font-bold text-gold no-underline"
+				>
+					<img
+						src={url('img/favicon.svg')}
+						alt=""
+						width={32}
+						height={32}
+						class="rounded-seal"
+					/>
+					Zapatro
+				</a>
+				<nav class="flex items-center gap-3">
+					<a href={`${base}presskit/`} class="btn py-1 text-base whitespace-nowrap">
+						{t['nav.presskit']}
+					</a>
+					<LangMenu lang={lang} label={t['nav.lang.label']} />
+				</nav>
+			</div>
+		</header>
+		<slot />
+		<footer class="border-t-2 border-panel-dark bg-panel text-sm text-dim">
+			<div
+				class="mx-auto flex w-11/12 flex-col gap-1 py-2 md:w-10/12 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-x-4 md:py-3"
+			>
+				<nav class="flex flex-wrap items-center gap-x-4">
+					<StoreBadge url={LINKS.steam} label="Steam" soon={t['cta.soon']} plain />
+					<StoreBadge url={LINKS.play} label="Google Play" soon={t['cta.soon']} plain />
+					<StoreBadge url={LINKS.itch} label="itch.io" soon={t['cta.soon']} plain />
+					<StoreBadge url={LINKS.discord} label="Discord" soon={t['cta.soon']} plain />
+					<StoreBadge
+						url={LINKS.contact}
+						label={t['footer.contact']}
+						soon={t['cta.soon']}
+						plain
+					/>
+					<a
+						href={`${base}privacy/`}
+						class="inline-flex min-h-11 items-center text-text md:min-h-0"
+					>
+						{t['footer.privacy']}
+					</a>
+				</nav>
+				<p class="m-0 pb-1 md:pb-0 md:text-right">{t['footer.credits']} · © 2026</p>
+			</div>
+		</footer>
+	</body>
+</html>

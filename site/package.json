@@ -4,21 +4,17 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
-		"typecheck": "bun check --no-script"
+		"dev": "astro dev",
+		"build": "astro build",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"next": "16.3.8",
-		"react": "19.3.0",
-		"react-dom": "19.3.0"
+		"astro": "7.4.11"
 	},
 	"devDependencies": {
-		"@tailwindcss/postcss": "4.3.3",
+		"@tailwindcss/vite": "4.3.5",
 		"@types/node": "26.6.3",
-		"@types/react": "19.3.0",
-		"@types/react-dom": "19.3.0",
-		"tailwindcss": "4.3.3",
+		"tailwindcss": "4.3.5",
 		"typescript": "6.0.3"
 	}
 }

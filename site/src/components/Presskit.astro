@@ -1,0 +1,116 @@
+---
+import { type Key, type Lang, TEXTS } from '@/i18n';
+import { url } from '@/links';
+import Trailer from './Trailer.astro';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = TEXTS[lang];
+const home = lang === 'en' ? url('') : url('pt/');
+
+/** The six store captures (docs/media, `bun scripts/store-art.ts`), one set per language. */
+const SHOTS = ['truco', 'count', 'shop', 'partner', 'boss', 'almanac'] as const;
+const facts: [Key, string][] = [
+	['press.developer', 'Alex Galhardo (Brasil)'],
+	['press.release', t['press.release.value']],
+	['press.platforms', t['press.platforms.value']],
+	['press.price', t['press.price.value']],
+	['press.languages', 'English · Português (Brasil)'],
+];
+---
+
+<main id="main" class="mx-auto my-8 w-11/12 flex-1 md:w-10/12">
+	<h1 class="text-4xl">{t['press.title']}</h1>
+	<p>
+		<a href={url('presskit/truco-roguelite-presskit.zip')} class="btn btn-cta">
+			{t['press.download']}
+		</a>
+	</p>
+	<div class="grid items-start gap-6 md:grid-cols-[16rem_1fr]">
+		<aside class="card">
+			<h2 class="mt-0 text-2xl">{t['press.factsheet']}</h2>
+			<dl>
+				{
+					facts.map(([k, v]) => (
+						<div class="mb-3">
+							<dt class="text-sm text-dim">{t[k]}</dt>
+							<dd class="m-0">{v}</dd>
+						</div>
+					))
+				}
+			</dl>
+		</aside>
+		<div>
+			<h2 class="text-2xl">{t['press.description']}</h2>
+			<p>{t['hero.pitch']}</p>
+			<h2 class="text-2xl">{t['press.history']}</h2>
+			<p>{t['press.history.body']}</p>
+			<h2 class="text-2xl">{t['press.features']}</h2>
+			<ul class="list-disc pl-6">
+				{(['1', '2', '3', '4', '5', '6'] as const).map((n) => <li>{t[`press.feat.${n}` as Key]}</li>)}
+			</ul>
+			<h2 class="text-2xl">{t['trailer.title']}</h2>
+			<Trailer lang={lang} />
+			<h2 class="text-2xl">{t['press.images']}</h2>
+			<p class="text-dim">{t['press.images.note']}</p>
+			<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+				{
+					SHOTS.map((s) => (
+						<a href={url(`img/press/${s}-${lang}.png`)}>
+							<img
+								src={url(`img/press/${s}-${lang}.webp`)}
+								alt={t[`shot.${s}`]}
+								loading="lazy"
+								width={1280}
+								height={720}
+								class="block h-auto w-full rounded-panel border-2 border-panel-dark shadow-solid"
+							/>
+						</a>
+					))
+				}
+			</div>
+			<h2 class="text-2xl">{t['press.logos']}</h2>
+			<div class="flex flex-wrap items-center gap-4">
+				<a href={url('img/press/logo.png')}>
+					<img
+						src={url('img/press/logo-640.webp')}
+						alt={t['press.logo.alt']}
+						width={320}
+						height={100}
+						loading="lazy"
+					/>
+				</a>
+				<a href={url('img/icon-1024.png')}>
+					<img
+						src={url('img/icon-256.png')}
+						alt={t['press.icon.alt']}
+						width={128}
+						height={128}
+						loading="lazy"
+					/>
+				</a>
+				<a href={url('img/press/header.png')}>
+					<img
+						src={url('img/press/header.png')}
+						alt={t['press.header.alt']}
+						width={460}
+						height={215}
+						loading="lazy"
+						class="h-auto max-w-full"
+					/>
+				</a>
+			</div>
+			<p class="text-sm text-dim">
+				<a href={url('img/press/logo.svg')}>{t['press.logo.svg']}</a>
+			</p>
+			<h2 class="text-2xl">{t['press.credits']}</h2>
+			<p>{t['footer.credits']}</p>
+		</div>
+	</div>
+	<p>
+		<a href={home}>{t['back.home']}</a>
+	</p>
+</main>
