@@ -996,6 +996,8 @@ export const ptBR: Record<I18nKey, string> = {
 	'table.strength.joker': 'Coringa · efeito surpresa ao jogar aberto',
 	'table.joker': 'CORINGA!',
 	'table.newVira': 'Nova vira!',
+	'table.raise': 'Aposta sobe: {n}',
+	'table.folded': 'Correu!',
 	'joker.void.name': 'Vaza anulada',
 	'joker.void.desc': 'Esta vaza foi cancelada: conta como empate',
 	'joker.zap.name': 'Virou ZAP',
