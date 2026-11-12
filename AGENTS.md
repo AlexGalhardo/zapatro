@@ -72,6 +72,8 @@ bun run android:run | android:debug | android:bundle       # Google Play (mobile
 bun run site:build                                          # site (site/, Astro) → site/out; o push na main publica no GitHub Pages (deploy.yml)
 bun scripts/site-check.ts                                  # ensaio do deploy: site/out servido sob /zapatro/ como o GitHub Pages, antes do push
 bun scripts/soak.ts --url http://localhost:5191            # soak RC1.2: 30 runs do bot, erros e heap
+bun scripts/feel-table.ts fps|shots · bun scripts/feel-ends.ts   # game feel: FPS de uma vaza e sequências de quadros dos efeitos (docs/game-feel.md)
+bun scripts/stakes.ts [--mode 1v1] [--decks] --runs 600    # curva das Estacas e diferença de cada baralho
 bun scripts/record-clips.ts --url http://localhost:5192    # clipes do trailer; depois cd trailer && bun run render
 ```
 
