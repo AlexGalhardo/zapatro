@@ -4,7 +4,7 @@
 > Design completo: **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (GDD; citações antigas "design §N" resolvem pela tabela "Mapa de seções antigas" no topo) (este plano não repete o design; ele o transforma em trabalho verificável).
 > Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.4**, arte pintada (`art-src/gta/`) e vetor por código (PixelLab só nos retratos legados), áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Astro + Tailwind v4**) no **GitHub Pages**, trailer em **Remotion**.
 > Legenda: `[ ]` pendente · `[x]` feito · `[~]` incompleto/bloqueado (motivo em uma linha) · `(D-xx)` decisão · `(Q-xx)` pergunta aberta · **Pronto quando:** critério objetivo de conclusão.
-> **Estado atual (2026-11-11):** `0.20.0`, BETA jogável do menu ao Rei do Truco, com LAN 2×2 na Partida Rápida. O caminho até a 1.0 (modo 1×1, multiplayer local completo, game feel, lojas e Next Fest de fevereiro de 2027) está em **[ROADMAP.md](ROADMAP.md)**.
+> **Estado atual (2026-11-12):** `0.21.0`, BETA jogável do menu ao Rei do Truco em 2×2 e em 1×1 (Partida Rápida, run e LAN), com Estacas e baralhos iniciais e o game feel da mesa (docs/game-feel.md). O caminho até a 1.0 (modo 1×1, multiplayer local completo, game feel, lojas e Next Fest de fevereiro de 2027) está em **[ROADMAP.md](ROADMAP.md)**.
 
 ## Sumário
 
@@ -124,7 +124,7 @@ O plano de entrega da 1.0, com grupos, aceite e calendário, está em [ROADMAP.m
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
 - [x] Sistemas inalcançáveis pelas flags: pular mesa, Promessas, pacotes e Melhorias saíram do código em 2026-11-11 (D-82, ROADMAP R0.4); a renovação da loja, os baralhos iniciais com o verso em jogo e as Estacas voltaram à interface em 2026-11-12 (ROADMAP R7.1, R7.2).
 - [x] 1×1 jogável (2026-11-11): Partida Rápida com escolha Dupla ou Mano a mano (ROADMAP R2.1, R2.4; R2.2 e R2.3 com acabamento pendente) e mesa da rede local 2×2 ou 1×1 com cartas especiais e saída do anfitrião (R4.2, R4.4, R4.9). Scripts de captura confiáveis (R0.2).
-- [x] Game feel, primeira leva (2026-11-12, ROADMAP R5.1, R5.2, R5.3, R5.5, R5.6 e R2.2): evento do truco, cartas com peso, centro do feltro, avisos em faixa e reações, com a referência em [docs/game-feel.md](docs/game-feel.md). Estacas, baralhos iniciais e renovação da loja de volta (R7.1, R7.2, D-82).
+- [x] Game feel (2026-11-12, ROADMAP R5 inteiro e R2.2): evento do truco, cartas com peso, centro do feltro, contagem de pontos passo a passo, avisos em faixa, reações, apresentação do chefe, queda e fins de mesa e de run; resumo da run com destraves (R6.4, R7.3), com a referência em [docs/game-feel.md](docs/game-feel.md). Estacas, baralhos iniciais e renovação da loja de volta (R7.1, R7.2, D-82).
 - [~] Run 1×1 (2026-11-11): modo, rivais do elenco, metas e balanceamento próprios, save no schema 4 (ROADMAP R3.1 a R3.3); itens e chefes auditados (R3.4) e estatísticas por modo só nos dados (R3.6); conteúdo exclusivo (R3.5) por fazer.
 - [x] LAN sem relógio de jogada: resolvido em 2026-11-11 com o relógio de 30 s, a jogada do bot no estouro e o piloto automático (D-81, ROADMAP R4.3, [docs/multiplayer.md](docs/multiplayer.md)).
 - [x] Build Poki (`VITE_POKI=1`) apagava as vozes de `dist/` mesmo com outro `outDir`: o corte agora usa o `outDir` resolvido (`scripts/lib/poki-trim.ts`, `tests/poki-trim.test.ts`).
