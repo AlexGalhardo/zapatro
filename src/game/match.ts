@@ -86,8 +86,6 @@ export interface MatchOptions {
 	extraRivalQuedas?: number;
 	/** Starting deck do Interior: Chips ×2 for these ranks. */
 	doubleChipRanks?: readonly string[];
-	/** Upgrade "espiar o monte": one card out of play is shown every hand. */
-	peekPile?: boolean;
 	/** Continue a saved table (the rng in it replaces `rng`). */
 	resume?: TableProgress;
 }
@@ -125,8 +123,6 @@ export class Match {
 	rivalQuedas = 0;
 	/** Vidro cards that broke at this table (they leave the run deck). */
 	broken: string[] = [];
-	/** Espiar o monte: a card out of play this hand. */
-	pileCard: Card | null = null;
 	readonly rivalQuedasNeeded: number;
 	private readonly doubleChipRanks: readonly string[] | undefined;
 	private readonly trinkets: readonly EquippedTrinket[];
@@ -135,7 +131,6 @@ export class Match {
 	}
 	private readonly tablesWon: number;
 	private readonly loseTento: number;
-	private readonly peekPile: boolean;
 	/** Bisbilhoteiro: a rival card shown to the player this hand. */
 	peek: { seat: Seat; cardId: string } | null = null;
 	/** State at the start of the current hand (what the save stores). */
@@ -161,7 +156,6 @@ export class Match {
 		this.partner = opts.partner;
 		this.boss = opts.boss;
 		this.rivalQuedasNeeded = QUEDAS_TO_LOSE + (opts.extraRivalQuedas ?? 0);
-		this.peekPile = opts.peekPile ?? false;
 		this.doubleChipRanks = opts.doubleChipRanks;
 		this.trinkets =
 			opts.boss === 'stuart' ? doubleFlaws(opts.trinkets ?? []) : (opts.trinkets ?? []);
@@ -404,11 +398,6 @@ export class Match {
 		});
 		this.state = dealt;
 		this.peek = null;
-		if (this.peekPile) {
-			const inPlay = new Set([...this.state.hands.flat(), this.state.vira].map((c) => c.id));
-			const out = this.deck.filter((c) => !inPlay.has(c.id));
-			this.pileCard = out.length ? this.rng.pick(out) : null;
-		}
 		if (this.has('peek')) {
 			const seat = this.rng.pick(rivalsOf(0, this.seats));
 			this.peek = { seat, cardId: this.rng.pick(this.state.hands[seat]).id };

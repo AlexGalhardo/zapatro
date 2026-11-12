@@ -1855,17 +1855,12 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const count = m.has('countManilhas')
 			? `\n${t('table.manilhasSeen', { n: manilhasSeen(s) })}`
 			: '';
-		const pc = m.pileCard;
-		const pile = pc
-			? `
-${t('table.pile', { c: `${pc.rank}${SUIT_MARK[pc.suit]}` })}`
-			: '';
 		const manilha = hidden ? t('table.viraHidden') : t('table.manilha', { r: s.manilha });
 		const zap = hidden
 			? ''
 			: `\n${t('table.zap', { c: `${manilhaOf(s.manilha)}${SUIT_MARK.clubs}` })}`;
 		this.viraLabel.setText(t('table.vira'));
-		this.manilhaText.setText(`${manilha}${zap}${count}${pile}`);
+		this.manilhaText.setText(`${manilha}${zap}${count}`);
 		const mw = Math.ceil(this.manilhaText.width) + 2 * PAD.card;
 		const mh = Math.ceil(this.manilhaText.height) + 2 * PAD.card;
 		this.manilhaBox.setTexture(
