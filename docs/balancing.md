@@ -471,3 +471,32 @@ Pacotes, Melhorias do Boteco e pular mesa (com as Promessas e `TABLE_SELECT`) sa
 | `bun scripts/sim.ts` (500 runs, seed 1, bot bom) | vitória 7,4%, Campeonato médio 4,53, 7,74 mãos por mesa, `endedAtChamp` `[48,69,65,73,71,54,47,73,0]` | idêntico |
 
 Nenhum número de gameplay foi retocado.
+
+## Run mano a mano 1×1 (2026-11-11, D-77, D-78, R3.3)
+
+A run 1×1 tem tabela de metas própria (`CHAMPIONSHIP_GOALS_1V1`, `src/data/championships.ts`); `TABLE_GOAL_MULT` (1 · 1,5 · 2), o infinito ×1,4 e a economia (prêmios, juros, rapidez, preços) são os do 2×2. Nada do 2×2 mudou.
+
+| Campeonato | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| Meta da Pequena, 2×2 | 210 | 270 | 350 | 430 | 560 | 700 | 880 | 1.120 |
+| Meta da Pequena, **1×1** | 240 | 310 | 400 | 490 | 640 | 800 | 1.000 | 1.280 |
+
+Como se chegou: a vaza tem 2 cartas, então a suposição era metade das Fichas e, portanto, metade das metas. Medido com o bot bom (150 a 300 runs por linha): as Fichas por mão caem menos do que isso, porque o Mult (aposta + Lance) faz a maior parte da mão e a mão do duelo se decide em menos vazas, mais afiadas. As metas do 2×2 divididas por 2 deixavam o bot bom em 38% de vitórias.
+
+| Meta do 1×1 (fração das metas do 2×2) | Bot bom vence | Campeonato médio | Mãos por mesa |
+|---|---|---|---|
+| ×0,5 (105 … 560) | 38,0% | 6,07 | 6,00 |
+| ×0,7 | 27,3% | 5,84 | 6,87 |
+| ×0,9 | 17,3% | 5,40 | 7,36 |
+| ×1,0 (as do 2×2) | 11,7% | 4,95 | 7,86 |
+| ×1,1 | 14,0% | 5,19 | 7,96 |
+| ×1,2 | 9,3% | 4,71 | 8,39 |
+| ×1,4 | 6,7% | 4,48 | 8,87 |
+
+(As linhas ×1,1 e ×1,2 foram medidas em outra seed que as demais; a diferença entre 14,0% e 11,7% é ruído de amostra, ±2 a 3 p.p. com 150 runs.) Ficou a tabela acima, cerca de ×1,14 das metas do 2×2 (≈ 10 a 14%, o meio da faixa e perto dos 7 a 9% do 2×2). Lances e prêmios não precisaram de tabela própria.
+
+**`bun scripts/balance.ts --mode 1v1 --seeds 3` (500 runs por bot e seed):** bot bom **13,8 · 11,8 · 11,2%** (faixa 5–20%), aleatório **0,0%** nas 3 seeds (< 5%), **8,16 · 8,04 · 8,06** mãos por mesa (4–12), sem NaN. **PASS.** `bun scripts/sim.ts --run-mode 1v1 --runs 300 --seed 4`: bot bom 11,0% (Campeonato médio 5,06; 8,01 mãos por mesa), aleatório 0,0% (1,15; 7,29).
+
+Rivais do 1×1: cada mesa sorteia um companheiro (o mesmo não repete no Campeonato); o jogo de apostas é o do arquétipo do estilo dele (`RIVAL_PROFILES_1V1`, tabela no GDD §8.2.1) e o erro vem do perfil sorteado em `RIVAL_POOLS`, então a dificuldade sobe como no 2×2.
+
+O gate do 2×2 (`bun run balance`, `bun scripts/sim.ts --runs 40 --seed 3 --bot good`) ficou idêntico: vitória 7,5%, Campeonato médio 4,67, 7,63 mãos por mesa.
