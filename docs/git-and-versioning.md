@@ -60,7 +60,7 @@ Regra do usuário (2026-10-24): **releases são poucos e em ordem** (10 até ago
 5. **Só quando o usuário pedir explicitamente** (regra de 2026-10-15): `bun run graph` e `git push origin dev:dev dev:main --follow-tags`. Até lá, commits e tags ficam locais.
 6. Também só sob pedido: `bun run release` (`scripts/release.ts`): publica, do mais antigo ao mais novo, um GitHub Release para cada tag de marco ainda sem release, no formato de [AlexGalhardo/vukem](https://github.com/AlexGalhardo/vukem/releases) (abaixo); o release do `HEAD` é o "Latest" e leva os builds (`zapatro_<versão>_web.zip`, `_web-demo.zip`, `_web-poki.zip`, `_windows_amd64.zip`, `_linux_amd64.zip`, `_android-debug.apk` e `checksums.txt`). `--no-build` publica só as notas; `--web-only` leva os zips web, o `.exe` do Windows, o APK debug do Android e `checksums.txt` (só o Electron do Linux fica para o `release.yml`).
 7. A tag também dispara o `release.yml`: com minutos de Actions, ele anexa ao release o que só sai no CI (macOS, AAB assinado, um `.sbom.json` por arquivo, `checksums.txt.sigstore.json` e `zapatro.intoto.jsonl`, a proveniência); sem minutos, o job nem começa e o release local basta. Empurre as tags **uma de cada vez** (o GitHub não cria evento de push quando mais de três tags sobem juntas).
-8. Mudança que chega ao jogador web → `bun run site:build` e `bun run site:deploy` (`--skip-demo` refaz só as páginas, sem regerar `/play` e `/demo`).
+8. Mudança que chega ao jogador web → `bun run site:build` e `bun scripts/site-check.ts`; o push na `main` publica (`--skip-demo` refaz só as páginas, sem regerar `/play` e `/demo`).
 
 ### O `.exe` de cada release
 
@@ -81,7 +81,7 @@ Os 104 commits até `6be48af` ganharam uma tag cada (`0.0.1`…`0.0.17`, `0.1.0-
 ## Branch única `main` (pedido do usuário, 2026-10-25)
 
 - Não há `dev`: todo commit vai direto para a **`main`** (`git push origin main`), depois dos gates: `bun run check:fix` (formatter) → `bun run check` (lint) → `bun run typecheck` (`bun check`) → `bun test` → smoke **Playwright headless** (`bun scripts/smoke.ts`) → `bun run build` → `bun run graph`.
-- Todo push na `main` roda o `ci.yml` e o `deploy.yml` (site em <https://beta.lekzera.xyz>).
+- Todo push na `main` roda o `ci.yml` e o `deploy.yml` (site no GitHub Pages, <https://alexgalhardo.github.io/zapatro/>).
 
 ## Worktrees
 

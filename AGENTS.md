@@ -2,8 +2,8 @@
 
 Instruções para qualquer agente de código (Claude Code, Codex, Cursor, Gemini, etc.). O `CLAUDE.md` só importa este arquivo.
 
-**Projeto** (codinome `truco-roguelite` no `appId`, na origem e no save; pacote `zapatro.com`): roguelite de cartas em **visual pintado "verão, pôr do sol" (Art Bible v3) com UI vetorial por código** (ver abaixo) sobre o **Truco Paulista 2×2**, com estrutura inspirada no Balatro: você + parceiro IA contra uma dupla IA; cada mão vira pontos (**Fichas × Mult**, com a aposta 1/3/6/9/12 como Mult base); a run tem 8 Campeonatos com loja, Manhas, cartas modificadas e chefes. Publicação: **Steam (Electron)**, **Google Play (Capacitor, Android)**, **itch.io e Poki (demo web)** e site próprio (<https://truco.lekzera.xyz>: `/play/` completo, `/demo/` até o primeiro chefe).
-**Stack:** TypeScript · Vite · **Phaser 4.2.x** · **Bun 1.4.4** (`bun:test`). UI e cartas vetoriais por código (`src/art/flat.ts`), personagens e fundos pintados em WebP; áudio ElevenLabs; trailer Remotion; site Next.js 16 SSG + Tailwind v4 na Vercel. UI **EN + PT-BR**; docs em PT-BR.
+**Projeto** (codinome `truco-roguelite` no `appId`, na origem e no save; pacote `zapatro.com`): roguelite de cartas em **visual pintado "verão, pôr do sol" (Art Bible v3) com UI vetorial por código** (ver abaixo) sobre o **Truco Paulista 2×2**, com estrutura inspirada no Balatro: você + parceiro IA contra uma dupla IA; cada mão vira pontos (**Fichas × Mult**, com a aposta 1/3/6/9/12 como Mult base); a run tem 8 Campeonatos com loja, Manhas, cartas modificadas e chefes. Publicação: **Steam (Electron)**, **Google Play (Capacitor, Android)**, **itch.io e Poki (demo web)** e site no GitHub Pages (<https://alexgalhardo.github.io/zapatro/>: `/play/` completo, `/demo/` até o primeiro chefe).
+**Stack:** TypeScript · Vite · **Phaser 4.2.x** · **Bun 1.4.4** (`bun:test`). UI e cartas vetoriais por código (`src/art/flat.ts`), personagens e fundos pintados em WebP; áudio ElevenLabs; trailer Remotion; site Astro (estático) + Tailwind v4 no GitHub Pages. UI **EN + PT-BR**; docs em PT-BR.
 
 ## Visual (Art Bible v3, 2026-10-27)
 
@@ -69,8 +69,8 @@ bun run exe                                                # Zapatro-<versão>-w
 bun run lan-server                                         # mesa LAN (Colyseus, porta 2567); docs/multiplayer.md
 bun run electron:dev | electron:build | electron:smoke     # Steam (desktop/)
 bun run android:run | android:debug | android:bundle       # Google Play (mobile/); JDK 21 + ANDROID_HOME
-bun run site:build · bun run site:deploy                   # site (site/) → site/out → Vercel (truco.lekzera.xyz)
-bun scripts/site-check.ts                                  # ensaio do deploy: site/out servido como na Vercel, antes do site:deploy
+bun run site:build                                          # site (site/, Astro) → site/out; o push na main publica no GitHub Pages (deploy.yml)
+bun scripts/site-check.ts                                  # ensaio do deploy: site/out servido sob /zapatro/ como o GitHub Pages, antes do push
 bun scripts/soak.ts --url http://localhost:5191            # soak RC1.2: 30 runs do bot, erros e heap
 bun scripts/record-clips.ts --url http://localhost:5192    # clipes do trailer; depois cd trailer && bun run render
 ```

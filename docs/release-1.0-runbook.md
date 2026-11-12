@@ -8,8 +8,8 @@ Custos marcados "conferir" não estão confirmados neste repositório: confirme 
 
 - App ID da Steam antes de `steamAppId` em `desktop/package.json` e de `app_build.vdf`.
 - Conta da Play Console antes do AAB assinado e antes da ficha da loja.
-- Domínio `zapatro.com` antes dos redirects do `site/vercel.redirects.example.json`.
-- Aviso de exportar o save publicado no `/play/` antigo ANTES de ativar o redirect (sem isso, quem joga em `truco.lekzera.xyz` perde o progresso ao migrar para o domínio novo, porque o save fica no `localStorage` de cada origem).
+- Domínio `zapatro.com` antes de apontar o GitHub Pages para ele (`SITE_URL`/`SITE_BASE`, Settings → Pages e DNS; ver [site.md](site.md)).
+- Aviso de exportar o save publicado no `/play/` antigo ANTES de trocar o endereço (sem isso, quem joga em `truco.lekzera.xyz` ou no GitHub Pages perde o progresso ao migrar para o domínio novo, porque o save fica no `localStorage` de cada origem).
 - Página "Em breve" da Steam publicada ≥ 2 semanas antes do lançamento.
 - Build da tag `v1.0.0` antes de qualquer envio às lojas.
 
@@ -62,11 +62,11 @@ Custos marcados "conferir" não estão confirmados neste repositório: confirme 
 
 1. **Aviso de exportar o save.** Publicar no `/play/` e `/demo/` antigos o aviso para exportar o save (`settings.export`) antes de migrar. Fazer ANTES do redirect. Feito quando o aviso estiver no ar.
 2. **Domínio.** Registrar `zapatro.com`. Custo: conferir. Feito quando o domínio estiver na conta do dev.
-3. **Vercel.** Adicionar o domínio no projeto, configurar o DNS e o HTTPS ([site.md](site.md)). Feito quando `https://zapatro.com` abrir.
-4. **Redirects.** Ativar `site/vercel.redirects.example.json` (renomear para o arquivo que a Vercel lê) para `truco.lekzera.xyz` e `zapaco.vercel.app` (308). Feito quando os dois redirecionarem.
-5. **Republicar o jogo.** `bun run site:build -- --url …` e `bun run site:deploy`, com `SITE_URL` novo. Feito quando `/play/` e `/demo/` estiverem do build 1.0.
+3. **GitHub Pages.** Pôr o domínio em Settings → Pages, configurar o DNS e o HTTPS e fixar `SITE_URL=https://zapatro.com` e `SITE_BASE=/` no build do `deploy.yml` ([site.md](site.md)). Feito quando `https://zapatro.com` abrir.
+4. **Endereços antigos.** O GitHub Pages não faz redirect de servidor e `truco.lekzera.xyz` era da Vercel: decidir com o dev se o domínio antigo some ou ganha uma página de aviso. Feito quando a decisão estiver registrada.
+5. **Republicar o jogo.** `bun run site:build` e push na `main` (o `deploy.yml` publica), com `SITE_URL` novo. Feito quando `/play/` e `/demo/` estiverem do build 1.0.
 6. **Validar.** OG, Twitter e JSON-LD (`VideoGame`, `VideoObject`), `robots.txt` e `sitemap.xml`. Lighthouse mobile e desktop ≥ 90 em performance, e 100 nos demais (hoje a performance não foi medida). Feito quando o Lighthouse estiver registrado.
-7. **Links de loja.** Preencher `steam`, `play` e `itch` em `site/src/links.ts` e rodar `bun run site:deploy` de novo. Feito quando os botões da home apontarem para as lojas.
+7. **Links de loja.** Preencher `steam`, `play` e `itch` em `site/src/links.ts` e fazer push na `main` de novo. Feito quando os botões da home apontarem para as lojas.
 
 ## Fase 6: marketing
 

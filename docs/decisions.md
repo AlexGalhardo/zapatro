@@ -52,3 +52,4 @@ A lista completa (D-01…D-58: design, entrevista e decisões técnicas) está e
 | 2026-11-11 | D-85: **demo com o Campeonato 1 das runs 2×2 e 1×1 e a Partida Rápida nos dois modos**; rede local só no jogo pago. Por quê: mostra as novidades e guarda um motivo de compra | Usuário |
 | 2026-11-11 | D-86: até a 1.0: **commit por item, agentes em paralelo e worktrees liberados, push na branch; por marco, PR, merge na `main` e release sem pedir de novo**. Por quê: autorização do dev para esta entrega | Usuário |
 | 2026-11-11 | D-87: **chat sem caveman** neste projeto. Por quê: pedido do dev | Usuário |
+| 2026-11-11 | D-88: **site em Astro no GitHub Pages**; Next.js, React e a Vercel saem do repositório. Os endereços `truco.lekzera.xyz` e `beta.lekzera.xyz` eram os da Vercel. Por quê: pedido do dev | Usuário |

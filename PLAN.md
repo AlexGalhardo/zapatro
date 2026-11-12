@@ -2,7 +2,7 @@
 >
 > **Roadmap principal e fonte da verdade.** Roguelite de cartas em arte pintada "verão, pôr do sol" com UI vetorial (Art Bible v3) sobre o **Truco Paulista 2×2**, com estrutura inspirada no Balatro: você e um parceiro IA contra uma dupla IA, cada mão vira pontos (Fichas × Mult), e a run é montada com Manhas, cartas modificadas, consumíveis e um parceiro que evolui.
 > Design completo: **[docs/gdd-game-design-document.md](docs/gdd-game-design-document.md)** (GDD; citações antigas "design §N" resolvem pela tabela "Mapa de seções antigas" no topo) (este plano não repete o design; ele o transforma em trabalho verificável).
-> Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.4**, arte pintada (`art-src/gta/`) e vetor por código (PixelLab só nos retratos legados), áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Next.js 16 SSG + Tailwind v4**) na **Vercel**, trailer em **Remotion**.
+> Stack: **Phaser 4.2.x + TypeScript + Vite + Bun 1.4.4**, arte pintada (`art-src/gta/`) e vetor por código (PixelLab só nos retratos legados), áudio **ElevenLabs**, desktop **Electron** (Steam), mobile **Capacitor** (Google Play), site estático (**Astro + Tailwind v4**) no **GitHub Pages**, trailer em **Remotion**.
 > Legenda: `[ ]` pendente · `[x]` feito · `[~]` incompleto/bloqueado (motivo em uma linha) · `(D-xx)` decisão · `(Q-xx)` pergunta aberta · **Pronto quando:** critério objetivo de conclusão.
 > **Estado atual (2026-11-11):** `0.20.0`, BETA jogável do menu ao Rei do Truco, com LAN 2×2 na Partida Rápida. O caminho até a 1.0 (modo 1×1, multiplayer local completo, game feel, lojas e Next Fest de fevereiro de 2027) está em **[ROADMAP.md](ROADMAP.md)**.
 
@@ -160,7 +160,7 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-22 | SemVer: 10 releases em ordem (`0.1.0` … `0.10.0`, 2026-10-24), depois patch `0.10.1` e minor `0.11.0`; RCs `1.0.0-rc.N` e lançamento `1.0.0`; sem bump nem tag por commit; todo release gera o `.exe` do Windows na raiz | §11 |
 | D-23 | Mobile na 1.0 = **só Android**; iOS pós-1.0 | Sem runner macOS para mobile |
 | D-24 | Negócio: **Steam e Play pagos** (premium, sem anúncios nem microtransação); **demo web grátis** no itch.io e no **Poki** (Poki SDK; exclusividade web não inclui Steam/lojas mobile; link para a Steam permitido) | Flag de build de demo (D-33) e integração do Poki SDK só no build Poki |
-| D-25 | Site: `site/` **estático** (Next.js 16 com `output: 'export'` + Tailwind v4, pedido do usuário em 2026-10-01; antes Vite sem framework), deploy na **Vercel**; presskit, demo embutida, política de privacidade; **sem newsletter** (wishlist + Discord + redes) | Sem backend, sem dados pessoais |
+| D-25 | Site: `site/` **estático** (Astro + Tailwind v4 desde 2026-11-11, D-88; antes Next.js 16 com `output: 'export'` desde 2026-10-01 e Vite sem framework antes disso), deploy no **GitHub Pages** (antes Vercel, D-88); presskit, demo embutida, política de privacidade; **sem newsletter** (wishlist + Discord + redes) | Sem backend, sem dados pessoais |
 | D-26 | Trailer: subprojeto `trailer/` (Remotion, licença gratuita para 1–3 pessoas, uso comercial permitido), clipes reais gravados por Playwright com seed fixa e bot; EN e PT-BR; na fase RC | `trailer/` com `package.json` próprio |
 | D-27 | Controles: **mouse + toque + teclado** no ALPHA; **gamepad** completo no BETA (meta: Steam Deck Verified) | Reaproveitar `core/gamepad.ts` → teclas virtuais |
 | D-28 | Steamworks na 1.0: **conquistas** (espelham os feitos) + **Steam Cloud** (Auto-Cloud) | `steamworks.js` só no processo principal do Electron |
@@ -195,6 +195,7 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-85 | Demo: Campeonato 1 nas runs 2×2 e 1×1 e Partida Rápida nos dois modos; rede local só no jogo pago | Revê D-33 |
 | D-86 | Até a 1.0: commit por item, agentes em paralelo e worktrees liberados, push na branch de trabalho; por marco, PR, merge por rebase na `main` com CI verde e release, sem pedir de novo | Autorização permanente desta entrega; fora dela vale a regra antiga (push e release só com pedido) |
 | D-87 | Chat em prosa normal neste projeto (sem caveman) | `.claude/rules/caveman.md` |
+| D-88 | Site em **Astro** no **GitHub Pages** (`https://alexgalhardo.github.io/zapatro/`, base configurável por `SITE_URL`/`SITE_BASE`); Next.js, React e o deploy na Vercel saem do repositório (2026-11-11, pedido do dev) | `docs/site.md`, `.github/workflows/deploy.yml` |
 
 ### 2.3 Técnicas propostas neste plano (valem até alguém contestar)
 
@@ -210,7 +211,7 @@ iOS · espanhol e outros idiomas · multiplayer pela internet e co-op na run (a 
 | D-57 | **Opção de baralho de 4 cores** (acessibilidade) e **velocidade de animação 1×/2×/4×** nas Configurações | Acessibilidade e ritmo |
 | D-59 | Mesa em **melhor de três quedas**: os rivais precisam fechar 12 tentos duas vezes; cada queda zera só os tentos de quem a fechou (como a Queda, D-04) | Com derrota na 1ª queda rival, nenhuma mesa passava de ~80% e a run nunca chegava aos 40–60% da D-39 (A5, 2026-09-30; revisar no playtest) |
 | D-60 | Calibragem do A5: metas ×1,27 por Campeonato (110 → 585), Corrida 15 Fichas × 2 Mult, Delegado = Corrida pela metade, parceiros com coragem 0,2, rivais por Campeonato (`RIVAL_POOLS`) | `bun run balance`: bot bom 45–49%, aleatório < 1%, 4,2 mãos por mesa |
-| D-62 | Repositório **público** `AlexGalhardo/zeta-c` (renomeado para `AlexGalhardo/zapatro`) com histórico novo (2026-10-25); branch única `main` (sem `dev`); CI de 3 sistemas em todo push; `deploy.yml` publica o site em `beta.lekzera.xyz` a cada push na `main`; workflows do Claude removidos | Minutos livres do Actions; repo público não deve aceitar disparo de terceiros com o token do Claude |
+| D-62 | Repositório **público** `AlexGalhardo/zeta-c` (renomeado para `AlexGalhardo/zapatro`) com histórico novo (2026-10-25); branch única `main` (sem `dev`); CI de 3 sistemas em todo push; `deploy.yml` publicava o site em `beta.lekzera.xyz` a cada push na `main` (hoje publica no GitHub Pages, D-88); workflows do Claude removidos | Minutos livres do Actions; repo público não deve aceitar disparo de terceiros com o token do Claude |
 | D-61 | Estacas mexem no relógio: rivais de pools mais duros e tentos de vantagem (1/2/4/6), além de metas ×1,3, juros com teto $3, sem prêmio na Pequena e preços +25% | Só metas quase não mudavam a taxa (o relógio domina, D-59) |
 | D-58 | Pastas das cascas: `desktop/` (Electron) e `mobile/` (Capacitor); `site/` e `trailer/` também com `package.json` e `bun.lock` próprios | Dependências pesadas fora do jogo |
 
@@ -550,7 +551,7 @@ Scripts herdados (`scripts/lib/pixellab.ts`, `pl-*.ts`, `assets-validate.ts`, `a
 - **Versão só no `package.json` raiz**; cascas, site e trailer leem dali; o `versionCode` do Android é derivado (`scripts/lib/version-code.ts`, RCs abaixo da final).
 - **CHANGELOG.md** (Keep a Changelog 1.1.0): toda mudança entra em `[Unreleased]` **no mesmo commit**; ao fechar seção, vira `## [x.y.z] - data`.
 - **Docs no mesmo lote:** PLAN (`[x]`), CHANGELOG e o doc afetado em `docs/`. Fluxo repetitivo ou armadilha nova → skill em `.claude/skills/`.
-- **CI** (`ci.yml`, push/PR na `main`): quality (format, lint, tsc, test, commitlint), balance, smoke, android debug APK, electron Linux, Windows e macOS (D-62). `deploy.yml`: site em `beta.lekzera.xyz`.
+- **CI** (`ci.yml`, push/PR na `main`): quality (format, lint, tsc, test, commitlint), balance, smoke, android debug APK, electron Linux, Windows e macOS (D-62). `deploy.yml`: site no GitHub Pages (D-88; antes `beta.lekzera.xyz` na Vercel).
 - **Release** (`release.yml`, tag `v*`): zip web (completo e demo), zips Electron por SO, AAB/APK assinados (secrets `ANDROID_KEYSTORE_*`), SHA256SUMS, GitHub Release com as notas do CHANGELOG (prerelease quando a tag tem `-`).
 
 ---
@@ -871,12 +872,12 @@ Pipeline em [docs/visual.md](docs/visual.md): concept → 640×360 → pixels2sv
 
 ### RC2 — Site oficial (`site/`) · `1.0.0-rc.2`
 
-- [x] RC2.1 Subprojeto `site/` (Next.js 16 SSG + Tailwind v4, `package.json` próprio), EN e PT-BR — `/` e `/pt/`; `docs/site.md`
+- [x] RC2.1 Subprojeto `site/` (Astro estático + Tailwind v4 desde D-88; antes Next.js 16 SSG, `package.json` próprio), EN e PT-BR — `/` e `/pt/`; `docs/site.md`
 - [~] RC2.2 Página inicial: logo, key art, trailer embutido, badges (Steam wishlist, Google Play, itch.io), destaques do jogo, capturas/GIFs, Discord e redes, rodapé (privacidade, contato, créditos) — pronta, com o trailer; links de loja, Discord e contato em `site/src/links.ts` esperam as páginas existirem
 - [x] RC2.3 Demo web embutida (build demo) — `/play/`, aberta em nova guia pelo botão da home (pedido do usuário: janela inteira e tela cheia)
 - [x] RC2.4 `/presskit` (formato presskit()): ficha técnica, descrição, história, features, vídeos, imagens em alta, logos, créditos, contato, zip para download — vídeo entra com o RC3
 - [x] RC2.5 `/privacy` (exigida pela Play): "não coleta dados"
-- [~] RC2.6 Deploy na Vercel (subdomínio; domínio próprio quando o usuário tiver, Q-03); Lighthouse ≥ 90 em performance e acessibilidade — no ar em <https://zapaco.vercel.app> (`bun run site:deploy`); mobile 95/100/100/100; performance desktop a medir fora da rede com antivírus
+- [~] RC2.6 Deploy (era na Vercel; hoje GitHub Pages, D-88) (subdomínio; domínio próprio quando o usuário tiver, Q-03); Lighthouse ≥ 90 em performance e acessibilidade — no ar em <https://zapaco.vercel.app> (`bun run site:deploy`); mobile 95/100/100/100; performance desktop a medir fora da rede com antivírus
 
 ### RC3 — Trailer (`trailer/`) · `1.0.0-rc.3`
 

@@ -12,7 +12,7 @@
 | Google Play (Android) | `zapatro_<versão>_android.aab` assinado com a chave de upload | Gratuito ou pago (decidir antes: PLAN Q-02); US$ 25 únicos | Material pronto; conta e página pendentes (humano) | `play` em `site/src/links.ts` (vazio) |
 | itch.io | `zapatro_<versão>_web-demo.zip` (navegador) + zips do Electron + APK assinado | Demo grátis; completo pago ou "Name your own price"; itch fica com 10% (ajustável até 0%) | Material pronto; página pendente (humano) | `itch` em `site/src/links.ts` (vazio) |
 | Poki | `zapatro_<versão>_web-poki.zip` (demo) | Grátis com anúncios; divisão da receita de anúncios; a Poki escolhe quem publica | Build pronto; candidatura pendente (humano) | URL dada pela Poki |
-| Site próprio | `/play` = jogo completo, `/demo` = demo até o primeiro chefe | Grátis | No ar | <https://truco.lekzera.xyz> |
+| Site próprio | `/play` = jogo completo, `/demo` = demo até o primeiro chefe | Grátis | No ar | <https://alexgalhardo.github.io/zapatro/> |
 
 Ordem sugerida: itch.io (minutos, sem revisão, bom para playtest) → página "Em breve" da Steam (precisa de ≥ 2 semanas no ar) e conta da Play (≥ 3 semanas até a produção) em paralelo → Poki (candidatura, semanas de resposta).
 
@@ -26,7 +26,7 @@ Feito (no repositório):
 - **Textos da página** em EN e PT-BR, dados da página e requisitos de sistema: [store-page.md](store-page.md).
 - **Builds**: zips web (completo, demo e Poki), Electron e AAB/APK pelo GitHub Release (skill `release-section`); ícones dos apps (`bun run app-icons`).
 - **Poki SDK** integrado (`src/core/poki.ts`) e build `VITE_POKI=1` (`bun run build:poki`).
-- **Política de privacidade** no ar: `https://truco.lekzera.xyz/privacy`.
+- **Política de privacidade** no ar: `https://alexgalhardo.github.io/zapatro/privacy/`.
 
 Pendência humana (conta, dinheiro, decisão ou assinatura; o repositório não faz):
 
@@ -49,11 +49,11 @@ Pendência humana (conta, dinheiro, decisão ou assinatura; o repositório não 
 2. **Builds conferidos.** Os zips web já têm o `index.html` na raiz (não a pasta `dist/`). Build local do Electron só gera o sistema atual e falha dentro do OneDrive (`EPERM ... rename win-unpacked.tmp`): use os zips do Release.
 3. **Presskit e textos.** Descrições curta e longa, em EN e PT-BR, estão em [store-page.md](store-page.md) (o presskit do site espelha os mesmos textos). Destaque: Truco Paulista 2×2, roguelite, Fichas × Mult, 8 Campeonatos, chefes.
 4. **Imagens.** Arte de loja pronta em [`media/`](media/) (gerada por `bun scripts/store-art.ts`; o wordmark já vem desenhado). Capturas 1920×1080 em `media/store-shot-0N-*-<lang>.png`, geradas por `bun scripts/store-shots.ts` a partir do build de produção (`bun run build` e `bunx --bun vite preview --port 4173`). Trailer em `trailer/out/` (EN e PT, 1080p60) e no YouTube.
-5. **Privacidade e conteúdo.** Política de privacidade: `https://truco.lekzera.xyz/privacy`. Nenhum dado coletado nem compartilhado; o save fica só no aparelho. Sem anúncios (exceto no build Poki), sem login, sem violência nem conteúdo adulto. As "apostas" são pontos sem valor real: responda **não** a jogos de azar com dinheiro real em todo questionário.
+5. **Privacidade e conteúdo.** Política de privacidade: `https://alexgalhardo.github.io/zapatro/privacy/`. Nenhum dado coletado nem compartilhado; o save fica só no aparelho. Sem anúncios (exceto no build Poki), sem login, sem violência nem conteúdo adulto. As "apostas" são pontos sem valor real: responda **não** a jogos de azar com dinheiro real em todo questionário.
 6. **IA.** Arte e áudio gerados por IA (PixelLab e ElevenLabs): declare onde a loja pedir (o itch exige).
 7. **Fiscal.** Pessoa física no Brasil preenche o **W-8BEN** (Steam, itch se vender, Poki). Declare a receita no Brasil; confira com um contador.
 8. **Segredos fora do repo:** keystore Android (`*.jks`) e senhas, `C:\steamcmd\config\config.vdf`, token do `butler`. Nunca commite.
-9. **Depois de cada loja no ar:** preencha a chave em `site/src/links.ts` e rode `bun run site:deploy`.
+9. **Depois de cada loja no ar:** preencha a chave em `site/src/links.ts` e faça push na `main` (o `deploy.yml` publica o site).
 
 ## 3. Steam (Windows, macOS, Linux e Steam Deck)
 
@@ -130,7 +130,7 @@ Confira na [documentação do Steamworks](https://partner.steamgames.com/doc/hom
 9. *Coming Soon*: escolha a data "To be announced" ou um trimestre.
 10. Envie para revisão. Depois de aprovada, clique **Release Coming Soon Page**. A partir daí contam as 2 semanas mínimas, e as wishlists começam.
 11. Com a página no ar:
-    - preencha `steam` em `site/src/links.ts` e rode `bun run site:deploy`;
+    - preencha `steam` em `site/src/links.ts` e faça push na `main` (o `deploy.yml` publica o site);
     - troque `STORE_URL` em `src/core/platform.ts` pela URL da loja (`https://store.steampowered.com/app/<AppID>/`). Hoje esse valor é uma busca provisória e alimenta o botão "Wishlist" do fim da demo.
 
 ### 3.4 Enviar o build (~1 h)
@@ -240,7 +240,7 @@ bun run android:bundle   # → mobile/android/app/build/outputs/bundle/release/a
 
    | Item | Resposta para o Zapatro |
    |---|---|
-   | Política de privacidade | `https://truco.lekzera.xyz/privacy` |
+   | Política de privacidade | `https://alexgalhardo.github.io/zapatro/privacy/` |
    | Acesso ao app | Todo o app fica disponível sem login |
    | Anúncios | Não contém anúncios |
    | Classificação do conteúdo | Questionário IARC. Categoria **Jogo**. Sem violência real, sem conteúdo sexual e sem apostas com dinheiro real: responda **não** a jogos de azar com dinheiro real |
@@ -283,7 +283,7 @@ bun run android:bundle   # → mobile/android/app/build/outputs/bundle/release/a
 1. *Produção → Criar nova versão* → promova a versão do teste fechado.
 2. *Países/regiões*: todos, ou comece por Brasil e EUA.
 3. *Revisar versão → Iniciar lançamento*. Use **lançamento gradual** (por exemplo, 20%), acompanhe as falhas por 1–2 dias e suba para 100%.
-4. A revisão do Google leva de horas a alguns dias. Quando aprovar, preencha `play` em `site/src/links.ts` com `https://play.google.com/store/apps/details?id=com.alexgalhardo.trucoroguelite` e rode `bun run site:deploy`.
+4. A revisão do Google leva de horas a alguns dias. Quando aprovar, preencha `play` em `site/src/links.ts` com `https://play.google.com/store/apps/details?id=com.alexgalhardo.trucoroguelite` e faça push na `main` (o `deploy.yml` publica o site).
 
 ### 4.7 Atualizações
 
@@ -348,12 +348,12 @@ A loja mais simples: sem taxa, sem revisão obrigatória, publicada em minutos. 
    - AI generation disclosure: **marque que usa arte e áudio gerados por IA** (PixelLab e ElevenLabs). O itch exige essa declaração.
    - Cover image 630×500: `media/store-itch-cover.png`.
    - Screenshots: 3–5, de `media/store-shot-*-<lang>.png`.
-   - Links: site (`https://truco.lekzera.xyz`) e, depois, Steam e Play.
+   - Links: site (`https://alexgalhardo.github.io/zapatro/`) e, depois, Steam e Play.
 6. **Visibility & access:**
    1. Comece com **Draft** e abra a página pelo link de pré-visualização.
    2. Jogue a demo no PC e no celular: carrega, áudio, tela cheia, save.
    3. Depois troque para **Public**.
-7. *Save*. Depois preencha `itch` em `site/src/links.ts` com a URL, rode `bun run site:deploy` e registre a URL em PLAN RC4.4.
+7. *Save*. Depois preencha `itch` em `site/src/links.ts` com a URL, faça push na `main` (o `deploy.yml` publica o site) e registre a URL em PLAN RC4.4.
 
 ### 5.3 Atualizações com butler (recomendado)
 
@@ -387,7 +387,7 @@ O `butler` envia só a diferença entre versões. Os jogadores do app do itch re
 
 Portal de jogos web gratuitos com anúncios. A receita vem da divisão dos anúncios, e **a Poki escolhe quais jogos publica**: o envio é uma candidatura, não uma publicação garantida. Confira em <https://developers.poki.com> e nos termos antes de aceitar.
 
-> **Conflito em aberto: exclusividade web.** O jogo já está na web em `https://truco.lekzera.xyz/play` (completo) e `/demo` (demo até o primeiro chefe), e vai para o itch.io (§5). Se o contrato da Poki tiver cláusula de exclusividade web, isso pode conflitar. Pergunte à Poki **antes** de assinar (§6.3 passo 2) e decida com o dev; não remova `/play`, `/demo` nem a página do itch sem decisão explícita.
+> **Conflito em aberto: exclusividade web.** O jogo já está na web em `https://alexgalhardo.github.io/zapatro/play/` (completo) e `/demo` (demo até o primeiro chefe), e vai para o itch.io (§5). Se o contrato da Poki tiver cláusula de exclusividade web, isso pode conflitar. Pergunte à Poki **antes** de assinar (§6.3 passo 2) e decida com o dev; não remova `/play`, `/demo` nem a página do itch sem decisão explícita.
 
 | Item | Valor |
 |---|---|
@@ -445,7 +445,7 @@ Portal de jogos web gratuitos com anúncios. A receita vem da divisão dos anún
 
 ## 7. Depois do lançamento
 
-1. **Links:** cada loja no ar entra em `site/src/links.ts` (`steam`, `play`, `itch`) + `bun run site:deploy`; Steam também troca `STORE_URL` em `src/core/platform.ts` (§3.3 passo 11); itch registra a URL em PLAN RC4.4.
+1. **Links:** cada loja no ar entra em `site/src/links.ts` (`steam`, `play`, `itch`) + push na `main`; Steam também troca `STORE_URL` em `src/core/platform.ts` (§3.3 passo 11); itch registra a URL em PLAN RC4.4.
 2. **Patch:** corrija, rode os gates e crie a tag (`release-section`); depois, por loja: Steam §3.6, Google Play §4.7, itch.io §5.3, Poki §6.4. A Steam não exige nova revisão para patches; a Play recusa `versionCode` igual ou menor; a Poki faz uma checagem rápida.
 3. **Notas de versão:** o trecho do CHANGELOG vai para *Community → Events & Announcements* (Steam), notas da versão (Play), Devlog (itch).
 4. **Monitorar:** *Android vitals* (falhas e ANRs) na Play durante o lançamento gradual; dados do teste de mercado na Poki; wishlists e, depois, a verificação de Steam Deck na Steam.

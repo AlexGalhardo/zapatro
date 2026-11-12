@@ -27,7 +27,7 @@ Fora do escopo:
 - Edição de save ou de memória na máquina da própria pessoa (jogo local; o save não é uma fronteira de confiança).
 - Negação de serviço, testes de carga e varreduras automatizadas intensas do site.
 - Engenharia social, phishing e ataques físicos.
-- Falhas em serviços de terceiros (Vercel, Steam, Google Play, itch.io, Poki) que não sejam causadas pela configuração do Zapatro.
+- Falhas em serviços de terceiros (GitHub Pages, Steam, Google Play, itch.io, Poki) que não sejam causadas pela configuração do Zapatro.
 - Relatos sem impacto de segurança demonstrado.
 
 ## Porto seguro
