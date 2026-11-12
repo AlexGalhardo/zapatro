@@ -190,8 +190,10 @@ export class Match {
 				? { startBet: 3 as const }
 				: {}),
 			// The partner never answers a rival's truco: the seat-0 player (or its bot) does. With a
-			// human at seat 2 (LAN) each human answers for themselves.
+			// human at seat 2 (LAN) each human answers for themselves, and a person whose partner is
+			// a bot answers for the pair, whatever the seat.
 			...(this.seats === 2 || this.brains[2].kind === 'human' ? {} : { humanAnswers: true }),
+			...(this.seats === 4 ? this.loneAnswerers() : {}),
 		};
 		this.dealer = r?.dealer ?? opts.dealer ?? (this.seats === 2 ? 1 : 3);
 		this.points = r?.points ?? 0;
@@ -232,6 +234,17 @@ export class Match {
 			called: this.calls.some((c) => teamOf(c) === 'us'),
 			bluff: won && this.calls.includes(0) && noManilha,
 		};
+	}
+
+	/** The `answers` rule: the person who answers for a pair whose other seat is a bot (seat 0 is `humanAnswers`). */
+	private loneAnswerers(): Pick<TableRules, 'answers'> {
+		const human = (seat: Seat): boolean => this.brains[seat]?.kind === 'human';
+		const lone = (a: Seat, b: Seat): Seat | undefined =>
+			human(a) === human(b) ? undefined : human(a) ? a : b;
+		const us = lone(0, 2);
+		const them = lone(1, 3);
+		const answers = { ...(us === 2 ? { us } : {}), ...(them === undefined ? {} : { them }) };
+		return Object.keys(answers).length ? { answers } : {};
 	}
 
 	/** Whether an active Manha has this table rule. */

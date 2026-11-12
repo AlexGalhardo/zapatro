@@ -128,6 +128,11 @@ export interface TableRules {
 	 * for the player (run option "partner may run").
 	 */
 	humanAnswers?: boolean;
+	/**
+	 * A pair's seat that answers every call against it: the lone person of a pair whose other seat
+	 * is a bot (LAN), so a bot never accepts, raises or runs for them. Wins over `humanAnswers`.
+	 */
+	answers?: Partial<Record<Team, Seat>>;
 }
 
 export const DEFAULT_RULES: TableRules = {
@@ -299,7 +304,7 @@ const hasPlayed = (s: TableState, seat: Seat): boolean =>
 
 /** Who answers a call against `seat`'s team: that seat, or the player when the rules say so. */
 const answerer = (s: TableState, seat: Seat): Seat =>
-	s.rules.humanAnswers && teamOf(seat) === 'us' ? 0 : seat;
+	s.rules.answers?.[teamOf(seat)] ?? (s.rules.humanAnswers && teamOf(seat) === 'us' ? 0 : seat);
 
 export function canCallTruco(s: TableState, seat: Seat): boolean {
 	return (
