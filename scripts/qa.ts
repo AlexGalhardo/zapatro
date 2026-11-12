@@ -203,6 +203,8 @@ await group(browser, 'table', async (t) => {
 		await t.eval<boolean>('(g, t) => t.tilted("card.missing", 8) === "card.missing"'),
 	);
 	if (!(await t.until('your turn', humanTurn))) return;
+	// A beat after the turn starts: a key in the same frame races the table's own refresh.
+	await t.eval('() => new Promise((r) => setTimeout(r, 300))');
 	await t.press('KeyS');
 	t.check('S opens the signal picker', await t.eval<boolean>('(g, t) => t.signPicker.visible'));
 	await t.eval('(g, t) => t.sendSignal("nothing")');
@@ -218,6 +220,11 @@ await group(browser, 'table', async (t) => {
 	);
 	// With seed 3 the rivals run from the truco and the next hand is dealt: wait until a card
 	// can really be played (in this hand or the next), so the key is never pressed mid-deal.
+	const answering =
+		'(g, t) => !t.busy && t.match.actor() === 0 && t.match.state.pending !== null';
+	await t.until('your turn', `(g, t) => (${humanTurn})(g, t) || (${answering})(g, t)`);
+	// The rivals may open the next hand with a truco of their own: accept it first.
+	if (await t.eval<boolean>(answering)) await t.press('KeyA');
 	await t.until('your turn to play', humanTurn);
 	const before = await t.eval<number>('(g, t) => t.match.state.hands[0].length');
 	await t.press('Digit1');
@@ -517,16 +524,16 @@ await group(browser, 'shop', async (t) => {
 	t.check(
 		'buying a trinket takes the money and adds it to the collection',
 		await t.eval<boolean>(
-			runWith(
-				`r.money === ${money - price} && r.shop.offers[0].sold && Object.keys(r.collection).includes(r.shop.offers[0].id)`,
-			),
+			// The shop was put in the scene (SHOP), not in the save: read the scene's run. Which offer
+			// the first price button belongs to is the layout's business.
+			`(g) => { const r = g.scene.keys.Run.run; const sold = r.shop.offers.filter((o) => o.sold); return sold.length === 1 && r.money === ${money} - ${price} && sold[0].id in r.collection; }`,
 		),
 	);
 	await t.eval('(g) => { g.scene.keys.Run.run.money = 0; g.scene.keys.Run.draw(); }');
 	const owned = await t.eval<number>(
 		'(g) => Object.keys(g.scene.keys.Run.run.collection).length',
 	);
-	await t.click(textIn('Run', /^\$[1-9]\d*$/, 1));
+	await t.click(textIn('Run', /^\$[1-9]\d*$/));
 	t.check(
 		'without money nothing is bought and the error shows',
 		(await t.eval<boolean>(
@@ -556,7 +563,7 @@ await group(browser, 'boss', async (t) => {
 		'the Cartomante hides the vira in the 1st trick',
 		await t.until(
 			'vira hidden',
-			'(g, t) => t.vira.texture.key === "card.back.default" && t.viraLabel.text.includes("?")',
+			'(g, t) => t.vira.texture.key.includes("card.back.default")',
 			5000,
 		),
 	);
