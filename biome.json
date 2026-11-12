@@ -41,11 +41,12 @@
 	},
 	"overrides": [
 		{
-			"includes": ["site/**"],
+			"includes": ["**/*.astro"],
 			"linter": {
 				"rules": {
-					"performance": {
-						"noImgElement": "off"
+					"correctness": {
+						"noUnusedImports": "off",
+						"noUnusedVariables": "off"
 					}
 				}
 			}

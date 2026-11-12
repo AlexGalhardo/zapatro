@@ -58,10 +58,10 @@ Resumo mínimo:
 
 ```text
 bun install · bun run dev · bun run build · bun test · bun run typecheck · bun run check(:fix)
-bun scripts/smoke.ts --url http://localhost:5191           # smoke headless (menu + partida com bot)
+bun scripts/smoke.ts --url http://localhost:5191 [--mode 1v1]  # smoke headless (menu + partida com bot; 1v1 = mano a mano até 12)
 bun scripts/qa.ts --url http://localhost:5191              # QA por grupos (skill qa-global)
 bun scripts/qa-web.ts --url http://localhost:5207 [--fast] # fluxos web no build de produção (vite preview)
-bun scripts/sim.ts [--skip none|small|both] · bun run balance  # simulação (pular mesa) e gate D-39
+bun scripts/sim.ts [--run-mode 1v1] · bun run balance [--mode 1v1]  # simulação de runs e gate D-39, nos dois modos (sim.ts --mode 1v1 = partidas mano a mano)
 bun scripts/store-art.ts · bun scripts/store-shots.ts      # artes e capturas de loja em docs/media/ (shots: build + vite preview 4173)
 bun run graph                                              # atualiza o grafo (antes de todo push)
 bun run release                                            # GitHub Release das tags novas (notas do CHANGELOG; builds e .exe no HEAD)
@@ -75,7 +75,7 @@ bun scripts/soak.ts --url http://localhost:5191            # soak RC1.2: 30 runs
 bun scripts/record-clips.ts --url http://localhost:5192    # clipes do trailer; depois cd trailer && bun run render
 ```
 
-Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pode estar ocupada). `?run=1&auto=1&speed=4` joga uma run inteira com o bot; `?skipMenu=1` abre a partida rápida (Truco puro até 12; `&goal=110` liga a pontuação); `?qa=1` expõe `window.__GAME__` em produção. Todos os atalhos de teste: **[test-hacks.md](test-hacks.md)**.
+Dev server na porta 5191 (`bunx --bun vite --port 5191 --strictPort`; a 5173 pode estar ocupada). `?run=1&auto=1&speed=4` joga uma run inteira com o bot; `?skipMenu=1` abre a partida rápida (Truco puro até 12; `&goal=110` liga a pontuação); `&mode=1v1` põe a partida rápida ou a run nova no mano a mano; `?qa=1` expõe `window.__GAME__` em produção. Todos os atalhos de teste: **[test-hacks.md](test-hacks.md)**.
 
 ## Onde está cada coisa
 
