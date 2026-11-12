@@ -9,6 +9,7 @@ graphify-out/
 .env
 .env.local
 TODO.md
+questions-to-dev.md
 STATUS.md
 .playwright-mcp/
 .claude/worktrees/
