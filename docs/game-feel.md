@@ -157,7 +157,39 @@ A preencher.
 
 ## 9. Começos e fins (R5.7)
 
-A preencher.
+Quatro momentos escritos à mão, cada um de no máximo 3 s a 1× (a 4× cabem em 750 ms; teste em `tests/feel-ends.test.ts`), puláveis com um toque, clique ou tecla (os primeiros 150 ms não contam, para o clique que abriu o momento não pulá-lo). Módulos de view em `src/view/fx/` (`boss-intro.ts`, `queda.ts`, `table-end.ts`) sobre a casca `moment.ts` (`runMoment`: um tween anda um relógio em tempo de 1×, o conteúdo desenha dele, o pulo vai ao fim); números em `src/config/feel-ends.ts`. Nenhum lê nem muda a partida: a `TableScene` chama e, quando o momento segura a mesa, espera o `done`. Tremor e zoom só por `shake()` e `zoomPunch()`; com "Reduzir piscadas" não há pulso de luz e os raios não giram.
+
+Fases a 1× (ms): congela, entra, segura, sai.
+
+| Momento | Congela | Entra | Segura | Sai | Total 1× | Total 4× | Segura a mesa? |
+|---|---|---|---|---|---|---|---|
+| Chefe | 60 | 480 | 1100 | 320 | 1960 | 490 | sim: o 1º turno espera |
+| Chefe final (Rei do Truco) | 80 | 700 | 1500 | 400 | 2680 | 670 | sim |
+| Queda nossa | 50 | 260 | 900 | 240 | 1450 | 363 | sim (era 1400) |
+| Queda dos rivais | 50 | 300 | 800 | 260 | 1410 | 353 | sim (antes não havia aviso) |
+| Mesa ganha | 0 | 380 | 500 | 300 | 1180 | 295 | não: o painel já funciona |
+| Mesa de chefe ganha | 60 | 460 | 1000 | 400 | 1920 | 480 | não |
+| Rei do Truco derrotado | 80 | 600 | 1500 | 500 | 2680 | 670 | não |
+| Mesa perdida | 120 | 520 | 500 | 300 | 1440 | 360 | não |
+| 1ª mesa da run perdida | 80 | 420 | 300 | 250 | 1050 | 263 | não |
+| Mesa de chefe perdida | 160 | 700 | 900 | 400 | 2160 | 540 | não |
+
+- **Apresentação do chefe** (`playBossIntro`): a mesa escurece, uma faixa escura abre no feltro com filetes na cor do chefe (roxo `fame`; dourado `manilha` no final), o card pintado cai de cima inclinado e assenta com `Back` (tremor, zoom e pulso quando pousa; `duckMusic`), e ao lado entram a linha pequena ("Campeonato 3 · Chefão", "Chefe final", "Mesa de chefe" na partida rápida), o nome e a regra. Na mesa de dois a regra é a do `tDuel()` (`.duel`). O final é um degrau acima: card 23% maior, nome maior, 18 raios, tremor 2×, zoom 7%, pulso 2×. Substitui o aviso `boss` de antes; a caixa "em jogo" segue mostrando a regra. Som: `sfx.truco` 300 cents abaixo (final: `sfx.bet.doze` 400 abaixo).
+- **Queda** (`playQueda`, `TableScene.quedaBeat`): a dupla que fechou o 12 é dona do feltro. Nossa: faixa dourada, raios, "QUEDA!" entra de lado e estoura (1,7× para 1×), o card do parceiro vem da esquerda, tremor, zoom e pulso. Dos rivais: faixa vermelha escura, sem raios nem pulso, a palavra cai de cima e assenta, os cards deles entram da direita escurecidos, som 500 cents abaixo. O texto de baixo é `table.queda` (nossa) ou `table.rivalQueda`. Na mesa de dois só o rival aparece.
+- **Fim de mesa** (`playTableEnd`): o painel do `drawEnd` entra por cima do jogo e já responde. Vitória: o feltro esquenta, raios giram e faíscas caem atrás do painel, que pousa com `Back`; mesa de chefe ganha tem raios roxos, 22 faíscas, tremor, zoom e pulso; o Rei do Truco derrotado tem 46 faíscas e raios dourados. Derrota: um escuro frio desce, sem faíscas, o painel desce pesado (`Cubic`); a 1ª mesa da run é um golpe mais leve, a de chefe é o mais pesado (tremor curto, escuro 62%). O peso sai de `endTier` (`src/config/feel-ends.ts`).
+- **Fim de run** (`RunScene.drawEnd`): entra com um fade curto (sem ele com "Reduzir piscadas"), resumo em §9.1.
+- **Música:** `music.boss` e `music.king` já tocavam no começo da mesa de chefe. `music.win` e `music.lose` são vinhetas de 10 a 12 s que o `playMusic` tocava em laço: agora `playMusic(key, { once: true, after })` toca uma vez e volta para `music.menu`. No fim de mesa fora do fim de run: a vinheta de quem ganhou ou perdeu. No fim de run: a mesa fica em silêncio (`stopMusic`) e a tela de resumo toca `music.win` (run ganha) ou `music.lose` (run perdida), uma vez.
+- **Mesa LAN** (`this.net`) não ganha a entrada nova do fim de mesa (mantém "Voltar ao lobby" e nunca mostra coisa de run); o tutorial usa o mesmo caminho do fim de mesa e termina como antes.
+- **Medida:** `bun scripts/feel-ends.ts shots` salva as sequências de quadros (1920×1080 por padrão, `--lang pt|en`, `--reduced`, `--mode 1v1`; o jogo congelado e avançado à mão) e `runend` salva a tela de resumo nos quatro tamanhos.
+
+### 9.1 Resumo da run (R6.4) e destraves (R7.3)
+
+A tela de fim de run lista, de cima para baixo: o resultado (coroa e "Você é o Rei do Truco!", ou caveira e "A run acabou"; na demo, "Fim da demo!"), até onde foi (Campeonato, mesa, modo, Estaca, baralho; em derrota, para quem perdeu; o card do parceiro no canto), três cartões (maior mão, item que mais pontuou com ícone ou medalha e pontos, mesas vencidas com mãos jogadas e dinheiro final), os trinkets com que a run terminou (medalhas, com dica ao passar o mouse), a seed com o botão Copiar, "Destravado nesta run", "Próximo destravo" e os botões **Nova run** (um toque: zera a run salva e abre a tela de nova run), **Menu principal** e, quando cabe, "Infinito" (run ganha) ou a lista de desejos (demo).
+
+- **Os números vêm de `runSummary(run)`** (`src/logic/run/summary.ts`), que só lê `run` e `run.stats`; o teste `tests/run-summary.test.ts` compara cada campo.
+- **Item que mais pontuou:** `itemPoints(steps)` (`src/logic/score/item-points.ts`) vale, para cada Manha e trinket de uma mão, os pontos da mão menos os pontos dela sem os passos daquele item. O `Match` soma por mesa (`match.itemPoints`), o `finishTable` soma na run (`run.stats.items`, chaves `manha:<id>` e `trinket:<id>`). Nenhuma regra de pontuação mudou. Runs salvas antes não têm `items` (o cartão mostra "Nenhum item pontuou"); uma mesa retomada de um save no meio da mesa só conta os itens da parte jogada depois.
+- **Seed:** o Copiar usa `navigator.clipboard`; sem ele, ou se recusar, abre `window.prompt` com o texto selecionável e, se a casca não tiver `prompt` (Electron), mostra "Seed: N" na linha de mensagem.
+- **Destravos:** `run.before` (`{ feats, stakeBest }`, gravado por `recordRunStart`) guarda o perfil no começo da run; `unlockedThisRun(meta, run)` lista os feitos que o perfil ganhou desde então (a lista de feitos só cresce), o que eles abriram (`deck:`, `partner:`) e a Estaca nova quando a vitória abriu uma. O que falta é `nextUnlock(meta)`: entre os feitos que ainda abrem conteúdo, o mais adiantado (`have/need` de feitos de vida e de Campeonato; empate pela ordem da lista), com a descrição do próprio feito e o progresso "(4/5)"; sem nenhum, a próxima Estaca do baralho menos avançado; sem nada, "Tudo destravado". Testes: save novo, save no meio do caminho e save com tudo aberto.
 
 ## 10. Sons que faltam
 
