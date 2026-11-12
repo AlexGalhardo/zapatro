@@ -105,9 +105,10 @@ export function playTrucoCall(scene: Phaser.Scene, a: TrucoCallArgs): TrucoCallH
 				fontFamily: UI_FONT,
 				fontSize: `${size}px`,
 				fontStyle: '800',
-				color: toCss(shade(c.color, 0.35)),
-				stroke: toCss(shade(c.color, -0.75)),
-				strokeThickness: Math.max(3, size / 9),
+				// Cream over a dark edge of the step's colour: readable on the rays at any step.
+				color: toCss(PALETTE.textLight),
+				stroke: toCss(shade(c.color, -0.55)),
+				strokeThickness: Math.max(4, size / 6),
 				shadow: TEXT_SHADOW,
 			})
 			.setOrigin(0.5)
