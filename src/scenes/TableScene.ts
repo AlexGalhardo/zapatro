@@ -14,6 +14,7 @@ import {
 import { titleMetrics } from '../art/title';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL, SHOW_SCORE_PANEL } from '../config/features';
+import { FELT_CENTER } from '../config/feel-felt';
 import { isTrucoStep, TRUCO_CALL } from '../config/feel-truco';
 import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
@@ -80,6 +81,7 @@ import {
 	type Team,
 	teamOf,
 } from '../logic/truco/table';
+import { trickMarks } from '../logic/truco/trick-marks';
 import type { ViewSize } from '../logic/viewport';
 import { acceptLine, foldLine, jokeDue, nextJoke } from '../logic/voice-lines';
 import type { NetClient } from '../net/client';
@@ -101,6 +103,7 @@ import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
+import { createFeltCenter, type FeltCenter } from '../view/fx/felt-center';
 import { NoticeBoard } from '../view/fx/notice';
 import { playTrucoCall, type TrucoCallHandle } from '../view/fx/truco-call';
 import { handEffects, visibleHandEffects } from '../view/hand-effects';
@@ -194,15 +197,36 @@ const CALL_VO: Record<number, VoLine> = { 3: 'truco', 6: 'seis', 9: 'nove', 12: 
  * indices (top-left corner) stay readable (BUGS.md B-04).
  */
 const SEAT_POS: Record<Seat, { portrait: [number, number]; play: [number, number] }> = {
-	0: { portrait: [390, 345], play: [390, 225] },
-	1: { portrait: [586, 162], play: [437, 179] },
-	2: { portrait: [345, 46], play: [390, 133] },
-	3: { portrait: [195, 162], play: [344, 179] },
+	0: { portrait: [390, 345], play: [390, 230] },
+	1: { portrait: [586, 162], play: [450, 179] },
+	2: { portrait: [345, 46], play: [390, 125] },
+	3: { portrait: [195, 162], play: [330, 179] },
+};
+
+/** The two-seat table: the rival (slot 2) is a bigger card at the top, so the played cards sit lower. */
+const DUEL_POS: Record<0 | 2, { portrait: [number, number]; play: [number, number] }> = {
+	0: { portrait: [390, 345], play: [390, 232] },
+	2: { portrait: [324, 62], play: [390, 166] },
 };
 
 /** Avatars on the table: characters (48 px art) and bosses (96 px art) both end up this wide. */
 /** A seat's character card, 3:4 like the painted art; the name plate hangs under it. */
 const SEAT_CARD = { w: 54, h: 72 };
+
+/** The lone rival of a two-seat table: bigger than a seat of the four-seat table (R2.2). */
+const DUEL_CARD = { w: 72, h: 96 };
+
+/**
+ * The rival's avatar and card backs, centred on top as one group (felt centre 390.5): avatar,
+ * 10 px gap, the three backs; the bubble sits right of the avatar, above the backs.
+ */
+const DUEL_UI: (typeof SEAT_UI)[2] = {
+	avatar: [288, 14],
+	backs: [370, 32],
+	step: [38, 0],
+	bubble: [370, 20],
+	tail: 'left',
+};
 
 /**
  * Per seat: top-left of the avatar card (portrait + name plate below it), top-left of the first
@@ -396,9 +420,10 @@ const HAND = { x: 390, y: 305, step: 51, tilt: 8, drop: 4, scale: 1.12 };
 const ACTIONS = { x: 580, w: 96, h: 24, normal: [250, 278, 306, 334], answer: [274, 304, 334] };
 
 /** Where each seat's turn-clock bar sits: above its avatar card; yours under your hand. */
-const CLOCK_BAR = { w: SEAT_CARD.w + 8, h: 5, mine: { x: 390, y: 351, w: 120 } };
+const CLOCK_BAR = { h: 5, mine: { x: 390, y: 351, w: 120 } };
 
-const VIRA = { x: 190, y: 46, scale: 0.78 };
+/** The vira's size (its place is in `FELT_CENTER`). */
+const VIRA = { scale: 0.78 };
 
 /**
  * The manilha block in the felt's bottom-left corner (free: left of your hand, under the left
@@ -506,6 +531,7 @@ export class TableScene extends Phaser.Scene {
 	private played: Phaser.GameObjects.Image[] = [];
 	private vira!: Phaser.GameObjects.Image;
 	private viraLabel!: Phaser.GameObjects.Text;
+	private feltCenter!: FeltCenter;
 	private manilhaBox!: Phaser.GameObjects.Image;
 	private manilhaText!: Phaser.GameObjects.Text;
 	/** The prize mini-card's value (null outside a run) and the value it shows now. */
@@ -580,7 +606,15 @@ export class TableScene extends Phaser.Scene {
 		return this.duel ? 2 : seat;
 	}
 	private seatUi(seat: Exclude<Seat, 0>): (typeof SEAT_UI)[Exclude<Seat, 0>] {
-		return SEAT_UI[this.slot(seat)];
+		return this.duel ? DUEL_UI : SEAT_UI[this.slot(seat)];
+	}
+	/** The avatar card's size: the two-seat rival's is bigger. */
+	private get seatCard(): { w: number; h: number } {
+		return this.duel ? DUEL_CARD : SEAT_CARD;
+	}
+	private seatPos(seat: Seat): { portrait: [number, number]; play: [number, number] } {
+		if (this.duel) return DUEL_POS[seat === 0 ? 0 : 2];
+		return SEAT_POS[seat === 0 ? 0 : this.slot(seat)];
 	}
 	/** `key`, or its `.duel` wording at a two-seat table. */
 	private tx(key: Duelable, vars?: Record<string, string | number>): string {
@@ -798,7 +832,7 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 			return { x: m.x - m.w / 2, y: m.y, w: m.w };
 		}
 		const [ax, ay] = this.seatUi(seat).avatar;
-		return { x: ax - 4, y: ay - 8, w: CLOCK_BAR.w };
+		return { x: ax - 4, y: ay - 8, w: this.seatCard.w + 8 };
 	}
 
 	/** The turn clock of a LAN table: a bar on the timed seat that drains, and a tick at the end. */
@@ -953,11 +987,11 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 	}
 
 	private playPos(seat: Seat): [number, number] {
-		return SEAT_POS[seat === 0 ? 0 : this.slot(seat)].play;
+		return this.seatPos(seat).play;
 	}
 
 	private portraitPos(seat: Seat): [number, number] {
-		return SEAT_POS[seat === 0 ? 0 : this.slot(seat)].portrait;
+		return this.seatPos(seat).portrait;
 	}
 
 	/** Sidebar text with real depth: cream letters, a dark outline and a solid drop shadow. */
@@ -1029,18 +1063,19 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 
 	private buildLayout(chars: Record<Seat, string>): void {
 		this.drawTable();
+		const card = this.seatCard;
 		for (const seat of this.others as readonly Exclude<Seat, 0>[]) {
 			const id = chars[seat];
 			const ui = this.seatUi(seat);
 			const [ax, ay] = ui.avatar;
 			const portrait = this.add
-				.image(ax + SEAT_CARD.w / 2, ay + SEAT_CARD.h / 2, tex(this, `charcard.${id}`))
-				.setDisplaySize(SEAT_CARD.w, SEAT_CARD.h);
+				.image(ax + card.w / 2, ay + card.h / 2, tex(this, `charcard.${id}`))
+				.setDisplaySize(card.w, card.h);
 			// The name plate hangs under the portrait, part of the same card.
 			const plate = this.add.graphics();
 			plate
 				.fillStyle(PALETTE.panelDark, 0.96)
-				.fillRoundedRect(ax, ay + SEAT_CARD.h - 3, SEAT_CARD.w, 17, {
+				.fillRoundedRect(ax, ay + card.h - 3, card.w, 17, {
 					tl: 0,
 					tr: 0,
 					bl: 5,
@@ -1048,14 +1083,14 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 				});
 			const name = this.add
 				.text(
-					ax + SEAT_CARD.w / 2,
-					ay + SEAT_CARD.h + 5.5,
+					ax + card.w / 2,
+					ay + card.h + 5.5,
 					this.seatNames[seat] ||
 						t((isBoss(id) ? `boss.${id}.name` : `char.${id}`) as I18nKey),
 					this.bold(8, isBoss(id) ? PALETTE.bad : PALETTE.textLight),
 				)
 				.setOrigin(0.5);
-			while (name.width > SEAT_CARD.w - 6 && name.style.fontSize !== '5px')
+			while (name.width > card.w - 6 && name.style.fontSize !== '5px')
 				name.setFontSize(Number.parseInt(String(name.style.fontSize), 10) - 1);
 			const backs = this.add.container(...ui.backs);
 			const [bx, by] = ui.bubble;
@@ -1082,7 +1117,7 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 				.setDepth(DEPTH.speech);
 			// Your partner's signal: the same emoji as the picker, at the card's corner.
 			const expression = this.add
-				.container(ax + SEAT_CARD.w - 2, ay + 4, [
+				.container(ax + card.w - 2, ay + 4, [
 					this.add
 						.text(0, 0, '', { fontFamily: EMOJI_FONT, fontSize: '22px' })
 						.setOrigin(0.5),
@@ -1103,11 +1138,13 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 			.rectangle(0, 0, 4000, 4000, PALETTE.night, 1)
 			.setAlpha(0)
 			.setDepth(DEPTH.vignette);
+		const center = FELT_CENTER[this.duel ? 'duel' : 'table'];
+		this.feltCenter = createFeltCenter(this, this.duel ? 'duel' : 'table');
 		this.vira = this.add
-			.image(VIRA.x, VIRA.y, tex(this, 'card.back.default'))
+			.image(center.vira.x, center.vira.y, tex(this, 'card.back.default'))
 			.setScale(VIRA.scale);
 		this.viraLabel = this.add
-			.text(VIRA.x, VIRA.y + 31, '', this.bold(8, PALETTE.textLight))
+			.text(center.vira.x, center.vira.y + 31, '', this.bold(8, PALETTE.textLight))
 			.setOrigin(0.5, 0);
 		// Origin at the bottom of its drop shadow, so the panel itself ends at MANILHA.bottom.
 		this.manilhaBox = this.add
@@ -1860,6 +1897,17 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			? ''
 			: `\n${t('table.zap', { c: `${manilhaOf(s.manilha)}${SUIT_MARK.clubs}` })}`;
 		this.viraLabel.setText(t('table.vira'));
+		// A trick whose cards still lie on the felt is not announced before they are collected.
+		const settled = s.tricks.map((tr, i) =>
+			i === s.tricks.length - 1 && this.played.length > 0 ? {} : tr,
+		);
+		this.feltCenter.update({
+			bet: s.bet,
+			pending: s.pending?.to ?? null,
+			marks: trickMarks(settled, 0),
+			live: !s.over,
+			dur: (ms) => this.dur(ms),
+		});
 		this.manilhaText.setText(`${manilha}${zap}${count}`);
 		const mw = Math.ceil(this.manilhaText.width) + 2 * PAD.card;
 		const mh = Math.ceil(this.manilhaText.height) + 2 * PAD.card;
