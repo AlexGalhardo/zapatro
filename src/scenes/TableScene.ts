@@ -22,7 +22,6 @@ import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx, voice, voiceBusy } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
-import { zoomPunch } from '../core/feel';
 import { playAmbience, playMusic, stopMusic, tableMusic } from '../core/music';
 import { pokiGameplay } from '../core/poki';
 import { trackZoom } from '../core/viewport';
@@ -58,6 +57,7 @@ import {
 	type RunState,
 	tableSize,
 } from '../logic/run/run';
+import { buildCountQueue } from '../logic/score/count-queue';
 import { formatPoints } from '../logic/score/format';
 import { type ScoreStep, tableGoal, totals } from '../logic/score/score';
 import { TOUCH_TEXT_MIN } from '../logic/touch';
@@ -112,6 +112,7 @@ import { cardWeight } from '../view/fx/card-weight';
 import { createFeltCenter, type FeltCenter } from '../view/fx/felt-center';
 import { NoticeBoard } from '../view/fx/notice';
 import { playQueda } from '../view/fx/queda';
+import { playScoreCount } from '../view/fx/score-count';
 import { SeatMotion } from '../view/fx/seat-react';
 import { playTableEnd } from '../view/fx/table-end';
 import { playTrucoCall, type TrucoCallHandle } from '../view/fx/truco-call';
@@ -2981,50 +2982,137 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 	/** Chips × Mult counted step by step (the same `steps` the total comes from, D-02). */
 	private async countScore(steps: readonly ScoreStep[], lance: LanceId): Promise<void> {
 		const level = this.match.levels[lance] ?? 1;
+		const goal = this.match.goal;
+		const points = totals(steps).points;
 		this.scoreTitle.setText(
 			`${t(`lance.${lance}` as I18nKey)}${level > 1 ? ` · ${t('table.lance.level', { n: level })}` : ''}`,
 		);
 		this.scoreTotal.setText('');
-		this.scoreBox.setVisible(true).setScale(0.9);
-		this.tweens.add({ targets: this.scoreBox, scale: 1, duration: this.dur(120) });
-		for (let i = 0; i < steps.length; i++) {
-			const st = steps[i];
-			const now = totals(steps.slice(0, i + 1));
-			const bump = st?.chips !== undefined ? this.chipsVal : this.multVal;
-			this.chipsVal.setText(`${now.chips}`);
-			this.multVal.setText(`${now.mult}`);
-			this.sideChips.setText(`${now.chips}`);
-			this.sideMult.setText(`${now.mult}`);
-			bump.setScale(1.3);
-			this.tweens.add({ targets: bump, scale: 1, duration: this.dur(90) });
-			if (!st) continue;
-			if (/^(manha|mod|joker|trinket):/.test(st.source)) {
-				await this.showEffect(st);
-				continue;
-			}
-			if (st.xMult !== undefined) sfx(this, 'sfx.score.xmult');
-			else if (st.addMult !== undefined) sfx(this, 'sfx.score.mult');
-			else sfx(this, 'sfx.score.chip');
-			await this.wait(st.chips !== undefined ? 60 : 220);
-		}
-		this.shownPoints = totals(steps).points;
-		this.scoreTotal.setText(formatPoints(this.shownPoints, getLang()));
-		zoomPunch(this, 0.02, this.dur(160));
+		this.chipsVal.setText('0');
+		this.multVal.setText('0');
+		const count = playScoreCount(this, {
+			queue: buildCountQueue(steps),
+			speed: this.speed,
+			box: {
+				root: this.scoreBox,
+				chips: this.chipsVal,
+				mult: this.multVal,
+				total: this.scoreTotal,
+				popup: this.popup,
+				chipsAt: [this.chipsVal.x, this.chipsVal.y],
+				multAt: [this.multVal.x, this.multVal.y],
+				totalAt: [this.scoreTotal.x, this.scoreTotal.y],
+				originAt: [this.scoreTitle.x, this.scoreTitle.y],
+			},
+			label: (e) => (e.named ? this.effectLine(e.step) : null),
+			sourceAt: (e) => this.sourceIcon(e.id, e.kind),
+			pulse: (e) => this.pulseIcon(e.id),
+			mirror: (chips, mult) => {
+				this.sideChips.setText(`${chips}`);
+				this.sideMult.setText(`${mult}`);
+			},
+			totalText: formatPoints(points, getLang()),
+			points,
+			goal,
+			meterAt: goal === undefined ? null : [SIDE.x + SIDEBAR.pad + 57, SIDE.goal[0] + 37],
+			land: (ms, scale) => this.landOnMeter(ms, scale),
+			beatText: t('table.count.beat'),
+			centre: [this.cx, this.cy],
+			spark: sparkTexture(this),
+		});
+		this.skipCall = count.skip;
+		await count.done;
+		this.skipCall = null;
+		this.shownPoints = points;
+		this.scoreTotal.setText(formatPoints(points, getLang()));
 		this.hudPoints = this.match.points;
 		this.hudMoney = this.match.money;
 		this.refreshHud();
-		await this.wait(900);
-		this.scoreBox.setVisible(false);
 	}
 
-	/** Popup `[Manha] why · effect` for a Manha or card modifier step (design §4.2). */
-	private async showEffect(st: ScoreStep): Promise<void> {
+	/** The goal card takes the hand's points: the meter fills over `ms` and the card bumps. */
+	private landOnMeter(ms: number, scale: number): void {
+		const to = this.match.points;
+		const counter = { v: this.hudPoints };
+		this.tweens.killTweensOf(counter);
+		this.hudMoney = this.match.money;
+		const bump = this.pointsText;
+		if (ms > 0)
+			this.tweens.add({
+				targets: counter,
+				v: to,
+				duration: ms,
+				ease: 'Cubic.easeOut',
+				onUpdate: () => {
+					this.hudPoints = counter.v;
+					this.refreshHud();
+				},
+				onComplete: () => {
+					this.hudPoints = to;
+					this.refreshHud();
+				},
+			});
+		else {
+			this.hudPoints = to;
+			this.refreshHud();
+		}
+		this.tweens.killTweensOf(bump);
+		bump.setScale(scale);
+		this.tweens.add({ targets: bump, scale: 1, duration: ms || 1, ease: 'Back.easeOut' });
+	}
+
+	/** The HUD icon (trinket medal or Manha) behind a step: world centre and size, or null. */
+	private sourceIcon(id: string, kind: string): { at: [number, number]; size: number } | null {
+		if (kind !== 'trinket' && kind !== 'manha') return null;
+		const icon = this.manhaIcon(id);
+		if (!icon) return null;
+		return {
+			at: [this.manhaRow.x + icon.x, this.manhaRow.y + icon.y],
+			size: slotSize(this.slots),
+		};
+	}
+
+	private manhaIcon(
+		id: string,
+	): Phaser.GameObjects.Image | Phaser.GameObjects.Container | undefined {
+		return this.manhaRow.list.find(
+			(o): o is Phaser.GameObjects.Image | Phaser.GameObjects.Container =>
+				(o instanceof Phaser.GameObjects.Image ||
+					o instanceof Phaser.GameObjects.Container) &&
+				o.getData('id') === id,
+		);
+	}
+
+	private pulseIcon(id: string): void {
+		const icon = this.manhaIcon(id);
+		if (!icon) return;
+		const base = (icon.getData('rest') as number | undefined) ?? icon.scale;
+		icon.setData('rest', base);
+		this.tweens.killTweensOf(icon);
+		icon.setScale(base);
+		this.tweens.add({
+			targets: icon,
+			scale: base * 1.35,
+			yoyo: true,
+			duration: this.dur(130),
+			ease: 'Back.easeOut',
+		});
+	}
+
+	/** The popup line `[Manha] why · effect` of a Manha or card modifier step (design §4.2). */
+	private effectLine(st: ScoreStep): { text: string; color: number } {
 		const [kind, id] = st.source.split(':');
 		const gain = [
-			st.chips !== undefined ? `+${st.chips} ${t('table.chips')}` : '',
-			st.addMult !== undefined ? `+${st.addMult} ${t('table.mult')}` : '',
+			st.chips !== undefined
+				? `${st.chips >= 0 ? '+' : ''}${st.chips} ${t('table.chips')}`
+				: '',
+			st.addMult !== undefined
+				? `${st.addMult >= 0 ? '+' : ''}${st.addMult} ${t('table.mult')}`
+				: '',
 			st.xMult !== undefined ? `×${st.xMult} ${t('table.mult')}` : '',
-			st.money !== undefined ? `+${t('table.money', { n: st.money })}` : '',
+			st.money !== undefined
+				? `${st.money >= 0 ? '+' : '-'}${t('table.money', { n: Math.abs(st.money) })}`
+				: '',
 		]
 			.filter(Boolean)
 			.join(' ');
@@ -3037,28 +3125,21 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				: st.chips !== undefined
 					? PALETTE.chips
 					: PALETTE.mult;
+		return { text: `[${name}]${why} ${gain}`, color };
+	}
+
+	/** Popup for a Manha or card modifier step when there is no count (quick match). */
+	private async showEffect(st: ScoreStep): Promise<void> {
+		const [, id] = st.source.split(':');
+		const { text, color } = this.effectLine(st);
 		this.popup
-			.setText(`[${name}]${why} ${gain}`)
+			.setText(text)
 			.setColor(toCss(color))
+			.setBackgroundColor(toCss(PALETTE.night))
 			.setVisible(true)
 			.setScale(1.2);
 		this.tweens.add({ targets: this.popup, scale: 1, duration: this.dur(140) });
-		const icon = this.manhaRow.list.find(
-			(o) =>
-				(o instanceof Phaser.GameObjects.Image ||
-					o instanceof Phaser.GameObjects.Container) &&
-				o.getData('id') === id,
-		);
-		if (
-			icon instanceof Phaser.GameObjects.Image ||
-			icon instanceof Phaser.GameObjects.Container
-		)
-			this.tweens.add({
-				targets: icon,
-				scale: icon.scale * 1.3,
-				yoyo: true,
-				duration: this.dur(120),
-			});
+		this.pulseIcon(id ?? '');
 		sfx(this, st.money !== undefined ? 'sfx.money' : 'sfx.manha.trigger');
 		await this.wait(650);
 		this.popup.setVisible(false);
