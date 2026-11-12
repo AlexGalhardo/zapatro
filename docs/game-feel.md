@@ -135,7 +135,7 @@ Fila: um aviso de peso maior ou igual ao atual (ou do mesmo tipo) o substitui na
 | `vira` | nova vira | `cards` | `chips` | 2 |
 | `raise` | aposta aceita ("Aposta sobe: N") | `coin` | `cta` | 3 |
 | `fold` | correu | `door` | `disabled` | 2 |
-| `trickUs` | vaza nossa (a chamada fica com o caso `trick`, de outro agente) | `check` | `good` | 2 |
+| `trickUs` | vaza nossa (dita depois que as cartas saem do feltro, porque a faixa fica onde cai a carta de cima) | `check` | `good` | 2 |
 | `trickThem` | vaza deles | `close` | `bad` | 2 |
 | `trickTie` | vaza empatada | `handshake` | `rarityCommon` | 1 |
 | `eleven` | mão de 11 e a decisão | `alert` | `cta` | 3 |
@@ -165,3 +165,9 @@ Lista de sons que um efeito pediria e que ainda não existem em `public/assets/a
 
 | Som | Para | Hoje usa |
 |---|---|---|
+| Batida por degrau (truco, seis, nove, doze) | o nome do pedido caindo no feltro (§3) | `sfx.truco` com o volume subindo |
+| Tique de aviso | entrada de uma faixa de aviso (§7) | nada |
+| Pancada do ZAP e sopro da subida | entrada do ZAP (§5) | `sfx.card.play` 700 cents abaixo |
+| Tapa de carta forte, brilho de manilha em voo, toque de carta encoberta | cartas por peso (§5) | `sfx.card.play` em outra altura, `sfx.card.cover` |
+| Varrida da vaza e estalo do empate | recolher a vaza (§5) | `sfx.trick.win` |
+| Vinhetas curtas de comemoração, resmungo e susto | selos de reação (§6) | nada |
