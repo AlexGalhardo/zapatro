@@ -15,6 +15,7 @@ import { titleMetrics } from '../art/title';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL, SHOW_SCORE_PANEL } from '../config/features';
 import { TIER_FEEL } from '../config/feel-cards';
+import { endTier } from '../config/feel-ends';
 import { FELT_CENTER } from '../config/feel-felt';
 import { isTrucoStep, TRUCO_CALL } from '../config/feel-truco';
 import { PALETTE, shade, toCss } from '../config/palette';
@@ -22,7 +23,7 @@ import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '
 import { sfx, voice, voiceBusy } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
 import { zoomPunch } from '../core/feel';
-import { playAmbience, playMusic, tableMusic } from '../core/music';
+import { playAmbience, playMusic, stopMusic, tableMusic } from '../core/music';
 import { pokiGameplay } from '../core/poki';
 import { trackZoom } from '../core/viewport';
 import { AI_PROFILE_IDS, AI_PROFILES, type AiProfileId } from '../data/ai-profiles';
@@ -105,11 +106,14 @@ import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
+import { playBossIntro } from '../view/fx/boss-intro';
 import { collectTrick, type FxEnv, flyCard, landCard, tieBump } from '../view/fx/card-fx';
 import { cardWeight } from '../view/fx/card-weight';
 import { createFeltCenter, type FeltCenter } from '../view/fx/felt-center';
 import { NoticeBoard } from '../view/fx/notice';
+import { playQueda } from '../view/fx/queda';
 import { SeatMotion } from '../view/fx/seat-react';
+import { playTableEnd } from '../view/fx/table-end';
 import { playTrucoCall, type TrucoCallHandle } from '../view/fx/truco-call';
 import { handEffects, visibleHandEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
@@ -809,19 +813,40 @@ export class TableScene extends Phaser.Scene {
 		// Nobody's controls work until the first pump decides whose turn it is.
 		this.updateControls(false);
 		this.announceKind();
-		// The boss table is no longer announced by the table-choice screen: name and rule here.
-		if (boss && this.match.state.kind === 'normal')
-			this.time.delayedCall(this.dur(500), () =>
-				this.notices.show(
-					'boss',
-					`${t(`boss.${boss}.name` as I18nKey)}
-${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
-					3200,
-				),
-			);
 		pokiGameplay(true);
 		this.events.once('shutdown', () => pokiGameplay(false));
-		this.time.delayedCall(250, () => this.pump());
+		// A boss table opens with its own introduction; the first turn waits for it.
+		if (boss && this.match.state.kind === 'normal') void this.introBoss(boss);
+		else this.time.delayedCall(250, () => this.pump());
+	}
+
+	/** The boss's name and rule as an authored, skippable moment (docs/game-feel.md §9). */
+	private async introBoss(boss: BossId): Promise<void> {
+		this.busy = true;
+		await this.wait(250);
+		if (!this.sys.isActive()) return;
+		const final = boss === FINAL_BOSS;
+		const intro = playBossIntro(this, {
+			boss,
+			final,
+			kicker: final
+				? t('boss.intro.final')
+				: this.runState
+					? t('boss.intro.champ', { n: this.runState.champ })
+					: t('boss.intro.table'),
+			name: t(`boss.${boss}.name` as I18nKey),
+			rule: tDuel(`boss.${boss}.rule` as I18nKey, this.duel),
+			centre: [this.cx, this.cy],
+			speed: this.speed,
+			onLand: () =>
+				final ? sfx(this, 'sfx.bet.doze', 1, -400) : sfx(this, 'sfx.truco', 0.9, -300),
+		});
+		this.skipCall = intro.skip;
+		await intro.done;
+		this.skipCall = null;
+		if (!this.sys.isActive()) return;
+		this.busy = false;
+		this.pump();
 	}
 
 	override update(): void {
@@ -2893,14 +2918,29 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				// The team that closes a queda cheers: your partner, or the rival on the right.
 				if (this.match.outcome === 'queda') this.chat(2, 'say.queda', 3);
 				if (this.match.outcome === 'rivalQueda') this.chat(1, 'say.queda', 3);
-				if (this.match.outcome === 'queda') {
-					sfx(this, 'sfx.queda');
-					this.notices.show('queda', t('table.queda'));
-					await this.wait(1400);
-				}
+				if (this.match.outcome === 'queda') await this.quedaBeat('us');
+				else if (this.match.outcome === 'rivalQueda') await this.quedaBeat('them');
 				break;
 			}
 		}
+	}
+
+	/** The pair that closed the match to 12 owns the felt for a beat (docs/game-feel.md §9). */
+	private async quedaBeat(team: 'us' | 'them'): Promise<void> {
+		const closers: Seat[] = team === 'us' ? [2] : [1, 3];
+		const beat = playQueda(this, {
+			team,
+			word: t('table.queda.word'),
+			sub: t(team === 'us' ? 'table.queda.sub' : 'table.rivalQueda'),
+			chars: closers.filter((s) => this.seats.has(s)).map((s) => this.charOf(s)),
+			centre: [this.cx, this.cy],
+			speed: this.speed,
+			onLand: () =>
+				team === 'us' ? sfx(this, 'sfx.queda') : sfx(this, 'sfx.queda', 0.9, -500),
+		});
+		this.skipCall = beat.skip;
+		await beat.done;
+		this.skipCall = null;
 	}
 
 	/**
@@ -3048,7 +3088,10 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 	private showEnd(winner: Team): void {
 		pokiGameplay(false);
 		sfx(this, winner === 'us' ? 'sfx.table.win' : 'sfx.table.lose');
-		playMusic(this, winner === 'us' ? 'music.win' : 'music.lose');
+		// A lost table of a run is the end of the run: the run-end screen plays its defeat music.
+		if (winner === 'us') playMusic(this, 'music.win', { once: true, after: 'music.menu' });
+		else if (this.runState) stopMusic(this);
+		else playMusic(this, 'music.lose', { once: true, after: 'music.menu' });
 		this.updateControls(false);
 		let reward: TableReward = null;
 		if (this.runState) {
@@ -3082,6 +3125,24 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.ended = { winner, reward };
 		this.drawEnd();
 		this.status.setText('');
+		if (this.net) return;
+		const run = this.runState;
+		const tier = endTier({
+			won: winner === 'us',
+			finalBoss: FINAL_BOSS,
+			first: run !== null && run.stats.tables === 0 && run.champ === 1,
+			...(this.match.boss ? { boss: this.match.boss } : {}),
+		});
+		const end = playTableEnd(this, {
+			tier,
+			panel: this.endPanel,
+			centre: [this.cx, this.cy],
+			speed: this.speed,
+		});
+		this.skipCall = end.skip;
+		void end.done.then(() => {
+			this.skipCall = null;
+		});
 	}
 
 	/**
