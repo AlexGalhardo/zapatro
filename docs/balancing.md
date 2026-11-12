@@ -500,3 +500,36 @@ Como se chegou: a vaza tem 2 cartas, então a suposição era metade das Fichas 
 Rivais do 1×1: cada mesa sorteia um companheiro (o mesmo não repete no Campeonato); o jogo de apostas é o do arquétipo do estilo dele (`RIVAL_PROFILES_1V1`, tabela no GDD §8.2.1) e o erro vem do perfil sorteado em `RIVAL_POOLS`, então a dificuldade sobe como no 2×2.
 
 O gate do 2×2 (`bun run balance`, `bun scripts/sim.ts --runs 40 --seed 3 --bot good`) ficou idêntico: vitória 7,5%, Campeonato médio 4,67, 7,63 mãos por mesa.
+
+## Estacas e baralhos de volta (2026-11-12, D-82, R7.1, R7.2)
+
+A tela de Nova run devolve Estacas e baralhos iniciais ao jogador; a curva de Estacas foi recalibrada porque, depois das metas ×2 e ×1,1, o bot bom fica perto de 7% na Estaca 1 e não há mais 5–8 p.p. por degrau para tirar. O critério passou a ser **a taxa nunca sobe de uma Estaca para a próxima** (`bun scripts/stakes.ts --runs 600`), com a Estaca 1 intocada (`bun run balance` imprime os mesmos 7,4 / 8,6 / 7,0%). Mesmas seeds (100 000 + i), bot bom, 600 runs por coluna.
+
+| Estaca | Antes (metas ×1; 150 runs) | Depois (600 runs) | `goalMult` antes → depois | `rivalHeadStart` antes → depois |
+|---|---|---|---|---|
+| 1 | 10,7% | **7,2%** | 1 → 1 | 0 → 0 |
+| 2 | 6,7% | **6,5%** | 1,15 → 1,1 | 0 → 0 |
+| 3 | 3,3% | **5,8%** | 1,25 → 1,18 | 3 → 1 |
+| 4 | 4,0% | **3,5%** | 1,3 → 1,25 | 3 → 1 |
+| 5 | 0,0% | **3,3%** | 1,45 → 1,3 | 4 → 2 |
+| 6 | 0,7% | **2,2%** | 1,5 → 1,38 | 6 → 2 |
+| 7 | 0,0% | **1,8%** | 1,7 → 1,4 | 6 → 3 |
+| 8 | 0,0% | **0,7%** | 1,8 → 1,9 | 7 → 4 |
+
+Degraus (p.p.): 0,7 · 0,7 · 2,3 · 0,2 · 1,1 · 0,4 · 1,1. Campeonato médio alcançado: 4,49 · 4,30 · 4,13 · 4,01 · 3,81 · 3,70 · 3,40 · 2,80. A antiga curva zerava na Estaca 5 (a "linha de antes" é a medição com 150 runs desta data, com os `goalMult` de então). Só `goalMult` não basta: ×1,05 de meta quase não mexe na taxa (a medição com `goalMult` 1 · 1,05 · 1,1 · … · 1,35 e a vantagem 0 0 1 1 2 2 3 3 deu 7,2 · 7,0 · 7,2 · 4,7 · 3,7 · 3,5 · 2,2 · 1,8%), então a vantagem dos rivais foi suavizada e o segundo salto de "rivais mais duros" saiu da Estaca 7 para a 8. Demais regras iguais: juros com teto $3 desde a 3, Pequena sem prêmio e rivais um Campeonato mais duros desde a 4, preços +25% na 8. O texto de cada Estaca na tela de Nova run é gerado de `stakeRules` (`stakeChanges`), então não desalinha dos números.
+
+Run 1×1 (`bun scripts/stakes.ts --mode 1v1 --runs 600`, a mesma curva de regras): 14,2 · 10,8 · 6,7 · 5,8 · 4,5 · 4,0 · 3,3 · 0,3% (degraus 3,4 · 4,1 · 0,9 · 1,3 · 0,5 · 0,7 · 3,0), também sempre descendo. Com 300 runs a mesma curva teve um empate-para-cima de 0,6 p.p. entre as Estacas 4 e 5 (ruído de amostra, ±1,3 p.p.).
+
+### Baralhos iniciais (`bun scripts/stakes.ts --decks --runs 600`, Estaca 1, 2×2)
+
+| Baralho | Vitórias do bot bom | Diferença para o normal | Campeonato médio |
+|---|---|---|---|
+| Normal | 7,2% | — | 4,49 |
+| do Interior (4, 5, 6 ×2 Fichas) | 7,7% | +0,5 | 4,52 |
+| do Blefe (+1 sinal) | 9,0% | +1,8 | 4,51 |
+| do Dinheiro (+$10, −1 espaço de trinket) | 7,0% | −0,2 | 4,55 |
+| Viciado (cópia extra de ♣) | 12,2% | **+5,0** | 4,72 |
+
+Todos dentro de ±5 p.p. (aceite do R7.2); o Viciado está **exatamente no limite**. As regras dos cinco baralhos existem com a loja só de trinkets: o do Dinheiro corta um espaço de trinket (`trinketSlots`), não de Manha. O Blefe só tem efeito com parceiro (o sinal é lido por ele): na run 1×1 ele fica fechado na tela de Nova run (`deckNeedsPartner`). O destrave das Manhas lendárias (feito `doze`) saiu porque a loja da 1.0 não vende Manhas.
+
+Teste do reroll da loja de trinkets: preço `rerollBase` $5 + $1 a cada renovação na mesma loja, o dinheiro sai, a oferta nova nunca traz o que a run já tem naquele nível, e a loja de depois do chefe mantém a oferta de nível 4 (`ShopState.afterBoss`).

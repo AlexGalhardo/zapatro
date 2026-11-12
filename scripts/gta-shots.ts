@@ -31,7 +31,7 @@ const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, locale: lang });
 const shots = [
 	{ name: '01-menu', q: '?', scene: 'Menu' },
-	{ name: '02-partner', q: '?run=1&seed=1', scene: 'Run' },
+	{ name: '02-partner', q: '?run=1&seed=1&mode=2v2', scene: 'Run' },
 	{ name: '03-shop', q: '?run=1&seed=7', scene: 'Run' },
 	{
 		name: '04-table',

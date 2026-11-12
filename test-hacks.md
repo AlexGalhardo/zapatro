@@ -22,11 +22,11 @@ Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Fun
 
 | Parâmetro | Valores | Efeito |
 | --- | --- | --- |
-| `run=1` | | Começa uma run nova na escolha do modo (Dupla 2×2 ou Mano a mano 1×1) e depois do parceiro |
-| `mode=1v1` | `1v1` | Com `run=1`, cria direto uma run mano a mano (sem escolha de modo nem de parceiro; os traços de parceiro não existem). Outro valor é ignorado: sem `mode`, a tela pergunta |
+| `run=1` | | Começa uma run nova na tela de Nova run (modo, Estaca e baralho inicial, lembrados no save) e depois na escolha do parceiro |
+| `mode=1v1` | `1v1` | Com `run=1`, pula a tela de Nova run: `1v1` cria direto uma run mano a mano (sem parceiro; os traços de parceiro não existem), `2v2` vai direto à escolha do parceiro. Baralho e Estaca vêm do que o save lembra (bloqueados voltam ao jogo base). Sem `mode`, a tela de Nova run aparece |
 | `money=N` | inteiro ≥ 0 | Dinheiro inicial da run nova (`RunScene`) |
 | `manhas=a,b` | ids de `src/data/manhas.ts` | Manhas iniciais da run nova: ids inválidos são ignorados e a lista é cortada nos slots disponíveis. Na partida rápida, começa com as mesmas Manhas |
-| `stake=N` | 1–8 | Estaca preselecionada da run nova, mesmo que ainda esteja bloqueada (limitada à Estaca máxima do jogo) |
+| `stake=N` | 1–8 | Estaca preselecionada da run nova, mesmo que ela ou o baralho lembrado ainda estejam bloqueados (limitada à Estaca máxima do jogo) |
 | `demo=1` | | Comportamento da demo web (termina no primeiro chefe) sem `VITE_DEMO` |
 
 ## Velocidade, bot e depuração

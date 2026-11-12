@@ -493,8 +493,13 @@ await group(browser, 'newrun', async (t) => {
 	await t.open('?seed=4');
 	await t.press('Enter');
 	t.check(
+		'New run opens the setup: mode, Stake and starting deck',
+		await t.until('setup', hasText('Run', /Stake|Estaca/), 5000),
+	);
+	await t.press('Enter');
+	t.check(
 		'New run asks for a partner',
-		await t.until('partners', hasText('Run', /partner|parceiro/i), 5000),
+		await t.until('partners', hasText('Run', /Play with|Jogar com/), 5000),
 	);
 	await t.click(textIn('Run', /Play with|Jogar com/, 1));
 	t.check(

@@ -115,7 +115,7 @@ O PLAN §1.3 (e o design original) lista um 6º pilar, **informação incompleta
 | **Meta** | várias runs | Feitos → baralhos, parceiros, Manhas lendárias; Estaca seguinte por baralho | Variedade, nunca poder (D-11) |
 
 ```text
-Menu → Nova run (baralho · parceiro · Estaca)
+Menu → Nova run (uma tela: modo · Estaca · baralho inicial, lembrados) → parceiro (2×2)
 → Campeonato N: Pequena → Loja → Grande → Loja → Chefe → Loja
 → Mesa: mãos até Pontos ≥ meta | rivais 2 quedas = fim da run
 → C8 vencido → vitória → infinito opcional → resumo → destraves → Menu
@@ -523,26 +523,28 @@ Meta só desbloqueia **variedade e dificuldade**, nunca poder: a run 1 tem a for
 |---|---|---|
 | Normal | sem alteração | inicial |
 | do Interior | 4, 5 e 6 dão ×2 Fichas | feito `lixo` (vencer com mão fraca) |
-| do Blefe | +1 sinal por mão | feito `blefe` |
+| do Blefe | +1 sinal por mão (o sinal é lido pelo parceiro: fechado na run 1×1) | feito `blefe` |
 | do Dinheiro | +$10; −1 espaço de trinket | feito `rico` (juntar $30 numa run) |
 | Viciado | cópia extra de toda carta de ♣ (era "começa com 2 zaps") | feito `ferro` (vencer mão de ferro) |
 
 ### 10.3 Feitos — 37 (`src/data/feats.ts`)
 
-Checados no fim da mão, da mesa e da run; espelham as conquistas Steam (D-28). Destravam: 4 baralhos, 2 parceiros (Jhony, Nino) e as Manhas lendárias (`doze`). O design original listava outros destraves (mão com 3 cartas fracas → Manha de `PERDA`; vencer o C8 com o Nino → parceiro); o código ficou com a tabela de GDD 10.2 e 8.1. Cada Estaca destrava a seguinte ao ser vencida com aquele baralho.
+Checados no fim da mão, da mesa e da run; espelham as conquistas Steam (D-28). Destravam: 4 baralhos e 2 parceiros (Jhony, Nino). O destrave das Manhas lendárias (`doze`) saiu em 2026-11-12: a loja da 1.0 só vende trinkets. O feito `ferro` lê o tipo da mão (`HandInfo.iron`), porque vencer a mão de ferro sempre fecha uma queda e o Lance nunca sai como `ferro`. O design original listava outros destraves (mão com 3 cartas fracas → Manha de `PERDA`; vencer o C8 com o Nino → parceiro); o código ficou com a tabela de GDD 10.2 e 8.1. Cada Estaca destrava a seguinte ao ser vencida com aquele baralho.
 
 ### 10.4 Estacas — 8 por baralho ⚖ (`src/data/stakes.ts`, cumulativas)
 
 | Estaca | Metas | Rivais começam com | Outras regras |
 |---|---|---|---|
 | 1 | ×1 | 0 | jogo base |
-| 2 | ×1,15 | 0 | — |
-| 3 | ×1,25 | 3 tentos | juros com teto $3 |
-| 4 | ×1,3 | 3 | rivais um Campeonato mais duros; Pequena sem prêmio |
-| 5 | ×1,45 | 4 | — |
-| 6 | ×1,5 | 6 | — |
-| 7 | ×1,7 | 6 | rivais dois Campeonatos mais duros |
-| 8 | ×1,8 | 7 | preços +25% |
+| 2 | ×1,1 | 0 | — |
+| 3 | ×1,18 | 1 tento | juros com teto $3 |
+| 4 | ×1,25 | 1 | rivais um Campeonato mais duros; Pequena sem prêmio |
+| 5 | ×1,3 | 2 | — |
+| 6 | ×1,38 | 2 | — |
+| 7 | ×1,4 | 3 | — |
+| 8 | ×1,9 | 4 | rivais dois Campeonatos mais duros; preços +25% |
+
+Curva recalibrada em 2026-11-12 (R7.1): como o bot bom já fica perto de 7% na Estaca 1, o degrau cai de 5–8 p.p. para cerca de 1 p.p., e a taxa só precisa descer sempre (`bun scripts/stakes.ts`). Medição em [balancing.md](balancing.md). A tela de Nova run lista as regras de cada Estaca a partir de `stakeRules` (`stakeChanges`); cada baralho abre as próprias Estacas (a seguinte, ao vencer com ele).
 
 ⚠ Contra o pilar P5 e a Pesquisa §3.4: as Estacas atuais são quase só **números** (meta, vantagem); o design original pedia uma **regra** por degrau (ex.: rivais com Manhas, vira sempre oculta, juros menores). **Proposta** (Pesquisa §5 item 10): manter a curva medida (−5 a −8 p.p. por degrau, D-39) mas trocar alguns degraus por regras do truco legíveis, por exemplo "rivais pedem truco mais cedo", "mão de 11 obrigatória", "1 Manha Perecível na loja", "sem sinal na 1ª mão da mesa". Toda troca passa por `bun scripts/stakes.ts`.
 
@@ -571,7 +573,7 @@ Coleção do que já foi visto (Manhas, parceiros, chefes, baralhos) + Estatíst
 ```text
 Boot → Preload → Menu
 Menu: Continuar run · Nova run · Partida rápida · Tutorial · Regras · Almanaque e dados · Configurações · Sair (só Electron)
-Nova run (baralho · parceiro · Estaca) → Apresentação da mesa (rivais/chefe; Pular)
+Nova run (modo · Estaca · baralho inicial → parceiro no 2×2) → Apresentação da mesa (rivais/chefe; Pular)
 → Mesa (+ Pausa) → fim de mesa (prêmio) → Loja → Pacote → próxima mesa … → Fim da run (resumo: parceiro, dados e Manhas; feitos) → Menu
 ```
 
