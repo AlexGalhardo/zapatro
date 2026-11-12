@@ -124,6 +124,7 @@ O plano de entrega da 1.0, com grupos, aceite e calendário, está em [ROADMAP.m
 - [ ] Material de loja com arte antiga: capturas (`bun scripts/store-shots.ts`), pôster do trailer, presskit e capsules; peso de `art-src/gta` no git (~31 MB).
 - [~] Sistemas inalcançáveis pelas flags: pular mesa, Promessas, pacotes e Melhorias **saíram do código** em 2026-11-11 (D-82, ROADMAP R0.4). Faltam voltar à interface a renovação da loja, os baralhos e versos destraváveis e as Estacas (ROADMAP R7.1, R7.2 e R6.2).
 - [x] 1×1 jogável (2026-11-11): Partida Rápida com escolha Dupla ou Mano a mano (ROADMAP R2.1, R2.4; R2.2 e R2.3 com acabamento pendente) e mesa da rede local 2×2 ou 1×1 com cartas especiais e saída do anfitrião (R4.2, R4.4, R4.9). Scripts de captura confiáveis (R0.2).
+- [~] Run 1×1 (2026-11-11): modo, rivais do elenco, metas e balanceamento próprios, save no schema 4 (ROADMAP R3.1 a R3.3); itens e chefes auditados (R3.4) e estatísticas por modo só nos dados (R3.6); conteúdo exclusivo (R3.5) por fazer.
 - [x] LAN sem relógio de jogada: resolvido em 2026-11-11 com o relógio de 30 s, a jogada do bot no estouro e o piloto automático (D-81, ROADMAP R4.3, [docs/multiplayer.md](docs/multiplayer.md)).
 - [x] Build Poki (`VITE_POKI=1`) apagava as vozes de `dist/` mesmo com outro `outDir`: o corte agora usa o `outDir` resolvido (`scripts/lib/poki-trim.ts`, `tests/poki-trim.test.ts`).
 

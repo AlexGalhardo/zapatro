@@ -18,13 +18,24 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 - **rules:** a "Mano a mano (1×1)" page in the Rules screen; F1 at a mano a mano table opens the manual on it.
 - **lan:** the host picks the table mode in the lobby, 2 vs 2 or 1 vs 1, in any mix of people and bots.
 - **lan:** the LAN table now plays with the special cards (Trevo, Olho, Raio) as well as the jokers. What the Olho shows is sent only to the pair that played it.
+- **run:** new run mode Mano a mano (1×1): you play alone against one rival per table. The ten characters of the cast are the rivals, each with their own style; there is no partner and no partner trait. A new run starts by asking Teams (2×2) or Mano a mano (1×1).
+- **run:** the 1×1 run has its own table goals, and leaves out what needs a partner or signals: the trinkets Dupla Dinâmica, Confia em Mim and Cantoria and the bosses Peter and the Judge.
+- **stats:** lifetime runs and wins are counted per mode, and the run history in the Almanac names the mode.
+- **balance:** `bun scripts/balance.ts --mode 1v1` and `bun scripts/sim.ts --run-mode 1v1` measure the 1×1 run; `?run=1&mode=1v1` starts one directly.
 - **qa:** `?skipMenu=1&mode=1v1` opens the mano a mano quick match; `bun scripts/smoke.ts --mode 1v1` and the `duel` and `modechoice` QA groups cover it, and CI runs the three.
 
 ### Changed
 
+- **save:** save schema 4. Existing saves keep working and their runs count as 2×2.
+- **site:** the official site is now built with Astro and published to GitHub Pages at <https://alexgalhardo.github.io/zapatro/> on every push to `main` (`/play/` is the full game, `/demo/` the demo). `SITE_URL` and `SITE_BASE` set the address, so a custom domain needs no code change. Saves are kept per address: progress made on the old site does not follow to the new one.
+- **tooling:** `scripts/site-check.ts` rehearses GitHub Pages under the `/zapatro/` prefix.
 - **lan:** a host who leaves the lobby hands the table to the next seated player; mid-match a bot takes the seat and the match goes on.
 - **tooling:** `scripts/shot.ts`, `scripts/gta-shots.ts` and `scripts/store-shots.ts` wait for the expected scene and game state (`scripts/lib/capture.ts`) instead of fixed delays, print PASS or FAIL per capture and exit non-zero when a screen does not show or the page logs an error. Captures go to the OS temp folder by default, so the committed store images are not overwritten.
 - **tooling:** the shop capture is a real first shop of a run, so it shows the trinket offers; `scripts/qa.ts` tests the trinket shop instead of the removed Manha shop and table choice; `scripts/record-clips.ts` has an `--out` option.
+
+### Removed
+
+- **site:** Next.js, React and the Vercel deploy (`site:deploy`, `vercel.json`, the `VERCEL_*` secrets in CI).
 
 ### Fixed
 

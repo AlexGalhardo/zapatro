@@ -92,6 +92,7 @@ Fechadas na entrevista de 2026-11-11 (registradas no PLAN §2.4 e em [docs/decis
 | D-85 | Demo: **Campeonato 1 nas runs 2×2 e 1×1** mais Partida Rápida nos dois modos; rede local só no jogo pago |
 | D-86 | Execução até a 1.0: commit por item fechado, agentes em paralelo e worktrees liberados, push na branch `improve/2026-11-next`; a cada marco, PR, merge por rebase na `main` com o CI verde e release, sem pedir de novo |
 | D-87 | O chat deste projeto é em prosa normal (sem caveman) |
+| D-88 | O site é **Astro no GitHub Pages** (`https://alexgalhardo.github.io/zapatro/`, deploy a cada push na `main`); Next.js e o deploy na Vercel saíram do repositório (pedido do dev, 2026-11-11) |
 
 Abertas:
 
@@ -146,17 +147,17 @@ Objetivo: a mesma máquina de regras joga com 2 ou 4 assentos. Nada de Phaser aq
 
 ## R3 — Run 1×1 (mano a mano)
 
-- [ ] **R3.1 Nova run com modo.** A tela de nova run pergunta o modo (Dupla ou Mano a mano); no 1×1 a escolha de parceiro não aparece. A run guarda `mode` no save (schema novo com migração; save antigo vira 2×2).
+- [x] **R3.1 Nova run com modo.** (2026-11-11: `RunState.mode`, save no schema 4 com migração; a escolha de modo abre a nova run e `?run=1&mode=1v1` pula direto) A tela de nova run pergunta o modo (Dupla ou Mano a mano); no 1×1 a escolha de parceiro não aparece. A run guarda `mode` no save (schema novo com migração; save antigo vira 2×2).
   **Aceite:** `tests/save-compat.test.ts` carrega um save `0.19.0` e continua a run; run 1×1 fecha e reabre no meio de uma mesa sem perder estado.
-- [ ] **R3.2 O elenco é o rival (D-78).** Na run 1×1 não há escolha de parceiro nem traço de companheiro: cada mesa comum sorteia um dos 10 companheiros como adversário, com o retrato, as falas e o perfil de IA dele; os chefões mantêm a regra própria.
+- [x] **R3.2 O elenco é o rival (D-78).** (2026-11-11: `RIVAL_PROFILES_1V1` em `src/data/companions.ts`, tabela no GDD §8.2.1; o rival não repete o da mesa anterior do Campeonato) Na run 1×1 não há escolha de parceiro nem traço de companheiro: cada mesa comum sorteia um dos 10 companheiros como adversário, com o retrato, as falas e o perfil de IA dele; os chefões mantêm a regra própria.
   **Aceite:** tabela dos 10 rivais com o perfil de IA de cada um em [docs/gdd-game-design-document.md](docs/gdd-game-design-document.md) §8; o mesmo rival não se repete dentro de um Campeonato (teste com seed); nenhum traço de parceiro entra na pontuação do 1×1 (teste).
-- [ ] **R3.3 Pontuação e metas.** A vaza tem 2 cartas, então as Fichas caem pela metade: metas, Lances e prêmios do 1×1 têm tabela própria em `src/data/`.
+- [x] **R3.3 Pontuação e metas.** (2026-11-11: `CHAMPIONSHIP_GOALS_1V1`, cerca de 1,14× as metas do 2×2; cortar pela metade deixava o bot bom com 38% de vitórias, porque o Mult domina a mão. `bun scripts/balance.ts --mode 1v1` PASS: bot bom 11,2 a 13,8%, aleatório 0%, 8,0 a 8,2 mãos por mesa) A vaza tem 2 cartas, então as Fichas caem pela metade: metas, Lances e prêmios do 1×1 têm tabela própria em `src/data/`.
   **Aceite:** `bun run balance --mode 1v1` dentro da faixa da D-39 (bot bom 5 a 20% na Estaca 1, aleatório < 5%) e 4 a 12 mãos por mesa; números em [docs/balancing.md](docs/balancing.md).
-- [ ] **R3.4 Manhas, trinkets e chefes no 1×1.** Itens que dependem de parceiro saem do sorteio do 1×1 ou ganham texto próprio; cada chefe tem a regra conferida em dois assentos.
+- [~] **R3.4 Manhas, trinkets e chefes no 1×1.** (2026-11-11: fora do 1×1 os trinkets Dupla Dinâmica, Confia em Mim e Cantoria e os chefes Peter e Juiz; Valentão e Sortuda com texto no singular (`boss.<id>.rule.duel`); teste percorre itens e chefes. Achado sem dono ainda: a Manha Ferro Quente e o Lance Ferro nunca disparam, nos dois modos, porque ganhar a mão de ferro sempre fecha uma queda; e o Juiz não faz nada no 2×2 com a loja só de trinkets. Entram em R7.5) Itens que dependem de parceiro saem do sorteio do 1×1 ou ganham texto próprio; cada chefe tem a regra conferida em dois assentos.
   **Aceite:** teste percorre todos os itens e chefes e falha se algum disponível no 1×1 tiver efeito impossível de ativar.
 - [ ] **R3.5 Conteúdo exclusivo.** De 5 a 8 Manhas ou trinkets que só existem no mano a mano, centrados em blefe e leitura (skill `add-game-content`).
   **Aceite:** cada um com dado, i18n, ícone, teste e linha no Almanaque.
-- [ ] **R3.6 Estatísticas e feitos por modo.** Almanaque separa vitórias 2×2 e 1×1; feitos novos do 1×1 espelhados nas conquistas da Steam ([docs/steam-achievements.md](docs/steam-achievements.md)).
+- [~] **R3.6 Estatísticas e feitos por modo.** (2026-11-11: `meta.stats.byMode` e `mode` no histórico, contados por `recordRunStart` e `recordRunEnd`; o histórico do Almanaque mostra o modo. Falta a tela de estatísticas por modo e os feitos do 1×1) Almanaque separa vitórias 2×2 e 1×1; feitos novos do 1×1 espelhados nas conquistas da Steam ([docs/steam-achievements.md](docs/steam-achievements.md)).
   **Aceite:** run 1×1 jogada pelo bot (`?run=1&mode=1v1&auto=1&speed=4`) chega ao fim e atualiza as estatísticas certas.
 
 ## R4 — Multiplayer local
@@ -302,7 +303,7 @@ Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam 
   **Aceite:** 6 capturas 1920×1080 em EN e PT-BR em `docs/media/`, cada uma mostrando um momento diferente.
 - [ ] **R12.2 Trailer novo.** Roteiro de 60 s com truco, contagem, loja, chefe, mano a mano e mesa com amigos; corte de 15 s.
   **Aceite:** `trailer/out/` em EN e PT-BR, 1080p a 60 fps; os primeiros 5 s mostram o jogo, não logos.
-- [ ] **R12.3 Site e presskit.** [truco.lekzera.xyz](https://truco.lekzera.xyz) com a arte atual, botões de lista de desejos, presskit baixável.
+- [ ] **R12.3 Site e presskit.** (2026-11-11, D-88: o site passou a ser Astro no GitHub Pages, [alexgalhardo.github.io/zapatro](https://alexgalhardo.github.io/zapatro/), com o jogo em `/play/` e a demo em `/demo/`; Next.js e Vercel saíram do repositório) Site com a arte atual, botões de lista de desejos, presskit baixável.
   **Aceite:** `bun scripts/site-check.ts` aprovado; Lighthouse ≥ 90 em desempenho e acessibilidade.
 - [ ] **R12.4 Demo web.** itch.io e Poki com o build demo (< 8 MB no Poki).
   **Aceite:** `bun scripts/qa-web.ts` no build de produção.
