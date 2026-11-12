@@ -3002,7 +3002,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				chipsAt: [this.chipsVal.x, this.chipsVal.y],
 				multAt: [this.multVal.x, this.multVal.y],
 				totalAt: [this.scoreTotal.x, this.scoreTotal.y],
-				originAt: [this.scoreTitle.x, this.scoreTitle.y],
+				originAt: [this.scoreTitle.x, this.scoreTitle.y - 17],
 			},
 			label: (e) => (e.named ? this.effectLine(e.step) : null),
 			sourceAt: (e) => this.sourceIcon(e.id, e.kind),

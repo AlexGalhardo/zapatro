@@ -153,7 +153,32 @@ Fila: um aviso de peso maior ou igual ao atual (ou do mesmo tipo) o substitui na
 
 ## 8. Contagem de pontos (R5.4)
 
-A preencher.
+No fim de uma mão ganha, a `TableScene` monta a fila com `buildCountQueue(steps)` (`src/logic/score/count-queue.ts`, lógica pura: uma entrada por `step` de `scoreHand`, na mesma ordem, com Fichas, Mult e pontos acumulados, peso, som e tempo) e `playScoreCount` (`src/view/fx/score-count.ts`) a toca sobre o painel de contagem no centro do feltro. O módulo só desenha: recebe a cena, os objetos do painel e dados prontos; não lê nem muda a partida. Números em `src/config/feel-score.ts`. O total mostrado é sempre o derivado dos `steps` (`totals`); `tests/score-count.test.ts` compara a fila com os `steps` (mão simples, mão com Manha ×Mult, trinkets Perk e Flaw reais, passo de dinheiro, fila longa).
+
+Cada passo (tempos a 1×; tudo passa por `speed`, a 4× divide por 4):
+
+1. **Fonte:** o número (`+20`, `+3`, `×1,5`, `-1`) voa da origem até a caixa de Fichas ou de Mult. De um trinket ou Manha equipado vem do ícone dele no card da lateral; de carta, Lance ou aposta vem de cima do painel.
+2. **Chega:** a caixa bate (1,18× Fichas, 1,32× +Mult, 1,6× ×Mult) e os totais correntes se atualizam. O ×Mult ainda ganha um anel, tremor e zoom leves (`shake`, `zoomPunch`).
+3. **Trinket ou Manha com nome:** o ícone no HUD pulsa (escala 1,35×) com um anel na cor `good` (Perk) ou `bad` (Flaw), e o popup `[Nome] motivo · efeito` aparece sobre um fundo verde ou vermelho escuro. Flaw é todo passo que tira algo (Fichas, Mult ou dinheiro negativo).
+4. **Som:** `sfx.score.chip`, `sfx.score.mult` e `sfx.score.xmult` por peso; passo com nome toca `sfx.manha.trigger` (e o `xmult` junto se for ×Mult); dinheiro toca `sfx.money`. A altura sobe 1 semitom por passo até 12; um Flaw cai 5 semitons abaixo da altura corrente. `sfx(scene, key, volume, rate)` ganhou o `rate` (multiplica a taxa de reprodução).
+
+| Peso | Passo | Tempo base | Bate | Número voando |
+|---|---|---|---|---|
+| 1 | Fichas, dinheiro | 130 ms | 1,18× | 11 px |
+| 2 | +Mult | 230 ms | 1,32× | 13 px |
+| 3 | ×Mult | 420 ms | 1,6× | 17 px |
+
+Passo com nome soma 170 ms para dar tempo de ler. O tempo de cada passo vai encolhendo até 55% no último (a contagem acelera) e a soma de todos nunca passa de **2800 ms** (`ceilingMs`): se passar, todos os passos são escalados juntos. A 4× a contagem inteira cabe em 700 ms. Antes: 120 ms de entrada do painel. Depois: 260 ms parado no total, voo do total até o card da meta (340 ms) e o medidor enchendo (480 ms).
+
+**O total cai no medidor.** O total voa até a barra do card da meta na lateral; o medidor enche pelo valor da mão (`landOnMeter`) e o card da meta bate proporcional ao tamanho da mão contra a meta: menos de 10% da meta, 1,08×; de 10% a 30%, 1,2× com tremor 0,0015; acima de 30%, 1,35× com tremor 0,003.
+
+**Uma mão sozinha bate a meta** (pontos da mão ≥ meta da mesa): antes do voo do total entra um final maior, 1360 ms a 1×: a mesa escurece (50%), raios dourados giram atrás do painel, o texto "Mesa ganha numa mão só!" cai com um "pop" abaixo do painel, faíscas explodem do painel, tremor 0,008 e zoom 6%; o card da meta bate 1,6×. Sem flash: só movimento e escurecimento.
+
+- **Pulável:** um toque, clique ou tecla (a mesma `skipCall` do pedido de truco; ignora os primeiros 150 ms) pula para os totais finais (os números mostrados são sempre os reais, e o painel mostra a última soma) e o medidor ainda enche, sem o voo.
+- **Reduzir piscadas:** sem anéis nem faíscas; ficam o movimento, o pulso do ícone e a cor estável. Tremor e zoom só com "Tremor de tela".
+- **Partida rápida sem meta** (Truco puro até 12): sem contagem, só o popup de cada Manha ou modificador (`showEffect`) e o ícone pulsa. A mesa LAN nunca tem contagem.
+- **Modificador de carta:** o passo `mod:` mostra o popup, mas não pulsa a carta: no fim da mão as cartas jogadas já saíram do feltro.
+- **Tutorial:** a mão do tutorial passa pela mesma contagem; `cue('scored')` continua saindo depois dela e as âncoras `points` e `hud` seguem no mesmo lugar.
 
 ## 9. Começos e fins (R5.7)
 

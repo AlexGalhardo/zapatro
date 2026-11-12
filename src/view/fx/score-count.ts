@@ -63,6 +63,8 @@ export interface ScoreCountHandle {
 }
 
 const SKIP_GUARD_MS = 150;
+/** Room for the total in the panel (logical px): from the `=` to the right edge. */
+const TOTAL_MAX_W = 66;
 
 /**
  * The score count (docs/game-feel.md §8): plays the queue of `buildCountQueue` step by step, the
@@ -169,6 +171,16 @@ export function playScoreCount(scene: Phaser.Scene, a: ScoreCountArgs): ScoreCou
 			sfx(scene, 'sfx.manha.trigger', 1, cents(e.rate));
 			if (e.channel === 'xMult') sfx(scene, base, 1, cents(e.rate));
 		} else sfx(scene, base, 1, cents(e.rate));
+	};
+
+	/** A long total shrinks to stay clear of the `=` on its left and the panel's edge. */
+	const fitTotal = (text: string): void => {
+		const t = a.box.total;
+		const base =
+			(t.getData('base') as number | undefined) ?? parseFloat(String(t.style.fontSize));
+		t.setData('base', base);
+		t.setFontSize(base).setText(text);
+		if (t.width > TOTAL_MAX_W) t.setFontSize(Math.max(8, (base * TOTAL_MAX_W) / t.width));
 	};
 
 	const signed = (n: number): string => `${n > 0 ? '+' : ''}${n}`;
@@ -314,7 +326,7 @@ export function playScoreCount(scene: Phaser.Scene, a: ScoreCountArgs): ScoreCou
 		const last = a.queue[a.queue.length - 1];
 		if (last) showNumbers(last.chips, last.mult);
 		a.box.popup.setVisible(false);
-		a.box.total.setText(a.totalText);
+		fitTotal(a.totalText);
 		bump(a.box.total, 1.5);
 		zoomPunch(scene, 0.02, real(160));
 		const beat = a.goal !== undefined && a.points >= a.goal;
