@@ -228,3 +228,7 @@ Lista de sons que um efeito pediria e que ainda não existem em `public/assets/a
 | Tapa de carta forte, brilho de manilha em voo, toque de carta encoberta | cartas por peso (§5) | `sfx.card.play` em outra altura, `sfx.card.cover` |
 | Varrida da vaza e estalo do empate | recolher a vaza (§5) | `sfx.trick.win` |
 | Vinhetas curtas de comemoração, resmungo e susto | selos de reação (§6) | nada |
+| Pancada do card do chefe | apresentação do chefe (§9) | `sfx.truco` 300 cents abaixo; `sfx.bet.doze` 400 abaixo no Rei do Truco |
+| Queda dos rivais | queda (§9) | `sfx.queda` 500 cents abaixo |
+| Chuva de faíscas da vitória e baque da derrota | entrada do fim de mesa (§9) | `sfx.table.win`, `sfx.table.lose` |
+| ×Mult e defeito de trinket | contagem de pontos (§8) | `sfx.score.xmult` e `sfx.score.mult` em outra altura |

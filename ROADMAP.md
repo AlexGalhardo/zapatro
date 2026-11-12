@@ -50,7 +50,7 @@ Cada marco é um release (`bun run release`, só com pedido do dev), com `.exe` 
 |---|---|---|---|---|
 | M0 | 2026-11-15 | — | Roadmap aprovado e decisões fechadas (feito em 2026-11-11); 🧑 contas da Steam e do Play abertas; lista de pinturas entregue ao dev | R0, R7.0, §4 |
 | Teste | 2026-11-11 | `0.20.0` | Release de teste pedido pelo dev, antes do M1: motor 1×1 (ainda sem tela), relógio de jogada na rede local, tela de carregamento, remoção de pacotes, Melhorias e pular mesa, formulário da LAN legível | R0.1, R0.4, R1, R4.3, R6.1, R7.0 |
-| M1 | 2026-11-29 | `0.21.0` | Partida Rápida 1×1 jogável | R2 |
+| M1 | 2026-11-12 (previsto 2026-11-29) | `0.21.0` | Saiu antes e maior: Partida Rápida e run 1×1, LAN 2×2 e 1×1 com cartas especiais, game feel (R5 inteiro), Estacas, baralhos e renovação da loja de volta, resumo de run, site em Astro no GitHub Pages | R0.2, R2, R3.1 a R3.3, R4.2, R4.4, R4.9, R5, R6.4, R7.1 a R7.3 |
 | M2 | 2026-12-13 | `0.22.0` | Multiplayer local completo: 2×2 e 1×1, qualquer combinação de humanos e NPCs, relógio de jogada | R4 |
 | M3 | 2026-12-27 | `0.23.0` | Run 1×1 balanceada e sistemas de profundidade decididos e ligados | R3, R7 |
 | M4 | 2027-01-10 | `0.24.0` | Game feel e interface; arte final sem marcas; congelamento de conteúdo. **Inscrição no Next Fest** | R5, R6, R7.4, R9 |
@@ -199,13 +199,13 @@ Princípio: todo evento de regra tem resposta visual e sonora proporcional ao pe
   **Aceite:** 60 FPS em 1920×1080 durante uma vaza inteira (`bun scripts/qa-browsers.ts`); nenhum efeito atrasa a vez do jogador.
 - [x] **R5.3 Centro do feltro vivo.** (2026-11-12: `src/view/fx/felt-center.ts`; monte com a vira ao lado, uma ficha por degrau com o valor em cima (a aposta pendente aparece como "N?"), três marcadores de vaza; as cartas jogadas abriram espaço no centro) Monte e vira juntos, fichas da aposta empilhando no centro, marcadores das três vazas (ganhou, perdeu, empatou) sempre visíveis.
   **Aceite:** captura de uma mão no meio: o jogador responde "quanto vale" e "quem levou cada vaza" sem olhar a barra lateral.
-- [ ] **R5.4 Contagem de pontos.** Passo a passo dos `steps` com som subindo de tom, cada Manha ou trinket pulsa na sua vez, total batendo no medidor; efeito especial quando uma mão sozinha bate a meta.
+- [x] **R5.4 Contagem de pontos.** (2026-11-12: `buildCountQueue(steps)` em `src/logic/score/count-queue.ts` vira a fila que `src/view/fx/score-count.ts` anima, e o teste compara as duas; o som sobe um semitom por passo, o trinket ou a Manha pulsa na vez dele (verde na vantagem, vermelho no defeito), o total voa para o medidor da meta; a mão que bate a meta sozinha tem um final próprio; no máximo 2,8 s a 1× e um toque pula. O modificador de carta não pulsa na carta, que já saiu do feltro na contagem) Passo a passo dos `steps` com som subindo de tom, cada Manha ou trinket pulsa na sua vez, total batendo no medidor; efeito especial quando uma mão sozinha bate a meta.
   **Aceite:** a animação mostra exatamente os `steps` de `scoreHand` (teste compara a fila animada com os `steps`); pode ser pulada com um toque.
 - [x] **R5.5 Avisos redesenhados.** (2026-11-12: `NoticeBoard.show` em `src/view/fx/notice.ts` desenha os 18 tipos, cada um com ícone, cor e peso; o mais leve espera o mais pesado. Tabela em docs/game-feel.md §7) "Nova vira", "Aposta sobe", "Vaza nossa", "Mão de 11" como faixas com ícone e cor por tipo, no lugar do texto sobre retângulo.
   **Aceite:** uma função única desenha todos os avisos; captura de cada tipo nas quatro resoluções.
 - [x] **R5.6 Personagens reagem.** (2026-11-12: as pinturas têm uma imagem só por personagem, então a reação é movimento, um banho de cor e um selo de emoção (`src/view/fx/seat-react.ts`); respiração em repouso e quem está na vez respira mais. Tabela em docs/game-feel.md §6) Expressões que já existem (`EXPRESSIONS`) em vitória, derrota, blefe descoberto e truco; respiração leve em repouso.
   **Aceite:** cada evento da tabela de `docs/game-feel.md` dispara uma expressão; nenhuma fala cobre outra.
-- [ ] **R5.7 Começos e fins.** Apresentação do chefe (retrato, nome, regra), Queda, vitória e derrota de mesa, vitória e derrota de run com música própria.
+- [x] **R5.7 Começos e fins.** (2026-11-12: apresentação do chefe (1960 ms; Rei do Truco 2680 ms), queda nossa e dos rivais (1450 e 1410 ms), entrada do painel de fim de mesa por resultado e peso, todos puláveis (`src/view/fx/boss-intro.ts`, `queda.ts`, `table-end.ts`); `music.win` e `music.lose` tocam uma vez no fim de run. Tabela em docs/game-feel.md §9) Apresentação do chefe (retrato, nome, regra), Queda, vitória e derrota de mesa, vitória e derrota de run com música própria.
   **Aceite:** cada um dura ≤ 3 s a 1×, é pulável e tem captura.
 
 ## R6 — Interface
@@ -218,7 +218,7 @@ Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam 
   **Aceite:** capturas nas quatro resoluções; toda oferta mostra raridade, efeito e preço sem abreviar.
 - [ ] **R6.3 Caminho do Campeonato.** Entre as mesas, uma tela curta mostra Mesa 1, Mesa 2 e Chefão com a regra do chefe e o prêmio.
   **Aceite:** o jogador vê a regra do chefe antes de entrar na Mesa 1; a tela some em um toque.
-- [ ] **R6.4 Fim de run.** Resumo com mão mais valiosa, item que mais pontuou, seed copiável e "Nova run" em um toque.
+- [x] **R6.4 Fim de run.** (2026-11-12: `runSummary` em `src/logic/run/summary.ts` (teste contra `run.stats`): resultado, até onde foi, maior mão, item que mais pontuou (`run.stats.items`), trinkets do fim, seed com Copiar, "Nova run" em um toque) Resumo com mão mais valiosa, item que mais pontuou, seed copiável e "Nova run" em um toque.
   **Aceite:** os números batem com `run.stats` (teste); captura de vitória e de derrota.
 - [ ] **R6.5 Ajuda no ponto.** Força da carta ao passar o mouse ou segurar o dedo; "por que perdi esta vaza" em uma linha para quem liga as dicas.
   **Aceite:** a explicação vem da mesma função que resolve a vaza (teste com manilha, empate e encoberta).
@@ -240,7 +240,7 @@ Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam 
   **Aceite:** `bun scripts/stakes.ts --runs 600` com a taxa caindo de forma monótona da Estaca 1 à 8; números em [docs/balancing.md](docs/balancing.md).
 - [x] **R7.2 Baralhos iniciais de volta (D-82).** (2026-11-12: cinco baralhos na tela "Nova run", bloqueados dizem o que os destrava; diferença para o Normal em 600 runs: Interior +0,5, Blefe +1,8, Dinheiro −0,2, Viciado +5,0; o verso do baralho aparece no monte, na vira escondida, nas cartas encobertas e nas mãos dos outros. Blefe fechado no 1×1) Escolha de baralho na nova run, destraves visíveis.
   **Aceite:** cada baralho muda a taxa do bot bom em no máximo ±5 p.p. em relação ao padrão; verso próprio em jogo.
-- [ ] **R7.3 Destraves com rumo.** Toda run, ganha ou perdida, mostra o que destravou e o que falta para o próximo destrave.
+- [x] **R7.3 Destraves com rumo.** (2026-11-12: o resumo da run lista o que ela destravou e o próximo destrave mais adiantado (`unlockedThisRun`, `nextUnlock` em `src/logic/meta.ts`); `tests/run-setup.test.ts` prova que todo destrave é alcançável na configuração da 1.0) Toda run, ganha ou perdida, mostra o que destravou e o que falta para o próximo destrave.
   **Aceite:** teste garante que todo destrave é alcançável na configuração da 1.0.
 - [ ] 🧑 **R7.4 Arte final sem marcas.** Camisa do Nino, letreiro e torre do `bg6`, Brahma e "51" do fundo da loja, "JOKER" na face do coringa, chefe `juiz` pintado, vendedor pintado (pedidos em R7.0).
   **Aceite:** revisão visual de cada pintura em `art-src/gta/` registrada em [docs/asset-status.md](docs/asset-status.md) com "sem marca real, sem texto"; `bun scripts/portraits.ts` regenerado; nenhum retrato em pixel no jogo.
