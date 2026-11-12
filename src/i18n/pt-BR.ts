@@ -737,6 +737,8 @@ export const ptBR: Record<I18nKey, string> = {
 	'feat.unlocked': 'Feito',
 	'run.stake': 'Estaca {n}',
 	'stats.runs': 'Runs: {n} · vitórias: {w}',
+	'stats.byMode':
+		'Dupla 2×2: runs {n2}, vitórias {w2} · Mano a mano 1×1: runs {n1}, vitórias {w1}',
 	'stats.hands': 'Mãos: {n} · vencidas: {w}',
 	'stats.trucos': 'Trucos pedidos: {n} · blefes vencidos: {b}',
 	'stats.best': 'Melhor mão: {h} · melhor Campeonato: {c}',
