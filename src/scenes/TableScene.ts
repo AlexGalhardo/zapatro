@@ -2345,7 +2345,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		else
 			v.tail
 				.setPosition(
-					Math.min(Math.max(ui.avatar[0] + SEAT_CARD.w / 2, b.left + 9), b.right - 9),
+					Math.min(Math.max(ui.avatar[0] + this.seatCard.w / 2, b.left + 9), b.right - 9),
 					b.bottom + 2,
 				)
 				.setAngle(105);
@@ -2733,9 +2733,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 						this.line(e.result === 'us' ? 'say.manilha.us' : 'say.manilha.them', 5),
 					);
 				else this.trickChat(e.winner);
-				this.status.setText(
-					e.result === 'tie' ? t('table.trick.tie') : this.tx(`table.trick.${e.result}`),
-				);
+				const trickText =
+					e.result === 'tie' ? t('table.trick.tie') : this.tx(`table.trick.${e.result}`);
+				this.status.setText(trickText);
 				this.cue('trick');
 				if (e.result === 'tie') tieBump(this.fx, this.played);
 				await this.wait(TABLE_TIMING.trickHold);
@@ -2746,6 +2746,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				await collectTrick(this.fx, this.played, to);
 				for (const img of this.played) img.destroy();
 				this.played = [];
+				// Said once the cards are gone: the strip sits where the top card was.
+				this.notices.show(
+					e.result === 'tie' ? 'trickTie' : e.result === 'us' ? 'trickUs' : 'trickThem',
+					trickText,
+				);
+				// The marker of this trick shows its result as the cards leave.
+				this.refreshHud();
 				break;
 			}
 			case 'truco': {
