@@ -14,6 +14,7 @@ import {
 import { titleMetrics } from '../art/title';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL, SHOW_SCORE_PANEL } from '../config/features';
+import { TIER_FEEL } from '../config/feel-cards';
 import { FELT_CENTER } from '../config/feel-felt';
 import { isTrucoStep, TRUCO_CALL } from '../config/feel-truco';
 import { PALETTE, shade, toCss } from '../config/palette';
@@ -103,8 +104,11 @@ import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
+import { collectTrick, type FxEnv, flyCard, landCard, tieBump } from '../view/fx/card-fx';
+import { cardWeight } from '../view/fx/card-weight';
 import { createFeltCenter, type FeltCenter } from '../view/fx/felt-center';
 import { NoticeBoard } from '../view/fx/notice';
+import { SeatMotion } from '../view/fx/seat-react';
 import { playTrucoCall, type TrucoCallHandle } from '../view/fx/truco-call';
 import { handEffects, visibleHandEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
@@ -529,6 +533,10 @@ export class TableScene extends Phaser.Scene {
 	/** The key (or pad button) that plays each card, under it. */
 	private cardKeys: Phaser.GameObjects.Text[] = [];
 	private played: Phaser.GameObjects.Image[] = [];
+	/** The seats' breathing and reactions (src/view/fx/seat-react.ts). */
+	private motion!: SeatMotion;
+	/** What the card effects (src/view/fx/card-fx.ts) need from this table. */
+	private readonly fx: FxEnv = { scene: this, dur: (ms) => this.dur(ms) };
 	private vira!: Phaser.GameObjects.Image;
 	private viraLabel!: Phaser.GameObjects.Text;
 	private feltCenter!: FeltCenter;
@@ -1064,6 +1072,12 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 	private buildLayout(chars: Record<Seat, string>): void {
 		this.drawTable();
 		const card = this.seatCard;
+		this.motion = new SeatMotion(
+			this,
+			() => this.match?.actor(),
+			(ms) => this.dur(ms),
+			() => comfort.reduceFlashes,
+		);
 		for (const seat of this.others as readonly Exclude<Seat, 0>[]) {
 			const id = chars[seat];
 			const ui = this.seatUi(seat);
@@ -1133,6 +1147,7 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 				expression,
 				charId: id,
 			});
+			this.motion.add(seat, portrait, [ax + 10, ay + 10]);
 		}
 		this.vignette = this.add
 			.rectangle(0, 0, 4000, 4000, PALETTE.night, 1)
@@ -2341,18 +2356,41 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		});
 	}
 
-	/** A reaction (a signal caught, a bet): the painted card has one pose, so it pops instead. */
-	private face(seat: Seat, _expr: Expression, ms: number = TABLE_TIMING.signalFace): void {
-		const v = this.seats.get(seat);
-		if (!v || comfort.reduceFlashes) return;
-		const base = v.portrait.scaleX;
-		this.tweens.add({
-			targets: v.portrait,
-			scale: base * 1.08,
-			duration: this.dur(Math.min(ms, 260)),
-			yoyo: true,
-			ease: 'Quad.easeOut',
-		});
+	/**
+	 * A reaction (docs/game-feel.md §6): the painted card has one pose, so `expr` becomes a motion,
+	 * a colour wash and an emotion stamp. `_ms` is kept for the callers; each reaction has its own length.
+	 */
+	private face(seat: Seat, expr: Expression, _ms?: number, strong = false): void {
+		this.motion.react(seat, expr, strong);
+	}
+
+	/** Seats react to the events whose animation does not call `face` itself (truco and folded do). */
+	private reactTo(e: TableEvent): void {
+		const cheer = (winner: Team, strong: boolean) => {
+			for (const seat of this.seats.keys())
+				this.face(seat, teamOf(seat) === winner ? 'happy' : 'sweat', undefined, strong);
+		};
+		switch (e.type) {
+			case 'trick':
+				if (e.result === 'tie')
+					for (const seat of this.seats.keys()) this.face(seat, 'eyebrow');
+				else cheer(e.result, false);
+				break;
+			case 'accepted':
+				this.face(e.seat, 'eyebrow');
+				break;
+			case 'signal':
+				if (e.seat === 2) this.face(2, 'wink');
+				if (e.seat !== 0 && teamOf(e.seat) === 'them' && e.caughtBy.includes(0))
+					this.face(e.seat, 'mouth');
+				if (e.seat === 0) for (const by of e.caughtBy) this.face(by, 'tongue');
+				break;
+			case 'handOver': {
+				const queda = this.match.outcome === 'queda' || this.match.outcome === 'rivalQueda';
+				if (e.end.winner) cheer(e.end.winner, queda);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -2648,9 +2686,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 	}
 
 	private async animate(e: TableEvent): Promise<void> {
+		this.reactTo(e);
 		switch (e.type) {
 			case 'played': {
-				sfx(this, e.faceDown ? 'sfx.card.cover' : 'sfx.card.play');
 				if (e.seat === 0) this.renderHand();
 				else this.refreshHud();
 				const [px, py] = this.playPos(e.seat);
@@ -2662,22 +2700,16 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					.setDepth(PLAYED_DEPTH[e.seat]);
 				if (!e.faceDown) this.markManilha(img, e.card);
 				this.played.push(img);
-				await this.tween({
-					targets: img,
-					x: px,
-					y: py,
-					duration: TABLE_TIMING.play,
-					ease: 'Quad.easeOut',
-				});
-				// Squash on landing (B6.1): wide and flat, then back.
-				img.setScale(PLAYED_SCALE * 1.14, PLAYED_SCALE * 0.86);
-				this.tweens.add({
-					targets: img,
-					scaleX: PLAYED_SCALE,
-					scaleY: PLAYED_SCALE,
-					duration: this.dur(140),
-					ease: 'Back.easeOut',
-				});
+				const weight = cardWeight(e.card, this.match.state.manilha, e.faceDown);
+				await flyCard(this.fx, img, [px, py], weight);
+				landCard(this.fx, img, weight);
+				const feel = TIER_FEEL[weight.tier];
+				sfx(
+					this,
+					e.faceDown ? 'sfx.card.cover' : 'sfx.card.play',
+					feel.volume,
+					feel.detune,
+				);
 				break;
 			}
 			case 'trick': {
@@ -2705,18 +2737,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					e.result === 'tie' ? t('table.trick.tie') : this.tx(`table.trick.${e.result}`),
 				);
 				this.cue('trick');
+				if (e.result === 'tie') tieBump(this.fx, this.played);
 				await this.wait(TABLE_TIMING.trickHold);
 				const to =
 					e.winner !== undefined
 						? this.portraitPos(e.winner)
 						: ([this.cx, this.cy - 20] as [number, number]);
-				await this.tween({
-					targets: this.played,
-					x: to[0],
-					y: to[1],
-					alpha: 0,
-					duration: TABLE_TIMING.collect,
-				});
+				await collectTrick(this.fx, this.played, to);
 				for (const img of this.played) img.destroy();
 				this.played = [];
 				break;
