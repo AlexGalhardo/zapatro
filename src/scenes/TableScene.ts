@@ -2749,10 +2749,14 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					await call.done;
 					this.skipCall = null;
 				} else await this.wait(700);
+				// The proposed value shows on the chips as the call leaves the screen.
+				this.refreshHud();
 				break;
 			}
 			case 'accepted':
 				sfx(this, 'sfx.bet.accept');
+				// The stack slams with the notice, not at the end of the action.
+				this.refreshHud();
 				this.notices.show('raise', t('table.raise', { n: e.bet }));
 				if (e.seat !== 0) {
 					voice(this, this.charOf(e.seat), acceptLine(this.chatter.next()));
