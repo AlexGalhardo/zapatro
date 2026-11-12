@@ -10,6 +10,7 @@ import { playAmbience, playMusic } from '../core/music';
 import { openStore } from '../core/platform';
 import { getView } from '../core/viewport';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
+import type { RunMode } from '../data/championships';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import type { Consumable } from '../data/consumables';
 import type { DeckId } from '../data/decks';
@@ -21,13 +22,14 @@ import { isTrinketId, TRINKET_BY_ID, TRINKET_IDS } from '../data/trinkets';
 import { botShop } from '../game/run-sim';
 import { getLang, type I18nKey, t } from '../i18n';
 import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
-import { isUnlocked, recordRunState } from '../logic/meta';
+import { isUnlocked, recordRunStart, recordRunState } from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
 import { drawCandidates } from '../logic/run/draw';
 import {
 	buy,
 	continueEndless,
 	discardConsumable,
+	dropUnfitTrinkets,
 	leaveShop,
 	moveManha,
 	needsTarget,
@@ -92,6 +94,8 @@ export class RunScene extends Phaser.Scene {
 	private stakeChoice = 1;
 	/** Closes the panel open over the screen (Esc), if any. */
 	private closePanel: (() => void) | null = null;
+	/** The mode picked on the first screen of a new run (`?mode=1v1` picks it ahead). */
+	private mode: RunMode | null = null;
 	/** The three partners on offer and the seed of the run they were drawn for. */
 	private candidates: CompanionId[] = [];
 	private runSeed = 0;
@@ -117,6 +121,7 @@ export class RunScene extends Phaser.Scene {
 		const save = getSave(this);
 		this.run = data?.fresh ? null : parseRun(save.run);
 		this.targeting = null;
+		this.mode = getParams(this).mode ?? null;
 		// `?stake=N` (test hacks) preselects the Stake of a new run, locked or not.
 		const debugStake = getParams(this).stake;
 		if (debugStake !== undefined) this.stakeChoice = Math.min(MAX_STAKE, debugStake);
@@ -158,6 +163,7 @@ export class RunScene extends Phaser.Scene {
 			lang = getLang();
 			this.draw();
 		});
+		if (!this.run && this.mode === '1v1') this.startRun(undefined);
 		if (getParams(this).auto) this.time.delayedCall(400, () => this.autoStep());
 	}
 
@@ -208,7 +214,8 @@ export class RunScene extends Phaser.Scene {
 		setBackdrop(this, !run ? 'partner' : run.phase === 'shop' ? 'shop' : 'main');
 		this.msg.setPosition(this.cx, this.h - 6);
 		if (!run) {
-			this.drawPartners();
+			if (this.mode === null) this.drawModes();
+			else this.drawPartners();
 			return;
 		}
 		if (run.phase === 'won' || run.phase === 'lost') {
@@ -357,7 +364,38 @@ export class RunScene extends Phaser.Scene {
 		return b;
 	}
 
-	// --- Partner -------------------------------------------------------------------------
+	// --- Mode and partner ----------------------------------------------------------------
+
+	/** First screen of a new run: Dupla 2×2 (then the partner choice) or Mano a mano 1×1. */
+	private drawModes(): void {
+		const { cx } = this;
+		// The partners are drawn now so the run's seed exists whichever mode is picked.
+		this.ensureCandidates();
+		this.title(cx, 80, t('run.chooseMode'), TYPE.screenTitle);
+		const modes: [RunMode, number][] = [
+			['2v2', 140],
+			['1v1', 215],
+		];
+		for (const [mode, y] of modes) {
+			this.button(
+				cx,
+				y,
+				t(`run.mode.${mode}` as I18nKey),
+				() => {
+					this.mode = mode;
+					if (mode === '1v1') this.startRun(undefined);
+					else this.draw();
+				},
+				200,
+				PALETTE.good,
+				{ h: BUTTON_H.primary },
+			);
+			this.put(cx, y + BUTTON_H.primary / 2 + 10, t(`run.mode.${mode}.desc` as I18nKey), 8);
+		}
+		this.button(cx, 290, t('menu.back'), () => fadeTo(this, 'Menu'), 100, undefined, {
+			hint: backHint,
+		});
+	}
 
 	/**
 	 * Partner choice: three rows, each a character card (3:4) on the left and the partner's name,
@@ -562,15 +600,22 @@ export class RunScene extends Phaser.Scene {
 	}
 
 	private choosePartner(id: CompanionId): void {
+		this.startRun(id);
+	}
+
+	/** Creates the run: with a partner (2×2) or without (1×1, mano a mano). */
+	private startRun(partner: CompanionId | undefined): void {
 		const meta = getSave(this).meta;
+		if (!this.runSeed) this.ensureCandidates();
 		this.candidates = [];
 		this.run = newRun(
 			this.runSeed,
-			id,
+			partner,
 			this.deckChoice,
 			this.stakeChoice,
 			isUnlocked(meta, 'legendary'),
 			IS_DEMO || getParams(this).demo,
+			partner ? '2v2' : '1v1',
 		);
 		// Test hacks for a new run (test-hacks.md): starting money and Manhas.
 		const params = getParams(this);
@@ -595,7 +640,8 @@ export class RunScene extends Phaser.Scene {
 			this.run.phase = 'shop';
 			this.run.shop = { offers: [], rerolls: 0 };
 		}
-		meta.stats.runs++;
+		dropUnfitTrinkets(this.run);
+		recordRunStart(meta, this.run);
 		this.save();
 		this.draw();
 		if (getParams(this).auto) this.time.delayedCall(300, () => this.autoStep());
@@ -630,7 +676,9 @@ export class RunScene extends Phaser.Scene {
 		const partner = this.put(
 			mid,
 			0,
-			`${t(`char.${run.partner}` as I18nKey)}${run.partner === 'nino' ? ` · ${t('table.lance.level', { n: run.partnerLevel })}` : ''}`,
+			run.partner
+				? `${t(`char.${run.partner}` as I18nKey)}${run.partner === 'nino' ? ` · ${t('table.lance.level', { n: run.partnerLevel })}` : ''}`
+				: t(`run.mode.${run.mode}` as I18nKey),
 			6.5,
 			PALETTE.textDim,
 			[0.5, 1],
@@ -1618,10 +1666,12 @@ export class RunScene extends Phaser.Scene {
 		];
 		if (!won)
 			rows.push(
-				t('run.end.lostTo', {
-					a: this.charName(run.rivals.chars[0]),
-					b: this.charName(run.rivals.chars[1]),
-				}),
+				run.mode === '1v1'
+					? t('run.end.lostTo1v1', { a: this.charName(run.rivals.chars[0]) })
+					: t('run.end.lostTo', {
+							a: this.charName(run.rivals.chars[0]),
+							b: this.charName(run.rivals.chars[1]),
+						}),
 			);
 		const stats = rows.map((s, i) =>
 			this.put(0, 108 + i * 17, s, 9, i ? PALETTE.textLight : PALETTE.manilha, [0, 0]),
@@ -1632,12 +1682,14 @@ export class RunScene extends Phaser.Scene {
 		const groupW = statsX + Math.max(...stats.map((s) => s.width));
 		const gx = Math.round(cx - groupW / 2);
 		for (const s of stats) s.setX(gx + statsX);
-		this.body.add(
-			this.add
-				.image(gx + face / 2, 142, tex(this, `charcard.${run.partner}`))
-				.setDisplaySize((face * 3) / 4, face),
-		);
-		this.put(gx + face / 2, 190, t(`char.${run.partner}` as I18nKey), 9);
+		if (run.partner) {
+			this.body.add(
+				this.add
+					.image(gx + face / 2, 142, tex(this, `charcard.${run.partner}`))
+					.setDisplaySize((face * 3) / 4, face),
+			);
+			this.put(gx + face / 2, 190, t(`char.${run.partner}` as I18nKey), 9);
+		}
 		// The demo pitch for the full game sits between the stats and the Manhas.
 		if (demo) this.put(cx, 210, t('demo.body'), 8, PALETTE.textLight, [0.5, 0], 368);
 		const my = demo ? 240 : 228;
