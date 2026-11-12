@@ -53,7 +53,19 @@ A resposta tem o próprio tempo: aceitou vira o aviso "Aposta sobe: N" (§7) e c
 
 ## 4. Centro do feltro (R5.3)
 
-A preencher: monte e vira, fichas da aposta, marcadores das três vazas, mesa de dois.
+Três peças no feltro, desenhadas por `src/view/fx/felt-center.ts` (recebe a cena e dados prontos: aposta, aposta pendente, marcadores; nunca lê nem muda a partida) e posicionadas em `src/config/feel-felt.ts` (palco 640×360). A `refreshHud` chama o módulo; os marcadores vêm de `trickMarks` (`src/logic/truco/trick-marks.ts`, do ponto de vista do assento 0: "ganhou" é a dupla do jogador). Cores: `BET_CHIP_COLOR` e a paleta em `palette.ts`; nenhum texto novo, só números e símbolos.
+
+| Peça | O que é | Duração (1×, passa por `dur()`) |
+|---|---|---|
+| Monte e vira | Pilha de 4 versos (`card.back.default`) com a vira virada ao lado e o rótulo "VIRA" embaixo. `this.vira` e `this.viraLabel` seguem sendo da cena (âncora do tutorial, QA, Cartomante). | A virada de nova vira segue no `animate` (220 ms) |
+| Fichas da aposta | Pilha vista de cima, uma ficha por degrau (1 = 1 ficha, 3 = 2, 6 = 3, 9 = 4, 12 = 5), cada uma na cor do degrau (creme, vermelho, laranja, roxo, dourado), a de cima com o valor grande (12 px de fonte lógica × escala). Cresce para cima a partir da base. | Ao subir a aposta a pilha "bate": escala 1,4 → 1, `Back.easeOut`, 260 ms |
+| Aposta pendente | Um pedido sem resposta soma fichas fantasma (60% de opacidade) no topo e o número vira "N?". O aceito segue sólido por baixo. | Pulso de opacidade 40% a 75% em 600 ms; com "Reduzir piscadas" fica parado a 60% |
+| Marcadores | Três quadrados com símbolo (✓ ganhou, ✗ perdeu, = empatou, vazio = a jogar), então se leem sem cor. A próxima vaza a jogar ganha anel dourado. | Ao decidir, o marcador "pipoca": 1,6 → 1, `Back.easeOut`, 220 ms |
+
+- Uma vaza só aparece decidida nos marcadores depois que as cartas dela saem do feltro (a partida já está uma ação à frente da animação).
+- Nada é aguardado: os tweens correm por cima do jogo e a vez do jogador não espera por eles.
+- **Mesa de quatro:** monte e vira no canto superior esquerdo; fichas e marcadores no vão entre as quatro cartas jogadas (x 352–428, y 157–201). As cartas jogadas se afastaram do centro (`SEAT_POS`: 125, 230, 330, 450) para abrir esse vão; as fichas ficam sob as cartas jogadas.
+- **Mesa de dois (R2.2):** o rival é um card de 72×96 (o assento da mesa de quatro tem 54×72) e ele e a mão dele formam um grupo centrado no topo (`DUEL_UI`); as cartas jogadas descem (rival em y 166, você em y 232). Monte e vira ficam à esquerda das cartas jogadas, fichas e marcadores à direita, em escala 1,3. Nenhum elemento da mesa de quatro aparece: sem retratos laterais, sem parceiro, sem sinal.
 
 ## 5. Cartas com peso (R5.2)
 
