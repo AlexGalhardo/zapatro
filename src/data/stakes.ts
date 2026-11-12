@@ -24,12 +24,12 @@ export interface StakeRules {
 /** Rules of a Stake (cumulative). */
 export function stakeRules(stake: number): StakeRules {
 	return {
-		goalMult: [1, 1.1, 1.18, 1.25, 1.3, 1.38, 1.45, 1.55][stake - 1] ?? 1.55,
+		goalMult: [1, 1.1, 1.18, 1.25, 1.3, 1.38, 1.4, 1.9][stake - 1] ?? 1.9,
 		interestCap: stake >= 3 ? 3 : 5,
 		smallPrize: stake < 4,
 		startMoney: null,
 		rivalShift: stake >= 8 ? 2 : stake >= 4 ? 1 : 0,
-		rivalHeadStart: [0, 0, 1, 1, 2, 2, 3, 3][stake - 1] ?? 3,
+		rivalHeadStart: [0, 0, 1, 1, 2, 2, 3, 4][stake - 1] ?? 4,
 		priceMult: stake >= 8 ? 1.25 : 1,
 	};
 }
