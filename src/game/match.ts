@@ -15,6 +15,7 @@ import { decide, randomAction } from '../logic/ai/decide';
 import type { HandInfo } from '../logic/meta';
 import { Rng } from '../logic/rng';
 import type { TableProgress } from '../logic/run/run';
+import { itemPoints } from '../logic/score/item-points';
 import { handFacts } from '../logic/score/manhas';
 import {
 	afterQueda,
@@ -117,6 +118,8 @@ export class Match {
 	points = 0;
 	/** Score of the last finished hand (roguelite mode). */
 	lastScore: HandScore | null = null;
+	/** Points each Manha or trinket added at this table, for the run summary (R6.4). */
+	readonly itemPoints: Record<string, number> = {};
 	outcome: TableOutcome = 'playing';
 	quedas = 0;
 	/** Quedas the rivals closed at this table (they win the table on QUEDAS_TO_LOSE). */
@@ -306,6 +309,8 @@ export class Match {
 				tablesWon: this.tablesWon,
 			});
 			this.points += this.lastScore.points;
+			for (const [id, n] of Object.entries(itemPoints(this.lastScore.steps)))
+				this.itemPoints[id] = (this.itemPoints[id] ?? 0) + n;
 			this.money += this.lastScore.money;
 			for (const st of this.lastScore.steps)
 				if (

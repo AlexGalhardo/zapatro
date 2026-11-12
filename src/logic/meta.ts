@@ -148,6 +148,7 @@ export function recordRunState(meta: MetaSave, run: RunState): string[] {
 export function recordRunStart(meta: MetaSave, run: RunState): void {
 	meta.stats.runs++;
 	meta.stats.byMode[run.mode].runs++;
+	run.before = { feats: meta.feats.length, stakeBest: meta.stakes[run.startDeck] ?? 0 };
 }
 
 /** End of a run: stats, history, Stake progress and the run feats. */

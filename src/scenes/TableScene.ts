@@ -3088,10 +3088,6 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 	private showEnd(winner: Team): void {
 		pokiGameplay(false);
 		sfx(this, winner === 'us' ? 'sfx.table.win' : 'sfx.table.lose');
-		// A lost table of a run is the end of the run: the run-end screen plays its defeat music.
-		if (winner === 'us') playMusic(this, 'music.win', { once: true, after: 'music.menu' });
-		else if (this.runState) stopMusic(this);
-		else playMusic(this, 'music.lose', { once: true, after: 'music.menu' });
 		this.updateControls(false);
 		let reward: TableReward = null;
 		if (this.runState) {
@@ -3104,6 +3100,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				money: m.money,
 				hands: m.hands,
 				bestHand: this.bestHand,
+				items: m.itemPoints,
 				broken: m.broken,
 			});
 			const meta = getSave(this).meta;
@@ -3122,6 +3119,12 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			persist(this);
 			if (this.auto) this.time.delayedCall(600, () => fadeTo(this, 'Run', { fresh: false }));
 		}
+		// The run's own victory and defeat music belong to the run-end screen; the table is silent
+		// for them. Every other end plays its vignette once.
+		const runOver = this.runState?.phase === 'won' || this.runState?.phase === 'lost';
+		if (runOver) stopMusic(this);
+		else if (winner === 'us') playMusic(this, 'music.win', { once: true, after: 'music.menu' });
+		else playMusic(this, 'music.lose', { once: true, after: 'music.menu' });
 		this.ended = { winner, reward };
 		this.drawEnd();
 		this.status.setText('');
