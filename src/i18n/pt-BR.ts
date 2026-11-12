@@ -364,7 +364,7 @@ export const ptBR: Record<I18nKey, string> = {
 	'run.end.unlockedNone': 'Nada novo desta vez',
 	'run.end.more': '+{n}',
 	'run.end.stakeOpen': 'Estaca {n} ({deck})',
-	'run.end.next': 'Próximo destravo',
+	'run.end.next': 'Próximo destrave',
 	'run.end.next.stake': 'Vença uma run na Estaca {n} com o {deck} para abrir a próxima Estaca',
 	'run.end.next.none': 'Tudo destravado. Vá atrás da Estaca mais alta!',
 	'run.end.new': 'Nova run',
