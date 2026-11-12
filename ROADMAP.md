@@ -105,11 +105,11 @@ Abertas:
 
 - [x] **R0.1 Linha de base dos gates** (2026-11-11, commit `3783613`: tudo verde, números no doc de QA). Rodar `bun run check`, `bun run lint:md`, `bun run typecheck`, `bun test`, `bun run build`, `bun scripts/smoke.ts` e `bun run balance` no commit de partida.
   **Aceite:** resultado de cada comando registrado em [docs/quality-assurance-functional-systems-global-test.md](docs/quality-assurance-functional-systems-global-test.md) com a data e o hash.
-- [ ] **R0.2 Scripts de captura confiáveis.** `scripts/shot.ts`, `scripts/gta-shots.ts` e `scripts/store-shots.ts` esperam a cena certa em vez de tempo fixo e teclas cegas.
+- [x] **R0.2 Scripts de captura confiáveis.** (2026-11-11: `scripts/lib/capture.ts` espera a cena e o estado, dá uma linha PASS ou FAIL por captura e sai com código 1; a loja é uma loja real, montada pela lógica da run; saída padrão na pasta temporária do sistema. `scripts/qa.ts` perdeu os testes da escolha de mesa e da loja de Manhas e ganhou os da loja de trinkets) `scripts/shot.ts`, `scripts/gta-shots.ts` e `scripts/store-shots.ts` esperam a cena certa em vez de tempo fixo e teclas cegas.
   **Aceite:** cada captura nomeada confere a cena ativa (`scene.isActive`) e a fase da run antes de fotografar; o script sai com código ≠ 0 se a tela esperada não apareceu; a captura `03-shop` mostra a loja.
 - [ ] **R0.3 Cabeçalho do PLAN em dia.** O "Estado atual" do PLAN ainda diz "PA2 concluído (`0.0.3`)".
   **Aceite:** o cabeçalho cita a versão corrente e aponta para este roadmap; `AGENTS.md` ("Comece aqui") cita o `ROADMAP.md` como foco até a 1.0.
-- [x] **R0.4 Flags sem dono (D-82)** (2026-11-11: −1.002 linhas; save no schema 3 com migração e fixture da `0.19.0`; balanceamento idêntico; sobrou código morto pequeno em `match.ts` e `TableScene.ts`, `peekPile` e `pileCard`, para limpar junto com R2). Pacotes, Melhorias, pular mesa e Promessas saem do código (dados, lógica, cena, i18n, testes, feitos, save com migração); Estacas, baralhos e renovação voltam em R7.
+- [x] **R0.4 Flags sem dono (D-82)** (2026-11-11: −1.002 linhas; save no schema 3 com migração e fixture da `0.19.0`; balanceamento idêntico; o resto morto em `match.ts` e `TableScene.ts`, `peekPile` e `pileCard`, saiu junto com R2). Pacotes, Melhorias, pular mesa e Promessas saem do código (dados, lógica, cena, i18n, testes, feitos, save com migração); Estacas, baralhos e renovação voltam em R7.
   **Aceite:** nenhum sistema inalcançável pelo jogador permanece no build; teste novo falha se um feito (`src/data/feats.ts`) depender de sistema desligado.
 
 ## R1 — Motor 1×1 (lógica pura)
@@ -135,13 +135,13 @@ Objetivo: a mesma máquina de regras joga com 2 ou 4 assentos. Nada de Phaser aq
 
 ## R2 — 1×1 jogável na Partida Rápida
 
-- [ ] **R2.1 Escolha de modo.** "Partida rápida" abre a escolha **Dupla (2×2)** ou **Mano a mano (1×1)**; `?skipMenu=1&mode=1v1` para testes ([test-hacks.md](test-hacks.md)).
+- [x] **R2.1 Escolha de modo.** (2026-11-11: `ModeScene`, última escolha em `settings.quickMode`; grupo `modechoice` do QA) "Partida rápida" abre a escolha **Dupla (2×2)** ou **Mano a mano (1×1)**; `?skipMenu=1&mode=1v1` para testes ([test-hacks.md](test-hacks.md)).
   **Aceite:** teclado, mouse, toque e controle escolhem o modo; a última escolha é lembrada no save.
-- [ ] **R2.2 Mesa de dois.** Layout próprio: rival grande no topo, suas cartas embaixo, vira e monte juntos, sem botão "Enviar sinal", placar "Você × Rival".
+- [~] **R2.2 Mesa de dois.** (2026-11-11: a `TableScene` segue `match.seats`; no 1×1 o rival ocupa o topo, sem assentos laterais, sem sinais; a mesa de 4 ficou idêntica byte a byte. Falta: vira e monte juntos, rival maior que o parceiro do 2×2 e as capturas revistas nas quatro resoluções, junto com R5.5) Layout próprio: rival grande no topo, suas cartas embaixo, vira e monte juntos, sem botão "Enviar sinal", placar "Você × Rival".
   **Aceite:** capturas nas quatro resoluções do §3; nenhum elemento do 2×2 (retratos laterais, sinal do parceiro) aparece.
-- [ ] **R2.3 Textos e regras.** Página "Mano a mano" nas Regras e no manual da mesa (F1); nomes e avisos sem "dupla", "nós" e "parceiro" no 1×1.
+- [~] **R2.3 Textos e regras.** (2026-11-11: página "Mano a mano" nas Regras, F1 abre nela, textos `.duel` na mesa. Falta: regra do chefe Peter, dicas da tela de carregamento e das marcas de queda, que ainda citam o parceiro; entram com R3.4) Página "Mano a mano" nas Regras e no manual da mesa (F1); nomes e avisos sem "dupla", "nós" e "parceiro" no 1×1.
   **Aceite:** busca por `partner`/`dupla` nas chaves usadas pela mesa 1×1 não retorna aviso exibido ao jogador; paridade EN e PT-BR.
-- [ ] **R2.4 Smoke e QA.** `bun scripts/smoke.ts --mode 1v1` joga uma partida inteira com o bot; `bun scripts/qa.ts` ganha o grupo 1×1.
+- [x] **R2.4 Smoke e QA.** (2026-11-11: `bun scripts/smoke.ts --mode 1v1` e os grupos `duel` e `modechoice` do `qa.ts`, os três no job `smoke` do `ci.yml`) `bun scripts/smoke.ts --mode 1v1` joga uma partida inteira com o bot; `bun scripts/qa.ts` ganha o grupo 1×1.
   **Aceite:** os dois passam no CI (`ci.yml`), sem erro de console.
 
 ## R3 — Run 1×1 (mano a mano)
@@ -165,11 +165,11 @@ Objetivo: sentar com quem estiver na sala e jogar sem atrito, em qualquer forma�
 
 - [~] **R4.1 Formulário legível.** O formulário de entrada escala com a altura da tela (`FORM_FONT` em `src/scenes/LanScene.ts`, 2026-11-11). Medido: rótulo 22,8 px e painel 730 px em 1920×1080; 30,4 px e 973 px em 2560×1440; no celular (360 px de altura) igual a antes (13 px, 416 px). Falta conferir num aparelho com o teclado aberto (R11.3).
   **Aceite:** em 1920×1080 a fonte dos campos tem ≥ 22 px e o painel ≥ 600 px de largura; em 2560×1440 cresce na mesma proporção; no celular continua cabendo com o teclado aberto.
-- [ ] **R4.2 Mesa 2×2 ou 1×1 no lobby.** O anfitrião escolhe o modo; o lobby mostra 2 ou 4 assentos. Formações cobertas: dois humanos parceiros contra dois NPCs; dois humanos adversários, cada um com um NPC de parceiro; três ou quatro humanos; humano contra humano no 1×1; humano contra NPC.
+- [x] **R4.2 Mesa 2×2 ou 1×1 no lobby.** (2026-11-11: modo `2v2` ou `1v1` no lobby (`TABLE_MODES` em `src/net/protocol.ts`), 7 formações jogadas até o fim em `tests/lan.test.ts`; quem tem um bot de parceiro responde sozinho a todo truco contra a dupla, em qualquer assento (`TableRules.answers`). Falta só o `lan-smoke` no navegador com a mesa 1×1, em R4.10) O anfitrião escolhe o modo; o lobby mostra 2 ou 4 assentos. Formações cobertas: dois humanos parceiros contra dois NPCs; dois humanos adversários, cada um com um NPC de parceiro; três ou quatro humanos; humano contra humano no 1×1; humano contra NPC.
   **Aceite:** `tests/lan.test.ts` joga uma partida completa em cada formação com um servidor real; `src/net/view.ts` gira e mascara certo com 2 assentos (`tests/net-view.test.ts`).
 - [~] **R4.3 Relógio de jogada (D-81).** Contagem no servidor, barra visível no assento da vez, aviso sonoro nos últimos 5 s. Feito em 2026-11-11 (`lan/room.ts`, mensagens `clock`, `back` e `timer` em `src/net/protocol.ts`, barra e painel "Voltei" na `TableScene`, ajuste do anfitrião no lobby; 6 testes novos em `tests/lan.test.ts`, conferido em 1920×1080). Falta: capturas em 2560×1440 e no toque, e dar mais presença à barra e ao painel de piloto automático, que hoje cobre as cartas do centro (entra em R5.5).
   **Aceite:** teste com relógio falso: humano parado recebe a ação do bot no tempo configurado; dois estouros seguidos ligam o piloto automático; qualquer ação do jogador o desliga; a mesa nunca fica parada mais que o tempo configurado mais 1 s.
-- [ ] **R4.4 Saída do anfitrião.** Quem criou a mesa sai no lobby ou no meio da partida.
+- [x] **R4.4 Saída do anfitrião.** (2026-11-11: 5 testes em `tests/lan.test.ts`; no lobby a chefia passa ao próximo sentado, na partida um bot assume) Quem criou a mesa sai no lobby ou no meio da partida.
   **Aceite:** no lobby, o próximo jogador vira anfitrião; na partida, um NPC assume o assento e o jogo segue; nenhum cliente fica em tela morta (teste em `tests/lan.test.ts`).
 - [ ] **R4.5 Achar a mesa.** Endereço do anfitrião em destaque no lobby, últimas mesas lembradas e, no desktop, lista de mesas da rede.
   **Aceite:** dois Electron na mesma rede: o segundo vê a mesa sem digitar IP; no Android, entrar exige no máximo um campo.
@@ -179,7 +179,7 @@ Objetivo: sentar com quem estiver na sala e jogar sem atrito, em qualquer forma�
   **Aceite:** três partidas seguidas no `lan-smoke` sem voltar ao formulário.
 - [ ] **R4.8 Provocações.** Seis frases rápidas por personagem, com as vozes que já existem, limitadas a uma a cada 5 s.
   **Aceite:** a frase toca para todos os clientes com o balão no assento certo; dá para silenciar nas Configurações.
-- [ ] **R4.9 Cartas especiais na LAN (D-79).** A mesa da rede local joga com os coringas e com Trevo, Olho e Raio; a visão mascarada esconde o que o Olho revela de quem não deve ver.
+- [x] **R4.9 Cartas especiais na LAN (D-79).** (2026-11-11: o servidor joga com `fullDeck()`; `viewState` manda `known` só à dupla que jogou o Olho e só enquanto a carta está na mão do rival) A mesa da rede local joga com os coringas e com Trevo, Olho e Raio; a visão mascarada esconde o que o Olho revela de quem não deve ver.
   **Aceite:** `tests/net-view.test.ts` prova que nenhum cliente recebe carta que não deveria ver, com o Olho em jogo.
 - [ ] **R4.10 `lan-smoke` no CI.**
   **Aceite:** job no `ci.yml` roda `bun scripts/lan-smoke.ts` nos modos 2×2 e 1×1.

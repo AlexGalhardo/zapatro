@@ -74,6 +74,8 @@ jobs:
           bunx --bun vite preview --port 4173 --strictPort &
           for i in $(seq 60); do curl -sf http://localhost:4173 > /dev/null && break; sleep 1; done
           bun scripts/smoke.ts --url http://localhost:4173 --seconds 30
+          bun scripts/smoke.ts --url http://localhost:4173 --mode 1v1
+          bun scripts/qa.ts --url http://localhost:4173 --only duel,modechoice
 
   # Steam build (desktop/): Linux, Windows and macOS on every push and PR (public repo, D-62).
   electron:
