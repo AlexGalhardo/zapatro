@@ -732,6 +732,7 @@ export const en = {
 	'feat.unlocked': 'Feat',
 	'run.stake': 'Stake {n}',
 	'stats.runs': 'Runs: {n} · wins: {w}',
+	'stats.byMode': 'Teams 2×2: runs {n2}, wins {w2} · Mano a mano 1×1: runs {n1}, wins {w1}',
 	'stats.hands': 'Hands: {n} · won: {w}',
 	'stats.trucos': 'Truco calls: {n} · bluffs won: {b}',
 	'stats.best': 'Best hand: {h} · best Championship: {c}',

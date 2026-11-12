@@ -467,6 +467,12 @@ export class AlmanacScene extends Phaser.Scene {
 		this.body.add(g);
 		const lines = [
 			t('stats.runs', { n: s.runs, w: s.wins }),
+			t('stats.byMode', {
+				n2: s.byMode['2v2'].runs,
+				w2: s.byMode['2v2'].wins,
+				n1: s.byMode['1v1'].runs,
+				w1: s.byMode['1v1'].wins,
+			}),
 			t('stats.hands', { n: s.handsPlayed, w: s.handsWon }),
 			t('stats.trucos', { n: s.trucosCalled, b: s.bluffsWon }),
 			t('stats.best', { h: formatPoints(s.bestHand, 'pt-BR'), c: s.bestChampionship }),
@@ -474,7 +480,7 @@ export class AlmanacScene extends Phaser.Scene {
 		lines.forEach((l, i) => {
 			this.put(
 				L + GRID.x + PAD.panel,
-				GRID.y + 18 + i * 17,
+				GRID.y + 18 + i * 15,
 				l,
 				9,
 				PALETTE.textLight,
