@@ -55,7 +55,7 @@ export const NOTICE_WEIGHT: Record<NoticeWeight, { ms: number; size: number }> =
 };
 
 /** Strip geometry (logical px): centre, badge diameter, padding, wrap width, entry slide. */
-export const NOTICE_BOX = { x: 390, y: 140, badge: 22, pad: 7, wrap: 250, rise: 8, inMs: 140 };
+export const NOTICE_BOX = { x: 390, y: 140, badge: 22, pad: 7, wrap: 190, rise: 8, inMs: 140 };
 
 /** Notices waiting behind the current one; older ones are dropped past this. */
 export const NOTICE_QUEUE = 2;

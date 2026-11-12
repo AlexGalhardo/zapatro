@@ -69,7 +69,7 @@ export function playTrucoCall(scene: Phaser.Scene, a: TrucoCallArgs): TrucoCallH
 	for (let i = 0; i < c.rays; i++) {
 		const a0 = (i / c.rays) * Math.PI * 2;
 		const a1 = a0 + (Math.PI * 2) / c.rays / 2;
-		rays.fillStyle(c.color, 0.5).fillTriangle(
+		rays.fillStyle(c.color, 0.12).fillTriangle(
 			0,
 			0,
 			Math.cos(a0) * 420,
@@ -80,7 +80,7 @@ export function playTrucoCall(scene: Phaser.Scene, a: TrucoCallArgs): TrucoCallH
 	}
 
 	const dir: [number, number] = a.from ? [a.from[0] - cx, a.from[1] - cy] : [0, 0];
-	const rest: [number, number] = [cx + dir[0] * 0.55, cy + dir[1] * 0.55];
+	const rest: [number, number] = [cx + dir[0] * 0.42, cy + dir[1] * 0.42];
 	const start: [number, number] = [cx + dir[0] * 2.2, cy + dir[1] * 2.2];
 	const tilt = dir[0] === 0 ? 0 : Math.sign(dir[0]) * 6;
 	const card = a.charId
