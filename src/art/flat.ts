@@ -1294,7 +1294,7 @@ function drawRoom(ctx: Ctx, id: string, w: number, h: number): void {
 /** Logical size of a key (docs/visual.md). */
 function sizeOf(key: string): [number, number] {
 	if (key.startsWith('icon.')) return [24, 24];
-	if (key === 'card.back.tile') return [BACK_TILE_W, BACK_TILE_H];
+	if (key.startsWith('card.back.tile')) return [BACK_TILE_W, BACK_TILE_H];
 	if (key.startsWith('card.')) return [CARD_W, CARD_H];
 	if (key.startsWith('portrait.')) return [PORTRAIT, PORTRAIT];
 	if (key.startsWith('charcard.')) return [CHAR_W, CHAR_H];
@@ -1314,9 +1314,9 @@ function sizeOf(key: string): [number, number] {
 function draw(ctx: Ctx, key: string, w: number, h: number): void {
 	const parts = key.split('.');
 	const [kind = '', a = '', b = ''] = parts;
-	if (key === 'card.back.tile') {
-		// A card back squeezed into a tile: the hands of the other players.
-		drawBack(ctx, 'default', w, h);
+	if (key.startsWith('card.back.tile')) {
+		// A card back squeezed into a tile: the hands of the other players (`card.back.tile.<back>`).
+		drawBack(ctx, parts[3] || 'default', w, h);
 	} else if (key.startsWith('card.back')) drawBack(ctx, b || 'default');
 	else if (key.startsWith('card.mod.')) drawMod(ctx, b);
 	else if (key === 'card.joker') drawJoker(ctx);

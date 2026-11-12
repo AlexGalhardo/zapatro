@@ -30,6 +30,7 @@ import { BOSS_POOL, type BossId, FINAL_BOSS } from '../data/bosses';
 import { CHAMPIONSHIPS, type ChampionshipId, type RunMode } from '../data/championships';
 import { type Expression, SIGN_CATEGORY, SIGNAL_EMOJI, TABLE_TIMING } from '../data/characters';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
+import { DECKS } from '../data/decks';
 import { JOKER_EFFECTS } from '../data/jokers';
 import type { Action as KeyAction } from '../data/keybinds';
 import type { LanceId } from '../data/lances';
@@ -601,6 +602,10 @@ export class TableScene extends Phaser.Scene {
 	private hudGfx!: Phaser.GameObjects.Graphics;
 	private betNote!: Phaser.GameObjects.Text;
 	private manhaRow!: Phaser.GameObjects.Container;
+	/** Card back in play: the run's starting deck has its own (docs/gdd, decks); else the default. */
+	private get backKey(): string {
+		return `card.back.${DECKS[this.runState?.startDeck ?? 'normal'].back}`;
+	}
 	/** Two seats (mano a mano): the rival sits on top, no side seats, no partner, no signals. */
 	private get duel(): boolean {
 		return this.match.seats === 2;
@@ -1154,9 +1159,9 @@ ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 			.setAlpha(0)
 			.setDepth(DEPTH.vignette);
 		const center = FELT_CENTER[this.duel ? 'duel' : 'table'];
-		this.feltCenter = createFeltCenter(this, this.duel ? 'duel' : 'table');
+		this.feltCenter = createFeltCenter(this, this.duel ? 'duel' : 'table', this.backKey);
 		this.vira = this.add
-			.image(center.vira.x, center.vira.y, tex(this, 'card.back.default'))
+			.image(center.vira.x, center.vira.y, tex(this, this.backKey))
 			.setScale(VIRA.scale);
 		this.viraLabel = this.add
 			.text(center.vira.x, center.vira.y + 31, '', this.bold(8, PALETTE.textLight))
@@ -1903,7 +1908,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.drawHudShapes(s.score.us, s.score.them);
 		// A Cartomante hides the vira until the first trick is over.
 		const hidden = m.boss === 'cartomante' && s.tricks.length === 1 && !s.over;
-		this.vira.setTexture(hidden ? tex(this, 'card.back.default') : this.cardKey(s.vira));
+		this.vira.setTexture(hidden ? tex(this, this.backKey) : this.cardKey(s.vira));
 		const count = m.has('countManilhas')
 			? `\n${t('table.manilhasSeen', { n: manilhasSeen(s) })}`
 			: '';
@@ -1947,7 +1952,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					.image(
 						i * ui.step[0],
 						i * ui.step[1],
-						face ? this.cardKey(card) : tex(this, 'card.back.tile'),
+						face
+							? this.cardKey(card)
+							: tex(this, this.backKey.replace('back.', 'back.tile.')),
 					)
 					.setOrigin(0, 0)
 					.setScale(face ? 0.66 : 1);
@@ -2111,7 +2118,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		for (const img of this.handCards) img.destroy();
 		const s = this.match.state;
 		this.handCards = s.hands[0].map((card, i) => {
-			const key = s.kind === 'iron' ? tex(this, 'card.back.default') : this.cardKey(card);
+			const key = s.kind === 'iron' ? tex(this, this.backKey) : this.cardKey(card);
 			const img = this.add
 				.image(0, 0, key)
 				.setInteractive({ useHandCursor: true })
@@ -2692,7 +2699,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				if (e.seat === 0) this.renderHand();
 				else this.refreshHud();
 				const [px, py] = this.playPos(e.seat);
-				const key = e.faceDown ? tex(this, 'card.back.default') : this.cardKey(e.card);
+				const key = e.faceDown ? tex(this, this.backKey) : this.cardKey(e.card);
 				const img = this.add
 					.image(...this.portraitPos(e.seat), key)
 					.setData('seat', e.seat)
