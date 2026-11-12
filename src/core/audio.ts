@@ -9,9 +9,9 @@ const limiter = new VoiceLimiter(SFX_MIN_INTERVAL);
 /**
  * Plays a sound effect through its bus (B6.1: master → sfx | ui, from the Settings volumes), with
  * a per-key voice limit (hordes would otherwise stack dozens of hits), a random take and a small
- * random pitch variation.
+ * random pitch variation. `detune` (cents) lowers or raises the whole sound, e.g. a heavy card.
  */
-export function sfx(scene: Phaser.Scene, key: SfxKey, volume = 1): void {
+export function sfx(scene: Phaser.Scene, key: SfxKey, volume = 1, detune = 0): void {
 	if (import.meta.env.SOUND_MUTED === 'true') return;
 	if (!scene.cache.audio.exists(key)) return;
 	const def = SFX[key];
@@ -22,6 +22,7 @@ export function sfx(scene: Phaser.Scene, key: SfxKey, volume = 1): void {
 	scene.sound.play(pickTake(scene, key), {
 		volume: gain,
 		rate: pitchRate(def.pitch, Math.random()),
+		detune,
 	});
 }
 
