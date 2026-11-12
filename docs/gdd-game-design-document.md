@@ -44,7 +44,7 @@ Código e PLAN citam "design §N" (o antigo `game-design-principles.md`). Equiva
 | Câmera | Mesa vista de cima, 4 jogadores em cruz (você embaixo, parceiro em cima, rivais nas laterais) | PLAN §6 |
 | Arte | Art Bible v3 (2026-10-27): personagens, fundos, versos e especiais pintados; cartas comuns e UI vetoriais por código; ícones de UI em pixel; palco 640×360, zoom inteiro (docs/visual.md §0) | revisão de direção |
 | Engine | Phaser 4.2.x + TypeScript + Vite sobre Bun 1.4.2 | **Fixo** |
-| Plataformas | Steam (Electron), Google Play (Capacitor, Android), web (itch.io, Poki, `truco.lekzera.xyz`); um único build Phaser 4 | D-23, D-24, decisão 2026-10-15 |
+| Plataformas | Steam (Electron), Google Play (Capacitor, Android), web (itch.io, Poki, `alexgalhardo.github.io/zapatro`); um único build Phaser 4 | D-23, D-24, decisão 2026-10-15 |
 | Sessão | Mão ≈ segundos; mesa ≈ 4,1 mãos ⚖; run = até 24 mesas. Duração em minutos: **a confirmar** (medir no playtest) | balancing.md |
 | Modelo | Premium nas lojas, sem anúncios nem microtransação; demo web grátis | D-24 |
 | Idiomas | EN + PT-BR desde o dia 1; "Truco" e nomes de Manhas em português nas duas, com tooltip | D-29 |
@@ -825,7 +825,7 @@ Estado implementado por versão (antigo `game-design.md`; detalhe no [CHANGELOG]
 | Google Play (Capacitor) | Jogo completo, pago, sem IAP | preço menor que Steam (a confirmar) |
 | itch.io | Demo web grátis | D-24 |
 | Poki | Demo web grátis com SDK; download < 8 MB | D-24; ⚠ exclusividade web (Pesquisa §4) |
-| `truco.lekzera.xyz` | `/play/` **jogo completo** e `/demo/` (C1) | decisão 2026-10-15 |
+| `alexgalhardo.github.io/zapatro` | `/play/` **jogo completo** e `/demo/` (C1) | decisão 2026-10-15 |
 | Trailer | Remotion, 1 min, EN + PT-BR | RC3 |
 
 ⚠ **Conflitos abertos:** (a) jogo completo grátis em `/play/` contra o modelo premium (D-24) — **a confirmar** se `/play/` é público; (b) Poki exige exclusividade na web, e a demo também está no itch.io e no site (Pesquisa §4, §5 item 27); (c) `AGENTS.md`/`CLAUDE.md` ainda citam `zapaco.vercel.app` em comandos.

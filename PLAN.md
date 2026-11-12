@@ -877,7 +877,7 @@ Pipeline em [docs/visual.md](docs/visual.md): concept → 640×360 → pixels2sv
 - [x] RC2.3 Demo web embutida (build demo) — `/play/`, aberta em nova guia pelo botão da home (pedido do usuário: janela inteira e tela cheia)
 - [x] RC2.4 `/presskit` (formato presskit()): ficha técnica, descrição, história, features, vídeos, imagens em alta, logos, créditos, contato, zip para download — vídeo entra com o RC3
 - [x] RC2.5 `/privacy` (exigida pela Play): "não coleta dados"
-- [~] RC2.6 Deploy (era na Vercel; hoje GitHub Pages, D-88) (subdomínio; domínio próprio quando o usuário tiver, Q-03); Lighthouse ≥ 90 em performance e acessibilidade — no ar em <https://zapaco.vercel.app> (`bun run site:deploy`); mobile 95/100/100/100; performance desktop a medir fora da rede com antivírus
+- [~] RC2.6 Deploy (era na Vercel; hoje GitHub Pages, D-88) (subdomínio; domínio próprio quando o usuário tiver, Q-03); Lighthouse ≥ 90 em performance e acessibilidade — no ar em <https://zapaco.vercel.app> (`bun run site:deploy`, comando removido em D-88); mobile 95/100/100/100; performance desktop a medir fora da rede com antivírus
 
 ### RC3 — Trailer (`trailer/`) · `1.0.0-rc.3`
 
