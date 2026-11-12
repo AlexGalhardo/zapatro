@@ -75,6 +75,10 @@ contras aceitar**.
 Valores revistos na calibração de 2026-10-27 (os contras de Mult zeravam a mão de aposta 1; Mult nunca fica abaixo de 1). Efeitos que dependem de algo que a lógica ainda não mede podem ser trocados por um equivalente de
 mesmo peso, sem perder a regra "um bônus e um contra diferentes".
 
+### Na run mano a mano (1×1, D-77)
+
+Três trinkets leem o parceiro ou os sinais e nunca disparam em dois assentos: **Dupla Dinâmica** (12), **Confia em Mim** (13) e **Cantoria** (28). Ficam fora da loja e da coleção da run 1×1 (`trinketNeedsPartner`, `TRINKET_IDS_1V1` em `src/data/trinkets.ts`); os outros 29 funcionam igual. Auditoria completa no GDD §14.1.
+
 ## Loja (layout)
 
 Duas colunas dentro da lousa:

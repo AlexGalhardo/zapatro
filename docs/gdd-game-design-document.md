@@ -438,6 +438,25 @@ A tela de escolha mostra, em três cards por parceiro, o **Estilo**, a **Vantage
 
 Os 9 companheiros que você não escolheu. O perfil de IA do assento é o do pool do Campeonato (erro; GDD 5.1) com a coragem, agressividade e blefe do estilo do companheiro (`rivalBrain`, `src/game/run-table.ts`) mais os traços. Na seleção de mesas, passar o mouse no retrato do rival mostra vantagem e defeito.
 
+#### 8.2.1 Os 10 rivais da run 1×1 (D-78, R3.2)
+
+Na run mano a mano você joga sozinho: não há escolha de parceiro nem traço de companheiro (`PARTNER_TRAITS` nunca entra na pontuação nem na loja). Cada mesa comum sorteia **um** dos 10 companheiros como adversário, com a seed da run, e o mesmo rival não senta duas vezes no mesmo Campeonato (a Pequena e a Grande sempre têm rivais diferentes); a terceira mesa é o chefe, com a regra e a identidade dele. O jogo de apostas do rival é o arquétipo de IA que o estilo dele pede (`RIVAL_PROFILES_1V1`, `src/data/companions.ts`); o **erro** vem do perfil sorteado no pool do Campeonato (`RIVAL_POOLS`), como no 2×2: os rivais erram muito nos primeiros Campeonatos (Novato, erro 0,25) e quase nunca nos últimos (Profissional, 0,01; Calculista, 0,02).
+
+| Rival | Estilo (texto) | Perfil de IA no 1×1 | Coragem | Agressividade | Blefe |
+|---|---|---|---|---|---|
+| Bruto | agressivo | Valentão (`bully`) | 0,80 | 0,80 | 0,20 |
+| Cida | conservadora | Calculista (`calculator`) | 0,45 | 0,45 | 0,02 |
+| Jhony | blefador | Blefador (`bluffer`) | 0,55 | 0,60 | 0,35 |
+| Nino | destemido | Novato (`rookie`) | 0,50 | 0,50 | 0,10 |
+| Zé | conservador | Calculista (`calculator`) | 0,45 | 0,45 | 0,02 |
+| Mia | agressiva | Valentão (`bully`) | 0,80 | 0,80 | 0,20 |
+| Chico | conservador | Covarde (`coward`) | 0,10 | 0,10 | 0,03 |
+| Beti | blefadora | Blefador (`bluffer`) | 0,55 | 0,60 | 0,35 |
+| Ayla | conservadora | Calculista (`calculator`) | 0,45 | 0,45 | 0,02 |
+| Sheila | conservadora | Covarde (`coward`) | 0,10 | 0,10 | 0,03 |
+
+Nenhum perfil novo foi preciso: os seis de 8.3 expressam os quatro estilos. "Cauteloso" virou Calculista (joga pela força real) para Cida, Zé e Ayla e Covarde (corre de chamada duvidosa) para Chico e Sheila; "destemido" virou Novato porque a coragem 0,5 é a mais próxima da 0,6 do estilo (o erro do Novato é trocado pelo do pool). Quem blefa mais no mano a mano são Jhony e Beti (R1.6).
+
 ### 8.3 Perfis de IA ⚖ (`src/data/ai-profiles.ts`)
 
 | Perfil | Comportamento | Coragem | Agressividade | Blefe | Erro | Flagra | Sinaliza |
@@ -648,11 +667,37 @@ Decisões D-77 e D-78 (2026-11-11). O motor é o mesmo do 2×2: `TableState.seat
 | Olho: trocar | Mistura a sua mão com a do parceiro | Mistura a sua mão com a do rival; as cartas espiadas que mudaram de mão deixam de ser conhecidas. **Rever no playtest:** pode sair do sorteio do 1×1 |
 | Olho: nova mão, Trevo, Raio, coringa | Por dupla ou globais | Sem mudança; o desfecho do coringa mostra as duas mãos |
 | Manha Bisbilhoteiro | Espia um dos dois rivais | Espia o rival |
-| Chefe A Sortuda | Os rivais recebem manilha com mais frequência | Vale para o rival |
-| Chefe O Valentão | Um rival pede truco na primeira vez | O rival pede truco na primeira vez |
+| Chefe A Sortuda | Os rivais recebem manilha com mais frequência | Vale para o rival; texto próprio no 1×1 (`boss.sortuda.rule1v1`) |
+| Chefe O Valentão | Os rivais pedem truco em toda mão | O rival pede truco em toda mão; texto próprio no 1×1 (`boss.valentao.rule1v1`) |
 | Chefe Rei do Truco | A aposta começa em 3 | Igual |
-| Chefe O Mudo | Sem sinais com o parceiro | Sem efeito (não há sinais): precisa de regra própria no 1×1 (ROADMAP R3.4) |
+| Chefe O Mudo | Sem sinais com o parceiro | Sem efeito (não há sinais): **fora do sorteio de chefes do 1×1** (R3.4, tabela abaixo) |
 | Juiz, Cartomante, Agiota, Tony, Stuart | Não citam assentos na mesa | Sem mudança na mesa; os de pontuação são conferidos em R3 |
+
+### Auditoria de itens e chefes no 1×1 (R3.4, 2026-11-11)
+
+Critério: um efeito que lê o parceiro (assento 2), os sinais ou os dois rivais **nunca dispara** em dois assentos. Entre "funciona igual", "sai do sorteio do 1×1" e "ganha comportamento e texto", a escolha foi tirar do sorteio. Os testes em `tests/run-1v1.test.ts` percorrem todos os itens e chefes: cada trinket do sorteio do 1×1 tem de alterar a pontuação ou os números da run, e cada chefe do 1×1 tem uma sonda que prova a regra numa mesa de dois assentos.
+
+| Item ou chefe | Resultado no 1×1 | Motivo |
+|---|---|---|
+| 29 dos 32 trinkets | Funcionam igual | Só leem vazas, cartas, aposta, meta ou dinheiro |
+| Dupla Dinâmica (vantagem: Mult por vaza do parceiro) | **Fora do sorteio** | A vantagem lê o assento 2 |
+| Confia em Mim (vantagem: Fichas por vaza do parceiro) | **Fora do sorteio** | A vantagem lê o assento 2 |
+| Cantoria (vantagem: Fichas por sinal enviado; defeito: rivais flagram mais) | **Fora do sorteio** | Não há sinais |
+| Trinkets da coleção do perfil | Os três acima não entram na run 1×1 | `dropUnfitTrinkets` ao criar a run |
+| Manhas Dupla Dinâmica, Parceiro de Aço, Confia em Mim, Dupla Quase Perfeita | Fora do sorteio de Manhas do 1×1 | Leem o parceiro (hoje a loja só vende trinkets: valem se `TRINKETS` desligar) |
+| Demais Manhas (inclui Bisbilhoteiro: espia o rival) | Funcionam igual | Condições por mão e por vaza |
+| Ferro Quente (Lance Ferro) | Igual ao 2×2: nunca dispara | Ganhar a mão de ferro sempre fecha uma Queda, que a classificação do Lance põe antes; achado fora do escopo do R3, fica para o dono dos Lances |
+| Lances, Simpatias, modificadores de carta | Funcionam igual | Só leem o resultado da mão e as cartas da dupla; a Mentirosa engana o rival único; a Marcada (o parceiro conhece) não tem fonte hoje |
+| Baralho Blefe (sinais extras) | Sem efeito | A run 1×1 não usa baralhos iniciais além do normal |
+| Traço de companheiro (Bruto, Cida, Jhony, Nino, Zé, Mia, Chico, Beti, Ayla, Sheila) | Nunca aplicado | Sem parceiro na run; um save adulterado com `partner` perde o campo ao carregar |
+| O Valentão | Funciona; texto no singular | O rival pede truco em toda mão |
+| A Cartomante | Funciona igual | Só esconde a vira (a cena lê o número de vazas) |
+| O Agiota, O Delegado, Stuart, Rei do Truco | Funcionam igual | Pontuação, dinheiro, defeitos dos trinkets e aposta inicial 3 |
+| A Sortuda | Funciona; texto no singular | A vira favorece a mão do rival único |
+| Peter (O Mudo) | **Fora do sorteio** | A regra são os sinais com o parceiro |
+| O Juiz | **Fora do sorteio** | Desliga a primeira Manha, e a loja só vende trinkets (no 2×2 ele também não faz nada hoje: achado, fora do escopo) |
+
+O sorteio de chefes do 1×1 tem 6 chefes (Valentão, Cartomante, Agiota, Delegado, Stuart, Sortuda) para os Campeonatos 1 a 7; o Campeonato 7 repete o primeiro sorteado. O Rei do Truco segue fixo no 8.
 
 A IA do 1×1 amostra uma única mão escondida e não tem conhecimento de parceiro. Medido em 2026-11-11: o perfil `pro` vence o bot aleatório em 954 de 1.000 partidas, a 0,26 ms por decisão; `bun scripts/sim.ts --mode 1v1 --matches 2000` roda sem exceção conferindo, a cada mão, que toda carta está contabilizada, que os tentos não diminuem e que a partida acaba em 12.
 
