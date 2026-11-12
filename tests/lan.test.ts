@@ -561,7 +561,8 @@ describe('LAN host leaving', () => {
 		expect(realWinner(pb)).toBe(realWinner(pc));
 		b.leave();
 		c.leave();
-	});
+		// Two full matches: over the 5 s default on a slow CI runner.
+	}, 20000);
 
 	test('everybody leaving mid-match ends it and reopens a clean lobby', async () => {
 		const { url, nets, players } = await lobby([0, 1]);
