@@ -1,31 +1,39 @@
 /**
- * Deploy rehearsal of the site (docs/site.md): serves site/out the way Vercel does (index.html per
- * directory, `.html` for routes) and checks it in headless Chromium before `bun run site:deploy`.
- *   bun run site:build && bun scripts/site-check.ts [--port 5211]
- * Checks: pages answer 200 (/, /pt/, presskit, privacy), `noindex` on /play/ and /demo/, /play/
- * hides __GAME__ without ?qa=1 and shows the menu with it, a quick match at 4x reaches 12 tentos,
- * /demo/ is the demo build; 0 console errors and 0 HTTP >= 400 everywhere (deferred audio included).
+ * Deploy rehearsal of the site (docs/site.md): serves site/out the way GitHub Pages does (under the
+ * repository prefix, index.html per directory, 404 outside the prefix) and checks it in headless
+ * Chromium before the push to main publishes it.
+ *   bun run site:build && bun scripts/site-check.ts [--port 5211] [--base /zapatro/]
+ * Checks: pages answer 200 (/, /pt/, presskit, privacy, both languages), robots.txt, sitemap.xml,
+ * the manifest and one image, no HTML with a root-absolute URL outside the base, `noindex` on /play/
+ * and /demo/, /play/ hides __GAME__ without ?qa=1 and shows the menu with it, a quick match at 4x
+ * reaches 12 tentos, /demo/ is the demo build; 0 console errors and 0 HTTP >= 400 everywhere.
  * Prints one PASS/FAIL line per check; exit 1 when one fails.
  */
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { chromium, type Page } from 'playwright';
 
 const args = process.argv.slice(2);
-const port = Number(args.includes('--port') ? args[args.indexOf('--port') + 1] : 5211);
+const arg = (name: string, fallback: string): string =>
+	args.includes(name) ? (args[args.indexOf(name) + 1] ?? fallback) : fallback;
+const port = Number(arg('--port', '5211'));
+const prefix = `/${arg('--base', '/zapatro/').replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
+const ROOT = 'site/out';
 const server = Bun.serve({
 	port,
-	fetch(req) {
-		let p = decodeURIComponent(new URL(req.url).pathname);
-		if (p.endsWith('/')) p += 'index.html';
-		let f = `site/out${p}`;
+	async fetch(req) {
+		const path = decodeURIComponent(new URL(req.url).pathname);
+		if (!path.startsWith(prefix)) return new Response('404', { status: 404 });
+		let f = `${ROOT}/${path.slice(prefix.length)}`;
+		if (f.endsWith('/')) f += 'index.html';
 		if (!existsSync(f) && existsSync(`${f}/index.html`)) f = `${f}/index.html`;
-		if (!existsSync(f) && existsSync(`${f}.html`)) f = `${f}.html`;
 		return existsSync(f) && statSync(f).isFile()
-			? new Response(Bun.file(f))
+			? new Response(await Bun.file(f).bytes(), {
+					headers: { 'Content-Type': Bun.file(f).type },
+				})
 			: new Response('404', { status: 404 });
 	},
 });
-const B = `http://localhost:${port}`;
+const B = `http://localhost:${port}${prefix.slice(0, -1)}`;
 const NOISE = /GL Driver Message|AudioContext was not allowed|GPU stall|swiftshader/i;
 const browser = await chromium.launch({
 	args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
@@ -52,7 +60,67 @@ async function visit(path: string, body?: (p: Page) => Promise<void>) {
 	ok(`${path} 0 HTTP >= 400`, http.length === 0, http.slice(0, 3).join(' | '));
 	await page.close();
 }
-for (const p of ['/', '/pt/', '/presskit/', '/pt/presskit/', '/privacy/']) await visit(p);
+for (const p of ['/', '/pt/', '/presskit/', '/pt/presskit/', '/privacy/', '/pt/privacy/'])
+	await visit(p);
+
+// Static files and the image of the home; the manifest and the sitemap must name the base too.
+for (const [path, type] of [
+	['/robots.txt', 'text/plain'],
+	['/sitemap.xml', 'xml'],
+	['/manifest.webmanifest', ''],
+	['/img/og.jpg', 'image/jpeg'],
+] as const) {
+	const r = await fetch(`${B}${path}`);
+	ok(
+		`${path} responds 200`,
+		r.status === 200 && r.headers.get('content-type')?.includes(type) === true,
+		`${r.status} ${r.headers.get('content-type')}`,
+	);
+}
+const manifestText = await (await fetch(`${B}/manifest.webmanifest`)).text();
+const manifest = JSON.parse(manifestText) as {
+	start_url: string;
+	icons: { src: string }[];
+};
+ok(
+	'manifest start_url and icons under the base',
+	manifest.start_url === prefix && manifest.icons.every((i) => i.src.startsWith(prefix)),
+);
+const sitemap = await (await fetch(`${B}/sitemap.xml`)).text();
+ok('sitemap lists the pages under the base', sitemap.includes(`${prefix}pt/presskit/</loc>`));
+ok(
+	'robots.txt names the sitemap',
+	(await (await fetch(`${B}/robots.txt`)).text()).includes(`${prefix}sitemap.xml`),
+);
+ok(
+	'nothing is served outside the base',
+	(await fetch(`${B.replace(prefix.slice(0, -1), '')}/`)).status === 404,
+);
+
+// No page may point at a root-absolute URL outside the base (it would 404 on a project site).
+const htmlFiles = (dir: string): string[] =>
+	readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+		e.isDirectory()
+			? ['play', 'demo'].includes(e.name) && dir === ROOT
+				? []
+				: htmlFiles(`${dir}/${e.name}`)
+			: e.name.endsWith('.html')
+				? [`${dir}/${e.name}`]
+				: [],
+	);
+const stray: string[] = [];
+for (const f of htmlFiles(ROOT))
+	for (const m of readFileSync(f, 'utf8').matchAll(
+		/(?:href|src|srcset|content)="(\/[^"/][^"]*)"|url\(["']?(\/[^"')/][^"')]*)/g,
+	)) {
+		const u = m[1] ?? m[2] ?? '';
+		if (!u.startsWith(prefix)) stray.push(`${f}: ${u}`);
+	}
+ok(
+	'no root-absolute URL outside the base in the HTML',
+	stray.length === 0,
+	stray.slice(0, 3).join(' | '),
+);
 const ev = (page: Page, js: string) =>
 	page.evaluate(
 		`(() => { const g = window.__GAME__; const t = g?.scene.keys.Table; return (${js})(g, t); })()`,
