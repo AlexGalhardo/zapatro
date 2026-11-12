@@ -990,6 +990,8 @@ export const en = {
 	'table.strength.joker': 'Joker · a random effect when played face up',
 	'table.joker': 'JOKER!',
 	'table.newVira': 'New vira!',
+	'table.raise': 'Bet up: {n}',
+	'table.folded': 'Folded!',
 	'joker.void.name': 'Void trick',
 	'joker.void.desc': 'This trick is cancelled: it counts as a tie',
 	'joker.zap.name': 'Became the ZAP',

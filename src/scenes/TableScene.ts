@@ -14,12 +14,13 @@ import {
 import { titleMetrics } from '../art/title';
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
 import { SHOW_MANILHA_BOX, SHOW_MONEY_PANEL, SHOW_SCORE_PANEL } from '../config/features';
+import { isTrucoStep, TRUCO_CALL } from '../config/feel-truco';
 import { PALETTE, shade, toCss } from '../config/palette';
 import { BUTTON_H, DEPTH, GAP, PAD, RADIUS, SAFE, SHADOW, SIDEBAR, TYPE } from '../config/ui';
 import { sfx, voice, voiceBusy } from '../core/audio';
 import { getParams, getSave, persist } from '../core/context';
-import { shake, zoomPunch } from '../core/feel';
-import { duckMusic, playAmbience, playMusic, tableMusic } from '../core/music';
+import { zoomPunch } from '../core/feel';
+import { playAmbience, playMusic, tableMusic } from '../core/music';
 import { pokiGameplay } from '../core/poki';
 import { trackZoom } from '../core/viewport';
 import { AI_PROFILE_IDS, AI_PROFILES, type AiProfileId } from '../data/ai-profiles';
@@ -31,7 +32,7 @@ import { JOKER_EFFECTS } from '../data/jokers';
 import type { Action as KeyAction } from '../data/keybinds';
 import type { LanceId } from '../data/lances';
 import { isManhaId } from '../data/manhas';
-import { DUCK, VO_JOKE, type VoJoke, type VoLine } from '../data/sfx';
+import { VO_JOKE, type VoJoke, type VoLine } from '../data/sfx';
 import { SPECIAL_CARDS, specialOf } from '../data/specials';
 import { TRINKET_SLOTS } from '../data/trinkets';
 import { TUTORIAL_DEAL, type TutorialAnchor, type TutorialTrigger } from '../data/tutorial';
@@ -100,6 +101,8 @@ import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { levelColor, trinketMedal } from '../ui/trinket-ui';
 import { comfort } from '../view/comfort';
+import { NoticeBoard } from '../view/fx/notice';
+import { playTrucoCall, type TrucoCallHandle } from '../view/fx/truco-call';
 import { handEffects, visibleHandEffects } from '../view/hand-effects';
 import { artToView, fitCamera } from '../view/stage';
 import { tentosBead } from '../view/tentos-grid';
@@ -524,7 +527,9 @@ export class TableScene extends Phaser.Scene {
 	private quedaMarks: Phaser.GameObjects.Zone[] = [];
 	private beads: Phaser.GameObjects.Image[][] = [[], []];
 	private beadsLit = [0, 0];
-	private banner!: Phaser.GameObjects.Text;
+	private notices!: NoticeBoard;
+	/** Ends the truco call event in progress (a click, tap or key), when there is one. */
+	private skipCall: (() => void) | null = null;
 	/** LAN turn clock: the timed seat (as I see it), its deadline on this machine's clock, the seats on autopilot. */
 	private netClock = { seat: null as Seat | null, end: 0, total: 0, auto: [] as Seat[], tick: 0 };
 	private clockGfx!: Phaser.GameObjects.Graphics;
@@ -627,8 +632,10 @@ export class TableScene extends Phaser.Scene {
 			'pointerdown',
 			(_p: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
 				if (this.pinned && !over.includes(this.pinned.owner)) this.unpinTip();
+				this.skipCall?.();
 			},
 		);
+		this.skipCall = null;
 		this.lang = getLang();
 		onSceneEvent(this, 'resume', () => {
 			if (getLang() !== this.lang) this.relabel();
@@ -758,7 +765,8 @@ export class TableScene extends Phaser.Scene {
 		// The boss table is no longer announced by the table-choice screen: name and rule here.
 		if (boss && this.match.state.kind === 'normal')
 			this.time.delayedCall(this.dur(500), () =>
-				this.showBanner(
+				this.notices.show(
+					'boss',
 					`${t(`boss.${boss}.name` as I18nKey)}
 ${tDuel(`boss.${boss}.rule` as I18nKey, this.duel)}`,
 					3200,
@@ -1226,15 +1234,8 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			.triangle(this.cx, 252, 0, 0, 12, 0, 6, 7, PALETTE.manilha)
 			.setDepth(DEPTH.status)
 			.setVisible(false);
-		// Banners (TRUCO!, the joker's draw…) sit over the played cards: a dark plate keeps them
-		// apart from the cards under them (BUGS.md B-10).
-		this.banner = this.add
-			.text(0, 0, '', this.text(18, PALETTE.manilha))
-			.setOrigin(0.5)
-			.setPadding(8, 3)
-			.setBackgroundColor(toCss(PALETTE.night))
-			.setDepth(DEPTH.banner)
-			.setVisible(false);
+		// Every notice (new vira, the joker's draw…) goes through this strip (R5.5).
+		this.notices = new NoticeBoard(this, (ms) => this.dur(ms));
 		// The action column (bottom right of the felt, screen-table.png): Truco, Enviar Sinal,
 		// Desistir, Esconder; while a call waits on you: Aceitar, Desistir and the raise.
 		// Every control shows the key or pad button that does the same (none on touch screens).
@@ -1368,7 +1369,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.manhaRow.setPosition(HUD.x + HUD_PAD + half, HUD.y + HUD_PAD + 10);
 		this.popup.setPosition(cx, cy - 72);
 		this.scoreBox.setPosition(cx, cy - 20);
-		this.banner.setPosition(cx, cy - 40);
+		this.notices.setPosition(cx, cy - 40);
 		this.autoBox?.setPosition(cx, cy + 30);
 		this.signPicker.setPosition(ACTIONS.x - ACTIONS.w / 2 - 148, 126);
 		this.eleven.setPosition(cx, cy + 14);
@@ -2103,16 +2104,16 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		this.refreshHud();
 		if (deal && s.kind !== 'iron' && s.hands[0].some((c) => isZap(c, s.manilha))) {
 			sfx(this, 'sfx.zap.reveal');
-			this.showBanner(t('table.zapDealt'), 1400);
+			this.notices.show('zap', t('table.zapDealt'), 1400);
 		}
 	}
 
 	private announceKind(): void {
 		const k = this.match.state.kind;
-		if (k === 'iron') this.showBanner(t('table.iron'), 1600);
+		if (k === 'iron') this.notices.show('iron', t('table.iron'), 1600);
 		// When you decide the mão de 11 its panel carries the title: no banner over it.
 		if (k === 'eleven' && (this.match.state.elevenTeam !== 'us' || this.auto))
-			this.showBanner(t('table.eleven.title'), 1200);
+			this.notices.show('eleven', t('table.eleven.title'), 1200);
 		// After the banner: the side at 11 talks (your partner, or the rival on the right).
 		const s = this.match.state;
 		const talker: Seat = this.duel ? 1 : 2;
@@ -2145,17 +2146,6 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		if (!voice(this, char, joke)) return;
 		this.lastJoke.set(char, joke);
 		this.handsSinceJoke = 0;
-	}
-
-	private showBanner(text: string, ms = 900): void {
-		this.banner.setText(text).setVisible(true).setScale(1.3).setAlpha(1);
-		this.tweens.add({
-			targets: this.banner,
-			scale: 1,
-			duration: this.dur(160),
-			ease: 'Back.easeOut',
-		});
-		this.time.delayedCall(this.dur(ms), () => this.banner.setVisible(false));
 	}
 
 	/**
@@ -2543,7 +2533,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			this.pump();
 		} else if (m.type === 'closed') {
 			this.netQueue = [];
-			this.showBanner(t('net.closed'), 2000);
+			this.notices.show('info', t('net.closed'), 2000);
 			this.time.delayedCall(2200, () => fadeTo(this, 'Menu'));
 		}
 	}
@@ -2684,12 +2674,8 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				break;
 			}
 			case 'truco': {
-				sfx(this, 'sfx.truco');
+				sfx(this, 'sfx.truco', isTrucoStep(e.to) ? TRUCO_CALL[e.to].volume : 1);
 				if (e.to === 12) sfx(this, 'sfx.bet.doze');
-				duckMusic(this, DUCK.truco.gain, DUCK.truco.ms);
-				zoomPunch(this, 0.04, this.dur(220));
-				shake(this, this.dur(160), 0.004);
-				if (e.seat === 0) this.showBanner(t(CALL_KEY[e.to] ?? 'table.call.3'));
 				this.cue('truco');
 				this.pendingCall = e.to;
 				if (e.seat !== 0) {
@@ -2702,11 +2688,24 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 					this.speak(e.seat, t(shout), PALETTE.truco, 1400);
 					this.face(e.seat, 'angry', 900);
 				}
-				await this.wait(700);
+				if (isTrucoStep(e.to)) {
+					const call: TrucoCallHandle = playTrucoCall(this, {
+						step: e.to,
+						label: t(CALL_KEY[e.to] ?? 'table.call.3'),
+						centre: [this.cx, this.cy],
+						from: e.seat === 0 ? null : this.portraitPos(e.seat),
+						charId: e.seat === 0 ? null : this.charOf(e.seat),
+						speed: this.speed,
+					});
+					this.skipCall = call.skip;
+					await call.done;
+					this.skipCall = null;
+				} else await this.wait(700);
 				break;
 			}
 			case 'accepted':
 				sfx(this, 'sfx.bet.accept');
+				this.notices.show('raise', t('table.raise', { n: e.bet }));
 				if (e.seat !== 0) {
 					voice(this, this.charOf(e.seat), acceptLine(this.chatter.next()));
 					this.say(e.seat, this.line('say.accept', 5));
@@ -2715,6 +2714,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				break;
 			case 'folded':
 				sfx(this, 'sfx.bet.run');
+				this.notices.show('fold', t('table.folded'));
 				if (e.seat !== 0) {
 					voice(this, this.charOf(e.seat), foldLine(this.pendingCall));
 					this.say(e.seat, this.line('say.fold', 5));
@@ -2731,7 +2731,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			case 'vira': {
 				sfx(this, 'sfx.card.flip');
 				this.refreshHud();
-				this.showBanner(t('table.newVira'), 900);
+				this.notices.show('vira', t('table.newVira'));
 				this.vira.setScale(0, VIRA.scale);
 				await this.tween({ targets: this.vira, scaleX: VIRA.scale, duration: 220 });
 				break;
@@ -2759,7 +2759,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				}
 				if (e.seat === 0 && e.caughtBy.length) {
 					sfx(this, 'sfx.signal.caught');
-					this.showBanner(t('table.youWereCaught'), 800);
+					this.notices.show('caught', t('table.youWereCaught'));
 					const by = e.caughtBy.find((seat) => seat !== 0);
 					if (by !== undefined) this.chat(by, 'say.caught', 3);
 				}
@@ -2768,9 +2768,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			}
 			case 'eleven':
 				this.eleven.setVisible(false);
-				this.showBanner(
+				this.notices.show(
+					'eleven',
 					this.tx(e.play ? 'table.eleven.played' : 'table.eleven.folded'),
-					900,
 				);
 				await this.wait(500);
 				break;
@@ -2778,13 +2778,13 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				const { winner, tentos } = e.end;
 				this.refreshHud();
 				if (winner === 'them') sfx(this, 'sfx.hand.lose');
-				this.showBanner(
+				this.notices.show(
+					winner ? (winner === 'us' ? 'handUs' : 'handThem') : 'handNone',
 					winner
 						? this.tx(winner === 'us' ? 'table.hand.us' : 'table.hand.them', {
 								n: tentos,
 							})
 						: t('table.hand.none'),
-					TABLE_TIMING.handEnd,
 				);
 				await this.wait(TABLE_TIMING.handEnd);
 				const score = this.match.lastScore;
@@ -2802,7 +2802,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				if (this.match.outcome === 'rivalQueda') this.chat(1, 'say.queda', 3);
 				if (this.match.outcome === 'queda') {
 					sfx(this, 'sfx.queda');
-					this.showBanner(t('table.queda'), 1400);
+					this.notices.show('queda', t('table.queda'));
 					await this.wait(1400);
 				}
 				break;
@@ -2820,23 +2820,20 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const card = specialOf(effect);
 		const pool: readonly PlayEffect[] = card ? SPECIAL_CARDS[card] : JOKER_EFFECTS;
 		const step = pool.length > 3 ? 3 : 1;
-		this.showBanner(
+		this.notices.show(
+			'joker',
 			card ? `${t(`special.${card}.name` as I18nKey).toUpperCase()}!` : t('table.joker'),
 			500,
 		);
 		await this.wait(450);
 		for (let i = 0; i < 8; i++) {
 			const e = pool[(pool.indexOf(effect) + step + i * step) % pool.length];
-			this.banner
-				.setText(name(e as PlayEffect))
-				.setVisible(true)
-				.setScale(1)
-				.setAlpha(0.7);
+			this.notices.show('joker', name(e as PlayEffect), 200);
 			sfx(this, 'sfx.ui.move');
 			await this.wait(60 + i * 12);
 		}
 		sfx(this, 'sfx.pack.open');
-		this.showBanner(name(effect), 1500);
+		this.notices.show('joker', name(effect), 1500);
 		this.popup
 			.setText(tDuel(`joker.${effect}.desc` as I18nKey, this.duel))
 			.setColor(toCss(PALETTE.textLight))
@@ -3311,6 +3308,9 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 
 	private bindKeys(): void {
 		const kb = this.input.keyboard;
+		onKey(kb, 'keydown', (e) => {
+			if (!e.repeat) this.skipCall?.();
+		});
 		this.nav = buttonNav(this, {
 			when: () => this.overlayOpen(),
 			roots: () => [this.eleven, this.signPicker, this.endPanel].filter((c) => c.visible),
@@ -3349,7 +3349,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 				this.speed = GAME_SPEEDS[
 					(GAME_SPEEDS.indexOf(this.speed) + 1) % GAME_SPEEDS.length
 				] as GameSpeed;
-				this.showBanner(`${this.speed}×`, 500);
+				this.notices.show('speed', `${this.speed}×`);
 			} else if (a === 'card1' || a === 'card2' || a === 'card3')
 				this.playCard(Number(a.slice(4)) - 1);
 			else if (a === 'truco') this.btn.truco.click();
