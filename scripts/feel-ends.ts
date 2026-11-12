@@ -161,22 +161,36 @@ async function runend(name: 'win' | 'lose', width: number, height: number, touch
 	);
 	await waitForScene(page, 'Run', { what: 'the run' });
 	await page.evaluate((won) => {
+		type Run = Record<string, unknown>;
+		type Meta = { feats: string[]; unlocked: string[]; stakes: Record<string, number> };
+		type Scene = { run: Run; play(): void; choosePartner(id: string): void; draw(): void };
 		type G = {
-			registry: { get(k: string): { run: Record<string, unknown> } };
-			scene: { keys: { Run: { run: object; draw(): void; finishForShot?(): void } } };
+			registry: { get(k: string): { meta: Meta } };
+			scene: { keys: { Run: Scene } };
 		};
 		const g = (window as unknown as { __GAME__: G }).__GAME__;
-		const run = g.registry.get('save').run;
+		const scene = g.scene.keys.Run;
+		// The new run would walk on to its first table: keep it on this screen.
+		scene.play = () => {};
+		scene.choosePartner('cida');
+		const run = scene.run;
+		const meta = g.registry.get('save').meta;
 		run.phase = won ? 'won' : 'lost';
 		run.champ = won ? 8 : 3;
+		run.table = won ? 2 : 1;
+		run.trinkets = ['peDeCoelho', 'acoNaManga'];
+		run.collection = { peDeCoelho: 2, acoNaManga: 1 };
 		run.stats = {
 			hands: 41,
 			bestHand: 18420,
 			tables: won ? 24 : 7,
-			items: { 'trinket:sorteDoCorno': 9000, 'manha:zapZap': 4200 },
+			items: { 'trinket:peDeCoelho': 9000, 'manha:zapZap': 4200 },
 		};
-		g.scene.keys.Run.run = run;
-		g.scene.keys.Run.draw();
+		run.before = { feats: meta.feats.length, stakeBest: 0 };
+		meta.feats.push('primeiraMao', 'ferro');
+		meta.unlocked.push('deck:viciado');
+		if (won) meta.stakes[run.startDeck as string] = 1;
+		scene.draw();
 	}, name === 'win');
 	await new Promise((r) => setTimeout(r, 1500));
 	const tag = `${lang}-runend-${name}-${width}x${height}${touch ? '-touch' : ''}`;

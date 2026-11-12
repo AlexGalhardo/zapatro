@@ -10,11 +10,12 @@ import { playAmbience, playMusic } from '../core/music';
 import { openStore } from '../core/platform';
 import { getView } from '../core/viewport';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
-import { RUN_MODES, type RunMode } from '../data/championships';
+import { RUN_MODES, type RunMode, TABLE_SIZES } from '../data/championships';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import type { Consumable } from '../data/consumables';
 import { DECK_IDS, DECKS, type DeckId, deckNeedsPartner } from '../data/decks';
 import { ECONOMY } from '../data/economy';
+import { FEATS } from '../data/feats';
 import { isManhaId, MANHA_BY_ID, type Rarity } from '../data/manhas';
 import { rarityOfPrice } from '../data/rarity';
 import { MAX_STAKE, type StakeChange, stakeChanges } from '../data/stakes';
@@ -54,6 +55,13 @@ import {
 	startTable,
 	useConsumable,
 } from '../logic/run/run';
+import {
+	type NextUnlock,
+	nextUnlock,
+	type RunUnlocks,
+	runSummary,
+	unlockedThisRun,
+} from '../logic/run/summary';
 import { equip, levelOf, mergeCollection, unequip } from '../logic/run/trinkets';
 import type { RunSetup } from '../logic/save';
 import { formatPoints } from '../logic/score/format';
@@ -72,6 +80,7 @@ import { addTitle, screenTitle } from '../ui/title';
 import { featToast } from '../ui/toast';
 import { touchUi, uiPx } from '../ui/touch';
 import { levelColor, trinketCard, trinketMedal } from '../ui/trinket-ui';
+import { comfort } from '../view/comfort';
 import { shopSlate } from '../view/shop-slate';
 import { fitCamera } from '../view/stage';
 import { setBackdrop } from './BackdropScene';
@@ -98,6 +107,8 @@ export class RunScene extends Phaser.Scene {
 	private debugTrinkets = false;
 	/** A table is being entered: draws and key repeats must not start it twice. */
 	private entering = false;
+	/** The run-end screen already played its music and entrance (a redraw must not repeat them). */
+	private endTuned = false;
 	/** The New run choices: remembered in the save settings, edited on the setup screen. */
 	private setup: RunSetup = { mode: '2v2', stake: 1, deck: 'normal' };
 	/** `?stake=N` (test hacks) preselects a Stake without the unlock check. */
@@ -138,6 +149,7 @@ export class RunScene extends Phaser.Scene {
 		if (debugStake !== undefined) this.setup.stake = Math.min(MAX_STAKE, debugStake);
 		this.tipText = null;
 		this.entering = false;
+		this.endTuned = false;
 		playMusic(this, 'music.menu');
 		playAmbience(this, null);
 		this.body = this.add.container(0, 0);
@@ -1835,120 +1847,291 @@ export class RunScene extends Phaser.Scene {
 
 	// --- End -----------------------------------------------------------------------------
 
+	/** The run's summary: the result, how far it went, what scored, what it unlocked and what is next. */
 	private drawEnd(run: RunState): void {
 		const { cx } = this;
-		const won = run.phase === 'won';
+		const meta = getSave(this).meta;
+		const s = runSummary(run);
+		const got = unlockedThisRun(meta, run);
+		const next = nextUnlock(meta);
+		const demo = s.won && s.demo;
+		if (!this.endTuned) {
+			this.endTuned = true;
+			playMusic(this, s.won ? 'music.win' : 'music.lose', {
+				once: true,
+				after: 'music.menu',
+			});
+			if (!comfort.reduceFlashes)
+				this.tweens.add({
+					targets: this.body,
+					alpha: { from: 0, to: 1 },
+					y: { from: 8, to: 0 },
+					duration: 360,
+					ease: 'Cubic.easeOut',
+				});
+		}
 		const leave = (): void => {
 			getSave(this).run = null;
 			persist(this);
 			fadeTo(this, 'Menu');
 		};
-		const demo = won && run.demo;
-		const L = cx - 200;
-		this.box(L, 24, 400, 312, { fill: PALETTE.panelDark, radius: RADIUS.frame });
-		this.icon(cx, 50, won ? 'crown' : 'skull', 32);
-		this.title(cx, 82, t(demo ? 'demo.end' : won ? 'run.won' : 'run.lost'), 20).setColor(
-			toCss(demo ? PALETTE.good : won ? PALETTE.manilha : PALETTE.bad),
+		const again = (): void => {
+			getSave(this).run = null;
+			persist(this);
+			fadeTo(this, 'Run', { fresh: true });
+		};
+		const W = 540;
+		const L = cx - W / 2;
+		const IN = 14;
+		this.box(L, 10, W, 340, { fill: PALETTE.panelDark, radius: RADIUS.frame });
+
+		// Header: the result, then how far it went.
+		this.icon(L + 34, 38, s.won ? 'crown' : 'skull', 30);
+		const head = this.put(
+			L + 62,
+			32,
+			t(demo ? 'demo.end' : s.won ? 'run.won' : 'run.lost'),
+			18,
+			demo ? PALETTE.good : s.won ? PALETTE.manilha : PALETTE.bad,
+			[0, 0.5],
 		);
-		const plural = (key: 'run.end.tables' | 'run.end.hands', n: number): string =>
-			t(`${key}.${n === 1 ? 'one' : 'other'}`, { n });
-		let top: [string, number] | null = null;
-		for (const [id, n] of Object.entries(run.levels))
-			if (n !== undefined && n > (top?.[1] ?? 1)) top = [id, n];
-		const rows = [
-			t('run.champ', { n: run.champ }),
-			plural('run.end.tables', run.stats.tables),
-			plural('run.end.hands', run.stats.hands),
-			t('run.end.best', { n: formatPoints(run.stats.bestHand, getLang()) }),
-			t('run.end.money', { n: run.money }),
-			top
-				? t('run.end.lance', { l: t(`lance.${top[0]}` as I18nKey), n: top[1] })
-				: t('run.end.lanceNone'),
-		];
-		if (!won)
-			rows.push(
+		head.setShadow(-2, 3, toCss(PALETTE.shadow), 0, true, true);
+		const how = [
+			t('run.champ', { n: s.champ }),
+			t(`table.side.table.${TABLE_SIZES[s.table]}` as I18nKey),
+			t(`run.mode.${s.mode}` as I18nKey),
+			t('run.stake', { n: s.stake }),
+			t(`deck.${s.deck}.name` as I18nKey),
+		].join(' · ');
+		this.put(L + 62, 52, how, 8, PALETTE.textDim, [0, 0.5], W - 62 - 70);
+		if (!s.won)
+			this.put(
+				L + 62,
+				64,
 				run.mode === '1v1'
 					? t('run.end.lostTo1v1', { a: this.charName(run.rivals.chars[0]) })
 					: t('run.end.lostTo', {
 							a: this.charName(run.rivals.chars[0]),
 							b: this.charName(run.rivals.chars[1]),
 						}),
+				8,
+				PALETTE.textLight,
+				[0, 0.5],
+				W - 62 - 70,
 			);
-		const stats = rows.map((s, i) =>
-			this.put(0, 108 + i * 17, s, 9, i ? PALETTE.textLight : PALETTE.manilha, [0, 0]),
-		);
-		// Portrait and stats are one group centred in the panel (the Manhas row starts under it).
-		const face = 76;
-		const statsX = face + 2 * GAP.card;
-		const groupW = statsX + Math.max(...stats.map((s) => s.width));
-		const gx = Math.round(cx - groupW / 2);
-		for (const s of stats) s.setX(gx + statsX);
-		if (run.partner) {
+		if (s.partner)
 			this.body.add(
 				this.add
-					.image(gx + face / 2, 142, tex(this, `charcard.${run.partner}`))
-					.setDisplaySize((face * 3) / 4, face),
+					.image(L + W - IN - 20, 40, tex(this, `charcard.${s.partner}`))
+					.setDisplaySize(36, 48),
 			);
-			this.put(gx + face / 2, 190, t(`char.${run.partner}` as I18nKey), 9);
-		}
-		// The demo pitch for the full game sits between the stats and the Manhas.
-		if (demo) this.put(cx, 210, t('demo.body'), 8, PALETTE.textLight, [0.5, 0], 368);
-		const my = demo ? 240 : 228;
-		this.put(gx, my, t('run.end.manhas'), 7, PALETTE.textDim, [0, 0]);
-		const slots = this.add.graphics();
-		this.body.add(slots);
-		for (let i = 0; i < run.manhaSlots; i++) {
-			const x = gx + 16 + i * 36;
-			slots
-				.lineStyle(1.5, PALETTE.panelLight, 1)
-				.strokeRoundedRect(x - 16, my + 14, 32, 32, RADIUS.button);
-			const id = run.manhas[i];
-			if (id)
+
+		// Three tiles: the best hand, the item that scored most, the tables won.
+		const tileY = 78;
+		const tileH = 68;
+		const tileW = (W - 2 * IN - 2 * GAP.card) / 3;
+		const tile = (i: number, label: string): { x: number; y: number } => {
+			const x = L + IN + i * (tileW + GAP.card);
+			this.box(x, tileY, tileW, tileH, { fill: PALETTE.panel });
+			this.put(x + tileW / 2, tileY + 9, label, 7, PALETTE.textDim);
+			return { x: x + tileW / 2, y: tileY };
+		};
+		const best = tile(0, t('run.end.bestTitle'));
+		this.put(best.x, best.y + 36, formatPoints(s.bestHand, getLang()), 18, PALETTE.manilha);
+		const top = tile(1, t('run.end.item'));
+		if (s.topItem) {
+			const { kind, id, points } = s.topItem;
+			const level = kind === 'trinket' ? levelOf(run.collection, id) : 0;
+			const name = kind === 'trinket' ? trinketName(id) : t(`manha.${id}.name` as I18nKey);
+			if (kind === 'trinket' && level > 0)
+				this.body.add(trinketMedal(this, id, level, 22).setPosition(top.x, top.y + 28));
+			else
 				this.body.add(
-					this.add.image(x, my + 30, tex(this, `manha.${id}`)).setDisplaySize(28, 28),
+					this.add
+						.image(top.x, top.y + 28, tex(this, `manha.${id}`))
+						.setDisplaySize(22, 22),
 				);
-		}
-		const menuW = won ? 180 : 200;
-		// Two buttons centred as a pair, a card gap apart.
-		const pairX = (menuW + GAP.card) / 2;
-		if (demo)
-			this.button(
-				cx - pairX,
-				306,
-				t('demo.wishlist'),
-				() => openStore(),
-				menuW,
-				PALETTE.good,
-				{
-					h: BUTTON_H.primary,
-				},
+			this.put(top.x, top.y + 46, name, 8, PALETTE.textLight, [0.5, 0.5], tileW - 12);
+			this.put(
+				top.x,
+				top.y + 58,
+				t('run.end.itemPts', { n: formatPoints(points, getLang()) }),
+				8,
+				PALETTE.manilha,
 			);
-		else if (won)
-			this.button(
-				cx - pairX,
-				306,
-				t('run.endless'),
-				() => {
-					continueEndless(run);
-					this.save();
-					this.draw();
-				},
-				menuW,
-				PALETTE.good,
-				{ h: BUTTON_H.primary },
-			);
-		this.button(
-			won ? cx + pairX : cx,
-			306,
-			t('table.menu'),
-			leave,
-			menuW,
-			won ? undefined : PALETTE.good,
-			{
-				h: BUTTON_H.primary,
-			},
+		} else this.put(top.x, top.y + 38, t('run.end.itemNone'), 8, PALETTE.textDim);
+		const won = tile(2, t('run.end.tablesWon'));
+		this.put(won.x, won.y + 28, String(s.tables), 18, PALETTE.textLight);
+		this.put(
+			won.x,
+			won.y + 46,
+			t(`run.end.hands.${s.hands === 1 ? 'one' : 'other'}`, { n: s.hands }),
+			8,
+			PALETTE.textDim,
 		);
+		this.put(won.x, won.y + 58, t('run.end.money', { n: s.money }), 8, PALETTE.textDim);
+
+		// The trinkets the run ended with, and the seed.
+		const rowY = tileY + tileH + GAP.card;
+		const rowH = 50;
+		const seedW = 190;
+		const trinW = W - 2 * IN - GAP.card - seedW;
+		this.box(L + IN, rowY, trinW, rowH, { fill: PALETTE.panel });
+		this.put(L + IN + 8, rowY + 9, t('run.end.trinkets'), 7, PALETTE.textDim, [0, 0.5]);
+		if (!s.trinkets.length)
+			this.put(
+				L + IN + 8,
+				rowY + 32,
+				t('run.end.trinketsNone'),
+				8,
+				PALETTE.textDim,
+				[0, 0.5],
+			);
+		s.trinkets.forEach((id, i) => {
+			const level = levelOf(run.collection, id);
+			if (level < 1) return;
+			const x = L + IN + 22 + i * 36;
+			const y = rowY + 32;
+			const zone = this.add.zone(x, y, 30, 30).setInteractive();
+			zone.on('pointerover', () =>
+				this.tip(
+					x,
+					y + 20,
+					`${trinketName(id)} · ${trinketRarityName(level)}`,
+					levelColor(level),
+				),
+			);
+			zone.on('pointerout', () => this.tipText?.setVisible(false));
+			this.body.add([trinketMedal(this, id, level, 28).setPosition(x, y), zone]);
+		});
+		const sx = L + IN + trinW + GAP.card;
+		this.box(sx, rowY, seedW, rowH, { fill: PALETTE.panel });
+		this.put(sx + 8, rowY + 9, t('run.end.seed'), 7, PALETTE.textDim, [0, 0.5]);
+		this.put(sx + 8, rowY + 32, String(s.seed), 11, PALETTE.textLight, [0, 0.5]);
+		this.button(
+			sx + seedW - 38,
+			rowY + 32,
+			t('run.end.copy'),
+			() => this.copySeed(s.seed),
+			60,
+			undefined,
+			{ h: BUTTON_H.small, size: 8 },
+		);
+
+		// What the run unlocked and what is missing for the next one.
+		const unY = rowY + rowH + GAP.card;
+		const unH = 84;
+		const half = (W - 2 * IN - GAP.card) / 2;
+		this.box(L + IN, unY, half, unH, { fill: PALETTE.panel });
+		this.put(L + IN + 8, unY + 9, t('run.end.unlocked'), 7, PALETTE.textDim, [0, 0.5]);
+		const lines = unlockLines(got, s.deck);
+		const shown = lines.slice(0, 4);
+		if (!lines.length)
+			this.put(L + IN + 8, unY + 36, t('run.end.unlockedNone'), 8, PALETTE.textDim, [0, 0.5]);
+		for (const [i, line] of shown.entries())
+			this.put(L + IN + 8, unY + 24 + i * 13, line, 8, PALETTE.good, [0, 0.5], half - 16);
+		if (lines.length > shown.length)
+			this.put(
+				L + IN + half - 8,
+				unY + unH - 9,
+				t('run.end.more', { n: lines.length - shown.length }),
+				7,
+				PALETTE.textDim,
+				[1, 0.5],
+			);
+		const nx = L + IN + half + GAP.card;
+		this.box(nx, unY, half, unH, { fill: PALETTE.panel });
+		this.put(nx + 8, unY + 9, t('run.end.next'), 7, PALETTE.textDim, [0, 0.5]);
+		this.put(
+			nx + 8,
+			unY + 24,
+			nextText(next),
+			8,
+			next ? PALETTE.textLight : PALETTE.textDim,
+			[0, 0],
+			half - 16,
+		);
+
+		// New run in one tap, the main menu, and the one extra the end offers.
+		const by = unY + unH + GAP.card + BUTTON_H.primary / 2 + 2;
+		const bw = 150;
+		const extra = demo
+			? { label: t('demo.wishlist'), fn: () => openStore() }
+			: s.won
+				? {
+						label: t('run.endless'),
+						fn: () => {
+							continueEndless(run);
+							this.save();
+							this.endTuned = false;
+							this.draw();
+						},
+					}
+				: null;
+		const step = bw + GAP.card;
+		const row = (n: number): number[] =>
+			Array.from({ length: n }, (_, i) => cx + (i - (n - 1) / 2) * step);
+		const slots = row(extra ? 3 : 2);
+		const primary = { h: BUTTON_H.primary };
+		let k = 0;
+		if (extra)
+			this.button(slots[k++] ?? cx, by, extra.label, extra.fn, bw, PALETTE.good, primary);
+		this.button(
+			slots[k++] ?? cx,
+			by,
+			t('run.end.new'),
+			again,
+			bw,
+			extra ? undefined : PALETTE.good,
+			primary,
+		);
+		this.button(slots[k] ?? cx, by, t('table.menu'), leave, bw, undefined, primary);
 	}
+
+	/** Copies the seed; where the Clipboard API is missing or refused, it is shown to be read. */
+	private copySeed(seed: number): void {
+		const text = String(seed);
+		const shown = (): void => {
+			try {
+				window.prompt(t('run.end.seed'), text);
+			} catch {
+				// Some shells (Electron) have no prompt: the line below still shows the seed.
+			}
+			this.say(t('run.end.seedShown', { n: text }));
+		};
+		const clip = typeof navigator === 'undefined' ? undefined : navigator.clipboard;
+		if (clip) clip.writeText(text).then(() => this.say(t('run.end.copied')), shown);
+		else shown();
+	}
+}
+
+/** What the run unlocked as lines: each feat (with the content it opened) and a new Stake. */
+function unlockLines(got: RunUnlocks, deck: DeckId): string[] {
+	const name = (key: string): string =>
+		key.startsWith('deck:')
+			? t(`deck.${key.slice(5)}.name` as I18nKey)
+			: t(`char.${key.slice(8)}` as I18nKey);
+	const lines = got.feats.map((id) => {
+		const opens = FEATS.find((f) => f.id === id)?.unlocks;
+		return `★ ${t(`feat.${id}.name` as I18nKey)}${opens ? ` → ${name(opens)}` : ''}`;
+	});
+	if (got.stake !== null)
+		lines.push(
+			`★ ${t('run.end.stakeOpen', { n: got.stake, deck: t(`deck.${deck}.name` as I18nKey) })}`,
+		);
+	return lines;
+}
+
+/** The next unlock in the player's words: the feat's own description, or the next Stake. */
+function nextText(next: NextUnlock | null): string {
+	if (!next) return t('run.end.next.none');
+	if (next.kind === 'stake')
+		return t('run.end.next.stake', {
+			n: next.stake,
+			deck: t(`deck.${next.deck}.name` as I18nKey),
+		});
+	const count = next.need > 1 ? ` (${next.have}/${next.need})` : '';
+	return `${t(`feat.${next.feat}.desc` as I18nKey)}${count}`;
 }
 
 /** Deck viewer order: by rank, the jokers and special cards last (they sit in the clubs row). */

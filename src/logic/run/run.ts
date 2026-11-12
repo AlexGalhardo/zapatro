@@ -86,6 +86,8 @@ export interface TableResult {
 	money: number;
 	hands: number;
 	bestHand: number;
+	/** Points each Manha or trinket added at this table (`itemPoints`), by `manha:<id>` or `trinket:<id>`. */
+	items?: Record<string, number>;
 }
 
 export interface Reward {
@@ -158,7 +160,10 @@ export interface RunState {
 	endless: boolean;
 	shop: ShopState | null;
 	tableSave: TableProgress | null;
-	stats: { hands: number; bestHand: number; tables: number };
+	/** `items`: points per Manha or trinket over the run (R6.4); runs from before it have none. */
+	stats: { hands: number; bestHand: number; tables: number; items?: Record<string, number> };
+	/** The profile when the run began: feats earned and Stake reached with this deck (R7.3). */
+	before?: { feats: number; stakeBest: number };
 }
 
 /** Runs `fn` with the run's rng and stores its new position. */
@@ -399,6 +404,8 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 	}
 	run.stats.hands += r.hands;
 	run.stats.bestHand = Math.max(run.stats.bestHand, r.bestHand);
+	for (const [id, n] of Object.entries(r.items ?? {}))
+		run.stats.items = { ...run.stats.items, [id]: (run.stats.items?.[id] ?? 0) + n };
 	if (!r.won) {
 		run.money = Math.max(0, run.money + r.money);
 		run.phase = 'lost';
