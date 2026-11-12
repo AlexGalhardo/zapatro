@@ -101,7 +101,7 @@ async function shots(name: string): Promise<void> {
 	const page = await openPage(ctx, newReport(), 'ends', base);
 	if (sc.run) {
 		await waitForScene(page, 'Run', { what: 'the run' });
-		await page.evaluate('window.__GAME__.scene.keys.Run.play()');
+		await page.evaluate("window.__GAME__.scene.keys.Run.choosePartner('cida')");
 	}
 	await waitForScene(page, 'Table', { what: 'the table' });
 	await waitForPaintings(page);
