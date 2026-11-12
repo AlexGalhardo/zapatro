@@ -1,5 +1,3 @@
-import type { RunMode } from './championships';
-
 /**
  * Bosses (design §3.6, PLAN A4.5): the third table of each Championship has a named rival and a
  * special rule. Championships 1–7 draw from the pool; the Rei do Truco is fixed at 8. Rules are
@@ -38,9 +36,3 @@ export const AGIOTA_FINE = 1;
  */
 export const BOSSES_NOT_1V1: readonly BossId[] = ['peter'];
 export const BOSSES_NEED_MANHAS: readonly BossId[] = ['juiz'];
-
-/** The i18n key of a boss rule; two bosses name "the rivals", so the 1v1 run has its own text. */
-export const bossRuleKey = (id: BossId, mode: RunMode): string =>
-	mode === '1v1' && (id === 'valentao' || id === 'sortuda')
-		? `boss.${id}.rule1v1`
-		: `boss.${id}.rule`;

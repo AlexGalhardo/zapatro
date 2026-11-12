@@ -511,7 +511,7 @@ export class AlmanacScene extends Phaser.Scene {
 			this.put(
 				L + GRID.x + PAD.panel,
 				GRID.y + 112 + i * step,
-				`${date} · ${t(`stats.end.${r.reason}` as I18nKey)} · ${t('run.champ', { n: r.championship })} · ${t(`char.${r.partner}` as I18nKey)} · ${t(`deck.${r.deck}.name` as I18nKey)} · ${t('run.stake', { n: r.stake })}`,
+				`${date} · ${t(`stats.end.${r.reason}` as I18nKey)} · ${t('run.champ', { n: r.championship })} · ${r.partner ? t(`char.${r.partner}` as I18nKey) : t('run.mode.1v1')} · ${t(`deck.${r.deck}.name` as I18nKey)} · ${t('run.stake', { n: r.stake })}`,
 				TYPE.small,
 				PALETTE.textDim,
 				[0, 0.5],

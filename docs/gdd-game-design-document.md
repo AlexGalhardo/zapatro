@@ -667,8 +667,8 @@ Decisões D-77 e D-78 (2026-11-11). O motor é o mesmo do 2×2: `TableState.seat
 | Olho: trocar | Mistura a sua mão com a do parceiro | Mistura a sua mão com a do rival; as cartas espiadas que mudaram de mão deixam de ser conhecidas. **Rever no playtest:** pode sair do sorteio do 1×1 |
 | Olho: nova mão, Trevo, Raio, coringa | Por dupla ou globais | Sem mudança; o desfecho do coringa mostra as duas mãos |
 | Manha Bisbilhoteiro | Espia um dos dois rivais | Espia o rival |
-| Chefe A Sortuda | Os rivais recebem manilha com mais frequência | Vale para o rival; texto próprio no 1×1 (`boss.sortuda.rule1v1`) |
-| Chefe O Valentão | Os rivais pedem truco em toda mão | O rival pede truco em toda mão; texto próprio no 1×1 (`boss.valentao.rule1v1`) |
+| Chefe A Sortuda | Os rivais recebem manilha com mais frequência | Vale para o rival; texto próprio no 1×1 (`boss.sortuda.rule.duel`) |
+| Chefe O Valentão | Os rivais pedem truco em toda mão | O rival pede truco em toda mão; texto próprio no 1×1 (`boss.valentao.rule.duel`) |
 | Chefe Rei do Truco | A aposta começa em 3 | Igual |
 | Chefe O Mudo | Sem sinais com o parceiro | Sem efeito (não há sinais): **fora do sorteio de chefes do 1×1** (R3.4, tabela abaixo) |
 | Juiz, Cartomante, Agiota, Tony, Stuart | Não citam assentos na mesa | Sem mudança na mesa; os de pontuação são conferidos em R3 |

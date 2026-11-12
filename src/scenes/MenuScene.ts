@@ -5,9 +5,9 @@ import { getSave } from '../core/context';
 import { playAmbience, playMusic } from '../core/music';
 import { isElectron, lanAvailable } from '../core/platform';
 import { trackZoom } from '../core/viewport';
+import type { RunMode } from '../data/championships';
 import { getLang, type I18nKey, t } from '../i18n';
 import { parseRun } from '../logic/run/run';
-import type { QuickMode } from '../logic/save';
 import { Button } from '../ui/Button';
 import { TEXT_SHADOW, UI_FONT } from '../ui/font';
 import { onKey, onSceneEvent } from '../ui/keys';
@@ -80,7 +80,7 @@ export class MenuScene extends Phaser.Scene {
 				onSelect: () => {
 					this.scene.pause();
 					this.scene.launch('Mode', {
-						onPick: (mode: QuickMode) => fadeTo(this, 'Table', { run: false, mode }),
+						onPick: (mode: RunMode) => fadeTo(this, 'Table', { run: false, mode }),
 					});
 				},
 			},

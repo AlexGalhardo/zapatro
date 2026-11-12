@@ -4,8 +4,8 @@ import { BUTTON_H, GAP, PAD, RADIUS } from '../config/ui';
 import { sfx } from '../core/audio';
 import { getSave, persist } from '../core/context';
 import { trackZoom } from '../core/viewport';
-import { type I18nKey, t } from '../i18n';
-import { QUICK_MODES, type QuickMode } from '../logic/save';
+import { RUN_MODES, type RunMode } from '../data/championships';
+import { t } from '../i18n';
 import { Button } from '../ui/Button';
 import { showHintLine } from '../ui/key-hint';
 import { onKey } from '../ui/keys';
@@ -14,8 +14,6 @@ import { text } from '../ui/screen';
 import { addTitle } from '../ui/title';
 import { byMode } from '../ui/touch';
 import { fitCamera } from '../view/stage';
-
-const LABEL: Record<QuickMode, I18nKey> = { '2v2': 'mode.duo', '1v1': 'mode.duel' };
 
 /** The card, like the pause card: one padding on every side and between title, buttons and hint. */
 const CARD = { x: 190, w: 260, pad: 20, titleH: 26, hintH: 8 };
@@ -26,16 +24,16 @@ const BUTTON = { x: 320, w: CARD.w - 2 * CARD.pad, h: BUTTON_H.primary };
  * menu; the pick is remembered in the save and handed to `onPick`, which starts the table.
  */
 export class ModeScene extends Phaser.Scene {
-	private onPick: (mode: QuickMode) => void = () => {};
+	private onPick: (mode: RunMode) => void = () => {};
 	private focus = 0;
 
 	constructor() {
 		super('Mode');
 	}
 
-	init(data: { onPick?: (mode: QuickMode) => void }): void {
+	init(data: { onPick?: (mode: RunMode) => void }): void {
 		this.onPick = data?.onPick ?? (() => {});
-		this.focus = Math.max(0, QUICK_MODES.indexOf(getSave(this).settings.quickMode ?? '2v2'));
+		this.focus = Math.max(0, RUN_MODES.indexOf(getSave(this).settings.quickMode ?? '2v2'));
 	}
 
 	create(): void {
@@ -46,7 +44,7 @@ export class ModeScene extends Phaser.Scene {
 			this.scene.stop();
 			this.scene.resume('Menu');
 		};
-		const pick = (mode: QuickMode): void => {
+		const pick = (mode: RunMode): void => {
 			getSave(this).settings.quickMode = mode;
 			persist(this);
 			close();
@@ -56,7 +54,7 @@ export class ModeScene extends Phaser.Scene {
 		const hintLine = showHintLine();
 		const { pad } = CARD;
 		const gap = GAP.card;
-		const buttonsH = QUICK_MODES.length * BUTTON.h + (QUICK_MODES.length - 1) * gap;
+		const buttonsH = RUN_MODES.length * BUTTON.h + (RUN_MODES.length - 1) * gap;
 		const cardH = pad + CARD.titleH + pad + buttonsH + pad + (hintLine ? CARD.hintH + pad : 0);
 		const top = Math.round(180 - cardH / 2);
 		const card = this.add.graphics();
@@ -70,8 +68,8 @@ export class ModeScene extends Phaser.Scene {
 		);
 		addTitle(this, 320, top + pad + CARD.titleH / 2, t('menu.quick'), 22);
 		const first = top + pad + CARD.titleH + pad + BUTTON.h / 2;
-		const buttons = QUICK_MODES.map((mode, i) =>
-			new Button(this, t(LABEL[mode]), () => pick(mode), {
+		const buttons = RUN_MODES.map((mode, i) =>
+			new Button(this, t(`run.mode.${mode}`), () => pick(mode), {
 				w: BUTTON.w,
 				h: BUTTON.h,
 				size: 12,
@@ -101,7 +99,7 @@ export class ModeScene extends Phaser.Scene {
 			for (const k of keys) onKey(kb, `keydown-${k}`, fn);
 		};
 		const move = (step: number): void => {
-			const n = QUICK_MODES.length;
+			const n = RUN_MODES.length;
 			this.focus = (this.focus + step + n) % n;
 			sfx(this, 'sfx.ui.move');
 			draw();
@@ -109,7 +107,7 @@ export class ModeScene extends Phaser.Scene {
 		on(['UP', 'W'], () => move(-1));
 		on(['DOWN', 'S'], () => move(1));
 		on(['ENTER', 'SPACE'], () => {
-			const mode = QUICK_MODES[this.focus];
+			const mode = RUN_MODES[this.focus];
 			if (!mode) return;
 			sfx(this, 'sfx.ui.confirm');
 			pick(mode);
