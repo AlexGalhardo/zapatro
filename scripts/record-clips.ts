@@ -7,6 +7,8 @@
  * Use the production build for short loads: `bun run build && bunx --bun vite preview --port 5192`.
  *   bun scripts/record-clips.ts --url http://localhost:5192 --lang en [clip…]
  *   bun scripts/record-clips.ts --assets-only   (only the art, audio and app icon)
+ *   --out <dir>   clips and clips.json go to <dir>/<lang> instead of trailer/public/clips/<lang>;
+ *   with it the game art is not copied (nothing under trailer/ is touched).
  */
 import {
 	cpSync,
@@ -19,6 +21,7 @@ import {
 } from 'node:fs';
 import { chromium, type Page } from 'playwright';
 import sharp from 'sharp';
+import { shopRun } from './lib/capture';
 
 const args = process.argv.slice(2);
 const opt = (name: string, d: string): string => {
@@ -27,26 +30,27 @@ const opt = (name: string, d: string): string => {
 };
 const url = opt('url', 'http://localhost:5192');
 const lang = opt('lang', 'en') === 'pt' ? 'pt' : 'en';
-const only = args.filter((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'));
-const OUT = `trailer/public/clips/${lang}`;
+const only = args.filter(
+	(a, i) => !a.startsWith('--') && !['--url', '--lang', '--out'].includes(args[i - 1] ?? ''),
+);
+const outBase = opt('out', '');
+const OUT = `${outBase || 'trailer/public/clips'}/${lang}`;
 const W = 1920;
 const H = 1080;
 const TABLE_READY = 'window.__GAME__?.scene.keys.Table?.match !== undefined';
 const MANHAS = 'seuZe,malandro,zapDeOuro';
-/** Run screen with a strong build: rare and legendary Manhas, modified cards in the deck. */
-const BUILD = `(() => {
-	const s = window.__GAME__.scene.keys.Run; const r = s.run;
-	Object.assign(r, { phase: 'shop', money: 31, manhaSlots: 5,
-		manhas: ['zapDeOuro', 'trucoDeBoteco', 'viraDourada', 'blefeProfissional', 'reiDaMesa'] });
-	const mods = ['vidro', 'hot', 'gold', 'heavy', 'nervosa'];
-	r.deck.forEach((c, i) => { if (i % 4 === 0) c.mod = mods[(i / 4) % mods.length]; });
-	r.shop = { offers: [
-		{ kind: 'manha', id: 'teatro', price: 8, sold: false },
-		{ kind: 'manha', id: 'zapZap', price: 9, sold: false },
-		{ kind: 'consumable', item: { kind: 'lance', id: 'virada' }, price: 3, sold: false },
-	], rerolls: 0 };
-	s.draw();
-})()`;
+/** The first shop of a real run (first table won through the run logic), with a deck of modified cards. */
+const shopOf = (seed: number, mods: boolean): string => {
+	const run = shopRun(seed);
+	if (mods) {
+		const names = ['vidro', 'hot', 'gold', 'heavy', 'nervosa'];
+		run.deck.forEach((c, i) => {
+			if (i % 4 === 0) c.mod = names[(i / 4) % names.length] as string;
+		});
+		run.money = 31;
+	}
+	return `(() => { const s = window.__GAME__.scene.keys.Run; s.run = ${JSON.stringify(run)}; s.draw(); })()`;
+};
 
 interface Clip {
 	query: string;
@@ -91,24 +95,22 @@ const CLIPS: Record<string, Clip> = {
 		ready: 'window.__GAME__?.scene.keys.Menu?.sys.isActive()',
 		act: (p) => p.waitForTimeout(8_000),
 	},
-	// Next-table panels, then the shop with Manhas.
+	// The partner choice, then the shop with the trinket offers.
 	shop: {
 		query: '?run=1&seed=6&qa=1',
 		ready: 'window.__GAME__?.scene.keys.Run?.sys.isActive()',
 		act: async (p) => {
-			await p.evaluate(`window.__GAME__.scene.keys.Run.choosePartner('bruto')`);
 			await p.waitForTimeout(3_000);
-			await p.evaluate(BUILD);
+			await p.evaluate(shopOf(6, false));
 			await p.waitForTimeout(5_000);
 		},
 	},
-	// The build: the shop with five strong Manhas, then the deck full of modified cards.
+	// The build: the shop, then the deck full of modified cards.
 	build: {
 		query: '?run=1&seed=7&qa=1',
 		ready: 'window.__GAME__?.scene.keys.Run?.sys.isActive()',
 		act: async (p) => {
-			await p.evaluate(`window.__GAME__.scene.keys.Run.choosePartner('cida')`);
-			await p.evaluate(BUILD);
+			await p.evaluate(shopOf(7, true));
 			await p.waitForTimeout(3_000);
 			await p.evaluate(
 				`(() => { const s = window.__GAME__.scene.keys.Run; s.drawDeck(s.run); })()`,
@@ -213,6 +215,7 @@ if (!args.includes('--assets-only')) {
 }
 
 // Game art and audio for the stills and the soundtrack.
+if (outBase) process.exit(0);
 rmSync('trailer/public/game', { recursive: true, force: true });
 cpSync('public/assets', 'trailer/public/game', { recursive: true });
 await sharp('art-src/app-icon.svg').resize(512).png().toFile('trailer/public/game/app-icon.png');
