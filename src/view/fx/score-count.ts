@@ -64,7 +64,7 @@ export interface ScoreCountHandle {
 
 const SKIP_GUARD_MS = 150;
 /** Room for the total in the panel (logical px): from the `=` to the right edge. */
-const TOTAL_MAX_W = 66;
+const TOTAL_MAX_W = 60;
 
 /**
  * The score count (docs/game-feel.md §8): plays the queue of `buildCountQueue` step by step, the
@@ -275,7 +275,7 @@ export function playScoreCount(scene: Phaser.Scene, a: ScoreCountArgs): ScoreCou
 				.setOrigin(0.5)
 				.setDepth(DEPTH.score + 1)
 				.setAlpha(0)
-				.setScale(1.7),
+				.setScale(1.3),
 		);
 		const proxy = { t: 0 };
 		const total = b.inMs + b.holdMs + b.outMs;
@@ -289,7 +289,7 @@ export function playScoreCount(scene: Phaser.Scene, a: ScoreCountArgs): ScoreCou
 				const fade = 1 - out;
 				dim.setAlpha(b.dim * u * fade);
 				rays.setAlpha(u * fade).setRotation(proxy.t * 0.0005);
-				label.setAlpha(Math.min(1, u * 2) * fade).setScale(1 + 0.7 * (1 - u) ** 3);
+				label.setAlpha(Math.min(1, u * 2) * fade).setScale(1 + 0.3 * (1 - u) ** 3);
 			},
 		});
 		shake(scene, real(b.shake.ms), b.shake.intensity);

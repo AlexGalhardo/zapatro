@@ -1450,7 +1450,7 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 		const { cx, cy } = this;
 		const half = slotSize(this.slots) / 2;
 		this.manhaRow.setPosition(HUD.x + HUD_PAD + half, HUD.y + HUD_PAD + 10);
-		this.popup.setPosition(cx, cy - 72);
+		this.popup.setPosition(cx, cy - 80);
 		this.scoreBox.setPosition(cx, cy - 20);
 		this.notices.setPosition(cx, cy - 40);
 		this.autoBox?.setPosition(cx, cy + 30);
