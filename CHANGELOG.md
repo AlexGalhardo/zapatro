@@ -12,12 +12,18 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-11-12
+
 ### Added
 
 - **feel:** calling truco, seis, nove or doze now stops the table for a beat: the caller's painted card slides in from their seat, the call lands in the middle of the felt and each step hits harder. A click, tap or key skips it; there is no flash with "Reduce flashes" on.
 - **feel:** cards have weight. They arc and squash when they land, stronger cards land harder and sound deeper, manilhas leave a trail and the ZAP has its own entrance. A won trick is swept to the winner's side.
 - **feel:** the middle of the felt shows the hand: the deck with the vira beside it, a stack of chips with the value of the bet (a call waiting for an answer shows as "N?") and three markers for the tricks won, lost and tied.
 - **feel:** the characters react to tricks, bets, caught signals and the end of a hand with a short motion, a colour wash and a small emotion stamp, and they breathe at rest.
+- **feel:** the score count plays every step of a hand in order: each number flies into Chips or Mult from where it came, the sound climbs in pitch, each trinket lights up in its turn (green for its perk, red for its flaw) and the total flies to the goal meter. A hand that alone beats the table goal gets a bigger finish. One tap skips it.
+- **feel:** each boss table opens with an introduction (the boss's painted card, name and rule), and the Rei do Truco gets a bigger one.
+- **feel:** a queda is a real beat, golden for your pair and darker and heavier for the rivals; the end of a table enters with a mood that matches the result.
+- **run:** the end of a run is a summary: the result, how far you got, your best hand, the item that scored the most, your trinkets, the seed with a Copy button, what you unlocked, what is missing for the next unlock, and New run in one tap.
 - **run:** a New run screen where you pick the mode, the Stake (1 to 8) and the starting deck on one page. Locked Stakes and decks say what unlocks them, and the game remembers your last choices.
 - **run:** the starting deck's own card back shows in play.
 - **shop:** the Refresh button is back, with a price that rises on every refresh in the same shop.
@@ -34,6 +40,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **audio:** the victory and defeat music plays once and goes back to the menu music instead of looping.
 - **table:** every notice (new vira, bet raised, trick won or lost, mão de 11, hand result, queda, boss rule and more) is a strip with an icon and a colour per kind; heavier notices are bigger and stay longer.
 - **table:** in mano a mano the rival is bigger and centred at the top, and the felt is laid out for two.
 - **balance:** the Stake curve was remeasured: Stake 1 is unchanged and every Stake after it is harder than the one before, up to Stake 8.
@@ -759,7 +766,8 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - The Android release job could not run `gradlew` (the executable bit was lost when the repository was recreated on Windows). ([a3ffc6a](https://github.com/AlexGalhardo/truco.lekzera.xyz/commit/a3ffc6ad09542e7f5bdf256b52a55f20606be9da))
 
-[Unreleased]: https://github.com/AlexGalhardo/zapatro/compare/v0.20.0...HEAD
+[Unreleased]: https://github.com/AlexGalhardo/zapatro/compare/v0.21.0...HEAD
+[0.21.0]: https://github.com/AlexGalhardo/zapatro/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/AlexGalhardo/zapatro/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/AlexGalhardo/zeta-c/compare/v0.17.0...v0.18.0
