@@ -140,7 +140,7 @@ export function ringTex(scene: Phaser.Scene): string {
 		48,
 		(ctx) => {
 			ctx.strokeStyle = toCss(PALETTE.panelBorder);
-			ctx.lineWidth = 2;
+			ctx.lineWidth = 3;
 			ctx.beginPath();
 			ctx.arc(24, 24, 22, 0, Math.PI * 2);
 			ctx.stroke();
