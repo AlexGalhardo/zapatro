@@ -83,7 +83,12 @@ function drawPip(g: Phaser.GameObjects.Graphics, mark: TrickMark, now: boolean, 
  * The centre of the felt: the deck, the bet as a stack of chips (a call waiting for an answer adds
  * ghost chips on top) and the three trick markers. Pure view: it draws what it is given.
  */
-export function createFeltCenter(scene: Phaser.Scene, kind: 'table' | 'duel'): FeltCenter {
+export function createFeltCenter(
+	scene: Phaser.Scene,
+	kind: 'table' | 'duel',
+	/** Texture key of the deck's card back (the run's starting deck has its own). */
+	backKey = 'card.back.default',
+): FeltCenter {
 	const layout: FeltCenterLayout = FELT_CENTER[kind];
 	const k = layout.scale;
 	const F = FELT_FEEL;
@@ -94,7 +99,7 @@ export function createFeltCenter(scene: Phaser.Scene, kind: 'table' | 'duel'): F
 			.image(
 				layout.deck.x + (i - F.deckLayers + 1) * F.deckStep,
 				layout.deck.y + (i - F.deckLayers + 1) * F.deckStep,
-				tex(scene, 'card.back.default'),
+				tex(scene, backKey),
 			)
 			.setScale(F.deckScale)
 			.setTint(i === F.deckLayers - 1 ? 0xffffff : shade(0xffffff, -0.25));
@@ -162,7 +167,7 @@ export function createFeltCenter(scene: Phaser.Scene, kind: 'table' | 'duel'): F
 
 	return {
 		update(data) {
-			for (const back of deck) back.setTexture(tex(scene, 'card.back.default'));
+			for (const layer of deck) layer.setTexture(tex(scene, backKey));
 			if (!shown || shown.bet !== data.bet || shown.pending !== data.pending) {
 				const grew = shown !== null && data.bet > shown.bet;
 				drawStack(data);
