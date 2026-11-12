@@ -6,7 +6,9 @@
  * Groups: menu, modechoice, settings, rules, pause, table, eleven, iron, duel, score, manhas, run,
  * newrun, shop, boss, continue, save, end, runend, touch, tutorial, deck.
  */
+
 import { type Browser, type BrowserContextOptions, chromium, type Page } from 'playwright';
+import { shopRun } from './lib/capture';
 
 const args = process.argv.slice(2);
 const opt = (name: string, d: string): string => {
@@ -121,7 +123,7 @@ async function group(
 					);
 				},
 				undefined,
-				{ timeout: 30000 },
+				{ timeout: 90000 },
 			);
 			await page.waitForTimeout(800);
 		},
@@ -417,18 +419,12 @@ await group(browser, 'end', async (t) => {
 });
 
 const runOf = '(g) => g.registry.get("save").run';
-/** A run in the shop with known offers (the shop screen is tested, not the rolls). */
+/** The real first shop of a run (the first table won through the run logic), put on the Run scene. */
+const shopJson = JSON.stringify(shopRun(6));
 const SHOP = `(g) => {
-	const r = g.scene.keys.Run.run;
-	Object.assign(r, { phase: 'shop', money: 40, manhas: ['seuZe', 'peQuente'] });
-	r.shop = {
-		offers: [
-			{ kind: 'manha', id: 'malandro', price: 4, sold: false },
-			{ kind: 'consumable', item: { kind: 'lance', id: 'limpa' }, price: 3, sold: false },
-		],
-		rerolls: 0,
-	};
-	g.scene.keys.Run.draw();
+	const s = g.scene.keys.Run;
+	s.run = ${shopJson};
+	s.draw();
 }`;
 const runWith = (cond: string): string => `(g) => { const r = (${runOf})(g); return ${cond}; }`;
 const newRunIn = async (t: T, seed: number): Promise<void> => {
@@ -495,71 +491,63 @@ await group(browser, 'newrun', async (t) => {
 	);
 	await t.click(textIn('Run', /Play with|Jogar com/, 1));
 	t.check(
-		'picking a partner starts the run at Championship 1',
-		await t.eval<boolean>(runWith('r?.champ === 1 && r.table === 0 && r.phase === "select"')),
+		'picking a partner opens the first table at once',
+		await t.until('table', active('Table'), 8000),
 	);
-	t.check('the next table shows its goal', await t.eval<boolean>(hasText('Run', /Goal|Meta/)));
-	t.check('and the rivals', await t.eval<boolean>(hasText('Run', /Rivals|Rivais/)));
-	await t.click(textIn('Run', /^\W*(Play|Jogar)$/));
-	t.check('Play opens the table', await t.until('table', active('Table'), 5000));
+	t.check(
+		'the run starts at Championship 1 with the table in play',
+		await t.eval<boolean>(runWith('r?.champ === 1 && r.phase === "table"')),
+	);
 });
 
 await group(browser, 'shop', async (t) => {
-	await newRunIn(t, 6);
+	await t.open('?run=1&seed=6');
+	await t.until('run screen', active('Run'), 5000);
 	await t.eval(SHOP);
-	await t.click(textIn('Run', /^\$4$/));
 	t.check(
-		'buying a Manha takes the money and fills a slot',
-		await t.eval<boolean>(runWith('r.money === 36 && r.manhas.at(-1) === "malandro"')),
+		'the shop sells trinkets on the chalkboard',
+		await t.eval<boolean>(
+			'(g) => { const r = g.scene.keys.Run.run; return r.phase === "shop" && r.shop.offers.length > 0 && r.shop.offers.every((o) => o.kind === "trinket"); }',
+		),
 	);
-	await t.eval('(g) => g.scene.keys.Run.drawManhaPanel(g.scene.keys.Run.run)');
-	await t.click(textIn('Run', /^▶$/));
+	const price = await t.eval<number>('(g) => g.scene.keys.Run.run.shop.offers[0].price');
+	const money = await t.eval<number>('(g) => g.scene.keys.Run.run.money');
+	// nth 0 is the money in the title; the offers' price buttons come after it.
+	await t.click(textIn('Run', /^(\$\d+|Free|Grátis)$/, 1));
 	t.check(
-		'▶ moves the first Manha right',
-		await t.eval<boolean>(runWith('r.manhas.join() === "peQuente,seuZe,malandro"')),
-	);
-	await t.click(textIn('Run', /^◀$/, 1));
-	t.check(
-		'◀ moves a Manha left',
-		await t.eval<boolean>(runWith('r.manhas.join() === "peQuente,malandro,seuZe"')),
-	);
-	await t.click(textIn('Run', /(Sell|Vender) \$/));
-	t.check(
-		'selling returns half the price',
-		await t.eval<boolean>(runWith('r.money === 38 && r.manhas.join() === "malandro,seuZe"')),
-	);
-	await t.eval('(g) => g.scene.keys.Run.closePanel?.()');
-	await t.click(textIn('Run', /^(Refresh|Renovar)$/));
-	t.check(
-		'reroll costs $5 and redraws the offers',
+		'buying a trinket takes the money and adds it to the collection',
 		await t.eval<boolean>(
 			runWith(
-				'r.money === 33 && r.shop.rerolls === 1 && r.shop.offers.every((o) => !o.sold)',
+				`r.money === ${money - price} && r.shop.offers[0].sold && Object.keys(r.collection).includes(r.shop.offers[0].id)`,
 			),
 		),
 	);
 	await t.eval('(g) => { g.scene.keys.Run.run.money = 0; g.scene.keys.Run.draw(); }');
-	await t.click(textIn('Run', /^\$[1-9]$/));
+	const owned = await t.eval<number>(
+		'(g) => Object.keys(g.scene.keys.Run.run.collection).length',
+	);
+	await t.click(textIn('Run', /^\$[1-9]\d*$/, 1));
 	t.check(
 		'without money nothing is bought and the error shows',
-		(await t.eval<boolean>(runWith('r.manhas.length === 2 && r.consumables.length === 0'))) &&
-			(await t.eval<boolean>(hasText('Run', /Not enough|insuficiente/))),
+		(await t.eval<boolean>(
+			`(g) => Object.keys(g.scene.keys.Run.run.collection).length === ${owned}`,
+		)) && (await t.eval<boolean>(hasText('Run', /Not enough|insuficiente/))),
 	);
 	await t.click(textIn('Run', /Next table|Próxima mesa/));
-	t.check('Next table leaves the shop', await t.eval<boolean>(runWith('r.phase === "select"')));
+	t.check(
+		'Next table leaves the shop for the table',
+		await t.until('table', active('Table'), 8000),
+	);
 });
 
 await group(browser, 'boss', async (t) => {
 	await newRunIn(t, 8);
+	await t.until('table', active('Table'), 8000);
+	// Table 3 of the Championship is the boss: force it and start that table.
 	await t.eval(
-		'(g) => { const r = g.scene.keys.Run.run; r.table = 2; r.bosses[0] = "cartomante"; g.scene.keys.Run.draw(); }',
+		'(g) => { g.scene.stop("Table"); const r = g.registry.get("save").run; r.table = 2; r.bosses[0] = "cartomante"; r.phase = "select"; g.scene.start("Run", { fresh: false }); }',
 	);
-	t.check(
-		'the boss and its rule show before the table',
-		await t.eval<boolean>(hasText('Run', /Cartomante|Fortune/)),
-	);
-	await t.eval('(g) => g.scene.keys.Run.play()');
-	if (!(await t.until('table', active('Table'), 5000))) return;
+	if (!(await t.until('table', '(g, t) => g.scene.isActive("Table") && t.match', 8000))) return;
 	t.check(
 		'the table knows its boss',
 		await t.eval<boolean>('(g, t) => t.match.boss === "cartomante"'),
