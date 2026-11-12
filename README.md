@@ -31,7 +31,7 @@ Feito com TypeScript, Vite e Phaser 4.2.x, rodando em Bun 1.4.4. Há builds para
 
 ## Jogar
 
-Site oficial: <https://truco.lekzera.xyz> (`/play/` completo, `/demo/` até o primeiro chefe). As páginas de loja (Steam, Google Play, itch.io e Poki) ainda não foram publicadas.
+Site oficial: <https://alexgalhardo.github.io/zapatro/> (`/play/` completo, `/demo/` até o primeiro chefe). As páginas de loja (Steam, Google Play, itch.io e Poki) ainda não foram publicadas.
 
 ## Começando
 

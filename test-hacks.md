@@ -1,6 +1,6 @@
 # Atalhos de teste
 
-Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Funcionam no `bun run dev` (<http://localhost:5191>) e no site (<https://truco.lekzera.xyz/play/>, `/demo/`); junte vários com `&`. Os de run (`run`, `partner`, `demo`, `money`, `stake`, `manhas`) valem só para **run nova**: "Continuar run" os ignora. `champ` não entra na run; só muda a ambiência da partida rápida.
+Parâmetros de URL para testar rápido (`src/debug/params.ts`, PLAN §10.4). Funcionam no `bun run dev` (<http://localhost:5191>) e no site (<https://alexgalhardo.github.io/zapatro/play/>, `/demo/`); junte vários com `&`. Os de run (`run`, `partner`, `demo`, `money`, `stake`, `manhas`) valem só para **run nova**: "Continuar run" os ignora. `champ` não entra na run; só muda a ambiência da partida rápida.
 
 ## Partida e mesa
 

@@ -6,7 +6,7 @@
 
 - [Phaser 4](https://phaser.io) — MIT License.
 - [Rubik](https://fonts.google.com/specimen/Rubik) via Fontsource (game) and `next/font` (site) — SIL Open Font License 1.1. The only font in the game and on the site.
-- Site: [Next.js](https://nextjs.org) and [Tailwind CSS](https://tailwindcss.com) — MIT License.
+- Site: [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com) — MIT License.
 - Trailer: [Remotion](https://www.remotion.dev) — Remotion License (free for individuals and companies of up to 3 people; a company license is needed beyond that).
 
 ## Art and audio

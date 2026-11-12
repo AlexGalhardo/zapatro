@@ -48,7 +48,7 @@ Estado em 2026-10-25 (`package.json` em 0.10.0): o material de loja já existe (
 
 - [ ] Job `android` verde; AAB assinado (secrets `ANDROID_KEYSTORE_*`) no GitHub Release
 - [ ] Testado no Galaxy S20 FE (checklist do doc)
-- [x] Política de privacidade no ar (`https://truco.lekzera.xyz/privacy`); arte da loja em `docs/media/` (ícone 512, gráfico 1024×500, capturas)
+- [x] Política de privacidade no ar (`https://alexgalhardo.github.io/zapatro/privacy/`); arte da loja em `docs/media/` (ícone 512, gráfico 1024×500, capturas)
 - [ ] Questionários IARC, segurança dos dados e público-alvo, e preenchimento da página na Play Console (humano)
 - [ ] Teste interno → teste fechado (12 testadores/14 dias em conta pessoal nova) → produção
 

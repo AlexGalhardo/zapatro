@@ -89,4 +89,4 @@ A tag também dispara o `release.yml`. Sem minutos de Actions ("The job was not 
 
 ## 8. Site (quando a mudança chega ao jogador web)
 
-`bun run site:build` (as imagens vêm de `docs/media/`: rode antes `bun scripts/store-art.ts` e `bun scripts/store-shots.ts` se as telas mudaram; `--skip-demo` não refaz `/play` e `/demo`) e `bun run site:deploy` → <https://truco.lekzera.xyz> (`/play/` completo, `/demo/` até o primeiro chefe). Confira com `curl -s -o /dev/null -w '%{http_code}' https://truco.lekzera.xyz/play/`. Trailer e presskit só com pedido do usuário. Detalhes em `docs/site.md`.
+`bun run site:build` (as imagens vêm de `docs/media/`: rode antes `bun scripts/store-art.ts` e `bun scripts/store-shots.ts` se as telas mudaram; `--skip-demo` não refaz `/play` e `/demo`) e `bun scripts/site-check.ts` (ensaio do GitHub Pages sob `/zapatro/`). O push na `main` publica sozinho (`deploy.yml`) em <https://alexgalhardo.github.io/zapatro/> (`/play/` completo, `/demo/` até o primeiro chefe). Confira com `curl -s -o /dev/null -w '%{http_code}' https://alexgalhardo.github.io/zapatro/play/`. Trailer e presskit só com pedido do usuário. Detalhes em `docs/site.md`.

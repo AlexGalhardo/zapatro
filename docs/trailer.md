@@ -9,7 +9,7 @@ bun run build && bunx --bun vite preview --port 5192        # jogo em produção
 bun scripts/record-clips.ts --url http://localhost:5192     # grava os clipes e copia arte/áudio do jogo
 cd trailer && bun install && bun run studio                 # ajustar no Remotion Studio
 cd trailer && bun run render                                # out/trailer-en.mp4, trailer-pt.mp4, teaser-en.mp4, teaser-pt.mp4
-bun run site:build && bun run site:deploy                   # o site publica trailer/out/trailer-*.mp4 sozinho
+bun run site:build                                          # o push na main publica o site; ele leva trailer/out/trailer-*.mp4 sozinho
 ```
 
 - `scripts/record-clips.ts` grava `table` (mão inteira com 3 Manhas, truco e contagem), `iron` (mão de ferro), `menu` e `shop` (painéis de mesa e loja) com o Playwright em 1920×1080, seed fixa e o bot. A gravação começa com a página, então `trailer/public/clips/clips.json` guarda o segundo em que cada cena ficou pronta; o trailer corta a partir dali (`<Clip name at>`).
