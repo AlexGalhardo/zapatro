@@ -1,0 +1,149 @@
+---
+import { type Lang, TEXTS } from '@/i18n';
+import { abs, LINKS, url } from '@/links';
+import { trailerPoster, trailerVideo } from '@/trailer';
+import StoreBadge from './StoreBadge.astro';
+import Trailer from './Trailer.astro';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = TEXTS[lang];
+
+// "Chips × Mult" / "Fichas × Mult" in the game's chip blue and mult red.
+const m = /(Chips|Fichas) × (Mult)/.exec(t['hero.pitch']);
+const pitch = m
+	? {
+			before: t['hero.pitch'].slice(0, m.index),
+			chips: m[1],
+			mult: m[2],
+			after: t['hero.pitch'].slice(m.index + m[0].length),
+		}
+	: null;
+
+const video = trailerVideo(lang);
+const poster = trailerPoster(lang);
+const ld: Record<string, unknown>[] = [
+	{
+		'@context': 'https://schema.org',
+		'@type': 'VideoGame',
+		name: 'Zapatro',
+		url: abs(lang === 'en' ? '' : 'pt/'),
+		description: t['meta.desc'],
+		image: abs('img/og.jpg'),
+		genre: 'Roguelike card game',
+		gamePlatform: ['Windows', 'macOS', 'Linux', 'Android', 'Web browser'],
+		inLanguage: ['en', 'pt-BR'],
+		author: { '@type': 'Person', name: 'Alex Galhardo' },
+	},
+];
+if (video)
+	ld.push({
+		'@context': 'https://schema.org',
+		'@type': 'VideoObject',
+		name: `Zapatro — ${t['trailer.title']}`,
+		description: t['meta.desc'],
+		thumbnailUrl: abs(poster ?? '/img/og.jpg'),
+		uploadDate: video.uploaded,
+		contentUrl: abs(video.src),
+		inLanguage: lang,
+	});
+const jsonLd = JSON.stringify(ld).replace(/</g, '\\u003c');
+---
+
+<!-- Phones (flex) read: title, CTA, trailer, pitch, badges; desktop (grid) puts the left column back together (`md:block`) and the trailer on the right. -->
+<main id="main" class="relative isolate flex flex-1 items-center overflow-hidden">
+	<script type="application/ld+json" set:html={jsonLd} />
+	<div
+		class="mx-auto flex w-11/12 flex-col gap-6 py-8 md:grid md:w-10/12 md:grid-cols-2 md:items-center md:gap-8"
+	>
+		<div class="contents md:relative md:block md:max-w-[36rem]">
+			<!-- Decorative fan of three flat cards behind the hero (vector, no scene: Art Bible v2 §1). -->
+			<svg
+				aria-hidden="true"
+				viewBox="0 0 300 220"
+				class="pointer-events-none absolute top-1/2 left-0 -z-10 hidden w-[36rem] -translate-y-1/2 opacity-[0.06] md:block"
+			>
+				{
+					[-18, 0, 18].map((a) => (
+						<rect
+							x="110"
+							y="30"
+							width="96"
+							height="128"
+							rx="10"
+							fill="#F8F0DE"
+							stroke="#1A1A1A"
+							stroke-width="4"
+							transform={`rotate(${a} 158 200)`}
+						/>
+					))
+				}
+			</svg>
+			<div class="order-1">
+				<h1
+					class="m-0 text-[clamp(2.6rem,5vw,5rem)] tracking-wide text-gold uppercase [text-shadow:0_4px_0_#1A1A1A]"
+				>
+					Zapatro
+				</h1>
+				<p class="mt-2 mb-0 text-tagline leading-snug text-cream">{t['hero.tagline']}</p>
+			</div>
+			<p class="order-4 m-0 md:mt-4">
+				{
+					pitch ? (
+						<>
+							{pitch.before}
+							<strong class="text-chips-text brightness-150">{pitch.chips}</strong> ×{' '}
+							<strong class="text-mult brightness-125">{pitch.mult}</strong>
+							{pitch.after}
+						</>
+					) : (
+						t['hero.pitch']
+					)
+				}
+			</p>
+			<div class="order-2 flex flex-wrap items-center gap-4 md:mt-6">
+				<a
+					href={url('play/')}
+					target="_blank"
+					rel="noopener"
+					class="btn btn-cta min-h-16 px-8 py-4 text-2xl uppercase"
+				>
+					{t['cta.play']}
+					<span class="sr-only"> {t['cta.newTab']}</span>
+				</a>
+				<a
+					href={url('demo/')}
+					target="_blank"
+					rel="noopener"
+					class="btn min-h-14 px-6 py-3 text-xl"
+				>
+					{t['cta.demo']}
+					<span class="sr-only"> {t['cta.newTab']}</span>
+				</a>
+			</div>
+			<div class="order-5 md:mt-4">
+				<p class="m-0 text-base text-dim">{t['demo.body']}</p>
+				<ul
+					aria-label={t['badges.label']}
+					class="mt-4 mb-0 flex list-none flex-wrap gap-3 p-0"
+				>
+					<li>
+						<StoreBadge url={LINKS.steam} label={t['badge.steam']} soon={t['cta.soon']} />
+					</li>
+					<li>
+						<StoreBadge url={LINKS.play} label="Google Play" soon={t['cta.soon']} />
+					</li>
+					<li>
+						<StoreBadge url={LINKS.itch} label="itch.io" soon={t['cta.soon']} />
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="order-3">
+			<Trailer lang={lang} />
+		</div>
+	</div>
+</main>

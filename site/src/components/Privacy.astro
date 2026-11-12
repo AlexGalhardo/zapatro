@@ -1,0 +1,22 @@
+---
+import { type Lang, TEXTS } from '@/i18n';
+import { url } from '@/links';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = TEXTS[lang];
+---
+
+<main id="main" class="mx-auto my-8 w-11/12 flex-1 md:w-10/12">
+	<h1 class="text-4xl">{t['privacy.title']}</h1>
+	<p>{t['privacy.body.1']}</p>
+	<p>{t['privacy.body.2']}</p>
+	<p>{t['privacy.body.3']}</p>
+	<p class="text-dim">{t['privacy.updated']}</p>
+	<p>
+		<a href={lang === 'en' ? url('') : url('pt/')}>{t['back.home']}</a>
+	</p>
+</main>

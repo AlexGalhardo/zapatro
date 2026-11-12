@@ -1,11 +1,11 @@
 /**
- * Builds the official site (PLAN RC2, Next.js static export) into site/out:
+ * Builds the official site (PLAN RC2, Astro static build) into site/out:
  *   1. icons from art-src; logo, header and the store captures from docs/media → site/public/img
  *   2. social preview (docs/media/site-og.*) → site/public/img/og.jpg
  *   3. the full game (`bun run build`) → site/public/play and the demo (`bun run build:demo`) → site/public/demo
  *   4. trailer renders, if any (trailer/out/*.mp4) → site/public/trailer
  *   5. press kit zip → site/public/presskit/truco-roguelite-presskit.zip
- *   6. `next build` in site/ (output: 'export')
+ *   6. `astro build` in site/ → site/out, plus .nojekyll (GitHub Pages)
  *   bun scripts/site-build.ts [--skip-demo]
  * Everything under site/public is generated (gitignored).
  */
@@ -38,7 +38,7 @@ for (const size of [64, 256, 1024])
 		.resize(size, size, { kernel: 'nearest' })
 		.png()
 		.toFile(`${IMG}/icon-${size}.png`);
-// Favicon, Apple touch icon and the web manifest sizes (site/app/manifest.ts).
+// Favicon, Apple touch icon and the web manifest sizes (site/src/pages/manifest.webmanifest.ts).
 cpSync('art-src/app-icon.svg', `${IMG}/favicon.svg`);
 await sharp('art-src/app-icon.svg').resize(180).png().toFile(`${IMG}/apple-touch-icon.png`);
 for (const size of [192, 512])
@@ -82,7 +82,7 @@ for (const f of readdirSync('docs/media').filter((f) => /^store-shot-.*\.png$/.t
 		.toFile(`${IMG}/press/${name}.webp`);
 }
 // Trailer poster per language until the render has its own still (§7.6): the count capture, in
-// the widths of its srcset (site/src/components/Trailer.tsx): phones fetch the small one.
+// the widths of its srcset (site/src/components/trailer.ts): phones fetch the small one.
 for (const lang of ['en', 'pt-BR'])
 	for (const w of [480, 720, 960])
 		await sharp(`docs/media/store-shot-02-count-${lang}.png`)
@@ -91,7 +91,7 @@ for (const lang of ['en', 'pt-BR'])
 			.toFile(`${IMG}/trailer-poster-${lang}${w === 960 ? '' : `-${w}`}.webp`);
 console.log('art ok');
 
-// Painted page background (art-src/gta/background-2.png): one size per breakpoint, see globals.css.
+// Painted page background (art-src/gta/background-2.png): one size per breakpoint, see site/src/styles/global.css.
 for (const w of [640, 1280, 1920])
 	await sharp('art-src/gta/background-2.png')
 		.resize(w, Math.round((w * 9) / 16), { fit: 'cover' })
@@ -166,41 +166,11 @@ if (process.platform === 'win32')
 else run(['zip', '-q', '../presskit/truco-roguelite-presskit.zip', ...files], IMG);
 console.log('press kit ok');
 
-// 6. Site. Every component is a server component: the pages need no React in the browser, so the
-// framework JS that would only hydrate them is stripped from the HTML below (mobile LCP and TBT,
-// docs/site.md). A client component would silently stop working there, hence the guard.
-const sources = (dir: string): string[] =>
-	readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-		e.isDirectory()
-			? sources(`${dir}/${e.name}`)
-			: /\.tsx?$/.test(e.name)
-				? [`${dir}/${e.name}`]
-				: [],
-	);
-const client = ['site/src', 'site/app']
-	.flatMap(sources)
-	.filter((f) => /^\s*['"]use client['"]/m.test(readFileSync(f, 'utf8')));
-if (client.length)
-	throw new Error(
-		`client components need the framework JS that this build strips: ${client.join(', ')}`,
-	);
-if (!existsSync('site/node_modules')) run(['bun', 'install'], 'site');
+// 6. Site: the Astro static build (site/astro.config.ts; SITE_URL and SITE_BASE set the origin and
+// the path prefix, GitHub Pages default /zapatro/). public/ (art, /play, /demo) is copied as-is.
+if (!existsSync('site/node_modules')) run(['bun', 'install', '--frozen-lockfile'], 'site');
+rmSync('site/out', { recursive: true, force: true });
 run(['bun', 'run', 'build'], 'site');
-const pages = (dir: string): string[] =>
-	readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
-		e.isDirectory()
-			? ['play', 'demo', '_next'].includes(e.name) && dir === 'site/out'
-				? []
-				: pages(`${dir}/${e.name}`)
-			: e.name.endsWith('.html')
-				? [`${dir}/${e.name}`]
-				: [],
-	);
-for (const page of pages('site/out')) {
-	const html = readFileSync(page, 'utf8')
-		// Next's chunks and the inline RSC payload (hydration only); our own script has an id.
-		.replace(/<script(?![^>]*\bid="lang-paths")[^>]*>[\s\S]*?<\/script>/g, '')
-		.replace(/<link rel="preload" as="script"[^>]*>/g, '');
-	writeFileSync(page, html);
-}
+// GitHub Pages runs Jekyll unless told not to, which would drop folders that start with "_".
+writeFileSync('site/out/.nojekyll', '');
 console.log('site/out ready');

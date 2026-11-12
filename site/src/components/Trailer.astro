@@ -1,0 +1,67 @@
+---
+import { type Lang, TEXTS } from '@/i18n';
+import { url } from '@/links';
+import { POSTER_SIZES, posterSrcset, trailerPoster, trailerTracks, trailerVideo } from '@/trailer';
+
+interface Props {
+	lang: Lang;
+}
+
+/**
+ * The trailer (game-director-feedback.md §7.6), checked at build time so no request for a missing
+ * file reaches the browser. Without a render it shows the poster with a labelled placeholder.
+ */
+const { lang } = Astro.props;
+const t = TEXTS[lang];
+const poster = trailerPoster(lang);
+const video = trailerVideo(lang);
+const tracks = trailerTracks();
+const FRAME =
+	'relative block aspect-video w-full overflow-hidden rounded-panel border-2 border-panel-dark bg-felt shadow-solid';
+---
+
+{
+	video ? (
+		<video
+			controls
+			preload="metadata"
+			playsinline
+			poster={poster ? url(poster) : undefined}
+			width={1280}
+			height={720}
+			class={FRAME}
+		>
+			<source src={url(video.src)} type="video/mp4" />
+			{tracks.map(([f, srcLang, label]) => (
+				<track
+					kind="subtitles"
+					src={url(`/trailer/trailer-${f}.vtt`)}
+					srclang={srcLang}
+					label={label}
+					default={srcLang === lang}
+				/>
+			))}
+		</video>
+	) : (
+		<figure class:list={[FRAME, 'm-0']}>
+			{poster && (
+				<img
+					src={url(poster)}
+					srcset={posterSrcset(poster)}
+					sizes={POSTER_SIZES}
+					alt=""
+					width={1280}
+					height={720}
+					fetchpriority="high"
+					class="h-full w-full object-cover opacity-60"
+				/>
+			)}
+			<figcaption class="absolute inset-0 grid place-items-center p-4">
+				<span class="card max-w-sm text-center">
+					<strong class="block text-xl text-gold">{t['trailer.soon']}</strong>
+					<span class="text-sm text-dim">{t['trailer.soon.note']}</span>
+				</span>
+			</figcaption>
+		</figure>
+	)
+}

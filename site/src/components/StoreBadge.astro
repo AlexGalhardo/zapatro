@@ -1,0 +1,29 @@
+---
+interface Props {
+	url: string | null;
+	label: string;
+	soon: string;
+	plain?: boolean;
+}
+
+/** A store/community link, or a muted "coming soon" badge while the page does not exist. */
+const { url, label, soon, plain = false } = Astro.props;
+const look = plain ? 'inline-flex min-h-11 items-center gap-1 md:min-h-0' : 'btn text-base';
+---
+
+{
+	url ? (
+		<a href={url} class:list={[look, plain && 'text-text']}>
+			{label}
+			<span aria-hidden="true">↗</span>
+		</a>
+	) : (
+		// Plain text, not a disabled link: nothing to click until the page exists.
+		<span
+			class:list={[look, 'cursor-default text-dim', !plain && 'bg-panel-dark shadow-none hover:text-dim']}
+		>
+			{label}
+			<small class="text-xs text-dim">({soon})</small>
+		</span>
+	)
+}
