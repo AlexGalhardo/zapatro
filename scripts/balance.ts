@@ -2,10 +2,13 @@
  * Balance gate (PLAN §10.2, D-39): fails when the good bot is outside 5–20% wins at stake 1, the
  * random bot wins 5% or more, a table averages fewer than 4 or more than 12 hands, or any number
  * is NaN. Results go to docs/balancing.md.
- *   bun scripts/balance.ts [--seeds 3] [--runs 500] [--stake 1]
+ *   bun scripts/balance.ts [--seeds 3] [--runs 500] [--stake 1] [--mode 2v2|1v1]
+ * `--mode 1v1` checks the mano a mano run (its own goal table, `CHAMPIONSHIP_GOALS_1V1`) against
+ * the same bands; the default stays the 2×2 run.
  * `--stake` has no effect until the Estacas exist (B2): then each Estaca takes 5–8 p.p. off the
  * good bot (D-39) and this gate gets its per-stake band.
  */
+import { RUN_MODES, type RunMode } from '../src/data/championships';
 import { simulateRun } from '../src/game/run-sim';
 
 const args = process.argv.slice(2);
@@ -16,6 +19,8 @@ const opt = (name: string, d: string): number => {
 const seeds = opt('seeds', '3');
 const runs = opt('runs', '500');
 const stake = opt('stake', '1');
+const modeArg = args[args.indexOf('--mode') + 1];
+const mode: RunMode = RUN_MODES.find((m) => m === modeArg) ?? '2v2';
 // Was 40–60%, then 20–35% after the 2026-10-25 doubling. Lowered on purpose on 2026-10-28
 // after CHAMPIONSHIP_GOALS doubled again (×2 of 105…560): the good bot sits around 9–13%,
 // and 5–20% leaves headroom so seed noise does not flake the gate. Random and pace stay put.
@@ -30,10 +35,10 @@ const check = (what: string, ok: boolean): void => {
 };
 for (let s = 1; s <= seeds; s++) {
 	const good = Array.from({ length: runs }, (_, i) =>
-		simulateRun(s * 100_000 + i, 'good', 8, stake),
+		simulateRun(s * 100_000 + i, 'good', 8, stake, undefined, mode),
 	);
 	const random = Array.from({ length: runs }, (_, i) =>
-		simulateRun(s * 100_000 + i, 'random', 8, stake),
+		simulateRun(s * 100_000 + i, 'random', 8, stake, undefined, mode),
 	);
 	const rate = (xs: typeof good): number => xs.filter((o) => o.won).length / xs.length;
 	const hands = good.flatMap((o) => o.handsPerTable);
