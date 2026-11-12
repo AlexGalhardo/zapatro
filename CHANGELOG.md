@@ -12,6 +12,24 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ## [Unreleased]
 
+### Added
+
+- **table:** Quick match now asks for the format: Teams (2×2) or Mano a mano (1×1). In mano a mano you play alone against one rival to 12 tentos, on a table laid out for two, with no partner and no signals. The game remembers your last choice.
+- **rules:** a "Mano a mano (1×1)" page in the Rules screen; F1 at a mano a mano table opens the manual on it.
+- **lan:** the host picks the table mode in the lobby, 2 vs 2 or 1 vs 1, in any mix of people and bots.
+- **lan:** the LAN table now plays with the special cards (Trevo, Olho, Raio) as well as the jokers. What the Olho shows is sent only to the pair that played it.
+- **qa:** `?skipMenu=1&mode=1v1` opens the mano a mano quick match; `bun scripts/smoke.ts --mode 1v1` and the `duel` and `modechoice` QA groups cover it, and CI runs the three.
+
+### Changed
+
+- **lan:** a host who leaves the lobby hands the table to the next seated player; mid-match a bot takes the seat and the match goes on.
+- **tooling:** `scripts/shot.ts`, `scripts/gta-shots.ts` and `scripts/store-shots.ts` wait for the expected scene and game state (`scripts/lib/capture.ts`) instead of fixed delays, print PASS or FAIL per capture and exit non-zero when a screen does not show or the page logs an error. Captures go to the OS temp folder by default, so the committed store images are not overwritten.
+- **tooling:** the shop capture is a real first shop of a run, so it shows the trinket offers; `scripts/qa.ts` tests the trinket shop instead of the removed Manha shop and table choice; `scripts/record-clips.ts` has an `--out` option.
+
+### Fixed
+
+- **lan:** with two people as opponents and a bot partner each, a bot could accept, raise or run from a truco for the person beside it. The person now answers every call against their pair, in any seat.
+
 ## [0.20.0] - 2026-11-11
 
 ### Added
