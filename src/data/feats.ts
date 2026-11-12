@@ -25,7 +25,7 @@ export type FeatRule =
 export interface FeatDef {
 	id: string;
 	rule: FeatRule;
-	/** Content it unlocks: `deck:<id>`, `partner:<id>`, `legendary` (legendary Manhas). */
+	/** Content it unlocks: `deck:<id>`, `partner:<id>`. */
 	unlocks?: string;
 }
 
@@ -34,7 +34,7 @@ export const FEATS: readonly FeatDef[] = [
 	{ id: 'cemPontos', rule: { on: 'hand', k: 'points', n: 100 } },
 	{ id: 'milPontos', rule: { on: 'hand', k: 'points', n: 1000 } },
 	{ id: 'dezMil', rule: { on: 'hand', k: 'points', n: 10000 } },
-	{ id: 'doze', rule: { on: 'hand', k: 'bet12' }, unlocks: 'legendary' },
+	{ id: 'doze', rule: { on: 'hand', k: 'bet12' } },
 	{ id: 'ferro', rule: { on: 'hand', k: 'iron' }, unlocks: 'deck:viciado' },
 	{ id: 'lixo', rule: { on: 'hand', k: 'weakWin' }, unlocks: 'deck:interior' },
 	{ id: 'blefe', rule: { on: 'hand', k: 'bluffWin' }, unlocks: 'deck:blefe' },

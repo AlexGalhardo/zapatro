@@ -227,6 +227,7 @@ export class Match {
 			weak: noManilha && facts.myHand.every((c) => !['3', '2', 'A'].includes(c.rank)),
 			called: this.calls.some((c) => teamOf(c) === 'us'),
 			bluff: won && this.calls.includes(0) && noManilha,
+			iron: s.kind === 'iron',
 		};
 	}
 

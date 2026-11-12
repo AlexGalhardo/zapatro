@@ -10,19 +10,26 @@ import { playAmbience, playMusic } from '../core/music';
 import { openStore } from '../core/platform';
 import { getView } from '../core/viewport';
 import { BOSS_POOL, FINAL_BOSS } from '../data/bosses';
-import type { RunMode } from '../data/championships';
+import { RUN_MODES, type RunMode } from '../data/championships';
 import { COMPANION_IDS, COMPANIONS, type CompanionId, isCompanion } from '../data/companions';
 import type { Consumable } from '../data/consumables';
-import type { DeckId } from '../data/decks';
+import { DECK_IDS, DECKS, type DeckId, deckNeedsPartner } from '../data/decks';
 import { ECONOMY } from '../data/economy';
 import { isManhaId, MANHA_BY_ID, type Rarity } from '../data/manhas';
 import { rarityOfPrice } from '../data/rarity';
-import { MAX_STAKE } from '../data/stakes';
+import { MAX_STAKE, type StakeChange, stakeChanges } from '../data/stakes';
 import { isTrinketId, TRINKET_BY_ID, TRINKET_IDS } from '../data/trinkets';
 import { botShop } from '../game/run-sim';
 import { getLang, type I18nKey, t } from '../i18n';
 import { trinketName, trinketRarityName, trinketTexts } from '../i18n/trinket';
-import { isUnlocked, recordRunStart, recordRunState } from '../logic/meta';
+import {
+	canStartRun,
+	isUnlocked,
+	maxStake,
+	recordRunStart,
+	recordRunState,
+	unlockFeat,
+} from '../logic/meta';
 import { Rng, randomSeed } from '../logic/rng';
 import { drawCandidates } from '../logic/run/draw';
 import {
@@ -48,6 +55,7 @@ import {
 	useConsumable,
 } from '../logic/run/run';
 import { equip, levelOf, mergeCollection, unequip } from '../logic/run/trinkets';
+import type { RunSetup } from '../logic/save';
 import { formatPoints } from '../logic/score/format';
 import { type Card, isSpecial, RANKS, type Rank, SUITS } from '../logic/truco/cards';
 import { fitArt } from '../logic/viewport';
@@ -90,8 +98,10 @@ export class RunScene extends Phaser.Scene {
 	private debugTrinkets = false;
 	/** A table is being entered: draws and key repeats must not start it twice. */
 	private entering = false;
-	private deckChoice: DeckId = 'normal';
-	private stakeChoice = 1;
+	/** The New run choices: remembered in the save settings, edited on the setup screen. */
+	private setup: RunSetup = { mode: '2v2', stake: 1, deck: 'normal' };
+	/** `?stake=N` (test hacks) preselects a Stake without the unlock check. */
+	private debugStake = false;
 	/** Closes the panel open over the screen (Esc), if any. */
 	private closePanel: (() => void) | null = null;
 	/** The mode picked on the first screen of a new run (`?mode=1v1` picks it ahead). */
@@ -122,9 +132,10 @@ export class RunScene extends Phaser.Scene {
 		this.run = data?.fresh ? null : parseRun(save.run);
 		this.targeting = null;
 		this.mode = getParams(this).mode ?? null;
-		// `?stake=N` (test hacks) preselects the Stake of a new run, locked or not.
+		this.setup = { ...(save.settings.runSetup ?? this.setup) };
 		const debugStake = getParams(this).stake;
-		if (debugStake !== undefined) this.stakeChoice = Math.min(MAX_STAKE, debugStake);
+		this.debugStake = debugStake !== undefined;
+		if (debugStake !== undefined) this.setup.stake = Math.min(MAX_STAKE, debugStake);
 		this.tipText = null;
 		this.entering = false;
 		playMusic(this, 'music.menu');
@@ -172,7 +183,9 @@ export class RunScene extends Phaser.Scene {
 		if (!this.sys.isActive()) return;
 		const run = this.run;
 		if (!run) {
-			this.choosePartner(this.ensureCandidates()[0] ?? 'bruto');
+			if (this.mode === null) this.confirmSetup();
+			else this.choosePartner(this.ensureCandidates()[0] ?? 'bruto');
+			if (!this.run) this.time.delayedCall(300, () => this.autoStep());
 			return;
 		}
 		if (run.phase === 'select') {
@@ -214,7 +227,7 @@ export class RunScene extends Phaser.Scene {
 		setBackdrop(this, !run ? 'partner' : run.phase === 'shop' ? 'shop' : 'main');
 		this.msg.setPosition(this.cx, this.h - 6);
 		if (!run) {
-			if (this.mode === null) this.drawModes();
+			if (this.mode === null) this.drawSetup();
 			else this.drawPartners();
 			return;
 		}
@@ -366,35 +379,203 @@ export class RunScene extends Phaser.Scene {
 
 	// --- Mode and partner ----------------------------------------------------------------
 
-	/** First screen of a new run: Dupla 2×2 (then the partner choice) or Mano a mano 1×1. */
-	private drawModes(): void {
+	/** The text of one Stake rule (`stake.<k>`). */
+	private stakeChange(c: StakeChange): string {
+		return t(`stake.${c.k}` as I18nKey, 'n' in c ? { n: c.n } : undefined);
+	}
+
+	/** What a locked deck asks for: the feat that unlocks it. */
+	private deckLockText(deck: DeckId): string {
+		const feat = unlockFeat(`deck:${deck}`);
+		return t('run.setup.lockedDeck', { feat: feat ? t(`feat.${feat}.desc` as I18nKey) : '' });
+	}
+
+	private pickSetup(patch: Partial<RunSetup>, tag: string): void {
+		this.setup = { ...this.setup, ...patch };
+		getSave(this).settings.runSetup = { ...this.setup };
+		persist(this);
+		this.nav?.prefer((b) => b.getData('setup') === tag);
+		this.draw();
+	}
+
+	/** Start (2×2 goes on to the partner choice, 1×1 begins the run); a locked setup does not. */
+	private confirmSetup(): void {
+		const s = this.setup;
+		if (!this.debugStake && !canStartRun(getSave(this).meta, s.mode, s.deck, s.stake)) {
+			sfx(this, 'sfx.ui.error');
+			this.say(t('run.setup.locked'));
+			return;
+		}
+		getSave(this).settings.runSetup = { ...s };
+		persist(this);
+		this.mode = s.mode;
+		if (s.mode === '1v1') this.startRun(undefined);
+		else this.draw();
+	}
+
+	/**
+	 * First screen of a new run, all on one page: mode, Stake and starting deck, remembered from
+	 * the last run, and one button to go on. "Start" is the first button so a first-time player
+	 * confirms the defaults (Teams 2×2, Stake 1, normal deck) with a single Enter or tap. Locked
+	 * Stakes and decks stay in the rows, dimmed; selecting one explains what unlocks it.
+	 */
+	private drawSetup(): void {
 		const { cx } = this;
+		const meta = getSave(this).meta;
+		const s = this.setup;
 		// The partners are drawn now so the run's seed exists whichever mode is picked.
 		this.ensureCandidates();
-		this.title(cx, 80, t('run.chooseMode'), TYPE.screenTitle);
-		const modes: [RunMode, number][] = [
-			['2v2', 140],
-			['1v1', 215],
-		];
-		for (const [mode, y] of modes) {
-			this.button(
-				cx,
-				y,
-				t(`run.mode.${mode}` as I18nKey),
-				() => {
-					this.mode = mode;
-					if (mode === '1v1') this.startRun(undefined);
-					else this.draw();
-				},
-				200,
-				PALETTE.good,
-				{ h: BUTTON_H.primary },
-			);
-			this.put(cx, y + BUTTON_H.primary / 2 + 10, t(`run.mode.${mode}.desc` as I18nKey), 8);
-		}
-		this.button(cx, 290, t('menu.back'), () => fadeTo(this, 'Menu'), 100, undefined, {
+		const left = cx - 280;
+		const controlsX = left + 100;
+		const controlsW = 280 * 2 - 100;
+		const startable = this.debugStake || canStartRun(meta, s.mode, s.deck, s.stake);
+		const bad = PALETTE.bad;
+
+		// First in the scene so the keyboard and the pad start focused on it.
+		this.button(
+			cx,
+			292,
+			s.mode === '1v1' ? t('run.setup.start') : t('run.setup.pickPartner'),
+			() => this.confirmSetup(),
+			220,
+			PALETTE.good,
+			{ h: BUTTON_H.primary, size: 12, onBlocked: () => this.confirmSetup() },
+		).setEnabled(startable);
+		this.button(cx, 324, t('menu.back'), () => fadeTo(this, 'Menu'), 100, undefined, {
 			hint: backHint,
 		});
+		this.title(cx, 22, t('run.setup.title'), TYPE.screenTitle);
+		const label = (y: number, key: I18nKey): void => {
+			this.put(left, y, t(key).toLocaleUpperCase(getLang()), 8, PALETTE.manilha, [0, 0.5]);
+		};
+
+		// Mode.
+		label(62, 'run.setup.mode');
+		const modeW = 150;
+		for (const [i, mode] of RUN_MODES.entries()) {
+			const b = this.button(
+				controlsX + modeW / 2 + i * (modeW + 8),
+				62,
+				t(`run.mode.${mode}` as I18nKey),
+				() => this.pickSetup({ mode }, `mode:${mode}`),
+				modeW,
+				s.mode === mode ? PALETTE.good : undefined,
+				{ h: BUTTON_H.action, size: 10 },
+			);
+			b.setData('setup', `mode:${mode}`);
+		}
+		this.put(
+			controlsX,
+			84,
+			t(`run.mode.${s.mode}.desc` as I18nKey),
+			7,
+			PALETTE.textDim,
+			[0, 0.5],
+			controlsW,
+		);
+
+		// Stake: one numbered button per Stake; the locked ones are dimmed.
+		label(116, 'run.setup.stake');
+		const top = maxStake(meta, s.deck);
+		const stakeW = 52;
+		const stakeGap = (controlsW - MAX_STAKE * stakeW) / (MAX_STAKE - 1);
+		for (let n = 1; n <= MAX_STAKE; n++) {
+			const locked = !this.debugStake && n > top;
+			const sx = controlsX + stakeW / 2 + (n - 1) * (stakeW + stakeGap);
+			const b = this.button(
+				sx,
+				116,
+				String(n),
+				() => this.pickSetup({ stake: n }, `stake:${n}`),
+				stakeW,
+				s.stake === n ? PALETTE.good : undefined,
+				{ h: BUTTON_H.action, size: 11 },
+			);
+			b.setData('setup', `stake:${n}`);
+			if (locked) {
+				b.setAlpha(0.6);
+				this.icon(sx + stakeW / 2 - 9, 116 - BUTTON_H.action / 2 + 9, 'lock', 12);
+			}
+		}
+		const changes = stakeChanges(s.stake).map((c) => this.stakeChange(c));
+		this.put(
+			controlsX,
+			145,
+			`${t('run.setup.stakeN', { n: s.stake })}: ${changes.join(' · ') || t('run.setup.stakeBase')}`,
+			7.5,
+			PALETTE.textLight,
+			[0, 0.5],
+			controlsW,
+		);
+		const stakeLocked = !this.debugStake && s.stake > top;
+		this.put(
+			controlsX,
+			158,
+			stakeLocked
+				? t('run.setup.lockedStake', { n: s.stake - 1 })
+				: s.stake > 1
+					? t('run.setup.stakeAll')
+					: '',
+			7,
+			stakeLocked ? bad : PALETTE.textDim,
+			[0, 0.5],
+			controlsW,
+		);
+
+		// Starting deck: the card back and the name of each.
+		label(204, 'run.setup.deck');
+		const deckW = 86;
+		const deckH = 62;
+		const deckGap = (controlsW - DECK_IDS.length * deckW) / (DECK_IDS.length - 1);
+		for (const [i, id] of DECK_IDS.entries()) {
+			const x = controlsX + deckW / 2 + i * (deckW + deckGap);
+			const open =
+				isUnlocked(meta, `deck:${id}`) && !(s.mode === '1v1' && deckNeedsPartner(id));
+			const b = this.button(
+				x,
+				204,
+				'',
+				() => this.pickSetup({ deck: id }, `deck:${id}`),
+				deckW,
+				s.deck === id ? PALETTE.good : undefined,
+				{ h: deckH },
+			);
+			b.setData('setup', `deck:${id}`);
+			const back = this.add
+				.image(x, 204 - 13, tex(this, `card.back.${DECKS[id].back}`))
+				.setScale(0.45);
+			const name = this.put(
+				x,
+				204 + 18,
+				t(`deck.${id}.name` as I18nKey),
+				7,
+				PALETTE.textDark,
+				[0.5, 0.5],
+				deckW - 6,
+			);
+			this.body.add(back);
+			if (!open) {
+				b.setAlpha(0.6);
+				back.setAlpha(0.6);
+				name.setAlpha(0.7);
+				this.icon(x + deckW / 2 - 9, 204 - deckH / 2 + 9, 'lock', 12);
+			}
+		}
+		this.put(
+			controlsX,
+			242,
+			`${t(`deck.${s.deck}.name` as I18nKey)}: ${t(`deck.${s.deck}.desc` as I18nKey)}`,
+			7.5,
+			PALETTE.textLight,
+			[0, 0.5],
+			controlsW,
+		);
+		const deckLock = !isUnlocked(meta, `deck:${s.deck}`)
+			? this.deckLockText(s.deck)
+			: s.mode === '1v1' && deckNeedsPartner(s.deck)
+				? t('run.setup.needsPartner')
+				: '';
+		this.put(controlsX, 255, deckLock, 7, bad, [0, 0.5], controlsW);
 	}
 
 	/**
@@ -608,11 +789,14 @@ export class RunScene extends Phaser.Scene {
 		const meta = getSave(this).meta;
 		if (!this.runSeed) this.ensureCandidates();
 		this.candidates = [];
+		const mode: RunMode = partner ? '2v2' : '1v1';
+		// A deck or Stake still locked (`?mode=` skips the setup screen) falls back to the base game.
+		const open = this.debugStake || canStartRun(meta, mode, this.setup.deck, this.setup.stake);
 		this.run = newRun(
 			this.runSeed,
 			partner,
-			this.deckChoice,
-			this.stakeChoice,
+			open ? this.setup.deck : 'normal',
+			open ? this.setup.stake : 1,
 			isUnlocked(meta, 'legendary'),
 			IS_DEMO || getParams(this).demo,
 			partner ? '2v2' : '1v1',
@@ -1271,6 +1455,7 @@ export class RunScene extends Phaser.Scene {
 		// Bottom-right of the visible screen, under the chalkboard when the frame has room below it.
 		const NEXT_H = 28;
 		const NEXT_W = 140;
+		const REROLL_W = 120;
 		const view = getView(this);
 		const fit = fitArt(view);
 		const worldRight = 320 + view.width / fit / 2;
@@ -1294,6 +1479,22 @@ export class RunScene extends Phaser.Scene {
 			PALETTE.good,
 			{ h: NEXT_H, size: 12 },
 		);
+		const doReroll = (): void => {
+			if (!this.err(reroll(run))) return;
+			sfx(this, 'sfx.shop.reroll');
+			this.save();
+			this.draw();
+		};
+		const cost = rerollCost(run);
+		this.button(
+			worldRight - edge - NEXT_W - GAP - REROLL_W / 2,
+			nextY,
+			`${t('run.reroll')} $${cost}`,
+			doReroll,
+			REROLL_W,
+			PALETTE.manilha,
+			{ h: NEXT_H, size: 12, onBlocked: doReroll },
+		).setEnabled(run.money >= cost);
 	}
 
 	/** Right column of the trinket shop: equipped slots, then the collection (clicks swap them). */
