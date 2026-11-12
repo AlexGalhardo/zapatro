@@ -77,7 +77,7 @@ await shoot(
 // 03 the shop, with the trinket offers on the chalkboard
 await shoot('03-shop', '?run=1&seed=7', (p) => showShop(p, shopRun(7)));
 // 04 partner choice
-await shoot('04-partner', '?run=1&seed=1', (p) =>
+await shoot('04-partner', '?run=1&seed=1&mode=2v2', (p) =>
 	waitForScene(p, 'Run', {
 		what: 'partner choice',
 		until: '(game, scene) => scene.run === null || scene.run === undefined',

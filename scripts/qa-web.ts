@@ -155,6 +155,9 @@ await group('flow', async (t) => {
 		),
 	);
 	await t.page.waitForTimeout(1500);
+	// The setup screen (mode, Stake, deck) comes first: Enter starts with the defaults.
+	await t.press('Enter');
+	await t.page.waitForTimeout(1500);
 	await t.press('Enter');
 	t.check(
 		'partner → table select',
