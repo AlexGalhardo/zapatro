@@ -1,4 +1,4 @@
-import { AI_PROFILES, type AiProfile } from './ai-profiles';
+import { AI_PROFILES, type AiProfile, type AiProfileId } from './ai-profiles';
 
 /**
  * Companions (design §8): one cast for partners and rivals. Each run offers three of them as
@@ -65,6 +65,26 @@ export const COMPANIONS: Record<CompanionId, CompanionDef> = {
 	ayla: { style: 'cautious', profile: base('ayla', 'calculator', 'cautious') },
 	sheila: { style: 'cautious', profile: base('sheila', 'coward', 'cautious') },
 };
+
+/**
+ * The rival's play in the 1v1 run (D-78, R3.2): the archetype whose courage, aggression and bluff
+ * the companion plays with. It follows the style text (aggressive → bully, cautious → calculator
+ * or coward when he runs from doubtful calls, bluffer → bluffer, fearless → rookie, whose 0.5 is
+ * the closest to his 0.6). The Championship's pool profile still supplies `error`, as in 2×2, so
+ * the rivals get sharper along the run (`RIVAL_POOLS`).
+ */
+export const RIVAL_PROFILES_1V1 = {
+	bruto: 'bully',
+	cida: 'calculator',
+	jhony: 'bluffer',
+	nino: 'rookie',
+	ze: 'calculator',
+	mia: 'bully',
+	chico: 'coward',
+	beti: 'bluffer',
+	ayla: 'calculator',
+	sheila: 'coward',
+} as const satisfies Record<CompanionId, AiProfileId>;
 
 /**
  * Each companion's own Perk and Flaw, roguelite ones that work only while he is the player's

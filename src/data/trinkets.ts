@@ -294,11 +294,31 @@ export const TRINKETS: readonly TrinketDef[] = [
 	),
 ];
 
+const fxNeedsPartner = (fx: Fx): boolean =>
+	fx.k === 'perSignal' ||
+	fx.k === 'rivalCatch' ||
+	((fx.k === 'trickChips' ||
+		fx.k === 'trickMult' ||
+		fx.k === 'trickMoney' ||
+		fx.k === 'trickX') &&
+		fx.f.by === 'partner');
+
+/**
+ * Reads the partner or the signals (seat 2, `perSignal`, the rivals catching signals): on the
+ * two-seat table of the 1v1 run (D-77) one of its two effects can never trigger, so the trinket
+ * stays out of that run's shop and collection.
+ */
+export const trinketNeedsPartner = (d: TrinketDef): boolean =>
+	fxNeedsPartner(d.perk) || fxNeedsPartner(d.flaw);
+
 export type TrinketId = string;
 export const TRINKET_BY_ID: ReadonlyMap<string, TrinketDef> = new Map(
 	TRINKETS.map((d) => [d.id, d]),
 );
 export const TRINKET_IDS: readonly string[] = TRINKETS.map((d) => d.id);
+export const TRINKET_IDS_1V1: readonly string[] = TRINKETS.filter(
+	(d) => !trinketNeedsPartner(d),
+).map((d) => d.id);
 export const isTrinketId = (id: unknown): id is TrinketId =>
 	typeof id === 'string' && TRINKET_BY_ID.has(id);
 

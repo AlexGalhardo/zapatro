@@ -1,5 +1,11 @@
 import { AI_PROFILES, type AiProfile, type AiProfileId } from '../data/ai-profiles';
-import { COMPANIONS, type CompanionId, PARTNER_STYLES } from '../data/companions';
+import {
+	COMPANIONS,
+	type CompanionId,
+	isCompanion,
+	PARTNER_STYLES,
+	RIVAL_PROFILES_1V1,
+} from '../data/companions';
 import { DECKS } from '../data/decks';
 import { stakeRules } from '../data/stakes';
 import { doubleFlaws } from '../data/trinkets';
@@ -21,8 +27,22 @@ export function rivalBrain(pool: AiProfileId, char: string): SeatBrain {
 	};
 }
 
+/**
+ * The rival of a 1v1 table: the archetype his style maps to (`RIVAL_PROFILES_1V1`) with the
+ * Championship pool's `error`. Bosses and unknown ids keep the pool profile.
+ */
+export function rival1v1Brain(pool: AiProfileId, char: string): SeatBrain {
+	const base = AI_PROFILES[pool];
+	return {
+		kind: 'ai',
+		profile: isCompanion(char)
+			? { ...AI_PROFILES[RIVAL_PROFILES_1V1[char]], id: char, error: base.error }
+			: base,
+	};
+}
+
 /** The partner's AI: his own profile (he plays the bets his way, he never answers a truco). */
-export const partnerProfile = (run: RunState): AiProfile => COMPANIONS[run.partner].profile;
+const partnerProfile = (partner: CompanionId): AiProfile => COMPANIONS[partner].profile;
 
 /** Seed of a table's own rng: fixed per run, Championship and table (replays match). */
 export const tableSeed = (run: RunState): number =>
@@ -32,12 +52,16 @@ export const tableSeed = (run: RunState): number =>
 export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 	const [p1, p3] = run.rivals.profiles;
 	const [c1, c3] = run.rivals.chars;
-	const brains: MatchOptions['brains'] = [
-		seat0,
-		rivalBrain(p1, c1),
-		{ kind: 'ai', profile: partnerProfile(run) },
-		rivalBrain(p3, c3),
-	];
+	// Mano a mano (D-78): you alone against one rival; no partner, trait or signal exists.
+	const partner = run.mode === '1v1' ? undefined : run.partner;
+	const brains: MatchOptions['brains'] = partner
+		? [
+				seat0,
+				rivalBrain(p1, c1),
+				{ kind: 'ai', profile: partnerProfile(partner) },
+				rivalBrain(p3, c3),
+			]
+		: [seat0, rival1v1Brain(p1, c1)];
 	const boss = currentBoss(run);
 	const equipped = boss === 'stuart' ? doubleFlaws(equippedOf(run)) : equippedOf(run);
 	const totals = trinketTotals(equipped);
@@ -48,7 +72,7 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		goal: currentGoal(run),
 		levels: run.levels,
 		manhas: run.manhas,
-		partner: { id: run.partner, level: run.partnerLevel },
+		...(partner ? { partner: { id: partner, level: run.partnerLevel } } : {}),
 		trinkets: equipped,
 		tablesWon: run.stats.tables,
 		startTentos: totals.startTentos,
@@ -56,7 +80,7 @@ export function tableMatch(run: RunState, seat0: SeatBrain): Match {
 		loseTento: totals.loseTento,
 		rivalCatch: totals.rivalCatch,
 		boss,
-		extraSignals: DECKS[run.startDeck].extraSignals ?? 0,
+		extraSignals: partner ? (DECKS[run.startDeck].extraSignals ?? 0) : 0,
 		doubleChipRanks: DECKS[run.startDeck].doubleChipRanks,
 		extraRivalQuedas: run.extraLife ? 1 : 0,
 		score: { us: 0, them: stakeRules(run.stake).rivalHeadStart },

@@ -23,6 +23,18 @@ export type ChampionshipId = (typeof CHAMPIONSHIPS)[number];
  */
 export const CHAMPIONSHIP_GOALS = [210, 270, 350, 430, 560, 700, 880, 1120] as const;
 
+/** The two kinds of run (D-77): dupla 2×2 with an AI partner, or mano a mano 1×1 playing alone. */
+export const RUN_MODES = ['2v2', '1v1'] as const;
+export type RunMode = (typeof RUN_MODES)[number];
+
+/**
+ * Goals of the 1v1 run (R3.3). A trick has 2 cards instead of 4, but halving the 2×2 table was far
+ * too easy (the good bot won 38%): the Mult, not the Chips, makes most of a hand, and a duel is
+ * decided in fewer, sharper hands. About ×1.14 of the 2×2 goals puts the good bot at ~10% of the
+ * runs (band 5–20%, docs/balancing.md). `TABLE_GOAL_MULT` and the endless growth are shared.
+ */
+export const CHAMPIONSHIP_GOALS_1V1 = [240, 310, 400, 490, 640, 800, 1000, 1280] as const;
+
 /** Endless mode (after Championship 8): each Championship multiplies the last goal by this. */
 export const ENDLESS_GOAL_GROWTH = 1.4;
 
