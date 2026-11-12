@@ -26,7 +26,6 @@
 		"release": "bun scripts/release.ts",
 		"lan-server": "bun lan/cli.ts",
 		"site:build": "bun scripts/site-build.ts",
-		"site:deploy": "cd site && bunx vercel@62.1.0 deploy --prod --yes",
 		"balance": "bun scripts/balance.ts --seeds 3",
 		"graph": "uvx --from graphifyy==0.9.71 graphify update . || graphify update .",
 		"test": "bun test",

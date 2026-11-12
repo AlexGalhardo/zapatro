@@ -13,8 +13,7 @@
 			"!**/dist",
 			"!**/skills-lock.json",
 			"!**/art-src",
-			"!**/mobile/android",
-			"!**/site/next-env.d.ts"
+			"!**/mobile/android"
 		]
 	},
 	"formatter": {
