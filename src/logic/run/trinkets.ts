@@ -40,7 +40,8 @@ export const equippedList = (ids: readonly string[], c: Collection): EquippedTri
 	});
 
 /** Slots of a run: Zé takes one away (his Flaw). */
-export const slotsFor = (partner: string): number => TRINKET_SLOTS - (partner === 'ze' ? 1 : 0);
+export const slotsFor = (partner: string | undefined): number =>
+	TRINKET_SLOTS - (partner === 'ze' ? 1 : 0);
 
 export function equip(equipped: string[], c: Collection, id: string, slots: number): boolean {
 	if (levelOf(c, id) < 1 || equipped.includes(id) || equipped.length >= slots) return false;
@@ -75,21 +76,23 @@ export function shopLevels(rng: Rng, afterBoss: boolean, n = SHOP_OFFERS): Trink
 /**
  * The four offers of a shop: for each level a trinket the player does not hold at that level or
  * above, never the same trinket twice. With none left at that level the offer becomes the next
- * level of a trinket the player holds (or is dropped when everything is maxed).
+ * level of a trinket the player holds (or is dropped when everything is maxed). `ids` limits the
+ * pool (the 1v1 run leaves out the trinkets that read a partner).
  */
 export function trinketOffers(
 	rng: Rng,
 	c: Collection,
 	afterBoss: boolean,
 	price: (base: number) => number,
+	ids: readonly string[] = TRINKET_IDS,
 ): TrinketOffer[] {
 	const taken = new Set<string>();
 	const out: TrinketOffer[] = [];
 	for (const want of shopLevels(rng, afterBoss)) {
-		let pool = TRINKET_IDS.filter((id) => !taken.has(id) && levelOf(c, id) < want);
+		let pool = ids.filter((id) => !taken.has(id) && levelOf(c, id) < want);
 		let level: TrinketLevel = want;
 		if (!pool.length) {
-			pool = TRINKET_IDS.filter((id) => !taken.has(id) && levelOf(c, id) < 4);
+			pool = ids.filter((id) => !taken.has(id) && levelOf(c, id) < 4);
 			if (!pool.length) continue;
 		}
 		const id = rng.pick(pool);

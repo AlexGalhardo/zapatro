@@ -106,7 +106,7 @@ export function recordRunState(meta: MetaSave, run: RunState): string[] {
 	markSeen(
 		meta,
 		...run.manhas.map((m) => `manha:${m}`),
-		`partner:${run.partner}`,
+		...(run.partner ? [`partner:${run.partner}`] : []),
 		`deck:${run.startDeck}`,
 	);
 	return achieve(meta, (r) => {
@@ -130,12 +130,19 @@ export function recordRunState(meta: MetaSave, run: RunState): string[] {
 	});
 }
 
+/** A new run starts: it counts in the lifetime totals and in its mode's. */
+export function recordRunStart(meta: MetaSave, run: RunState): void {
+	meta.stats.runs++;
+	meta.stats.byMode[run.mode].runs++;
+}
+
 /** End of a run: stats, history, Stake progress and the run feats. */
 export function recordRunEnd(meta: MetaSave, run: RunState, reason: RunEnd, at: number): string[] {
 	const s = meta.stats;
 	const won = reason === 'won';
 	if (won) {
 		s.wins++;
+		s.byMode[run.mode].wins++;
 		meta.stakes[run.startDeck] = Math.max(meta.stakes[run.startDeck] ?? 0, run.stake);
 	}
 	s.bestChampionship = Math.max(s.bestChampionship, run.champ);
@@ -145,8 +152,9 @@ export function recordRunEnd(meta: MetaSave, run: RunState, reason: RunEnd, at: 
 		championship: run.champ,
 		bestHand: run.stats.bestHand,
 		deck: run.startDeck,
-		partner: run.partner,
+		partner: run.partner ?? '',
 		stake: run.stake,
+		mode: run.mode,
 	});
 	s.history.length = Math.min(s.history.length, HISTORY_MAX);
 	const now = recordRunState(meta, run);

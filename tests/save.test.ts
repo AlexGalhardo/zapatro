@@ -94,6 +94,7 @@ describe('save v1 (PLAN §4.5)', () => {
 					deck: 'normal',
 					partner: 'bruto',
 					stake: 1,
+					mode: '2v2',
 				},
 				60,
 			);

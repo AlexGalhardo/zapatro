@@ -100,6 +100,10 @@ export interface ManhaDef {
 	effect: ManhaEffect;
 }
 
+/** Reads the partner (seat 2): it can never trigger on a two-seat table. */
+export const manhaNeedsPartner = (d: ManhaDef): boolean =>
+	d.per?.by === 'partner' || d.when.some((w) => w.k === 'partnerCalled' || w.k === 'bothWon');
+
 export const MANHAS = [
 	{
 		id: 'malandro',

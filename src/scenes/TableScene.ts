@@ -679,7 +679,7 @@ export class TableScene extends Phaser.Scene {
 			this.startTable({
 				0: 'player',
 				1: run.rivals.chars[0],
-				2: run.partner,
+				2: run.partner ?? '',
 				3: run.rivals.chars[1],
 			});
 			return;

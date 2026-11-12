@@ -1,15 +1,27 @@
 import { TRINKETS } from '../../config/features';
 import { AI_PROFILE_IDS, type AiProfileId } from '../../data/ai-profiles';
-import { BOSS_POOL, type BossId, FINAL_BOSS } from '../../data/bosses';
-import { CHAMPIONSHIPS, RIVAL_POOLS, TABLE_SIZES, type TableSize } from '../../data/championships';
+import {
+	BOSS_POOL,
+	BOSSES_NEED_MANHAS,
+	BOSSES_NOT_1V1,
+	type BossId,
+	FINAL_BOSS,
+} from '../../data/bosses';
+import {
+	CHAMPIONSHIPS,
+	RIVAL_POOLS,
+	type RunMode,
+	TABLE_SIZES,
+	type TableSize,
+} from '../../data/championships';
 import { COMPANION_IDS, type CompanionId, PARTNER_TRAITS } from '../../data/companions';
 import { type Consumable, SIMPATIA_IDS, SIMPATIAS } from '../../data/consumables';
 import { DECKS, type DeckId } from '../../data/decks';
 import { ECONOMY } from '../../data/economy';
 import { LANCE_IDS } from '../../data/lances';
-import { MANHA_BY_ID, MANHAS, type ManhaId } from '../../data/manhas';
+import { MANHA_BY_ID, MANHAS, type ManhaId, manhaNeedsPartner } from '../../data/manhas';
 import { stakeRules } from '../../data/stakes';
-import type { EquippedTrinket } from '../../data/trinkets';
+import { type EquippedTrinket, TRINKET_IDS_1V1 } from '../../data/trinkets';
 import { Rng } from '../rng';
 import { type LanceLevels, tableGoal } from '../score/score';
 import {
@@ -42,7 +54,10 @@ import {
 export type Phase = 'select' | 'table' | 'shop' | 'won' | 'lost';
 
 export interface RivalPair {
-	/** Character ids of seats 1 and 3 (seat 1 is the boss at a boss table). */
+	/**
+	 * Character ids of seats 1 and 3 (seat 1 is the boss at a boss table). In a 1v1 run there is one
+	 * rival: both entries hold him.
+	 */
 	chars: [string, string];
 	profiles: [AiProfileId, AiProfileId];
 }
@@ -101,6 +116,8 @@ export interface TableProgress {
 export interface RunState {
 	v: 1;
 	seed: number;
+	/** Dupla 2×2 with an AI partner, or mano a mano 1×1 playing alone (D-77). */
+	mode: RunMode;
 	/** Starting deck and Stake (B2). */
 	startDeck: DeckId;
 	stake: number;
@@ -128,7 +145,9 @@ export interface RunState {
 	deck: Card[];
 	cardSerial: number;
 	levels: LanceLevels;
-	partner: CompanionId;
+	/** The AI partner of a 2×2 run; a 1v1 run has none (D-78). */
+	partner?: CompanionId;
+	/** Nino's level; 0 and unused without him. */
 	partnerLevel: number;
 	/** The rivals need one more queda at the next table (kept in saves; nothing sets it since D-82). */
 	extraLife: boolean;
@@ -148,18 +167,29 @@ function roll<T>(run: RunState, fn: (rng: Rng) => T): T {
 	return out;
 }
 
+/** Bosses the run draws from: the 1v1 run drops the ones whose rule needs a partner or Manhas. */
+export const bossPool = (mode: RunMode): readonly BossId[] =>
+	mode === '2v2'
+		? BOSS_POOL
+		: BOSS_POOL.filter(
+				(b) => !BOSSES_NOT_1V1.includes(b) && !(TRINKETS && BOSSES_NEED_MANHAS.includes(b)),
+			);
+
+/** `partner` is ignored in a 1v1 run (pass `undefined`). */
 export function newRun(
 	seed: number,
-	partner: CompanionId,
+	chosen: CompanionId | undefined,
 	startDeck: DeckId = 'normal',
 	stake = 1,
 	legendary = false,
 	demo = false,
+	mode: RunMode = '2v2',
 ): RunState {
+	const partner = mode === '1v1' ? undefined : chosen;
 	const d = DECKS[startDeck];
 	const rules = stakeRules(stake);
 	const rng = new Rng(seed);
-	const pool = rng.shuffle(BOSS_POOL);
+	const pool = rng.shuffle(bossPool(mode));
 	const bosses: BossId[] = [
 		...Array.from({ length: 7 }, (_, i) => pool[i % pool.length] as BossId),
 		FINAL_BOSS,
@@ -167,6 +197,7 @@ export function newRun(
 	const run: RunState = {
 		v: 1,
 		seed,
+		mode,
 		startDeck,
 		stake,
 		legendary,
@@ -199,8 +230,8 @@ export function newRun(
 		],
 		cardSerial: d.extraSuit ? 10 : 0,
 		levels: {},
-		partner,
-		partnerLevel: partner === 'nino' ? 0 : 1,
+		...(partner ? { partner } : {}),
+		partnerLevel: partner === 'nino' || !partner ? 0 : 1,
 		extraLife: false,
 		rivals: { chars: ['ze', 'mia'], profiles: ['rookie', 'rookie'] },
 		phase: 'select',
@@ -231,7 +262,7 @@ export const championshipId = (run: RunState): (typeof CHAMPIONSHIPS)[number] =>
 
 export const goalOf = (run: RunState, size: TableSize): number =>
 	Math.round(
-		tableGoal(run.champ, size) *
+		tableGoal(run.champ, size, run.mode) *
 			stakeRules(run.stake).goalMult *
 			(run.partner === 'sheila' ? PARTNER_TRAITS.sheila.goalMult : 1) *
 			trinketGoalMult(run),
@@ -253,6 +284,7 @@ function rollRivals(run: RunState): void {
 	const shift = stakeRules(run.stake).rivalShift;
 	const pool = RIVAL_POOLS[Math.min(run.champ + shift, RIVAL_POOLS.length) - 1] ?? AI_PROFILE_IDS;
 	run.rivals = roll(run, (rng) => {
+		if (run.mode === '1v1') return roll1v1Rival(run, rng, pool);
 		const [a, b] = rng.shuffle(COMPANION_IDS.filter((id) => id !== run.partner));
 		const boss = currentBoss(run);
 		return {
@@ -260,6 +292,18 @@ function rollRivals(run: RunState): void {
 			profiles: [rng.pick(pool), rng.pick(pool)],
 		};
 	});
+}
+
+/**
+ * The one rival of a 1v1 table (D-78): a companion of the cast, never the one who sat at the
+ * Championship's previous table; the boss at a boss table. The pool profile of the Championship
+ * (`RIVAL_POOLS`) gives his `error`, as in 2×2, so he plays sharper later in the run.
+ */
+function roll1v1Rival(run: RunState, rng: Rng, pool: readonly AiProfileId[]): RivalPair {
+	const prev = run.table === 1 ? run.rivals.chars[0] : undefined;
+	const char = currentBoss(run) ?? rng.pick(COMPANION_IDS.filter((id) => id !== prev));
+	const profile = rng.pick(pool);
+	return { chars: [char, char], profiles: [profile, profile] };
 }
 
 export function startTable(run: RunState): void {
@@ -276,7 +320,7 @@ function advance(run: RunState): void {
 		run.champ++;
 		run.table = 0;
 		if (run.endless && run.champ > run.bosses.length)
-			run.bosses.push(roll(run, (rng) => rng.pick(BOSS_POOL)));
+			run.bosses.push(roll(run, (rng) => rng.pick(bossPool(run.mode))));
 	} else run.table = (run.table + 1) as 0 | 1 | 2;
 }
 
@@ -384,6 +428,14 @@ export function finishTable(run: RunState, r: TableResult): Reward | null {
 	return reward;
 }
 
+/** A 1v1 run holds no trinket that reads a partner or signals (the profile's collection may). */
+export function dropUnfitTrinkets(run: RunState): void {
+	if (run.mode !== '1v1') return;
+	for (const id of Object.keys(run.collection))
+		if (!TRINKET_IDS_1V1.includes(id)) delete run.collection[id];
+	run.trinkets = run.trinkets.filter((id) => TRINKET_IDS_1V1.includes(id));
+}
+
 /** After winning Championship 8: keep playing with growing goals. */
 export function continueEndless(run: RunState): void {
 	run.endless = true;
@@ -416,7 +468,10 @@ function pickManha(run: RunState, rng: Rng): ManhaId | null {
 		rng.weightedIndex([w.common, w.uncommon, w.rare, w.legendary])
 	];
 	const free = MANHAS.filter(
-		(m) => !run.manhas.includes(m.id) && (run.legendary || m.rarity !== 'legendary'),
+		(m) =>
+			!run.manhas.includes(m.id) &&
+			(run.legendary || m.rarity !== 'legendary') &&
+			(run.mode === '2v2' || !manhaNeedsPartner(m)),
 	);
 	const pool = free.filter((m) => m.rarity === want);
 	const from = pool.length ? pool : free;
@@ -474,8 +529,12 @@ function makeOffers(run: RunState, rng: Rng): Offer[] {
 function openTrinketShop(run: RunState, afterBoss: boolean): void {
 	run.phase = 'shop';
 	run.shop = roll(run, (rng) => {
-		const offers: Offer[] = trinketOffers(rng, run.collection, afterBoss, (base) =>
-			priceOf(run, base, 'trinket'),
+		const offers: Offer[] = trinketOffers(
+			rng,
+			run.collection,
+			afterBoss,
+			(base) => priceOf(run, base, 'trinket'),
+			run.mode === '1v1' ? TRINKET_IDS_1V1 : undefined,
 		);
 		// Zé: in the first shop of each Championship the cheapest offer is free.
 		if (run.partner === 'ze' && run.table === 1) {
@@ -635,9 +694,13 @@ export function parseRun(raw: unknown): RunState | null {
 	// Finished runs too: the Run screen reads them back to show the summary (and Endless).
 	if (!['select', 'table', 'shop', 'won', 'lost'].includes(r.phase as string)) return null;
 	const run = raw as RunState;
-	// Saves from 0.1.0-alpha.1 have no extraLife, startDeck, stake, legendary or demo.
+	const mode: RunMode = run.mode === '1v1' ? '1v1' : '2v2';
+	// Saves from 0.1.0-alpha.1 have no extraLife, startDeck, stake, legendary or demo; from before
+	// the 1v1 run (D-77), no mode. A 1v1 run never keeps a partner.
+	const { partner: _, ...noPartner } = run;
 	return {
-		...run,
+		...(mode === '1v1' ? noPartner : run),
+		mode,
 		extraLife: run.extraLife ?? false,
 		startDeck: run.startDeck ?? 'normal',
 		stake: run.stake ?? 1,
@@ -645,7 +708,7 @@ export function parseRun(raw: unknown): RunState | null {
 		demo: run.demo ?? false,
 		// Saves from before trinkets: no equipped or held ones (their Manhas stay unused).
 		trinkets: Array.isArray(run.trinkets) ? run.trinkets : [],
-		trinketSlots: run.trinketSlots ?? slotsFor(run.partner),
+		trinketSlots: run.trinketSlots ?? slotsFor(mode === '1v1' ? undefined : run.partner),
 		collection: run.collection ?? {},
 	};
 }

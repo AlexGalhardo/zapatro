@@ -2,8 +2,10 @@ import { AGIOTA_FINE, type BossId, TONY_CORRIDA_X } from '../../data/bosses';
 import { MANILHA_CHIPS, RANK_CHIPS, ZAP_CHIPS } from '../../data/cards';
 import {
 	CHAMPIONSHIP_GOALS,
+	CHAMPIONSHIP_GOALS_1V1,
 	ENDLESS_GOAL_GROWTH,
 	QUEDAS_TO_LOSE,
+	type RunMode,
 	TABLE_GOAL_MULT,
 	type TableSize,
 } from '../../data/championships';
@@ -247,13 +249,12 @@ export function scoreHand(ctx: ScoreContext): HandScore {
  * Goal of a table: championship base × table size (design §3.2). Endless mode (beyond 8): the
  * last goal grows by ENDLESS_GOAL_GROWTH per Championship.
  */
-export function tableGoal(championship: number, size: TableSize): number {
-	const n = CHAMPIONSHIP_GOALS.length;
+export function tableGoal(championship: number, size: TableSize, mode: RunMode = '2v2'): number {
+	const goals = mode === '1v1' ? CHAMPIONSHIP_GOALS_1V1 : CHAMPIONSHIP_GOALS;
+	const n = goals.length;
 	const c = Math.max(championship, 1);
 	const base =
-		c <= n
-			? (CHAMPIONSHIP_GOALS[c - 1] ?? 0)
-			: (CHAMPIONSHIP_GOALS[n - 1] ?? 0) * ENDLESS_GOAL_GROWTH ** (c - n);
+		c <= n ? (goals[c - 1] ?? 0) : (goals[n - 1] ?? 0) * ENDLESS_GOAL_GROWTH ** (c - n);
 	return Math.round(base * TABLE_GOAL_MULT[size]);
 }
 

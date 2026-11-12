@@ -1,4 +1,5 @@
 import { GAME_SPEEDS, type GameSpeed } from '../config/constants';
+import { RUN_MODES, type RunMode } from '../data/championships';
 import { RESOLUTION_IDS, type ResolutionId } from '../data/display';
 import type { KeyBindings } from '../data/keybinds';
 import { isTrinketId } from '../data/trinkets';
@@ -9,7 +10,7 @@ import { defaultKeys, parseKeys } from './keybinds';
  * Local save (PLAN §4.5): one JSON document with schema version and checksum.
  * Bump SAVE_VERSION and add a step to MIGRATIONS whenever the payload shape changes.
  */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const SAVE_KEY = 'truco-roguelite.save';
 
 export const PAD_DEADZONES = ['low', 'normal', 'high'] as const;
@@ -63,13 +64,23 @@ export interface RunRecord {
 	/** Best single-hand score. */
 	bestHand: number;
 	deck: string;
+	/** The partner's id; empty in a 1v1 run, which has none. */
 	partner: string;
 	stake: number;
+	mode: RunMode;
+}
+
+/** Runs started and won in one mode (the Almanac shows 2×2 and 1×1 apart, D-77). */
+export interface ModeStats {
+	runs: number;
+	wins: number;
 }
 
 export interface LifetimeStats {
+	/** All modes together; `byMode` splits them. */
 	runs: number;
 	wins: number;
+	byMode: Record<RunMode, ModeStats>;
 	handsPlayed: number;
 	handsWon: number;
 	trucosCalled: number;
@@ -109,6 +120,7 @@ export function emptyStats(): LifetimeStats {
 	return {
 		runs: 0,
 		wins: 0,
+		byMode: { '2v2': { runs: 0, wins: 0 }, '1v1': { runs: 0, wins: 0 } },
 		handsPlayed: 0,
 		handsWon: 0,
 		trucosCalled: 0,
@@ -203,7 +215,13 @@ function parseRecord(v: unknown): RunRecord | null {
 		deck: typeof v.deck === 'string' ? v.deck : 'normal',
 		partner: typeof v.partner === 'string' ? v.partner : '',
 		stake: int(v.stake, 1, 1),
+		mode: oneOf(v.mode, RUN_MODES, '2v2'),
 	};
+}
+
+function parseModeStats(v: unknown): ModeStats {
+	const o = isObj(v) ? v : {};
+	return { runs: int(o.runs, 0), wins: int(o.wins, 0) };
 }
 
 /** Validates field by field, filling defaults, so an old or partial save still loads. */
@@ -257,6 +275,10 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
 			stats: {
 				runs: int(st.runs, 0),
 				wins: int(st.wins, 0),
+				byMode: {
+					'2v2': parseModeStats(isObj(st.byMode) ? st.byMode['2v2'] : undefined),
+					'1v1': parseModeStats(isObj(st.byMode) ? st.byMode['1v1'] : undefined),
+				},
 				handsPlayed: int(st.handsPlayed, 0),
 				handsWon: int(st.handsWon, 0),
 				trucosCalled: int(st.trucosCalled, 0),
@@ -281,6 +303,7 @@ export function validateSave(raw: unknown, lang: Lang): SaveData {
 export const MIGRATIONS: Record<number, (payload: Obj) => Obj> = {
 	1: (payload) => renameIds(payload) as Obj,
 	2: dropRemovedRunSystems,
+	3: addRunMode,
 };
 
 /** v1 → v2: characters (and the feats named after them) go by their real names, not nicknames. */
@@ -336,6 +359,30 @@ function dropRemovedRunSystems(payload: Obj): Obj {
 	};
 }
 
+/**
+ * v3 → v4 (D-77): the 1v1 run exists. Every lifetime count so far was 2×2, so the history records
+ * get `mode: '2v2'` and the stats' per-mode split starts from the totals. The run snapshot needs
+ * no step: `parseRun` reads a missing `mode` as 2×2.
+ */
+function addRunMode(payload: Obj): Obj {
+	const { meta } = payload;
+	const out: Obj = { ...payload };
+	if (isObj(meta) && isObj(meta.stats)) {
+		const { runs, wins, history } = meta.stats;
+		out.meta = {
+			...meta,
+			stats: {
+				...meta.stats,
+				byMode: { '2v2': { runs, wins }, '1v1': { runs: 0, wins: 0 } },
+				...(Array.isArray(history)
+					? { history: history.map((r) => (isObj(r) ? { mode: '2v2', ...r } : r)) }
+					: {}),
+			},
+		};
+	}
+	return out;
+}
+
 export function migrate(payload: Obj, from: number): Obj {
 	let p = payload;
 	for (let v = from; v < SAVE_VERSION; v++) {
@@ -381,7 +428,11 @@ export function parseSave(text: string | null, lang: Lang): ParseResult {
 /** Adds a finished run to the lifetime stats. */
 export function recordRun(stats: LifetimeStats, rec: RunRecord, playTime: number): void {
 	stats.runs++;
-	if (rec.reason === 'won') stats.wins++;
+	stats.byMode[rec.mode].runs++;
+	if (rec.reason === 'won') {
+		stats.wins++;
+		stats.byMode[rec.mode].wins++;
+	}
 	stats.bestHand = Math.max(stats.bestHand, rec.bestHand);
 	stats.bestChampionship = Math.max(stats.bestChampionship, rec.championship);
 	stats.playTime += playTime;
