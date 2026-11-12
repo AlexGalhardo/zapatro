@@ -51,21 +51,21 @@
 		@apply bg-bg font-sans text-body text-text leading-normal;
 		/* Painted sunset (scripts/site-build.ts) under a dark veil so the text keeps its contrast.
 		   --bg-* are set on <html> by the layout, because the site may live under a path prefix. */
-		background-image: linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)),
-			var(--bg-1280);
+		background-image:
+			linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)), var(--bg-1280);
 		background-size: cover;
 		background-position: center;
 	}
 	@media (max-width: 640px) {
 		body {
-			background-image: linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)),
-				var(--bg-640);
+			background-image:
+				linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)), var(--bg-640);
 		}
 	}
 	@media (min-width: 1281px) {
 		body {
-			background-image: linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)),
-				var(--bg-1920);
+			background-image:
+				linear-gradient(rgb(26 17 22 / 0.62), rgb(26 17 22 / 0.8)), var(--bg-1920);
 			background-attachment: fixed;
 		}
 	}
