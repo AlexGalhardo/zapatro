@@ -138,7 +138,7 @@ Objetivo: a mesma máquina de regras joga com 2 ou 4 assentos. Nada de Phaser aq
 
 - [x] **R2.1 Escolha de modo.** (2026-11-11: `ModeScene`, última escolha em `settings.quickMode`; grupo `modechoice` do QA) "Partida rápida" abre a escolha **Dupla (2×2)** ou **Mano a mano (1×1)**; `?skipMenu=1&mode=1v1` para testes ([test-hacks.md](test-hacks.md)).
   **Aceite:** teclado, mouse, toque e controle escolhem o modo; a última escolha é lembrada no save.
-- [~] **R2.2 Mesa de dois.** (2026-11-11: a `TableScene` segue `match.seats`; no 1×1 o rival ocupa o topo, sem assentos laterais, sem sinais; a mesa de 4 ficou idêntica byte a byte. Falta: vira e monte juntos, rival maior que o parceiro do 2×2 e as capturas revistas nas quatro resoluções, junto com R5.5) Layout próprio: rival grande no topo, suas cartas embaixo, vira e monte juntos, sem botão "Enviar sinal", placar "Você × Rival".
+- [x] **R2.2 Mesa de dois.** (2026-11-12: rival de 72×96 centrado no topo com a mão dele, monte e vira à esquerda, fichas e marcadores à direita; capturas conferidas em 1920×1080, 2560×1440, 2400×1080 e 3120×1440 de toque) Layout próprio: rival grande no topo, suas cartas embaixo, vira e monte juntos, sem botão "Enviar sinal", placar "Você × Rival".
   **Aceite:** capturas nas quatro resoluções do §3; nenhum elemento do 2×2 (retratos laterais, sinal do parceiro) aparece.
 - [~] **R2.3 Textos e regras.** (2026-11-11: página "Mano a mano" nas Regras, F1 abre nela, textos `.duel` na mesa. Falta: regra do chefe Peter, dicas da tela de carregamento e das marcas de queda, que ainda citam o parceiro; entram com R3.4) Página "Mano a mano" nas Regras e no manual da mesa (F1); nomes e avisos sem "dupla", "nós" e "parceiro" no 1×1.
   **Aceite:** busca por `partner`/`dupla` nas chaves usadas pela mesa 1×1 não retorna aviso exibido ao jogador; paridade EN e PT-BR.
@@ -157,7 +157,7 @@ Objetivo: a mesma máquina de regras joga com 2 ou 4 assentos. Nada de Phaser aq
   **Aceite:** teste percorre todos os itens e chefes e falha se algum disponível no 1×1 tiver efeito impossível de ativar.
 - [ ] **R3.5 Conteúdo exclusivo.** De 5 a 8 Manhas ou trinkets que só existem no mano a mano, centrados em blefe e leitura (skill `add-game-content`).
   **Aceite:** cada um com dado, i18n, ícone, teste e linha no Almanaque.
-- [~] **R3.6 Estatísticas e feitos por modo.** (2026-11-11: `meta.stats.byMode` e `mode` no histórico, contados por `recordRunStart` e `recordRunEnd`; o histórico do Almanaque mostra o modo. Falta a tela de estatísticas por modo e os feitos do 1×1) Almanaque separa vitórias 2×2 e 1×1; feitos novos do 1×1 espelhados nas conquistas da Steam ([docs/steam-achievements.md](docs/steam-achievements.md)).
+- [~] **R3.6 Estatísticas e feitos por modo.** (2026-11-12: `meta.stats.byMode` e `mode` no histórico; o Almanaque mostra runs e vitórias de 2×2 e de 1×1 e o modo de cada run. Faltam os feitos próprios do 1×1) Almanaque separa vitórias 2×2 e 1×1; feitos novos do 1×1 espelhados nas conquistas da Steam ([docs/steam-achievements.md](docs/steam-achievements.md)).
   **Aceite:** run 1×1 jogada pelo bot (`?run=1&mode=1v1&auto=1&speed=4`) chega ao fim e atualiza as estatísticas certas.
 
 ## R4 — Multiplayer local
@@ -193,17 +193,17 @@ Objetivo: sentar com quem estiver na sala e jogar sem atrito, em qualquer forma�
 
 Princípio: todo evento de regra tem resposta visual e sonora proporcional ao peso dele. Tudo respeita "Reduzir piscadas", "Tremor de tela" e a velocidade 1×/2×/4×.
 
-- [ ] **R5.1 O pedido de truco é um evento.** Congelamento curto, retrato de quem pediu entrando na tela, grito, a ficha da aposta batendo no centro; intensidade sobe a cada degrau (3, 6, 9, 12) em cor, tremor e música.
+- [x] **R5.1 O pedido de truco é um evento.** (2026-11-12: `src/view/fx/truco-call.ts`; a mesa escurece, o card pintado de quem pediu entra pelo lado, o nome cai no centro; 700, 820, 970 e 1240 ms a 1× por degrau, no máximo 310 ms a 4×; pulável; sem pulso com "Reduzir piscadas". Tabela em docs/game-feel.md §3) Congelamento curto, retrato de quem pediu entrando na tela, grito, a ficha da aposta batendo no centro; intensidade sobe a cada degrau (3, 6, 9, 12) em cor, tremor e música.
   **Aceite:** tabela de durações e intensidades em `docs/game-feel.md`; a 4× o efeito inteiro dura ≤ 400 ms; com "Reduzir piscadas" ligado não há flash.
-- [ ] **R5.2 Cartas com peso.** Arco e amassado ao jogar, poeira no feltro, som mais grave para carta forte, rastro em manilha, entrada própria do ZAP.
+- [x] **R5.2 Cartas com peso.** (2026-11-12: `src/view/fx/card-fx.ts`; peso pela força real da carta, amassado e poeira crescentes, som mais grave, rastro de manilha, entrada do ZAP (160 ms a mais); vaza varrida para quem levou. Medido em 1920×1080: 59,8 FPS a 1× e 59,4 a 4× (`bun scripts/feel-table.ts fps`). Sons próprios pedidos em docs/game-feel.md §10) Arco e amassado ao jogar, poeira no feltro, som mais grave para carta forte, rastro em manilha, entrada própria do ZAP.
   **Aceite:** 60 FPS em 1920×1080 durante uma vaza inteira (`bun scripts/qa-browsers.ts`); nenhum efeito atrasa a vez do jogador.
-- [ ] **R5.3 Centro do feltro vivo.** Monte e vira juntos, fichas da aposta empilhando no centro, marcadores das três vazas (ganhou, perdeu, empatou) sempre visíveis.
+- [x] **R5.3 Centro do feltro vivo.** (2026-11-12: `src/view/fx/felt-center.ts`; monte com a vira ao lado, uma ficha por degrau com o valor em cima (a aposta pendente aparece como "N?"), três marcadores de vaza; as cartas jogadas abriram espaço no centro) Monte e vira juntos, fichas da aposta empilhando no centro, marcadores das três vazas (ganhou, perdeu, empatou) sempre visíveis.
   **Aceite:** captura de uma mão no meio: o jogador responde "quanto vale" e "quem levou cada vaza" sem olhar a barra lateral.
 - [ ] **R5.4 Contagem de pontos.** Passo a passo dos `steps` com som subindo de tom, cada Manha ou trinket pulsa na sua vez, total batendo no medidor; efeito especial quando uma mão sozinha bate a meta.
   **Aceite:** a animação mostra exatamente os `steps` de `scoreHand` (teste compara a fila animada com os `steps`); pode ser pulada com um toque.
-- [ ] **R5.5 Avisos redesenhados.** "Nova vira", "Aposta sobe", "Vaza nossa", "Mão de 11" como faixas com ícone e cor por tipo, no lugar do texto sobre retângulo.
+- [x] **R5.5 Avisos redesenhados.** (2026-11-12: `NoticeBoard.show` em `src/view/fx/notice.ts` desenha os 18 tipos, cada um com ícone, cor e peso; o mais leve espera o mais pesado. Tabela em docs/game-feel.md §7) "Nova vira", "Aposta sobe", "Vaza nossa", "Mão de 11" como faixas com ícone e cor por tipo, no lugar do texto sobre retângulo.
   **Aceite:** uma função única desenha todos os avisos; captura de cada tipo nas quatro resoluções.
-- [ ] **R5.6 Personagens reagem.** Expressões que já existem (`EXPRESSIONS`) em vitória, derrota, blefe descoberto e truco; respiração leve em repouso.
+- [x] **R5.6 Personagens reagem.** (2026-11-12: as pinturas têm uma imagem só por personagem, então a reação é movimento, um banho de cor e um selo de emoção (`src/view/fx/seat-react.ts`); respiração em repouso e quem está na vez respira mais. Tabela em docs/game-feel.md §6) Expressões que já existem (`EXPRESSIONS`) em vitória, derrota, blefe descoberto e truco; respiração leve em repouso.
   **Aceite:** cada evento da tabela de `docs/game-feel.md` dispara uma expressão; nenhuma fala cobre outra.
 - [ ] **R5.7 Começos e fins.** Apresentação do chefe (retrato, nome, regra), Queda, vitória e derrota de mesa, vitória e derrota de run com música própria.
   **Aceite:** cada um dura ≤ 3 s a 1×, é pulável e tem captura.
@@ -214,7 +214,7 @@ Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam 
 
 - [~] **R6.1 Carregamento com identidade.** Arte do menu, logo, barra de progresso e uma dica por carregamento. Feito em 2026-11-11: título, barra com porcentagem e uma de 10 dicas (EN e PT-BR) sobre um degradê de entardecer que o `index.html` já pinta antes do JavaScript; primeiro quadro em cerca de 0,9 a 1,1 s no build de produção; primeiro download 7,48 MiB. Falta: trocar o degradê pela arte-chave quando ela existir (pedido F em docs/art-requests-1.0.md) e ver a barra andando numa conexão lenta de verdade.
   **Aceite:** primeiro quadro pintado em ≤ 1 s no build de produção; primeiro download web segue < 8 MB (GD-017).
-- [ ] **R6.2 Loja com vendedor.** Pintura do Seu Zé atrás do balcão (🧑 arte), falas dele ao comprar e ao sair sem comprar, renovação da oferta (D-82).
+- [~] **R6.2 Loja com vendedor.** (2026-11-12: a renovação da oferta voltou, $5 e mais $1 a cada vez na mesma loja; faltam a pintura e as falas do Seu Zé) Pintura do Seu Zé atrás do balcão (🧑 arte), falas dele ao comprar e ao sair sem comprar, renovação da oferta (D-82).
   **Aceite:** capturas nas quatro resoluções; toda oferta mostra raridade, efeito e preço sem abreviar.
 - [ ] **R6.3 Caminho do Campeonato.** Entre as mesas, uma tela curta mostra Mesa 1, Mesa 2 e Chefão com a regra do chefe e o prêmio.
   **Aceite:** o jogador vê a regra do chefe antes de entrar na Mesa 1; a tela some em um toque.
@@ -236,9 +236,9 @@ Frente prioritária de acabamento (D-83): quando faltar prazo, R6 e R7.4 passam 
 - [x] **R7.0 Lista de pinturas e prompts (D-83)** (2026-11-11: 25 pinturas e 32 ícones de trinket pedidos, 5 deles bloqueando loja; 🧑 agora é com o dev gerar e aprovar). [docs/art-requests-1.0.md](docs/art-requests-1.0.md): cada pintura que falta, com arquivo de destino, tamanho, enquadramento, prompt no estilo de `art-src/gta/` e o que não pode aparecer (texto, marcas reais).
   **Aceite:** a lista cobre R6.1, R6.2, R6.8 e R7.4; cada linha tem prioridade (bloqueia loja, festival ou 1.0) e status (pedido, gerado, aprovado, integrado).
 
-- [ ] **R7.1 Estacas de volta (D-82).** Seleção de Estaca na nova run, com a curva recalibrada ([docs/pending-decisions.md](docs/pending-decisions.md) §2 e §3).
+- [x] **R7.1 Estacas de volta (D-82).** (2026-11-12: tela "Nova run" com modo, Estaca e baralho; curva recalibrada, 600 runs: 7,2 · 6,5 · 5,8 · 3,5 · 3,3 · 2,2 · 1,8 · 0,7% no 2×2 e 14,2 · 10,8 · 6,7 · 5,8 · 4,5 · 4,0 · 3,3 · 0,3% no 1×1. O critério virou "a taxa nunca sobe", porque degraus de 5 a 8 pontos não cabem com o bot em 7% na Estaca 1) Seleção de Estaca na nova run, com a curva recalibrada ([docs/pending-decisions.md](docs/pending-decisions.md) §2 e §3).
   **Aceite:** `bun scripts/stakes.ts --runs 600` com a taxa caindo de forma monótona da Estaca 1 à 8; números em [docs/balancing.md](docs/balancing.md).
-- [ ] **R7.2 Baralhos iniciais de volta (D-82).** Escolha de baralho na nova run, destraves visíveis.
+- [x] **R7.2 Baralhos iniciais de volta (D-82).** (2026-11-12: cinco baralhos na tela "Nova run", bloqueados dizem o que os destrava; diferença para o Normal em 600 runs: Interior +0,5, Blefe +1,8, Dinheiro −0,2, Viciado +5,0; o verso do baralho aparece no monte, na vira escondida, nas cartas encobertas e nas mãos dos outros. Blefe fechado no 1×1) Escolha de baralho na nova run, destraves visíveis.
   **Aceite:** cada baralho muda a taxa do bot bom em no máximo ±5 p.p. em relação ao padrão; verso próprio em jogo.
 - [ ] **R7.3 Destraves com rumo.** Toda run, ganha ou perdida, mostra o que destravou e o que falta para o próximo destrave.
   **Aceite:** teste garante que todo destrave é alcançável na configuração da 1.0.

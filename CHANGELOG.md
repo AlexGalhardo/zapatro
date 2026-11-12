@@ -14,6 +14,14 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Added
 
+- **feel:** calling truco, seis, nove or doze now stops the table for a beat: the caller's painted card slides in from their seat, the call lands in the middle of the felt and each step hits harder. A click, tap or key skips it; there is no flash with "Reduce flashes" on.
+- **feel:** cards have weight. They arc and squash when they land, stronger cards land harder and sound deeper, manilhas leave a trail and the ZAP has its own entrance. A won trick is swept to the winner's side.
+- **feel:** the middle of the felt shows the hand: the deck with the vira beside it, a stack of chips with the value of the bet (a call waiting for an answer shows as "N?") and three markers for the tricks won, lost and tied.
+- **feel:** the characters react to tricks, bets, caught signals and the end of a hand with a short motion, a colour wash and a small emotion stamp, and they breathe at rest.
+- **run:** a New run screen where you pick the mode, the Stake (1 to 8) and the starting deck on one page. Locked Stakes and decks say what unlocks them, and the game remembers your last choices.
+- **run:** the starting deck's own card back shows in play.
+- **shop:** the Refresh button is back, with a price that rises on every refresh in the same shop.
+- **almanac:** the stats show runs and wins for 2×2 and for 1×1.
 - **table:** Quick match now asks for the format: Teams (2×2) or Mano a mano (1×1). In mano a mano you play alone against one rival to 12 tentos, on a table laid out for two, with no partner and no signals. The game remembers your last choice.
 - **rules:** a "Mano a mano (1×1)" page in the Rules screen; F1 at a mano a mano table opens the manual on it.
 - **lan:** the host picks the table mode in the lobby, 2 vs 2 or 1 vs 1, in any mix of people and bots.
@@ -26,6 +34,10 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **table:** every notice (new vira, bet raised, trick won or lost, mão de 11, hand result, queda, boss rule and more) is a strip with an icon and a colour per kind; heavier notices are bigger and stay longer.
+- **table:** in mano a mano the rival is bigger and centred at the top, and the felt is laid out for two.
+- **balance:** the Stake curve was remeasured: Stake 1 is unchanged and every Stake after it is harder than the one before, up to Stake 8.
+- **run:** the Bluff deck is not available in mano a mano, where there is no partner to signal.
 - **save:** save schema 4. Existing saves keep working and their runs count as 2×2.
 - **site:** the official site is now built with Astro and published to GitHub Pages at <https://alexgalhardo.github.io/zapatro/> on every push to `main` (`/play/` is the full game, `/demo/` the demo). `SITE_URL` and `SITE_BASE` set the address, so a custom domain needs no code change. Saves are kept per address: progress made on the old site does not follow to the new one.
 - **tooling:** `scripts/site-check.ts` rehearses GitHub Pages under the `/zapatro/` prefix.
@@ -35,10 +47,13 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Removed
 
+- **feats:** "Twelve!" no longer promises legendary Manhas, which the shop does not sell.
 - **site:** Next.js, React and the Vercel deploy (`site:deploy`, `vercel.json`, the `VERCEL_*` secrets in CI).
 
 ### Fixed
 
+- **feats:** winning the iron hand now unlocks the Loaded deck; the feat never fired, because that hand always closes a queda.
+- **shop:** refreshing the trinket shop could offer Manhas, which the run cannot hold.
 - **lan:** with two people as opponents and a bot partner each, a bot could accept, raise or run from a truco for the person beside it. The person now answers every call against their pair, in any seat.
 
 ## [0.20.0] - 2026-11-11
