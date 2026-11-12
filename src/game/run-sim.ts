@@ -1,5 +1,6 @@
 import { SHOP_SIMPLE, TRINKETS } from '../config/features';
 import { AI_PROFILES, type AiProfile } from '../data/ai-profiles';
+import type { RunMode } from '../data/championships';
 import { COMPANION_IDS, type CompanionId } from '../data/companions';
 import type { Consumable } from '../data/consumables';
 import { ECONOMY } from '../data/economy';
@@ -39,6 +40,7 @@ const DEFAULT_COMPANIONS = COMPANION_IDS.filter((id) =>
 export type RunBot = 'good' | 'random';
 
 export interface RunSummary {
+	mode: RunMode;
 	stake: number;
 	won: boolean;
 	champ: number;
@@ -242,7 +244,7 @@ const phaseOf = (run: RunState): Phase => run.phase;
 /**
  * Plays one run to the end (or to `maxChamp`). `stake` is the Estaca (D-39): carried to the summary
  * now and handed to `newRun` once the Estacas exist (B2). `partner` fixes the partner (default: one
- * of a fresh save's two, drawn by the seed).
+ * of a fresh save's two, drawn by the seed); `mode` '1v1' plays the run alone (no partner).
  */
 export function simulateRun(
 	seed: number,
@@ -250,11 +252,12 @@ export function simulateRun(
 	maxChamp = 8,
 	stake = 1,
 	partner?: CompanionId,
+	mode: RunMode = '2v2',
 ): RunSummary {
 	const rng = new Rng(seed ^ 0x5bd1e995);
 	// The bot takes the first partner on offer to a fresh save.
 	const drawn = drawCandidates(seed, DEFAULT_COMPANIONS)[0] ?? 'bruto';
-	const run = newRun(seed, partner ?? drawn, 'normal', stake);
+	const run = newRun(seed, partner ?? drawn, 'normal', stake, false, false, mode);
 	const seat0: SeatBrain =
 		bot === 'good' ? { kind: 'ai', profile: GOOD_BOT } : { kind: 'random' };
 	const perTable: number[] = [];
@@ -289,6 +292,7 @@ export function simulateRun(
 		if (phaseOf(run) === 'shop') botShop(run, bot, rng);
 	}
 	return {
+		mode,
 		stake,
 		won: run.phase === 'won',
 		champ: run.champ,

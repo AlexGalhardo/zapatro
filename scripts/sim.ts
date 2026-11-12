@@ -1,7 +1,8 @@
 /**
  * Headless runs (PLAN §10.2): win rate, Championship reached, hands per table and favourite Manhas.
  *   bun scripts/sim.ts [--runs 500] [--bot good|random] [--seed 1] [--champ 8] [--stake 1]
- *     [--partner bruto|cida|jhony|nino]
+ *     [--partner bruto|cida|jhony|nino] [--run-mode 2v2|1v1]
+ * `--run-mode 1v1` plays the mano a mano run (alone, one rival per table; the partner is ignored).
  * `--stake` has no effect until the Estacas exist (B2); the bot already carries it.
  *
  * 1v1 quick matches (mano a mano, plain Truco to 12), invariants checked on every hand:
@@ -9,6 +10,7 @@
  * `--bot good` seats the `pro` AI against the random bot; `random` seats random against random.
  */
 import { AI_PROFILES } from '../src/data/ai-profiles';
+import type { RunMode } from '../src/data/championships';
 import type { CompanionId } from '../src/data/companions';
 import type { SeatBrain } from '../src/game/match';
 import { type RunBot, simulateRun } from '../src/game/run-sim';
@@ -60,10 +62,11 @@ const seed = Number(opt('seed', '1'));
 const champ = Number(opt('champ', '8'));
 const stake = Number(opt('stake', '1'));
 const partner = (opt('partner', '') || undefined) as CompanionId | undefined;
+const runMode: RunMode = opt('run-mode', '2v2') === '1v1' ? '1v1' : '2v2';
 
 const t0 = performance.now();
 const out = Array.from({ length: runs }, (_, i) =>
-	simulateRun(seed * 100_000 + i, bot, champ, stake, partner),
+	simulateRun(seed * 100_000 + i, bot, champ, stake, partner, runMode),
 );
 const wins = out.filter((o) => o.won).length;
 const reached = out.map((o) => o.champ);
@@ -76,8 +79,9 @@ console.log(
 	JSON.stringify(
 		{
 			bot,
+			...(runMode === '1v1' ? { mode: runMode } : {}),
 			stake,
-			partner: partner ?? 'bruto|cida',
+			partner: runMode === '1v1' ? 'none' : (partner ?? 'bruto|cida'),
 			runs,
 			seed,
 			winRate: Number((wins / runs).toFixed(3)),
