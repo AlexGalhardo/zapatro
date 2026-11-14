@@ -49,6 +49,11 @@ export const SFX = {
 	'sfx.bet.doze': fx(0.9, 1, 0.02, 750),
 	'sfx.queda': fx(0.8, 1, 0, 750),
 	'sfx.hand.lose': fx(0.5, 1, 0.03, 500),
+	'sfx.joker.spin': fx(0.6, 1, 0.03, 1200),
+	'sfx.boss.intro': fx(0.8, 1, 0.02, 1500),
+	'sfx.eleven.enter': fx(0.7, 1, 0.02, 2000),
+	'sfx.iron.enter': fx(0.8, 1, 0.02, 2000),
+	'sfx.feat.unlock': fx(0.6, 2, 0.02, 700),
 	// Scoring and economy.
 	'sfx.score.chip': fx(0.35, 4, 0, 120),
 	'sfx.score.mult': fx(0.5, 3, 0, 200),
@@ -65,6 +70,9 @@ export const SFX = {
 	'sfx.ui.confirm': ui(0.55, 350),
 	'sfx.ui.back': ui(0.45, 250),
 	'sfx.ui.error': ui(0.5, 250),
+	'sfx.ui.toggle': ui(0.45, 150),
+	// One voice: held arrow keys and fast clicks never stack the ticks.
+	'sfx.ui.slider': { ...ui(0.4, 90), voices: 1 },
 } as const satisfies Record<string, SfxDef>;
 
 export type SfxKey = keyof typeof SFX;
