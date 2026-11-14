@@ -2,5 +2,10 @@
 	root * /srv
 	encode zstd gzip
 	file_server
-	header /assets/* Cache-Control "public, max-age=31536000, immutable"
+	# Only hashed files that exist: a cached 404 would pin players to a broken deploy.
+	@hashed {
+		path /assets/*
+		file
+	}
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
 }
