@@ -1,9 +1,5 @@
 {
 	"images": {
-		"portrait.juiz": {
-			"w": 128,
-			"h": 128
-		},
 		"portrait.bruto": {
 			"w": 256,
 			"h": 256
@@ -73,6 +69,10 @@
 			"h": 256
 		},
 		"portrait.cartomante": {
+			"w": 256,
+			"h": 256
+		},
+		"portrait.juiz": {
 			"w": 256,
 			"h": 256
 		}

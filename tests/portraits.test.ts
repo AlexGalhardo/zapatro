@@ -15,8 +15,7 @@ describe('portraits', () => {
 			expect(existsSync(file(id))).toBe(true);
 	});
 
-	test('the pixel converter maps only Juiz and leaves Pedrão out', () => {
-		expect(Object.keys(PORTRAITS)).toEqual(['char-juiz']);
+	test('the pixel converter leaves Pedrão out', () => {
 		expect(Object.keys(PORTRAITS)).not.toContain('char-pedrao');
 	});
 

@@ -2,14 +2,15 @@
  * Painted art (Art Bible v3, art-src/gta/*): for the cast in PAINTED, the character cards become
  * public/assets/gfx/card/<id>.webp (tall, name band and border cut) and the square bust
  * public/assets/gfx/portrait/<id>.webp; fund, menu, shop and card-back images become
- * public/assets/gfx/bg|back/*.webp. The pixel-art path below still serves the portraits with no
- * painted card yet (ze, bosses). Usage: bun scripts/portraits.ts
+ * public/assets/gfx/bg|back/*.webp. The pixel-art path below serves portraits with no
+ * painted card (none today). Usage: bun scripts/portraits.ts
  *
  * Converts the pixel-art character concept art (references/concept-art/zapatro/char-*.png, 1254×1254) into
  * the game's 128×128 portraits: area downscale, at most 32 colours, no dithering, and the flat
  * background removed from the image corners (the game paints the background by role).
  * Every portrait without a painting is pixel art from a concept. Local only, no network. Usage: bun scripts/portraits.ts
  */
+import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import sharp from 'sharp';
 
@@ -40,12 +41,11 @@ export const PAINTED: Record<string, string> = {
 	tony: 'tony',
 	valentao: 'valentao',
 	cartomante: 'cartomante',
+	'jorge-juiz': 'juiz',
 };
 
 /** Source file → portrait id (pixel art). `char-pedrao.png` is left out on purpose (docs/visual.md). */
-export const PORTRAITS: Record<string, string> = {
-	'char-juiz': 'juiz',
-};
+export const PORTRAITS: Record<string, string> = {};
 
 /** Clears the pixels connected to the corners that look like the corner colour. */
 function cutBackground(rgba: Buffer, w: number, h: number): void {
@@ -111,7 +111,9 @@ const SRC_GTA = 'art-src/gta';
 const CARD_CROP = { left: 100, top: 115, width: 824, height: 1100 } as const;
 
 async function painted(file: string, id: string): Promise<void> {
-	const card = sharp(await sharp(`${SRC_GTA}/char-${file}.jpeg`).extract(CARD_CROP).toBuffer());
+	// Most cards are JPEG; the Judge came as PNG.
+	const ext = existsSync(`${SRC_GTA}/char-${file}.jpeg`) ? 'jpeg' : 'png';
+	const card = sharp(await sharp(`${SRC_GTA}/char-${file}.${ext}`).extract(CARD_CROP).toBuffer());
 	await card.clone().resize(480, 640).webp({ quality: 82 }).toFile(`${G}/card/${id}.webp`);
 	await card
 		.clone()
