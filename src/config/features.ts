@@ -9,6 +9,12 @@ const flag = (v: string | undefined): boolean => v === '1' || v?.trim().toLowerC
 export const IS_DEMO: boolean = flag(import.meta.env.VITE_DEMO);
 export const IS_POKI: boolean = flag(import.meta.env.VITE_POKI);
 
+/**
+ * Every way into LAN multiplayer (today: the main menu's "Mesa LAN" row). false: hidden; the
+ * code, server, LanScene and tests stay. scripts/lan-smoke.ts opens the scene directly.
+ */
+export const MULTIPLAYER_ENABLED = false;
+
 /** The table's "Manilha / ZAP" box (bottom left of the felt): hidden to clear the table (dev test). */
 export const SHOW_MANILHA_BOX = false;
 

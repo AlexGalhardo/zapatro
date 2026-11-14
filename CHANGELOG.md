@@ -16,6 +16,10 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - **art:** the Judge (`juiz`) boss is now painted (`art-src/gta/char-jorge-juiz.png` → card and bust WebP); `scripts/portraits.ts` accepts PNG sources.
 
+### Changed
+
+- **ui:** the LAN multiplayer entry is hidden behind `MULTIPLAYER_ENABLED = false` (`src/config/features.ts`); code, server and tests stay.
+
 ## [0.21.0] - 2026-11-12
 
 ### Added

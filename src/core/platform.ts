@@ -1,3 +1,5 @@
+import { MULTIPLAYER_ENABLED } from '../config/features';
+
 /** The Steam build: Electron adds "Electron/<version>" to the user agent. */
 export function isElectron(): boolean {
 	return navigator.userAgent.includes('Electron/');
@@ -25,7 +27,7 @@ export const hostLan = (): Promise<LanHost> => {
  * `https://` page (the website, itch.io, Poki). The desktop and Android apps allow it.
  */
 export const lanAvailable = (): boolean =>
-	isElectron() || capacitor() !== null || location.protocol === 'http:';
+	MULTIPLAYER_ENABLED && (isElectron() || capacitor() !== null || location.protocol === 'http:');
 
 /**
  * Starts the game over. In Electron the shell relaunches the whole app (desktop/preload.cjs): once
