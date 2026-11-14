@@ -839,8 +839,10 @@ export class TableScene extends Phaser.Scene {
 			rule: tDuel(`boss.${boss}.rule` as I18nKey, this.duel),
 			centre: [this.cx, this.cy],
 			speed: this.speed,
-			onLand: () =>
-				final ? sfx(this, 'sfx.bet.doze', 1, -400) : sfx(this, 'sfx.truco', 0.9, -300),
+			onLand: () => {
+				sfx(this, 'sfx.boss.intro');
+				if (final) sfx(this, 'sfx.bet.doze', 1, -400);
+			},
 		});
 		this.skipCall = intro.skip;
 		await intro.done;
@@ -2226,6 +2228,10 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			duration: this.dur(300),
 		});
 		sfx(this, 'sfx.card.shuffle');
+		if (k === 'eleven') sfx(this, 'sfx.eleven.enter');
+		if (k === 'iron') sfx(this, 'sfx.iron.enter');
+		// The decisive hands (mão de 11, iron) swap the place's ambience for the held-breath bar.
+		playAmbience(this, k === 'normal' ? `amb.${this.place()}` : 'amb.decisive');
 		this.pendingCall = 3;
 		this.handsSinceJoke++;
 		if (k === 'normal' && jokeDue(this.handsSinceJoke, this.chatter.next()))
@@ -2960,10 +2966,10 @@ ${t(`manha.${id}.desc` as I18nKey)}`)
 			500,
 		);
 		await this.wait(450);
+		sfx(this, 'sfx.joker.spin');
 		for (let i = 0; i < 8; i++) {
 			const e = pool[(pool.indexOf(effect) + step + i * step) % pool.length];
 			this.notices.show('joker', name(e as PlayEffect), 200);
-			sfx(this, 'sfx.ui.move');
 			await this.wait(60 + i * 12);
 		}
 		sfx(this, 'sfx.pack.open');
