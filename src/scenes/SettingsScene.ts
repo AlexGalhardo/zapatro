@@ -63,6 +63,8 @@ interface Row {
 	col: 0 | 1 | 2;
 	y: number;
 	kind: Kind;
+	/** A volume slider: its steps tick instead of the generic move sound. */
+	slider?: boolean;
 	label: I18nKey;
 	/** Shown value (choice text, volumes in %) or the toggle state. */
 	value?: () => string | boolean;
@@ -119,6 +121,7 @@ export class SettingsScene extends Phaser.Scene {
 			col: 0,
 			y,
 			kind: 'choice',
+			slider: true,
 			label,
 			value: () => `${Math.round(s.volume[key] * 100)}%`,
 			onAdjust: (d) => vol(key, d),
@@ -530,14 +533,19 @@ export class SettingsScene extends Phaser.Scene {
 		const row = this.rows[this.focus];
 		if (!row?.onAdjust || row.disabled?.()) return;
 		row.onAdjust(dir);
-		sfx(this, 'sfx.ui.move');
+		sfx(this, this.adjustSound(row));
 		if (this.sys.isActive()) this.redraw();
+	}
+
+	private adjustSound(row: Row): 'sfx.ui.toggle' | 'sfx.ui.slider' | 'sfx.ui.move' {
+		if (row.kind === 'toggle') return 'sfx.ui.toggle';
+		return row.slider ? 'sfx.ui.slider' : 'sfx.ui.move';
 	}
 
 	private select(i: number = this.focus): void {
 		const row = this.rows[i];
 		if (!row || row.disabled?.()) return;
-		sfx(this, 'sfx.ui.confirm');
+		sfx(this, row.kind === 'toggle' ? 'sfx.ui.toggle' : 'sfx.ui.confirm');
 		if (row.onSelect) row.onSelect();
 		else row.onAdjust?.(1);
 		if (this.sys.isActive()) this.redraw();
