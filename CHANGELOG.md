@@ -15,6 +15,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 ### Added
 
 - **art:** the Judge (`juiz`) boss is now painted (`art-src/gta/char-jorge-juiz.png` → card and bust WebP); `scripts/portraits.ts` accepts PNG sources.
+- **docker:** `infra/Dockerfile` builds the web game with `oven/bun:1.4.4-slim` and serves `dist/` with Caddy 2.11.9 (`infra/Caddyfile`, port 8080, non-root user); `.dockerignore` leaves out `node_modules`, `dist`, desktop/mobile, art sources, `.env*` and the Windows executables.
 
 ### Changed
 
