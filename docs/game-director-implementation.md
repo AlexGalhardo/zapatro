@@ -121,7 +121,7 @@ Decisões do dev nesta sessão: agentes paralelos (sem worktree, por memória); 
 | `site.trailer.poster` | Implementado e validado | 1280×720 WebP de 41 kB a partir da captura da contagem |
 | `card.manilha.plate` | Implementado e validado | ver GD-011 |
 | `icon.boss.rule` | Não implementado | a regra do chefe já se lê pelo título vermelho "Mesa do Chefe"; ícone seria redundante |
-| `icon.sign.<6>` e `icon.ui.<6>` | Não implementado | PixelLab sem saldo (plano esgotado até 2026-10-26, US$ 0,06); a prova do selo "piscada" saiu com contorno duplo e olho de leitura errada; o carrinho saiu aproveitável e está em `art-src/icon/cart.png`, sem integrar (misturaria pixel e vetor na mesma barra) |
+| `icon.sign.<6>` e `icon.ui.<6>` | Não implementado | PixelLab sem saldo (plano esgotado até 2026-10-26, US$ 0,06); a prova do selo "piscada" saiu com contorno duplo e olho de leitura errada; o carrinho saiu aproveitável, mas nunca foi integrado e o arquivo foi removido de `art-src/` (continua no histórico do git) (misturaria pixel e vetor na mesma barra) |
 | `portrait.sortuda` | Não implementado | depende de P-06 |
 | `runend.summary` | Implementado e validado | ver GD-006 |
 
