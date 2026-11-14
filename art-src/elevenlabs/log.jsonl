@@ -1164,3 +1164,13 @@
 {"at":"2026-10-28T21:59:54.132Z","kind":"vo","key":"vo.en.juiz.piada2","take":2,"model":"eleven_v4","text":"[laughing] Sentenced to lose the hand."}
 {"at":"2026-10-28T21:59:54.996Z","kind":"vo","key":"vo.en.juiz.piada3","take":1,"model":"eleven_v4","text":"[confident] Silence! The gavel has decided."}
 {"at":"2026-10-28T21:59:56.390Z","kind":"vo","key":"vo.en.juiz.piada3","take":2,"model":"eleven_v4","text":"[laughing] Silence! The gavel has decided."}
+{"at":"2026-11-14T17:39:47.694Z","kind":"ui","key":"sfx.ui.toggle","take":1,"seconds":0.5,"prompt":"Tiny plastic switch click, very short, mono"}
+{"at":"2026-11-14T17:40:01.194Z","kind":"sfx","key":"sfx.joker.spin","take":1,"seconds":1.2,"prompt":"Fast ticking spinning wheel of a small prize drum, ending in a click, dry"}
+{"at":"2026-11-14T17:40:05.949Z","kind":"sfx","key":"sfx.boss.intro","take":1,"seconds":1.5,"prompt":"Ominous short accordion chord with a low drum hit, Brazilian countryside bar"}
+{"at":"2026-11-14T17:40:11.401Z","kind":"sfx","key":"sfx.eleven.enter","take":1,"seconds":2,"prompt":"Tension riser: low string swell with a heartbeat, ends abruptly"}
+{"at":"2026-11-14T17:40:17.017Z","kind":"sfx","key":"sfx.iron.enter","take":1,"seconds":2,"prompt":"Metallic anvil hit with a long dark ring"}
+{"at":"2026-11-14T17:40:22.379Z","kind":"ui","key":"sfx.feat.unlock","take":1,"seconds":0.7,"prompt":"Short achievement chime: two ascending glockenspiel notes, clean, no tail"}
+{"at":"2026-11-14T17:40:28.988Z","kind":"ui","key":"sfx.ui.slider","take":1,"seconds":0.5,"prompt":"Very short soft tick, wooden, mono"}
+{"at":"2026-11-14T17:40:39.486Z","kind":"amb","key":"amb.decisive","take":1,"seconds":30,"prompt":"Bar crowd going quiet then murmuring with tension, a glass set down, no music, no clear words, seamless loop, steady background ambience"}
+{"at":"2026-11-14T17:40:52.304Z","kind":"music","key":"music.shop","model":"music_v2_5","seconds":60,"credits":0,"prompt":"Relaxed Brazilian viola caipira and triangle, mid tempo, warm bar afternoon, lighter than the table theme. instrumental, no vocals, seamless loop for a cozy pixel art card game set in a small bar in the countryside of Sao Paulo, Brazil"}
+{"at":"2026-11-14T17:43:43.322Z","kind":"music","key":"music.shop","model":"music_v2_5","seconds":60,"credits":0,"prompt":"Relaxed Brazilian viola caipira and triangle, mid tempo, warm bar afternoon, lighter than the table theme. instrumental, no vocals, seamless loop for a cozy pixel art card game set in a small bar in the countryside of Sao Paulo, Brazil"}
