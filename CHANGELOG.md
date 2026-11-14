@@ -19,6 +19,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 ### Changed
 
+- **audio:** the nine tier 2 sounds are wired in: joker spin, boss intro, mão de 11 and iron hand entrances, the held-breath `amb.decisive` ambience on those hands, the feat chime, Settings toggle and slider ticks, and `music.shop` in the shop (loaded late with the other extra music). Test `tests/audio-tier2.test.ts`.
 - **ui:** the LAN multiplayer entry is hidden behind `MULTIPLAYER_ENABLED = false` (`src/config/features.ts`); code, server and tests stay.
 - **ui:** the match table backdrop is darker and greyer: brightness 0.3 → 0.2 plus a 50% grey veil (`TABLE_BACKDROP_BRIGHTNESS`, `TABLE_VEIL` in `palette.ts`).
 
