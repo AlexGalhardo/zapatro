@@ -109,6 +109,8 @@ export class RunScene extends Phaser.Scene {
 	private entering = false;
 	/** The run-end screen already played its music and entrance (a redraw must not repeat them). */
 	private endTuned = false;
+	/** The shop's own loop is playing (the menu loop everywhere else in this scene). */
+	private shopMusic = false;
 	/** The New run choices: remembered in the save settings, edited on the setup screen. */
 	private setup: RunSetup = { mode: '2v2', stake: 1, deck: 'normal' };
 	/** `?stake=N` (test hacks) preselects a Stake without the unlock check. */
@@ -150,6 +152,7 @@ export class RunScene extends Phaser.Scene {
 		this.tipText = null;
 		this.entering = false;
 		this.endTuned = false;
+		this.shopMusic = false;
 		playMusic(this, 'music.menu');
 		playAmbience(this, null);
 		this.body = this.add.container(0, 0);
@@ -237,6 +240,11 @@ export class RunScene extends Phaser.Scene {
 		this.tipText?.setVisible(false);
 		const run = this.run;
 		setBackdrop(this, !run ? 'partner' : run.phase === 'shop' ? 'shop' : 'main');
+		const inShop = run?.phase === 'shop';
+		if (inShop !== this.shopMusic) {
+			this.shopMusic = inShop;
+			playMusic(this, inShop ? 'music.shop' : 'music.menu');
+		}
 		this.msg.setPosition(this.cx, this.h - 6);
 		if (!run) {
 			if (this.mode === null) this.drawSetup();
