@@ -108,7 +108,8 @@ Decisões do dev nesta sessão: agentes paralelos (sem worktree, por memória); 
 |---|---|---|
 | `sfx.zap.reveal`, `sfx.bet.doze`, `sfx.queda`, `sfx.hand.lose`, `sfx.card.cover` | Implementado e validado | gerados (prova com 2, depois o resto), normalizados a −16 LUFS (±1,5), conferidos por espectrograma e disparados nos eventos; `bet.doze` e `hand.lose` regerados (N-03) |
 | `vo.juninho.oloco.2` | Discordo | bloqueio da ElevenLabs (N-02); fica 1 take |
-| `sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider`, `sfx.promise`, `music.shop`, `amb.decisive` | Não implementado | no catálogo (`scripts/el-catalog.ts`, tier 2) prontos para gerar; fora da autorização de créditos (só prioridade) |
+| `sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider`, `music.shop`, `amb.decisive` | Implementado | ligados em 2026-11-14 (docs/audio.md), com teste `tests/audio-tier2.test.ts` |
+| `sfx.promise` | Não implementado | no catálogo (`scripts/el-catalog.ts`, tier 2) prontos para gerar; fora da autorização de créditos (só prioridade) |
 | `vo.<char>.onze`, `vo.<char>.ferro` (56 falas) | Não implementado | idem; e o Juninho não pode ser regravado |
 
 ### 5.3 Assets visuais (seção 9)

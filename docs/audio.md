@@ -95,6 +95,13 @@ Sem saída de som na sessão, a mixagem foi medida em vez de ouvida (`ffmpeg` `e
 
 - Resolvido: `sfx.score.xmult` agora é o tinido sustentado de duas garrafas (bruto −10 LUFS; o tilintar curto de copos media −40). `amb.reiDoTruco` refeita (a versão "silenciosa" media −46 LUFS).
 
-- Tier 2 da revisão do diretor no catálogo (`scripts/el-catalog.ts`): `sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider`, `music.shop` e `amb.decisive` gerados e normalizados em 2026-11-14 (`audio-check`: 846 takes aprovados). O 1º take de `music.shop` tinha estalo na emenda do loop e foi refeito. Falta ligá-los às cenas (`src/data/sfx.ts` e as cenas que tocam cada evento) e a escuta humana.
+- Tier 2 da revisão do diretor no catálogo (`scripts/el-catalog.ts`): `sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider`, `music.shop` e `amb.decisive` gerados e normalizados em 2026-11-14 (`audio-check`: 846 takes aprovados). O 1º take de `music.shop` tinha estalo na emenda do loop e foi refeito. Ligados ao jogo em 2026-11-14 (mapa em `src/data/sfx.ts`, teste `tests/audio-tier2.test.ts`); falta a escuta humana.
+  - `sfx.joker.spin`: `jokerRoulette` (`TableScene`), um som no lugar dos tiques de `sfx.ui.move`; `sfx.pack.open` fecha a roleta.
+  - `sfx.boss.intro`: pouso da carta em `playBossIntro` (`introBoss`); o Rei do Truco soma `sfx.bet.doze` grave.
+  - `sfx.eleven.enter` / `sfx.iron.enter`: início da mão de 11 / de ferro (`announceKind`), junto do embaralhar.
+  - `amb.decisive`: troca a ambiência do Campeonato (`playAmbience`) nas mãos de 11 e de ferro e volta à do lugar na mão normal; barra Música.
+  - `sfx.feat.unlock`: toast de feito (`featToast`), no lugar de `sfx.money`.
+  - `sfx.ui.toggle` / `sfx.ui.slider`: Configurações; toggles (clique e Enter) e passos dos volumes (1 voz, sem empilhar com tecla segurada), barra UI.
+  - `music.shop`: `RunScene` ao entrar na fase da loja, com crossfade; volta a `music.menu` ao sair. Carrega no `LATER` (como `music.king`); se ainda não chegou, a música do menu continua.
 - O `el-sfx.ts` acrescenta "no music" ao prompt: prompts com instrumento melódico (xilofone, sino) saem como clique e ruído; descreva como foley (blocos de madeira, taça).
 - `sfx.ui.error` bruto a −26 LUFS (ok depois de normalizado).
