@@ -21,7 +21,7 @@ export function featToast(scene: Phaser.Scene, ids: readonly string[]): void {
 			.setOrigin(0.5)
 			.setDepth(DEPTH.toast)
 			.setScrollFactor(0);
-		sfx(scene, 'sfx.money');
+		sfx(scene, 'sfx.feat.unlock');
 		scene.tweens.add({
 			targets: msg,
 			alpha: 0,
