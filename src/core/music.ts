@@ -10,6 +10,7 @@ export type MusicKey =
 	| 'music.table4'
 	| 'music.boss'
 	| 'music.king'
+	| 'music.shop'
 	| 'music.win'
 	| 'music.lose';
 /** The normal tables' loops, drawn at every table (never the previous one). */
@@ -24,6 +25,7 @@ export const MUSIC_KEYS: readonly MusicKey[] = [
 	...TABLE_MUSIC,
 	'music.boss',
 	'music.king',
+	'music.shop',
 	'music.win',
 	'music.lose',
 ];
