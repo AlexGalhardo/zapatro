@@ -178,6 +178,12 @@ export function buttonHover(fill: number): number {
  * stand out on it.
  */
 export const BACKDROP_BRIGHTNESS = 0.3;
+/**
+ * The match table's backdrop: darker and greyer so the painting only just shows. Tint 0.3 -> 0.2,
+ * plus a flat grey veil (`TABLE_VEIL`, 0 before) that pulls the hue towards grey.
+ */
+export const TABLE_BACKDROP_BRIGHTNESS = 0.2;
+export const TABLE_VEIL = { color: 0x303030, alpha: 0.5 } as const;
 /** The shop's chalkboard holds the UI: its painting stays brighter than the other backdrops. */
 export const SHOP_BACKDROP_BRIGHTNESS = 0.75;
 

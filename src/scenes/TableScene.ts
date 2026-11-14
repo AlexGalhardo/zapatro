@@ -1079,7 +1079,7 @@ export class TableScene extends Phaser.Scene {
 
 	/** The painted felt (public/assets/gfx/bg/table.webp) with a soft shadow; flat felt if it is missing. */
 	private drawTable(): void {
-		setBackdrop(this, 'main');
+		setBackdrop(this, 'table');
 		const { x, y, w, h } = FELT;
 		const g = this.add.graphics();
 		g.fillStyle(PALETTE.shadow, 0.55).fillRoundedRect(x, y + 3, w, h, 12);

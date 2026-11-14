@@ -1,10 +1,16 @@
 import Phaser from 'phaser';
-import { BACKDROP_BRIGHTNESS, PALETTE, SHOP_BACKDROP_BRIGHTNESS } from '../config/palette';
+import {
+	BACKDROP_BRIGHTNESS,
+	PALETTE,
+	SHOP_BACKDROP_BRIGHTNESS,
+	TABLE_BACKDROP_BRIGHTNESS,
+	TABLE_VEIL,
+} from '../config/palette';
 import { trackZoom } from '../core/viewport';
 import { shopImageRect } from '../view/shop-slate';
 
 /** Painted backdrops of public/assets/gfx/bg (scripts/portraits.ts); `main` is every other screen. */
-export type BackdropKey = 'main' | 'shop' | 'partner';
+export type BackdropKey = 'main' | 'shop' | 'partner' | 'table';
 const REGISTRY_KEY = 'backdrop';
 /** Grey multiplied over the painting (same factor on every channel keeps the colours). */
 const grey = (b: number): number => {
@@ -13,6 +19,7 @@ const grey = (b: number): number => {
 };
 const DIM_TINT = grey(BACKDROP_BRIGHTNESS);
 const SHOP_TINT = grey(SHOP_BACKDROP_BRIGHTNESS);
+const TABLE_TINT = grey(TABLE_BACKDROP_BRIGHTNESS);
 
 /** Gameplay paintings (background-1 to 6): `main` and `partner` show one of them, drawn at random. */
 const VARIANTS = ['partner', 'street', 'main', 'bg4', 'bg5', 'bg6'] as const;
@@ -66,6 +73,10 @@ export class BackdropScene extends Phaser.Scene {
 		const cam = this.cameras.main;
 		cam.setBackgroundColor(PALETTE.bgNeutral);
 		const image = this.add.image(0, 0, 'img.bg.main').setVisible(false).setTint(DIM_TINT);
+		const veil = this.add
+			.rectangle(0, 0, 1, 1, TABLE_VEIL.color, TABLE_VEIL.alpha)
+			.setOrigin(0, 0)
+			.setVisible(false);
 		let size = { width: 0, height: 0 };
 		const show = (): void => {
 			const key = (this.game.registry.get(REGISTRY_KEY) as BackdropKey | undefined) ?? 'main';
@@ -76,7 +87,10 @@ export class BackdropScene extends Phaser.Scene {
 			const ok = this.textures.exists(tex);
 			image.setVisible(ok);
 			if (!ok) return;
-			image.setTexture(tex).setTint(key === 'shop' ? SHOP_TINT : DIM_TINT);
+			image
+				.setTexture(tex)
+				.setTint(key === 'shop' ? SHOP_TINT : key === 'table' ? TABLE_TINT : DIM_TINT);
+			veil.setVisible(key === 'table').setSize(size.width, size.height);
 			if (key === 'shop') {
 				// The chalkboard stays in view on any window shape (src/view/shop-slate.ts).
 				const r = shopImageRect(size);

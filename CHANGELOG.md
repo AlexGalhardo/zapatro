@@ -19,6 +19,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 ### Changed
 
 - **ui:** the LAN multiplayer entry is hidden behind `MULTIPLAYER_ENABLED = false` (`src/config/features.ts`); code, server and tests stay.
+- **ui:** the match table backdrop is darker and greyer: brightness 0.3 → 0.2 plus a 50% grey veil (`TABLE_BACKDROP_BRIGHTNESS`, `TABLE_VEIL` in `palette.ts`).
 
 ## [0.21.0] - 2026-11-12
 
