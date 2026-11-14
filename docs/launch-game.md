@@ -107,7 +107,7 @@ Confira na [documentação do Steamworks](https://partner.steamgames.com/doc/hom
 *Store Admin → Edit Store Page*:
 
 1. **Descrição** curta e longa, em EN e PT-BR (§2 item 3).
-2. **Gráficos** (fontes em `art-src/capsules/`, logo por cima antes de enviar):
+2. **Gráficos** (`art-src/capsules/` foi removido; use os `media/store-*.png`, logo por cima antes de enviar):
 
    | Arte | Tamanho | Fonte |
    |---|---|---|

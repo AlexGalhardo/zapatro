@@ -24,6 +24,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 ### Removed
 
 - **art:** unused source art (`art-src/icon/cart.png`, `art-src/portrait/peter.png`), neither read by any asset script.
+- **art:** more unused source art: `art-src/backup-pixel/` (15 old pixel portraits), `art-src/keyart.png`, `art-src/capsules/` (6 store capsules; the store images are generated into `docs/media/`) and `art-src/gta/shop2.jpeg`. All stay in git history.
 
 ## [0.21.0] - 2026-11-12
 
