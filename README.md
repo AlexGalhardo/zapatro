@@ -56,6 +56,15 @@ bun run dev
 | `bun run android:run` | Roda o app Android (JDK 21 e `ANDROID_HOME`) |
 | `bun run release` | Cria o GitHub Release das tags novas (só o mantenedor) |
 
+## Docker
+
+Imagem do jogo web: o build do Bun (`oven/bun:1.4.4-slim`) gera o `dist/` e o Caddy (`infra/Caddyfile`) serve na porta 8080, como usuário não-root.
+
+```sh
+docker build -f infra/Dockerfile -t zapatro .
+docker run --rm -p 8080:8080 zapatro
+```
+
 ## Documentação
 
 - [PLAN.md](PLAN.md): decisões, regras do Truco, arquitetura e fases.

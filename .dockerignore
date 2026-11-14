@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+desktop
+mobile
+art-src
+references
+trailer
+site
+graphify-out
+*.exe
+# Local env files hold API keys and Vite would inline VITE_* values into the bundle.
+.env
+.env.*

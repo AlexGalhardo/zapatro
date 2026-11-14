@@ -16,6 +16,7 @@ Since 2026-10-24 the project has 18 releases, numbered in order from 0.1.0 to 0.
 
 - **audio:** generate and normalise the nine tier 2 takes of the director review (`sfx.joker.spin`, `sfx.boss.intro`, `sfx.eleven.enter`, `sfx.iron.enter`, `sfx.feat.unlock`, `sfx.ui.toggle`, `sfx.ui.slider`, `music.shop`, `amb.decisive`); `audio-check` passes all 846 takes. Not wired to the scenes yet.
 - **art:** the Judge (`juiz`) boss is now painted (`art-src/gta/char-jorge-juiz.png` → card and bust WebP); `scripts/portraits.ts` accepts PNG sources.
+- **docker:** `infra/Dockerfile` builds the web game with `oven/bun:1.4.4-slim` and serves `dist/` with Caddy 2.11.9 (`infra/Caddyfile`, port 8080, non-root user); `.dockerignore` leaves out `node_modules`, `dist`, desktop/mobile, art sources, `.env*` and the Windows executables.
 
 ### Changed
 
